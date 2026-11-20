@@ -1,0 +1,135 @@
+---
+title: Animation runtime
+description: How Worklets, Reanimated 4 and Gesture Handler 3 run on the Qt host, which thread owns each step, and what the Pi 400 runs showed about frames, springs and gestures.
+---
+
+Animation libraries on this platform run in three layers. `react-native-worklets` 0.13.1 supplies a second JavaScript runtime on its own thread. `react-native-reanimated` 4.7.1 builds shared values and animated styles on that runtime. `react-native-gesture-handler` 3.4.0 supplies the gesture JavaScript, while the recognizers themselves are C++ written for this host. Upstream JavaScript runs unmodified. All three switches (`RNQNX_ENABLE_WORKLETS`, `RNQNX_ENABLE_REANIMATED`, `RNQNX_ENABLE_GESTURE_HANDLER`) default to OFF, and each CMake step rejects a version outside its supported range.
+
+This page covers the threads, the seams between them and the evidence. Sources: `docs/worklets-qnx.md`, `docs/reanimated-gesture-handler-qnx.md`, `docs/adr/0020-worklets-reanimated-gesture-handler-bootstrap.md` and the receipts under `docs/evidence/`.
+
+## Two threads, one render loop
+
+<svg
+  role="img"
+  aria-label="Two columns show the GUI thread that runs React JavaScript and the rnqnx-ui-worklet thread that runs worklets, with arrows for posting batches, calling back to JavaScript, frame delivery, mounting and gesture callbacks"
+  viewBox="0 0 760 420"
+  width="100%"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+>
+  <title>Threads and seams in the animation runtime</title>
+  <defs>
+    <marker id="anim-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none" />
+    </marker>
+  </defs>
+  <text x="160" y="20" textAnchor="middle" fill="currentColor" stroke="none" fontSize="14">Qt GUI thread (also the RN JS thread)</text>
+  <text x="600" y="20" textAnchor="middle" fill="currentColor" stroke="none" fontSize="14">rnqnx-ui-worklet thread</text>
+
+  <rect x="10" y="34" width="300" height="52" rx="6" />
+  <text x="160" y="56" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Hermes RN runtime</text>
+  <text x="160" y="74" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">React, useSharedValue, scheduleOnUI</text>
+  <rect x="450" y="34" width="300" height="52" rx="6" />
+  <text x="600" y="56" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtUiThread, QtUIScheduler</text>
+  <text x="600" y="74" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">one queued call per batch</text>
+  <line x1="310" y1="60" x2="448" y2="60" markerEnd="url(#anim-arrow)" />
+  <text x="380" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QtUiThread::post</text>
+
+  <rect x="10" y="110" width="300" height="52" rx="6" />
+  <text x="160" y="132" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtRuntimeTaskQueue</text>
+  <text x="160" y="150" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">runs JS callbacks on the owner</text>
+  <rect x="450" y="110" width="300" height="52" rx="6" />
+  <text x="600" y="132" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">UI Worklet Runtime</text>
+  <text x="600" y="150" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">worklets, gesture and event handlers</text>
+  <line x1="450" y1="136" x2="312" y2="136" markerEnd="url(#anim-arrow)" />
+  <text x="380" y="128" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">scheduleOnRN</text>
+
+  <rect x="10" y="186" width="300" height="52" rx="6" />
+  <text x="160" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtFrameBridge</text>
+  <text x="160" y="226" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QQuickWindow::afterAnimating</text>
+  <rect x="450" y="186" width="300" height="52" rx="6" />
+  <text x="600" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">requestAnimationFrame batch</text>
+  <text x="600" y="226" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">steady_clock milliseconds</text>
+  <line x1="310" y1="212" x2="448" y2="212" markerEnd="url(#anim-arrow)" />
+  <text x="380" y="204" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">frame batch</text>
+
+  <rect x="10" y="262" width="300" height="52" rx="6" />
+  <text x="160" y="284" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtSchedulerDelegate</text>
+  <text x="160" y="302" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">mounts into Qt Quick items</text>
+  <rect x="450" y="262" width="300" height="52" rx="6" />
+  <text x="600" y="284" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Reanimated commit</text>
+  <text x="600" y="302" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">animated props from the UI thread</text>
+  <line x1="450" y1="288" x2="312" y2="288" markerEnd="url(#anim-arrow)" />
+  <text x="380" y="280" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">owner poster</text>
+
+  <rect x="10" y="338" width="300" height="52" rx="6" />
+  <text x="160" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtGestureInput</text>
+  <text x="160" y="378" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">event filter, GestureHandlerCore Registry</text>
+  <rect x="450" y="338" width="300" height="52" rx="6" />
+  <text x="600" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Gesture worklet callbacks</text>
+  <text x="600" y="378" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">onBegin, onUpdate, onEnd</text>
+  <line x1="310" y1="364" x2="448" y2="364" markerEnd="url(#anim-arrow)" />
+  <text x="380" y="356" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">pointer events</text>
+
+  <text x="380" y="412" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">The Qt render thread, when present, draws the scene graph and runs no worklet or React code.</text>
+</svg>
+
+The Qt GUI thread runs React, Hermes, module calls and Qt item changes. The host has no separate JS thread, so the UI-worklet thread (`rnqnx-ui-worklet`) is a third thread added beside the render thread, and not a replacement for the JS thread. On the Pi 400, the app logged `[gui]` for the JS thread role and `ui-worklet` for the worklet role in every run.
+
+## The seams
+
+**JS to UI.** `QtUiThread::post` queues one call per batch, scheduled by `QtUIScheduler` (`vnext/src/worklets/`).
+
+**UI to JS.** `QtTaskQueueCallInvoker` posts to `QtRuntimeTaskQueue`. React Native's own call invoker cannot serve here. This host's runtime executor runs a callback inline on the caller, which would execute JavaScript on the UI-worklet thread.
+
+**Frames.** `QtFrameBridge` (`vnext/src/worklets/QtFrameBridge.cpp`) connects to `QQuickWindow::afterAnimating`. A frame request marks the window dirty once per outstanding batch. When the signal fires on the GUI thread, the bridge swaps the pending callbacks into a batch and runs them on the UI thread with a `steady_clock` millisecond timestamp. No timer is involved. A hidden or unexposed window produces no frames, and so no callbacks. The bridge follows one window.
+
+**Mounting.** Qt items change only on the GUI thread. Reanimated commits from the UI thread, so `QtSchedulerDelegate`'s owner poster re-posts the mount. The delegate also reports a successful mount to the `UIManager` through `setMountReporter`. This hook came out of a device finding. On the Pi, a shared value advanced to 222.133 while pixels stayed put until a React commit, because the scheduler never called `reportMount`, and the pinned Reanimated mount hook resumes paused animation commits there. The fix and its host test are in `docs/validation/pr149-frame-mount-2026-11-13.md`. Failed mutation batches are not acknowledged.
+
+## How the libraries attach
+
+Each library looks up a named TurboModule and expects the native side to install a global proxy: `WorkletsModule` (`__workletsModuleProxy`), `ReanimatedModule` (`__reanimatedModuleProxy`) and `RNGestureHandlerModule`. ADR-0020 registers those three through `QtReactHost::registerTurboModule` as thin bootstraps over the upstream C++, compiled from the installed npm package and not vendored. A Nitro HybridObject cannot answer the registry lookup, and an empty TurboModule would hide failures, so a method the platform does not implement returns an error. New third-party TurboModule names need their own ADR. `QtReactHost::addTeardownHook` lets a library stop its thread or runtime while Hermes is still alive.
+
+Worklets evaluates serialized function source on its secondary runtime even when the app bundle is bytecode. An app with Worklets on therefore links the full `libhermesvm.so` from `RNQNX_HERMES_QNX_DIR`. A release app without Worklets keeps `libhermesvmlean.so`, and a missing full VM stops configuration. Bundle Mode is not supported. The Worklets Babel plugin comes from `babel-preset-expo` when the package is installed.
+
+The platform patches upstream C++ in generated copies with one-line text substitutions that fail the configure step if the upstream line changes: one `AsyncQueueImpl.cpp` line (`pthread_setname_np` takes the thread first on QNX), the `SynchronouslyUpdateUIPropsFunction` type and the loop that applies synchronous props.
+
+## Reanimated and Gesture Handler
+
+`QnxReanimatedModule` builds the upstream `ReanimatedModuleProxy` with Qt implementations of `requestRender` (the frame bridge), `getAnimationTimestamp` (`steady_clock`) and `synchronouslyUpdateUIPropsFunction` (a GUI-thread update into the mounted item). Events for `useAnimatedScrollHandler` and gesture handlers come through `Scheduler::addEventListener`, and the handler worklet runs on the UI thread. Sensors, keyboard, pseudo-selectors and platform CSS backends are not provided, and sensors and keyboard log and return -1.
+
+The recognizers are in `vnext/src/gesture/GestureHandlerCore.cpp`, a registry with no Qt or React dependency. `QtGestureInput` observes window mouse and touch events and never consumes them, so `Pressable` keeps working beside it (see [Input path](/docs/explanation/input-path)).
+
+| Handler | Status |
+| --- | --- |
+| Pan, Tap, LongPress, Fling | Implemented with the options the source lists, for example Pan min distance, offsets and velocity, Tap count, duration and delay |
+| Manual | Driven by `GestureStateManager` |
+| Pinch, Rotation, Native, Hover | Accepted, then fail on the first pointer with a log line |
+
+By default the first handler to activate fails every other begun or active handler that shares a pointer. `simultaneousHandlers`, `waitFor` and `blocksHandlers` change that. Pointer-data callbacks, multi-pointer pan averaging, hit slop, `RNGestureHandlerButton` behavior (it mounts as a plain container), arbitration with Qt scrolling and coordinate spaces for transformed ancestors are not implemented.
+
+## Teardown
+
+At shutdown the platform stops frames, marks the RN runtime dead, invalidates the proxy and joins the UI thread. Queued but unstarted jobs are discarded. In the Pi 400 probes of 2026-11-13, five of five runs exited with status 0 and logged `RNQNX_WORKLETS_SHUTDOWN_OK`, with a never-ending frame loop, 500 queued UI jobs and 2000 queued UI-to-JS posts. Gesture cancellation is specified separately: detaching, disabling or moving a handler cancels its current contact first, and window deactivation cancels all handlers. A 24-case native suite covers this on Linux (`docs/evidence/pr149-cancellation-2026-11-17/README.md`).
+
+## What the Pi 400 showed
+
+| Observation | Source |
+| --- | --- |
+| A worklet reports thread role `ui-worklet`, React reports `gui` | `docs/evidence/worklets-frame-2026-11-13/device-before-flush.txt`, run 1 `app.txt` |
+| 30 frame callbacks in 465 ms (worst gap 18 ms) and in 472 ms (17 ms) after the frame fix; 30 in 459 ms (worst gap 23 ms) in PR 149 run 1 | same files, `docs/evidence/pr149-pi400-run1-2026-11-19/README.md` |
+| `withSpring` mid-travel, then finished with the box at its end position, and a `withTiming` card with intermediate pixels | run 1 and run 2 screenshots, `docs/validation/pr149-frame-mount-2026-11-13.md` |
+| Pan moves a card and it springs back on release; single tap counts 1; a double click reports "double tap"; after a swipe, a swipeable list's first row (Inbox) is gone from the visible rows | run 1 and run 2 READMEs |
+
+The frame figures are intervals between callbacks. They are not presentation timing, and no record shows frames reaching the display on schedule.
+
+## Limits
+
+- **Busy JavaScript.** React runs on the GUI thread, so a blocked JS thread stops repainting and stops frame callbacks. The device probe reported `JS busy 300 ms: 0 of 40 UI worklet jobs ran inside the busy window`, so no run shows UI-thread work continuing while JS is blocked. The remedy named in the docs is a dedicated JS thread with a free GUI thread (`docs/platform-modernization/01-runtime-baseline.md`), and the work has not been done.
+- **Input source.** The pan, tap and double-tap results used injected single-pointer events from `rnqnx-inject` at 1024x768. Pinch, rotation, multi-pointer input, 1920x1080 and a physical mouse are not verified.
+- **Scope of the hosted evidence.** The linked Linux host fixture (Qt 6.11.1, software rendering) moves one view by 60 px with `withTiming` and another by 40 px with a pan, and repeats the flow over two hosts and a teardown with a pending frame. It qualifies host linkage and does not stand in for the QNX binary.
+- **Unavailable pieces.** `toggleSlowAnimationsOnUIRuntime` returns false, and general animated SVG props and broader hook compositions are listed as open in `docs/handoff/CURRENT_STATE.md`.
+- **Release builds.** Source unpackers need a Hermes that compiles source, so a release build needs the bytecode unpacker path (`hermesBytecode: true`) proved on the target. This was proved only on full Hermes.
+
+Release gates for this stack stay pending. See [Release gates](/docs/reference/release-gates) and [Known gaps](/docs/reference/known-gaps), and [Threading model](/docs/explanation/threading) for the owner-thread rules the seams above enforce.

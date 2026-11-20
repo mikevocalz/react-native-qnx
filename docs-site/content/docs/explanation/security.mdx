@@ -1,0 +1,79 @@
+---
+title: Security and sandboxing on QNX
+description: What the repository documents and tests about security, what the runner does and does not isolate, and what is still unknown.
+---
+
+React Native QNX is experimental. [`SECURITY.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/SECURITY.md) says so directly: the active RN 0.88 line "receives security fixes as maintainers can verify them", and "no supported production release or response-time guarantee is established". This page lists what the source and documents show about security on the QNX target, and what they leave open. It makes no claim about process isolation beyond what appears below.
+
+## Reporting
+
+`SECURITY.md` asks reporters to use GitHub private vulnerability reporting, or to open a minimal issue asking for a private contact if that flow is unavailable. Reports should state the affected revision, dependency versions, host and target identity, and label host, QNX VM and physical-board results separately. Licensed Qt or QNX material stays out of public issues, CI logs and screenshots.
+
+## Where the app process runs
+
+Every Raspberry Pi 400 receipt that names a user runs the app as the ordinary account `qnxuser`, not as root.
+
+- `docs/evidence/forge-qnx-2026-11-07.md`: "execution as qnxuser".
+- `docs/evidence/pi400-runtime-trace-2026-11-07.md`: the native recorder ran under "unprivileged `qnxuser`".
+- `docs/evidence/pi400-runtime-baseline-2026-11-07.md`: ten trials "as app user".
+
+The launcher template `template/qnx/run-app.sh` defaults the Qt runtime path to `/data/home/qnxuser/qt612-public-o2` and finds the app's other copies with `pidin`. It stops a running copy with SIGTERM, never SIGKILL. Run as a normal user it acts only on that user's processes. Run as root it sees every user's. The app also guards itself over a local socket so a second instance defers to the first.
+
+The same receipts show operator tooling that does use elevated rights. The input injector and screenshot capture in the 2026-11-19 runs go through `sudo -n` (for example `sudo -n /data/home/qnxuser/bin/rnqnx-inject4` and `sudo -n screenshot`), and `tools/qnx-winmgr/swap-winmgr.sh` runs the window manager swap with `sudo -n -u qnxuser`. These are test and deployment steps outside the app.
+
+```text
+  Board image (QNX)            Project-built, user qnxuser       Operator tooling
+  libc, libc++, libscreen      app executable, Hermes            sudo -n injector,
+  libEGL, libGLESv2, ...       Qt libraries and plugins          screenshot, winmgr swap
+```
+
+## What the runner does not isolate
+
+The documents contain no description of a sandbox for the app, and the hardening plan says one is missing. `docs/v1/hardening-coverage.md` item E2 reads "QNX runner security type/policy absent". Its acceptance column asks for a plan, an ADR, a non-root target run, `secpolgenerate` abilities reviewed by hand, and tests for denied operations. That row is pending, so no least-privilege policy exists to cite.
+
+From the code the following facts follow, with the limits of what was read:
+
+- **JavaScript and native code share one process.** Hermes runs inside the app. [Threading](/docs/explanation/threading) describes JavaScript running on the Qt owner thread. `docs/testing-host-renderer.md` says the host "is not a sandbox for untrusted/unbounded JavaScript", and that React Native's microtask retry ceiling and fatal behaviour after a burst of throwing jobs are unchanged.
+- **JavaScript can block the window.** The accessibility audit (`docs/v1/design/accessibility-audit.md`, G-A11Y-09) records that JavaScript sharing the GUI thread means long JavaScript work prevents native window and overlay operation.
+- **An app's native module surface is whatever it links.** Nitro HybridObjects and the C++ modules in `vnext/src/runtime/` run with the app's rights. No per-module permission check appears in the files read.
+
+## Network behaviour that has security consequences
+
+- **Image loader.** From `docs/image-loader.md`: TLS errors are not ignored. Redirects are limited to five hops under the original deadline. Same-origin hops keep caller headers, and an origin change drops them. Non-HTTP(S), credential-bearing and HTTPS-to-HTTP redirect targets are rejected. Automatic cookie handling and cached authentication reuse are disabled. A request has a 30-second timeout and a 16 MiB encoded limit, and decode rejects images over 16 million pixels.
+- **WebSockets.** `docs/websocket-host-readiness.md` says TLS uses Qt's default peer verification and certificate errors are never ignored. A host test rejects an ephemeral self-signed endpoint. It also says trusted remote `wss://` interoperability and target CA-store provisioning remain integration work, so a QNX image's trust store has not been checked.
+- **Development client.** `docs/getting-started/dev-workflow.md` states that the client runs whatever JavaScript the given server sends, over plain HTTP by default, and that Metro listens on all interfaces unless `--host` limits it. The doc says to use it on a private link and never ship a build with `RNQNX_ENABLE_DEV_SUPPORT=ON`. The `/message` socket accepts only `reload` and `devMenu`. Release builds do not link the WebSocket module.
+
+## Prebuilt runner and the SDP boundary
+
+[ADR-0018](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md) (Accepted 2026-11-12) governs `rnqnx runner fetch`. No runner had been built or published when the ADR was accepted.
+
+The ADR splits what a runner process loads on the Pi 400 into three groups: project-built code and public-source Qt, QNX system libraries from the board image, and a Mesa and libdrm overlay under `/data/pi400-graphics-compat` from QNX Software Center. The decision is that a QNX runner archive carries only the first group plus licence material. The ADR says QNX's redistribution terms have not been checked and that it "is not a legal opinion".
+
+Enforcement, as the ADR describes it (this page confirmed only the hash and size check in `packages/react-native-qnx-cli/src/runner.mjs`; the archive-content check is taken from the ADR and `scripts/verify-runner-archive.mjs` was not read):
+
+- Each manifest entry carries a 64-character `sha256` and a `size`. A download that fails the hash check is deleted.
+- Every QNX entry lists `targetLibraries`. After the hash check, `fetch` lists the tar.gz without extracting it and refuses archives containing files named like QNX SDP or target-image libraries (`libc`, `libscreen`, `libEGL`, `libdrm`, `*_dri.so` and others), absolute paths, or `..`.
+- Redirects are followed only between `github.com` release-download paths and `githubusercontent.com` hosts, at most five hops.
+- GitHub artifact attestations come from `.github/workflows/runner-release.yml`. Checking one needs `gh attestation verify <file> --repo mikevocalz/react-native-qnx`, which `fetch` does not run. The attestation names the workflow run and commit. It does not prove which machine compiled a QNX runner, because those are built on a machine with a licensed SDP.
+- `fetch` never contacts a device. With `--target-libs <file>` it compares names against a listing taken on the board, and otherwise reports `targetLibrariesChecked: false`.
+
+The ADR's consequences section concedes that a compromised repository could publish a bad manifest and a matching archive. Hardening item F6 adds that the runner "compares target library names only", so exact SDP identity is unverified.
+
+`scripts/qnx-device.sh` opens SSH with `BatchMode=yes` and `StrictHostKeyChecking=yes`.
+
+## Supply chain
+
+`pnpm audit:dependencies` runs `scripts/audit-dependencies.mjs` against the registry at the moderate threshold. Its policy, per `docs/security/braces.md` and `docs/security/NOVEMBER_2026_NPM_REMEDIATION.md`:
+
+- On 2026-11-02 the frozen graph had 14 unmitigated moderate-or-higher advisories (1 critical, 9 high, 4 moderate) across 7 package names. Overrides and a regenerated lockfile addressed them, and the doc says to add no advisory to `audit.ignore`.
+- `braces@3.0.3` has no patched release. `patches/braces@3.0.3.patch` backports the five library files from upstream pull request 72 and caps brace and parenthesis nesting at 100. The audit script recognises that one advisory as "locally mitigated" only after hashing every installed copy, and the raw `pnpm audit` stays nonzero. The doc says a passing gate must not be described as a clean registry audit, and it makes "no QNX target-runtime claim".
+- The public-source Qt 6.12.0 build applies three security diffs to qtbase (`CVE-2026-116337` 0001 and 0002, and `CVE-2026-105924`, per `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md`). `docs/v1/hardening-coverage.md` records that a later Qt diff, `CVE-2026-105943`, is not applied because its hunks touch Windows SSPI code and the QNX build header has `QT_FEATURE_sspi -1`.
+
+## Unknowns
+
+- No QNX process sandbox, security type or ability policy exists, and no denied-operation test exists.
+- No per-app permission model for native APIs was found.
+- No security review or penetration test of the renderer, the Nitro boundary or the runner is recorded.
+- The target CA store is unprovisioned for `wss://`.
+- The runner's exact SDP identity is unchecked, and no runner has been published.
+- Hosted CI checks run on GitHub-hosted Linux runners and compile nothing for QNX (see [releases](/docs/explanation/releases)).

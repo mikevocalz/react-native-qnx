@@ -1,0 +1,69 @@
+---
+title: Comparison with other React Native platforms
+description: Facts about how other out-of-tree React Native platforms and React Native QNX differ in target, engine and renderer, each cited to its source.
+---
+
+This page lists facts about React Native platforms that live outside the main `facebook/react-native` repository. It gives no rankings. Each external fact carries the URL it came from. All external pages were fetched on 2026-11-19, and a project's pages may have changed since. Where a fetched page did not state a point, the table says so and the page makes no claim from memory.
+
+## React Native QNX
+
+Claims in this section cite repository paths.
+
+- **Target.** QNX SDP 8.0.5. `docs/v1/release-notes.md` calls v1 a milestone "for the React Native 0.88 line on QNX SDP 8.0.5". The only verified device is a Raspberry Pi 400 on a custom image (see [status](/docs/reference/status)).
+- **Relationship to core React Native.** `README.md` calls it "an out-of-tree React Native platform for QNX". The workspace pins `react-native` 0.88.1. `pnpm-workspace.yaml` applies `patches/react-native@0.88.1.patch`, which changes three files: `ReactFabric-dev.js`, `ReactFabric-prod.js` and `dispatchNativeEvent.js`. No React Native fork exists in the files read.
+- **JavaScript engine.** Hermes only (`docs/adr/0005-hermes-only.md`), cross-compiled for QNX.
+- **Architecture.** Fabric and JSI only, with no Paper and no legacy bridge (`docs/adr/0009-fabric-only.md`; see [why Fabric only](/docs/explanation/why-fabric-only)).
+- **Renderer.** Qt Quick. Fabric mutations become `QQuickItem` operations through `QtQuickMountingLayer`, and Yoga stays the only layout authority (`docs/adr/0001-qt-quick-backend.md`). Qt's QNX platform plugin presents on QNX Screen. The layers are described in [architecture](/docs/explanation/architecture).
+- **Native modules.** Nitro HybridObjects for application APIs, with C++ modules for the ones React Native's JavaScript requires by name (`docs/adr/0004-nitro-modules.md`, `docs/handoff/DECISIONS.md`).
+
+## Side by side
+
+| Project | Target platform | Relationship to core React Native | JavaScript engine | Renderer or UI layer |
+| --- | --- | --- | --- | --- |
+| react-native-qnx | QNX SDP 8.0.5 | Out-of-tree, pins `react-native` 0.88.1 with a three-file patch | Hermes (`docs/adr/0005-hermes-only.md`) | Fabric only, Qt Quick (`docs/adr/0009-fabric-only.md`, `docs/adr/0001-qt-quick-backend.md`) |
+| react-native-windows | Windows 10 SDK devices | Not stated on the pages fetched | Hermes supported and enabled by default for new projects, with Chakra as the fallback | Paper on UWP XAML, Fabric on Windows App SDK Composition |
+| react-native-macos | macOS Big Sur (11) or newer | "a working fork of facebook/react-native" | Not stated on the pages fetched | Not stated on the pages fetched |
+| react-native-tvos | Apple TV and Android TV | "a full fork of the main repository" | Hermes, enabled by default | New architecture, "identically to the core repo" |
+| react-native-visionos | visionOS | "a full fork of the main repository" | Not stated on the page fetched | Not stated on the page fetched |
+| React Native on Meta Quest | Meta Horizon OS (Android-based) | Uses core React Native with an Expo config plugin | Not stated on the page fetched | React Native's own components in a window |
+
+## react-native-windows
+
+- The [README](https://github.com/microsoft/react-native-windows) says it "adds support for the Windows 10 SDK" and targets devices the SDK supports, including PCs, tablets, Xbox and mixed reality devices.
+- The same README describes the Paper renderer as "built on UWP XAML" and says the Fabric renderer "targets Composition from the start" and can host "islands of XAML".
+- The [new architecture page](https://microsoft.github.io/react-native-windows/docs/new-architecture) says Fabric host components are built on the Windows App SDK's Visual Layer (Composition). It does not use WinUI 3 or XAML for them. New Architecture apps are "Win32, Windows App SDK applications". The page says the new architecture was an opt-in preview in 0.76.0 and became the default for new app projects in 0.80.0. It also says the Old Architecture was deprecated as of react-native 0.82.0 and that parity with the old architecture is "not yet at 100%".
+- The [Hermes page](https://microsoft.github.io/react-native-windows/docs/hermes) says Hermes is supported on Windows and "enabled by default for React Native Windows projects". Setting `UseHermes` to `false` reverts to Chakra. The page does not say which architecture each engine applies to.
+
+## react-native-macos
+
+- The [README](https://github.com/microsoft/react-native-macos) calls the project "A framework for building native macOS apps with React", says it runs on Macs with Big Sur (11) or newer, and calls itself "a working fork of facebook/react-native".
+- The [documentation intro](https://microsoft.github.io/react-native-macos/docs/intro) calls it an "out-of-tree platform" maintained by Microsoft.
+- Neither page states the native UI framework, the JavaScript engine or New Architecture support.
+
+## react-native-tvos
+
+- The [README](https://github.com/react-native-tvos/react-native-tvos) says it provides "Apple TV and Android TV support for React Native" and is "a full fork of the main repository, with only the changes needed to support Apple TV and Android TV". It is installed by aliasing `react-native` to `react-native-tvos`, and cannot be used together with core `react-native` in one project.
+- It says "Hermes is fully working on both Apple TV and Android TV, and is enabled by default", and that it "fully implements the new architecture, identically to the core repo". The new architecture can be switched off with `RCT_NEW_ARCH_ENABLED=0` on Apple TV and `newArchEnabled=false` on Android TV.
+- Version 0.81.0-0 is derived from React Native 0.81.0. The README gives the form 0.xx.x-y. It states minimum tvOS and iOS 15.1.
+- tvOS and iOS share most Objective-C and JavaScript code. The README does not name a single UI toolkit.
+
+## react-native-visionos
+
+- The [README](https://github.com/callstack/react-native-visionos) calls it "A framework for building native visionOS applications using React" and "a full fork of the main repository with changes needed to support visionOS". A release script aligns dependency versions with core React Native.
+- The README does not state the UI framework, engine or architecture. Two Callstack documentation URLs, `callstack.github.io/react-native-visionos` (a 301 redirect) and `oss.callstack.com/react-native-visionos` (HTTP 404), gave no content on 2026-11-19, so no facts are cited from them.
+
+## React Native on Meta Quest
+
+- The React Native blog post [React Native Comes to Meta Quest](https://reactnative.dev/blog/2026/02/24/react-native-comes-to-meta-quest) says Quest devices "run Meta Horizon OS, an Android-based operating system" built on AOSP without Google Mobile Services. It says existing Android tooling works "with minimal changes" and that Meta Quest "integrates with React Native's existing abstractions".
+- Setup uses an Expo config plugin, `expo-horizon-core`, plus standard Android configuration. Apps open "in a new window on the device", and the manifest sets a default panel size.
+- The post does not mention the JavaScript engine, Fabric or the New Architecture. It does not discuss immersive apps.
+
+## What the React Native docs list
+
+The [out-of-tree platforms page](https://reactnative.dev/docs/out-of-tree-platforms) names React Native macOS, Windows, visionOS and OpenHarmony under partners, and tvOS, Web and Skia under community. It describes the Skia entry as "React Native using Skia as a renderer. Currently supports Linux and macOS." QNX does not appear on it as of 2026-11-19.
+
+## Differences that follow from the facts
+
+- Platforms that are forks carry their changes in a separate copy of the core repository. React Native QNX carries its changes outside the core tree, with a three-file patch to the pinned package.
+- The Windows new-architecture page names Windows App SDK Composition as the base for Fabric host components. React Native QNX names Qt Quick.
+- react-native-tvos and React Native QNX both name Hermes as their engine. The Windows documentation lists Hermes with Chakra as a fallback. React Native QNX names no fallback engine.

@@ -1,0 +1,48 @@
+---
+title: "ADR-0011: Qt module licensing gate"
+description: The rule that a Qt module enters the build only after its license is recorded, and the GPLv3-only modules the project excludes.
+---
+
+Record: [`docs/adr/0011-qt-module-licensing.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md), dated 2026-08-14. The index lists its status as "Restricted evaluation; open-source matrix proposed".
+
+## Status
+
+The record states: "[ADR-0013](/docs/explanation/adr/0013-open-source-qt) selects open-source Qt with no paid-license prerequisite. The historical evaluation subset and broader source/module inventory below keep their own evidence scopes. Accepted only for the restricted Pi 400 evaluation subset recorded below. The broader open-source module matrix remains Proposed (2026-08-14)."
+
+The record adds that the matrix's evidence comes from the installed Qt 6.11.1 Homebrew kegs and Qt's online documentation, and that it must be re-audited against the pinned Qt LTS source tree once that source is in the workspace.
+
+## Context
+
+[ADR-0001](/docs/explanation/adr/0001-qt-quick-backend) committed the project to building Qt 6 from source for QNX. Each Qt module is a licensing decision as well as a technical one. Some modules are GPLv3-only under the open-source offering, others are available under LGPLv3, and adding a GPLv3-only module to an LGPLv3 product silently changes the licensing posture. The Homebrew kegs ship neither source `LICENSES/` directories nor per-module `SBOM` files, so the record is a gate built from Qt's public documentation and the keg inventory.
+
+## Decision
+
+1. A Qt module enters the build only after its license is recorded in this ADR and `docs/packaging.md`.
+2. Under the open-source LGPLv3 posture, no module that Qt lists as GPLv3-only is built or shipped without a documented product decision to move to a commercial license or accept GPLv3 obligations.
+3. Qt Virtual Keyboard is the critical case. It is GPLv3-only in the open-source edition, so it is excluded. The product then needs one of three choices: buy a commercial license, build an on-screen keyboard as a React Native component over `<TextInput>`, or require a physical keyboard. The record lists this as a product-level gap until the owner chooses.
+4. Other modules are presumed LGPLv3, subject to confirmation against the pinned source.
+5. No Tier 1 or Tier 2 module enters the build before the ADR is Accepted.
+
+The accepted piece is the restricted Pi 400 evaluation subset. It covers qtbase (Core, Gui, Network), qtdeclarative (Qml, Quick), qtshadertools, Quick Shapes (the playground's View factory imports `QtQuick.Shapes`), and Qt OpenGL from qtbase. The record documents the Qt 6.12.0 source archive and its integrity values, and states they are integrity checks and not a verified vendor signature. It also says the evaluation does not authorize release packaging or redistribution. A 2026-11-13 addition brings in qtsvg, built by `scripts/qt-public/build-svg-qnx.sh`, which supplies `libQt6Svg` and the `qsvg` plugin so `QImageReader` can decode SVG for an `<Image>` in `react-native-svg`. The renderer does not link `Qt6::Svg`. The plugin is found at run time through `QT_PLUGIN_PATH`, and a runtime without it still renders everything except SVG `<Image>` sources.
+
+The per-module tables sort modules into tiers. Tier 0 (Core, Gui, Qml, Quick, Quick Controls, Network, Shader Tools) is mandatory. Tier 1 holds component-backing modules adopted when the feature lands. Tier 2 is evaluated per need and flags GPLv3-only modules such as Quick 3D, Graphs, Lottie, HTTP Server and MQTT. Tier 3 is excluded: Quick Layouts (Yoga is the layout authority), Widgets, WebEngine, WebView and others, each with the reason in the record.
+
+## Consequences
+
+Every module adoption becomes reviewable and tied to license evidence. The cost is that a touchscreen `<TextInput>` with an on-screen keyboard cannot ship under the open-source posture without one of the three choices above.
+
+## Alternatives rejected
+
+- Assuming every installed Homebrew module is LGPLv3, because the kegs carry no license files and Qt's documentation names GPLv3-only modules.
+- Adopting Virtual Keyboard under LGPLv3 anyway, because the open-source edition does not offer it under LGPLv3.
+- Waiting for the pinned source before drafting any ADR, because documenting the best current evidence beats leaving the gate unwritten.
+
+## Evidence
+
+Source tree: `scripts/qt-public/` (configure, patch, build and `spdx-audit.py` scripts, and `stage-runtime.py` for the runtime closure), `docs/packaging.md`, `docs/build-qt-modules.md`, `docs/cited-seams.md`, `THIRD_PARTY_NOTICES.md` and the reference page [Qt tiers](/docs/reference/qt-tiers).
+
+Device evidence on the Raspberry Pi 400: `docs/evidence/pi400-hello-world-2026-11-07.txt` and `pi400-nitro-qt-2026-11-07.md` (evaluation runtime), `pi400-public-qt-2026-11-12-b51b49c.md` and the closure manifest `qt-public-runtime-closure-2026-11-12-b51b49c.json` (public-source runtime), and `pi-image-formats-2026-11-13.md` for the image-format plugins the record's Tier 1 table marks as built on 6.12.0. The matrix itself has no Pi receipt, since it is a license inventory.
+
+## What would reverse this
+
+The record ties its own promotion to a condition. The broader matrix moves from Proposed to Accepted after re-audit against the pinned Qt LTS source, per module, using the `LICENSES/` and SBOM files the Homebrew kegs lacked. A change of license terms for any listed module, or an owner decision on Virtual Keyboard, would change a row. The evaluation subset's expiry (17 November 2026 for the evaluation artifacts) does not affect independently obtained open-source Qt, as ADR-0013 states.

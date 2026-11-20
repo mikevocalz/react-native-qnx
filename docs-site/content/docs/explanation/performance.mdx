@@ -1,0 +1,102 @@
+---
+title: Performance model
+description: How the renderer spends time, which numbers exist from a Raspberry Pi 400, and which performance questions have no measurement yet.
+---
+
+The performance gate in the [release gates](/docs/reference/release-gates) is pending, and `docs/releases/v1-readiness.json` describes performance as "unmeasured on QNX". This page separates three things: how the design spends time, the numbers that exist, and what has not been measured. Every number below comes from one Raspberry Pi 400 running a custom QNX 8.0.5 image. No stock Pi 4 result exists.
+
+## Where time goes by design
+
+The [architecture](/docs/explanation/architecture) sends each React commit through Fabric, a mount adapter and the Qt Quick item tree. Three design choices shape cost.
+
+**One owner thread.** JavaScript runs on the Qt thread that built the host, so JavaScript, mounting and Qt Quick's GUI work share a thread (see [threading](/docs/explanation/threading)). A long JavaScript task delays input and window operations. `docs/v1/design/accessibility-audit.md` records this as G-A11Y-09. The worklets run on the Pi 400 saw it directly: with a 300 ms JavaScript block, "0 of 40 UI worklet jobs ran inside the busy window" (`docs/evidence/pr149-pi400-run1-2026-11-19/README.md`). That receipt says it "does not show UI-thread worklets executing while JS is blocked".
+
+**Yoga computes layout and Qt gets absolute geometry.** [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md) bars Qt anchors and layout managers from reinterpreting the Fabric result. That removes a second layout pass. No measurement shows what it saves.
+
+**Image work leaves the owner thread.** `docs/image-loader.md` describes the image pipeline. File and data reads, disk-cache I/O, decoding, resizing, tinting, BlurHash and ThumbHash generation, and PNG encoding run on a bounded worker queue. Network and completion callbacks, Promise resolution and registry updates stay on the owner thread. All Expo Image views, `prefetch` and `loadAsync` share one `ImageFetchQueue` with six admitted tasks. A cancelled or abandoned worker keeps its slot until its work finishes, which caps queued work behind blocked file reads. Limits stated there:
+
+| Limit | Value |
+| --- | --- |
+| Decoded memory cache (LRU) | 32 MiB |
+| On-disk cache for the `ExpoImage` view and `expo-image` prefetch | 128 MiB |
+| Encoded response size | 16 MiB |
+| Request wall-clock timeout | 30 seconds |
+| Decoded pixels | rejected above 16 million |
+| Redirect hops | at most 5 |
+
+The worker design has host evidence under ASan and UBSan. The PR 159 receipts record 90 QtTest entries passing in the combined image, cache and queue graph (`docs/handoff/CURRENT_STATE.md`, section "PR 159 image workers and cache lifecycle continuation"). Those tests check correctness and lifetime. They do not report throughput.
+
+## Why Qt is built at -O2
+
+[ADR-0017](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0017-qt-qnx-optimization-level.md) records a build defect found on 2026-11-12. The first public-source Qt for QNX used `-release -optimize-size`. With the QNX compiler driver, Qt's CMake sets no size flag, so Release had no `-O` level and GCC compiled at its default of `-O0`. The cache entries showed `CMAKE_CXX_FLAGS_RELEASE` as `-DNDEBUG   -DNDEBUG`, and no compile line in `build.ninja` contained an `-O` level.
+
+The fix drops `-optimize-size` and checks after configure that both Release flag sets contain `-O2`. The receipt `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md` records the result:
+
+- Of 2,992 compile lines, 2,345 use `-O2` and 647 use `-O3` (QtCore and QtGui, which Qt compiles at `-O3` when `optimize_size` is off). None lacks an `-O` level.
+- `_FORTIFY_SOURCE` warnings in the build log fell from 2,248 to 0.
+- The 16 ELF files shrank from 122,755,752 to 51,271,416 bytes in total, for example `libQt6Core` from 25.2 MB to 12.8 MB and `libQt6Gui` from 31.1 MB to 12.1 MB.
+
+ADR-0017 states that "no timing, size or frame-pacing measurement exists for this build". No benchmark of the -O0 runtime against the -O2 runtime appears in the docs read for this page, so the effect on speed is unknown. The ADR says the 2026-11-12 runtime is unoptimised and that its Pi 400 runs (Hello World, Nitro/Qt, Pressable) must be repeated on the rebuilt runtime before their hashes count as qualified. The earlier public-source build used the same configure options as the evaluation build, so receipts from the first week of November probably ran on similar flags. No record confirms that.
+
+## Numbers that exist
+
+### Runtime trace, 2026-11-07
+
+`docs/evidence/pi400-runtime-trace-2026-11-07.json` is a bounded native trace of the Hello World app on the Pi 400 as `qnxuser`. It holds 8 records and dropped none. Subtracting the begin and end timestamps gives these spans.
+
+<svg role="img" aria-label="Four spans on a 1,900 millisecond timeline: host evaluate 6.6 ms, surface start 569.4 ms, surface stop 1.4 ms, queue close 0.01 ms" viewBox="0 0 800 190" width="100%" fill="none" stroke="currentColor" strokeWidth="1">
+  <title>Runtime trace spans for Hello World on a Raspberry Pi 400</title>
+  <line x1="130" y1="20" x2="790" y2="20" />
+  <text x="130" y="14" fontSize="12" fill="currentColor" stroke="none">0 ms</text>
+  <text x="716" y="14" fontSize="12" fill="currentColor" stroke="none">1,900 ms</text>
+  <text x="8" y="50" fontSize="12" fill="currentColor" stroke="none">host.evaluate</text>
+  <rect x="138" y="38" width="3" height="16" fill="currentColor" />
+  <text x="150" y="50" fontSize="12" fill="currentColor" stroke="none">6.57 ms</text>
+  <text x="8" y="90" fontSize="12" fill="currentColor" stroke="none">surface.start</text>
+  <rect x="141" y="78" width="197" height="16" fill="currentColor" />
+  <text x="346" y="90" fontSize="12" fill="currentColor" stroke="none">569.43 ms</text>
+  <text x="8" y="130" fontSize="12" fill="currentColor" stroke="none">surface.stop</text>
+  <rect x="389" y="118" width="3" height="16" fill="currentColor" />
+  <text x="400" y="130" fontSize="12" fill="currentColor" stroke="none">1.43 ms</text>
+  <text x="8" y="170" fontSize="12" fill="currentColor" stroke="none">queue.close</text>
+  <rect x="786" y="158" width="3" height="16" fill="currentColor" />
+  <text x="690" y="170" fontSize="12" fill="currentColor" stroke="none">0.01 ms</text>
+</svg>
+
+| Span | Begin (ms) | End (ms) | Duration (ms) |
+| --- | --- | --- | --- |
+| `host.evaluate` | 23.90 | 30.46 | 6.57 |
+| `surface.start` | 31.25 | 600.68 | 569.43 |
+| `surface.stop` | 746.43 | 747.86 | 1.43 |
+| `queue.close` | 1,888.32 | 1,888.33 | 0.01 |
+
+Read these with the limits the receipt states. The clock is `std::chrono::steady_clock`, "session-relative; not aligned to Qt/QNX/display clocks". Each timestamp is taken after the recorder lock, "record-copy after recorder lock". The receipt says the work "records no FPS, presentation latency or scheduling improvement". `surface.start` is the span of one start call and does not show when a pixel reached the display. The trace came from one run, so no distribution exists. The runtime was the pre-ADR-0017 Qt build of that date, and this page did not find a record of its optimisation level.
+
+### Ten-trial baseline, 2026-11-07
+
+`docs/evidence/pi400-runtime-baseline-2026-11-07.md` records ten separate fullscreen Hello World runs under a 35-second deadline. All ten exited zero with the expected Nitro marker and a complete 1920 by 1080 PNG. The receipt records "contentVerification: not performed" and "presentationVerification: not performed" for the frames, and the clock on the board was unset. This receipt proves repeatable startup and exit. It carries no latency figure.
+
+Failure paths ran too. A one-second watchdog on a sleeping child exited 124, and a deliberate abort exited 134. The next Hello World launch exited zero.
+
+### Worklets frame loop, 2026-11-19
+
+Run 1 of PR 149 logged `frames 30 in 459 ms, worst gap 23 ms` on a 1024 by 768 display (`docs/evidence/pr149-pi400-run1-2026-11-19/`). This measures the Worklets frame callback on a `ui-worklet` thread. It is not a presented-frame interval, and the build came from a branch of draft pull request 149.
+
+### Image load times, with an open question
+
+The gallery app's `RemoteImageCard` logged load times for one Unsplash URL in several runs. Run 2 logged 154,149 ms and 618,203 ms. Logs from 2026-11-13 that were not kept showed 677 to 721 ms, and the key-hold run on 2026-11-19 logged 30,905 ms. The run 2 receipt says "The cause of the spread is unknown." These numbers describe a remote fetch over the board's network. They carry no weight for decode or render performance.
+
+## What has not been measured
+
+The gate text in `docs/releases/v1-readiness.json` asks for startup-to-first-frame, presented-frame intervals and RSS for Hello World, a 1000-row list and drawer drag, each with revision, sample size and capture limits. None exists. In addition:
+
+- No frame-pacing or presentation-latency measurement from the QNX compositor.
+- No input-to-pixel latency distribution. The trace receipt marks interaction latency "Not run".
+- No memory figure for any app on the target.
+- No comparison of `-O0` and `-O2` Qt, and no `-O3` evaluation.
+- No cold-boot timing. The cold-boot gate asks for 20 supervised boots, and the baseline receipt lists cold-boot trials as open.
+- No QNX VM or stock Pi 4 QSTI run, and no hosted CI job that compiles for QNX.
+- No measurement for list scrolling. `tests/benchmarks/QtQuickMountingLayerBenchmark.cpp` is a host mutation benchmark that excludes creation and rendering, and no result from it appears in the docs read here.
+- No profile of JavaScript time on the target.
+
+`docs/v1/hardening-coverage.md` items F1, F3 and F4 lay out planned work (an AOT QML comparison with a 1000-item first-frame check, scene graph logs, a 1000-row qualified workload). Each is pending.

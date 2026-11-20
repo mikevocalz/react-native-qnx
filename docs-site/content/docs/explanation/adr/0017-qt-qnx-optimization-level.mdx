@@ -1,0 +1,58 @@
+---
+title: "ADR-0017: Compile public-source Qt for QNX at -O2"
+description: Why the Qt libraries on the Pi 400 were first built with no optimization level, and the configure change that now requires -O2.
+---
+
+Record: [`docs/adr/0017-qt-qnx-optimization-level.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0017-qt-qnx-optimization-level.md), dated 2026-11-12.
+
+## Status
+
+The record states: "Accepted, 2026-11-12. The owner delegated this decision. The first build with the new flags ran the same day; see the -O2 receipt (runtime tarball `9ead47f44e7ba79ab9abc08ef59279d5d49a28693b03676988b82bd805ec0cc4`)." The index labels it "Accepted; rebuild pending".
+
+## Context
+
+The first public-source Qt 6.12.0 build for QNX reused the evaluation build's configure options, including `-release -optimize-size`. Its receipt noted that the Release flags carried no `-O` level and left the fix open. The build tree in the `qnx805-build` container, read on 2026-11-12, shows:
+
+| Cache entry | Value |
+| --- | --- |
+| `CMAKE_BUILD_TYPE` | `Release` |
+| `CMAKE_CXX_FLAGS_RELEASE` | `-DNDEBUG   -DNDEBUG` |
+| `CMAKE_C_FLAGS_RELEASE` | `-DNDEBUG   -DNDEBUG` |
+| `CMAKE_CXX_FLAGS_MINSIZEREL` | `-DNDEBUG   -DNDEBUG -O2` |
+| `FEATURE_optimize_size` | `ON` |
+| `FEATURE_optimize_full` | `OFF` |
+
+No compile line in `qnx-build/build.ninja` contains `-O0` through `-O3`, `-Os` or `-Oz`. GCC without an `-O` flag compiles at `-O0`, so the Qt libraries on the Pi 400 were unoptimized. The host-tools build in the same container has `-O2` because it uses the system GCC.
+
+The cause is Qt's own CMake. `qtbase/cmake/QtCompilerOptimization.cmake` sets `QT_CFLAGS_OPTIMIZE` (`-O2`) and `QT_CFLAGS_OPTIMIZE_FULL` (`-O3`) for `QCC`, and sets `QT_CFLAGS_OPTIMIZE_SIZE` only for GCC and Clang. With `optimize_size` on, `qt_internal_set_up_config_optimizations_like_in_qmake` removes CMake's default `-O` flags and substitutes the size variable, which is empty for qcc. MinSizeRel falls back to `QT_CFLAGS_OPTIMIZE`, which is why it shows `-O2`. The QNX headers also warn during the build that `_FORTIFY_SOURCE` falls back to 0, because fortification needs optimization.
+
+## Decision
+
+1. Qt for QNX compiles at `-O2`, Qt's normal Release level. No evidence argues for `-O3` or `-Os`: no timing, size or frame-pacing measurement exists for this build, and Qt's configure offers no `-Os` for qcc.
+2. `scripts/qt-public/configure-qnx.sh` drops `-optimize-size`, passes `-DFEATURE_optimize_size=OFF -DFEATURE_optimize_full=OFF`, and after configure exits with an error unless both `CMAKE_C_FLAGS_RELEASE` and `CMAKE_CXX_FLAGS_RELEASE` contain `-O2`.
+3. The qualified Qt runtime, and any runner or package built on it, must come from a build with these flags. The earlier 2026-11-12 runtime (tarball `64afc468edb2641fbd3b121805f2e0b62140fa2086a4b0ab2486eae53ef49312`) is unoptimized. Its hashes remain valid evidence of that build and are not the qualified artifact hashes.
+4. The host-tools build keeps its current flags.
+
+## Consequences
+
+- Every Qt library hash in the closure manifest changes on the next build, and the Pi 400 runs (hello world, Nitro/Qt, pressable) must be repeated on the rebuilt runtime before its hashes count as qualified.
+- `_FORTIFY_SOURCE` can take effect once `-O2` is present. The `-O2` build log has no such warning, where the `-O0` log had 2248.
+- With `optimize_size` off, Qt's own `qt_internal_add_optimize_full_flags()` compiles QtCore and QtGui at `-O3` (647 of 2992 compile lines in the `-O2` build). Every other module is at `-O2`. This is upstream behavior and was kept.
+- The 16 ELF files shrank from 122.8 MB to 51.3 MB in total. No size budget existed to compare against.
+- The RN executables and Hermes are separate CMake builds with their own build types and are unaffected.
+
+## Alternatives rejected
+
+- Keeping `-optimize-size`, because with qcc in Qt 6.12.0 it produces no optimization.
+- `-Os` through `CMAKE_CXX_FLAGS_RELEASE` with `QT_USE_DEFAULT_CMAKE_OPTIMIZATION_FLAGS`, because nothing shows a size problem on the Pi 400 and it moves Qt off its normal Release flags.
+- `-O3` (`-optimize-full`), because no measurement shows a CPU-bound Qt path that would gain. It can be revisited with frame-pacing evidence.
+
+## Evidence
+
+The enforcement is visible in `scripts/qt-public/configure-qnx.sh`: it passes `-DFEATURE_optimize_size=OFF -DFEATURE_optimize_full=OFF`, then checks the cached Release flags for ` -O2 ` and exits with "ADR-0017 requires -O2" if one is missing. A header comment in the script gives the same history. Related files are `scripts/qt-public/README.md`, `docs/packaging.md` and the closure manifests `docs/evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json` (the -O0 build) and `qt-public-runtime-closure-o2-2026-11-12-a79e16a.json`.
+
+Device evidence on the Raspberry Pi 400: `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md` is the receipt for the first -O2 build, and the earlier `pi400-public-qt-2026-11-12-b51b49c.md` covers the -O0 build. The index status "rebuild pending" reflects the Consequences list: the record still asks for the Pi runs to be repeated on the rebuilt runtime before the -O2 hashes are called qualified. This page did not verify whether those repeats have since been recorded.
+
+## What would reverse this
+
+The record names two triggers. Qt upstream may add a qcc size flag, and the Notes say to re-read `QtCompilerOptimization.cmake` before changing options if the Qt pin moves. Frame-pacing or size measurements on the Pi 400 could justify `-O3` or `-Os` later. The configure check catches a missing `-O2` in either case.

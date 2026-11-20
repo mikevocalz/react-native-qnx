@@ -1,0 +1,57 @@
+---
+title: "ADR-0008: Version pinning and source contracts"
+description: How the project pins Expo, React Native, Nitro and tooling to exact versions and checks upstream source shape before trusting a QNX patch.
+---
+
+Record: [`docs/adr/0008-version-pinning.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0008-version-pinning.md), dated 2026-07-19 in the index, with a version snapshot taken on 2026-10-01.
+
+## Status
+
+The record states: "Accepted".
+
+## Context
+
+React Native, React, Expo, Metro, Hermes, Nitro Modules, Nitrogen, TypeScript, Node and pnpm each ship on their own cadence. An out-of-tree platform cannot mix arbitrary "latest" packages when Expo or React Native declares a compatibility line, and it should not stay frozen on an old ecosystem after that line moves.
+
+The record separates four kinds of identity: exact direct workspace pins, exact transitive versions in the lockfile, source snapshots bundled inside React Native, and QNX-specific patches whose applicability must be proven again after upstream source changes. None of these demonstrates QNX support by itself. Native seams have to be tied to installed source and then compiled and exercised with the licensed SDK and target.
+
+## Decision
+
+Track the newest requested Expo SDK line, use the React and React Native versions that Expo tests for that SDK, and keep the remaining direct npm tooling on current published versions when they install coherently. Every direct dependency is pinned exactly.
+
+The record's 2026-10-01 snapshot lists Expo 58.0.0 (SDK 58), React Native 0.88.0-rc.3, React 19.3.0, Metro 0.87.1, Nitro Modules and Nitrogen 0.37.1, TypeScript 7.0.2, Node.js 26 or later and pnpm 12.8.1. It picks SDK 58 even though npm still labeled SDK 57 as `latest` that day, because SDK 58 is the product target and its manifest tests React 19.3.0 with React Native 0.88.0-rc.3.
+
+Two further rules carry the weight. React Native's installed `sdks/.hermesv1version` is the source of truth for the bundled Hermes identity. A Hermes QNX patch written against an older line is historical evidence only until it is rebased and revalidated. Yoga is recorded only as the snapshot bundled with the selected React Native, with no invented standalone version.
+
+An executable source contract backs the decision. `scripts/validate-dependencies.mjs` checks that every direct dependency is an exact installed pin, that Expo's tested React and React Native versions match the workspace, that the React Native peer range accepts the React version, that Nitro Modules and Nitrogen share one release line, that Metro resolves to 0.87.x, that the Hermes source tag matches the compiler identity, and that selected Fabric, Yoga, Expo Modules, Nitro and Metro source symbols still exist. These checks detect upstream drift. They do not claim QNX support, which waits for the QNX build and runtime gates.
+
+The record's update procedure has eight steps: check the Expo SDK baseline, query registry releases, select exact pins and regenerate `pnpm-lock.yaml`, run `pnpm validate:dependencies`, run TypeScript, JavaScript, package and host-native validation, update the ADR and compatibility matrix, rebase QNX patches whose source identity changed, and run QNX cross-compilation and physical-target validation before declaring the new line compatible.
+
+## Consequences
+
+- Direct installs are deterministic.
+- Expo's SDK contract wins over a bare npm dist-tag.
+- Standalone tooling can stay current without pretending every package family shares a cadence.
+- A React Native or Hermes upgrade invalidates unproven source patches until they are rebased and retested.
+- Host evidence and QNX hardware evidence stay separate.
+
+## Alternatives rejected
+
+- Floating semver ranges, because native seams drift between installs.
+- npm `latest` everywhere, because Expo SDK 58 needs a React Native 0.88 release candidate while some support packages still show 0.87.x as stable.
+- Staying on SDK 57 because it was npm `latest`, because SDK 58 is the chosen baseline.
+- Reusing the React Native 0.86 Hermes QNX patch unchanged, because the bundled Hermes identity changed.
+
+## What the source tree shows
+
+The record is a dated snapshot, and the tree has moved past it. In the current `package.json`, Expo is `58.0.24`, React Native is `0.88.1`, React is `19.3.0`, Metro is `0.87.1`, TypeScript is `7.0.2`, `react-native-nitro-modules` and `nitrogen` are `1.0.0-alpha.nightly.136.gdb81de61bd32`, and `packageManager` is `pnpm@12.18.0`. `cmake/dependencies/Hermes.cmake` expects tag `hermes-v260318099.0.5`, where the record names `260318099.0.2`. The pinning rule held, since the pins were updated in place, while the version numbers in the record did not follow. `docs/getting-started/compatibility-matrix.md` is the place the record says carries the current resolved graph.
+
+The enforcement is also in CMake: `Hermes.cmake` stops the configure step if React Native's Hermes tag differs from the audited one, and `cmake/RnqnxWorklets.cmake` rejects a `react-native-worklets` outside 0.13.x. Related files are `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `scripts/regenerate-sdk58-lockfile.sh`, `scripts/expo-sdk58-support.mjs`, `docs/handoff/HERMES_QNX.md`, `docs/handoff/QNX_VALIDATION_QUEUE.md` and `docs/dependencies/SDK58_STABLE_UPGRADE.md`. CI runs `.github/workflows/sdk58-validation.yml`.
+
+## Evidence
+
+Host evidence covers the validator. Device evidence is separate and records the versions it ran: `docs/evidence/pi400-nitro-qt-2026-11-07.md` lists RN 0.88.1, React 19.3, Hermes 260318099.0.5 and Nitro nightly 105, which differs from today's nightly 136 pin. That gap is the case the last update-procedure step exists for.
+
+## What would reverse this
+
+The record names no trigger. The policy changes when Expo's compatibility line stops being the anchor, for example if the project decided to follow React Native releases directly. The record's own rule applies to every bump: the pins can move, but QNX compatibility is declared only after cross-compilation and physical-target validation.

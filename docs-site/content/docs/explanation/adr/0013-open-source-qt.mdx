@@ -1,0 +1,48 @@
+---
+title: "ADR-0013: Open-source Qt without a paid-license prerequisite"
+description: Why the project builds Qt for QNX from eligible open-source sources and does not require a commercial Qt subscription.
+---
+
+Record: [`docs/adr/0013-open-source-qt.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md), dated 2026-11-07.
+
+## Status
+
+The record states: "Accepted project direction, 2026-11-07, following the repository owner's clarification. Public-source build qualification remains an implementation step; this decision does not relabel the earlier evaluation artifacts."
+
+## Context
+
+[ADR-0001](/docs/explanation/adr/0001-qt-quick-backend) and the packaging guidance had stopped Qt download, build and deploy work behind a paid-license question, after the owner obtained a ten-day Qt Device Creation Enterprise evaluation for the Pi 400 bring-up. That evaluation expires on 17 November 2026 and covers only the artifacts built from its sources.
+
+## Decision
+
+Use eligible open-source Qt components under their LGPL and GPL terms. A paid Qt subscription is not a prerequisite for the project's open-source development or for its Linux and Wayland target. Project-authored code stays under MIT, and the root `LICENSE` file grants that license. The record cites Qt's licensing page for the LGPLv3 option on eligible components and Qt's LGPL page for the notice and replacement requirements. It rejects a revenue threshold or a "non-commercial" label as a substitute for the actual source and component terms.
+
+For the QNX target the project proceeds with an eligible public-source build and inspects the exact module and QPA notices, source channel, hashes, shared libraries and plugins as part of packaging. The Qt QNX product page describes a commercial offering, and the record declines to treat that as a blanket requirement to buy Qt before inspecting or building open-source components.
+
+QNX SDP, BSP and runtime terms are separate from Qt's. The existing QNX Everywhere toolchain and non-redistribution boundaries stay, and no vendor SDK payload goes into platform source packages. [ADR-0018](/docs/explanation/adr/0018-runner-hosting-and-sdp-boundary) applies that boundary to runner archives.
+
+## Consequences
+
+- The blanket Qt download, build and deploy stop in ADR-0001 and the packaging guidance is replaced. No further owner confirmation is needed to pursue open-source Qt, and development continues through normal source, module and build verification.
+- The earlier Pi 400 Qt 6.12.0 receipts used the private evaluation. Their expiry belongs to those artifacts. A separately identified public-source build must exist before anyone claims a release artifact.
+- The existing module subset stays. New optional modules need their source terms and target support recorded, and GPL-only dependencies are not added silently to the LGPL-compatible core ([ADR-0011](/docs/explanation/adr/0011-qt-module-licensing)).
+- Runtime, component and performance gates are independent of the licensing choice.
+
+## Alternatives rejected
+
+The record does not list a rejected-alternatives section. The text it does contain turns down three positions: stopping development to request a commercial license, using a revenue threshold or the non-commercial label to decide eligibility, and treating the evaluation's expiry as the expiry of open-source Qt.
+
+## Evidence
+
+Source tree: `scripts/qt-public/` holds the public-source pipeline (`extract-source.sh`, `apply-cve-patches.sh`, `apply-qnx-patches.sh`, `configure-host.sh`, `configure-qnx.sh`, `build-svg-qnx.sh`, `stage-runtime.py`, `spdx-audit.py` and a patches directory). `docs/packaging.md` carries the artifact and notice steps the record points to, and states that every staged Qt module file offers `LGPL-3.0-only`. `docs/releases/v1-readiness.md` is the other cross-reference. `THIRD_PARTY_NOTICES.md` sits at the repository root.
+
+Device evidence on the Raspberry Pi 400:
+
+- `docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md`, with `pi400-public-qt-hello-world-2026-11-12-b51b49c.png` and `qt-public-runtime-closure-2026-11-12-b51b49c.json`: the first public-source Qt 6.12.0 runtime on the board.
+- `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md`: the rebuild at -O2 ([ADR-0017](/docs/explanation/adr/0017-qt-qnx-optimization-level)). Its text says the component gallery app (`org.rnqnx.showcase`) uses this runtime.
+
+These receipts show that a public-source Qt runs on the device. They do not make a release artifact. The record says that needs its own identified build and notice material, and the [release gates](/docs/reference/release-gates) page tracks that work.
+
+## What would reverse this
+
+The record names no trigger. The decision depends on Qt continuing to offer eligible components under LGPL or GPL terms and on each module's terms staying compatible with the LGPL core. A required module that exists only under GPLv3 or a commercial license would need its own product decision, which ADR-0011 already sets out. A reversal of the whole direction would restore the paid-license stop that this record removed.

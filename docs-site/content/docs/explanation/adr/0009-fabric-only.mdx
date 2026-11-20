@@ -1,0 +1,55 @@
+---
+title: "ADR-0009: Fabric-only renderer architecture"
+description: Why the platform implements Fabric and JSI only, with no Paper view managers and no legacy bridge.
+---
+
+Record: [`docs/adr/0009-fabric-only.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md), dated 2026-08-13.
+
+## Status
+
+The record states: "Accepted".
+
+## Context
+
+Supporting both Paper and Fabric would duplicate the native surface and add a legacy bridge that the project charter excludes.
+
+## Decision
+
+Implement only Fabric plus JSI. There is no Paper view-manager registration and no legacy application bridge. Application-facing native APIs are Nitro HybridObjects ([ADR-0004](/docs/explanation/adr/0004-nitro-modules)). React Native internal host contracts are implemented only where the installed source proves they are required.
+
+## Consequences
+
+- The platform follows React Native's New Architecture.
+- The QNX mounting layer must implement the installed Fabric scheduler, transaction, mutation, event and component-descriptor contracts.
+- A React Native internal interface that mentions TurboModules does not authorize TurboModules as the QNX application module system.
+
+The last point sets up [ADR-0020](/docs/explanation/adr/0020-worklets-reanimated-gesture-handler-bootstrap), which registers three named TurboModules because third-party JavaScript looks them up by name, and says so as a bounded exception.
+
+## Alternatives rejected
+
+- Paper plus Fabric, because it doubles seams that are still unproven on the platform.
+- A legacy bridge first, because the project charter rules it out.
+
+## Evidence boundary
+
+The record carries its own caveat: installed React Native 0.86.2 provided the host contracts named in `docs/handoff/CURRENT_STATE.md`, and no headless Fabric QNX build had passed yet. P2 sat behind G0 and P1. That text is dated. The current tree is on React Native 0.88.1 (`package.json`), and the Pi 400 receipts below show Fabric mounting on the device.
+
+## What the source tree shows
+
+The Fabric side lives under `vnext/src/fabric/`. `QtQuickMountingLayer.cpp` applies Fabric mutations to Qt Quick items, and the neighboring bridges (`QtImageBridge.cpp`, `QtModalBridge.cpp`, `QtNativeUiBridge.cpp`, `QtRnsvgBridge*.cpp`, `QtExpoImageBridge.cpp`, `QtExtraComponents.cpp`) supply component descriptors and views. `vnext/src/runtime/QtReactHost.cpp` hosts the runtime and exposes `registerTurboModule`, the single seam through which a name-keyed lookup is answered. Component codegen scripts sit in `scripts/` (`fabric-codegen.mjs`, `qt-native-ui-codegen.mjs`, `qt-rnsvg-codegen.mjs`, `qt-svg-codegen.mjs`, `qt-video-codegen.mjs`). `scripts/validate-dependencies.mjs` checks that the Fabric source symbols the platform depends on still exist in the installed React Native, as [ADR-0008](/docs/explanation/adr/0008-version-pinning) describes.
+
+This page makes no claim from source about the absence of Paper view managers, because that negative was not checked. The status vocabulary in `docs/component-support.md` and the [component matrix](/docs/reference/component-matrix) show which components have host and device results.
+
+## Evidence
+
+Device evidence on the Raspberry Pi 400:
+
+- `docs/evidence/pi400-hello-world-2026-11-07.txt`: Hello World through React Native, Fabric, Hermes and Qt Quick.
+- `docs/evidence/pi400-host-mounting-2026-11-07.json` and `pi400-host-validation-2026-11-07.md`: host mounting and validation results from the Pi 400 (contents not summarized here).
+- `docs/evidence/tile-layout-pi400-2026-11-13/` and `gallery-yoga-layout-2026-11-13.md`: Yoga layout results applied through Fabric on the gallery app.
+
+See [Architecture](/docs/explanation/architecture) for where Fabric, Yoga and the Qt Quick item tree sit relative to each other, and [Threading](/docs/explanation/threading) for the thread that mounts.
+
+## What would reverse this
+
+The record names no trigger. Supporting Paper would mean adding view managers and a bridge the charter excludes, and the record's reason against it is the doubled platform seams. A React Native release that removes a Fabric contract the mounting layer implements would force rework inside this decision. The dependency validator exists to catch that case before a version bump lands.

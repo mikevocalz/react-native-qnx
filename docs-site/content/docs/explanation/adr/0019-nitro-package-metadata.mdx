@@ -1,0 +1,75 @@
+---
+title: "ADR-0019: QNX build metadata for Nitro packages"
+description: How a third-party Nitro module declares its QNX CMake project and registration function in package.json, and how the consumer build links it.
+---
+
+Record: [`docs/adr/0019-nitro-package-metadata.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0019-nitro-package-metadata.md), dated 2026-11-12.
+
+## Status
+
+The record states: "Accepted, 2026-11-12. The project owner delegated this decision. Discovery, the descriptor, the build plan and the CMake reader have host tests, and the generated registration header compiles and runs on the host. No third-party Nitro module has been cross-built with the QNX SDK or run on a device under this format yet."
+
+## Context
+
+An app outside this repository can depend on a Nitro module published elsewhere. The consumer build (`project prepare-native`, then `project build-native`) had no way to learn that such a module has QNX C++ code, where its CMake project is, or how to register its hybrid classes. The only Nitro code in a consumer executable was the platform's own `rnqnx_nitro_qnx` runtime.
+
+The record lists what already exists. Expo modules declare QNX support in `expo-module.config.json`, and `@rn-qnx/expo-qnx-autolinking` reads it. Nitro's `nitro.json` belongs to nitrogen, whose schema at `1.0.0-alpha.nightly.136` is a closed object and turned `autolinking` into a hard error. Nitrogen already reads one tool-specific field from a package's own `package.json`, `swiftpmConfig`. Its Android output registers classes from one generated function, `registerAllNatives()`, and this repository registers `QnxPlatformInfo` the same way before `margelo::nitro::install(runtime)`. React Native CLI autolinking reads `react-native.config.js`, which is code, and `project doctor` promises not to import package code.
+
+## Decision
+
+A Nitro module declares its QNX build under a `react-native-qnx` key in its own `package.json`, with four required fields under `nitro`: `platforms` (a nonempty array, only `"qnx"` today), `cmakeListsPath` (a package-relative path ending in `CMakeLists.txt`, with no `..`, absolute paths, backslashes, symlinks or shell-special characters), `target` (the CMake target the file defines, with the `rnqnx_` prefix reserved) and `initializer` (a `void()` C++ function named with `::` separators that registers the package's hybrid classes). Any other key under `react-native-qnx` or `react-native-qnx.nitro` is an error, so a typo fails and nothing is silently ignored.
+
+<svg role="img" aria-label="Nitro package discovery pipeline from package.json to the generated registration header" viewBox="0 0 760 150" width="100%" fill="none" stroke="currentColor" strokeWidth="1.5">
+  <title>Nitro package metadata pipeline</title>
+  <rect x="10" y="40" width="150" height="70" rx="6" />
+  <text x="85" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">dependency</text>
+  <text x="85" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">package.json</text>
+  <rect x="210" y="40" width="150" height="70" rx="6" />
+  <text x="285" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">prepare-native</text>
+  <text x="285" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">native-app.json</text>
+  <rect x="410" y="40" width="150" height="70" rx="6" />
+  <text x="485" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">RnqnxConsumerApp</text>
+  <text x="485" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">.cmake</text>
+  <rect x="610" y="40" width="140" height="70" rx="6" />
+  <text x="680" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">NitroModules</text>
+  <text x="680" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">.generated.h</text>
+  <path d="M160 75 H208 M360 75 H408 M560 75 H608" />
+  <path d="M200 69 L208 75 L200 81 M400 69 L408 75 L400 81 M600 69 L608 75 L600 81" />
+</svg>
+
+The pipeline has six steps, and the diagram covers steps 1 to 4:
+
+1. `prepare-native` reads the app's `dependencies` (not `devDependencies`), walks `node_modules/<name>` upward as Node's lookup does without reading `exports`, and follows pnpm symlinks with `realpath`. A package with the key needs a matching `name`, a `version`, a valid declaration and a regular `CMakeLists.txt` inside the package, and no two packages may share a `target` or `initializer`. Only JSON is read.
+2. Matching packages go into `native-app.json` as `nitroModules` (`package`, `version`, `root`, `cmakeLists`, `target`, `initializer`), sorted by name, and the key is omitted when nothing matches.
+3. `build-native` recomputes the descriptor, so adding or removing a Nitro dependency makes it stale. With modules present it passes `-DRNQNX_BUILD_NITRO_QNX=ON`, and `--host-preview` is rejected because the preview configuration does not build the Nitro runtime.
+4. `cmake/RnqnxConsumerApp.cmake` revalidates each entry, requires the `rnqnx_nitro_qnx` target, calls `add_subdirectory` on each package, fails if the declared target is missing, links it, and writes `NitroModules.generated.h` with `rnqnx::consumer::registerNitroModules()`.
+5. The consumer `main.cpp` calls `registerNitroModules()` before `installQnxNitroRuntime`.
+6. `project doctor` runs the same discovery and reports a `nitro-modules` check.
+
+## Consequences
+
+- A module author adds one `package.json` key, a CMake project and one registration function. Nothing in this repository changes per module.
+- Discovery and doctor never execute package code. The package's CMake and C++ do run at build time through `add_subdirectory`, as for any native dependency.
+- The initializer is the author's responsibility, since nitrogen generates no QNX initializer.
+- ABI agreement is not checked. A module must build against the same `react-native-nitro-modules` and `nitro-core` that the platform pins (`1.0.0-alpha.nightly.136.gdb81de61bd32`).
+- The declaration rejects any platform other than `qnx`, and the list form lets another value be added later without a shape change.
+- Only direct dependencies count. A transitive module must be listed in the app's `dependencies` to link.
+
+## Alternatives rejected
+
+- A key inside `nitro.json`, because nitrogen owns and validates that schema across nightly versions.
+- `expo-module.config.json`, because a Nitro module is not an Expo module and should not need the `expo` package to be found.
+- `react-native.config.js`, because reading it means running it.
+- A separate `qnx.json`, which adds a file with no benefit over a `package.json` key.
+- Registration by static initializers, because a linker drops unreferenced objects in a static archive and registration would depend on whole-archive flags per toolchain. A named function fails to link when missing.
+- Generating registration from `.nitro.ts` specs, because nitrogen at this version emits only Apple and Android platform specs, and the repository's QNX generator covers `PlatformInfo` only (`docs/nitro/PLATFORM_CODEGEN_POC.md`).
+
+## Evidence
+
+Source tree: `packages/react-native-qnx-cli/src/nitro-modules.mjs` (discovery and validation), `prepare-native.mjs`, `build-native.mjs` (the `-DRNQNX_BUILD_NITRO_QNX=ON` switch), `doctor.mjs`, `cmake/RnqnxConsumerApp.cmake` (the generated header and `registerNitroModules()`), `vnext/probes/playground/main.cpp` (the call to `registerNitroModules()`), `tests/js/qnx-nitro-package-metadata.test.mjs`, and CI in `.github/workflows/qnx-native-consumer-build.yml`. The guide `docs/getting-started/native-consumer-app.md` covers the consumer flow, and the how-to [Nitro modules](/docs/how-to/nitro-modules) shows an author's side.
+
+Device evidence on the Raspberry Pi 400: none for this format. The record states that no third-party Nitro module has been cross-built with the SDK or run on a device under it. The Nitro runtime itself has device receipts under [ADR-0004](/docs/explanation/adr/0004-nitro-modules).
+
+## What would reverse this
+
+The record's Notes describe how to advance it from host tests: publish or `pnpm link` a real Nitro module carrying the key, run `prepare-native --bundle build/qnx/app.hbc` and `build-native` with SDP 8.0.5, call one of its hybrid objects on the Pi, and record the result under QNX-NITRO-002 in `docs/handoff/QNX_VALIDATION_QUEUE.md`. The decision would change if nitrogen gains a QNX backend that generates registration, if nitrogen's schema starts tolerating a QNX key, or if a real module shows the declaration cannot express its build.

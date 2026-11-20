@@ -1,0 +1,153 @@
+---
+title: Input path
+description: How a key press or pointer event on a QNX device travels from the USB driver through Screen and Qt to a JavaScript handler, and which hops have device evidence.
+---
+
+A tap, click, key press or mouse wheel notch passes through six hops on the way to JavaScript. Four of them are QNX and Qt code that the project configures and does not own. Two are project code: `QtTouchDispatcher` and the TextInput bridge. This page names each hop, shows what the repository proves about it, and lists the hops that no test has exercised with real hardware.
+
+All device results below come from one board, a Raspberry Pi 400 running QNX 8.0.0 (`qnxpi`, display 1024x768 in the November 2026 runs). Nothing here was run on another device.
+
+## The route
+
+<svg
+  role="img"
+  aria-label="Input flow from USB devices through io-hid, Screen and the Qt QNX plugin into QtTouchDispatcher, QtGestureInput and the QML TextInput, and on to JavaScript"
+  viewBox="0 0 760 420"
+  width="100%"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+>
+  <title>Input path from USB hardware to JavaScript</title>
+  <defs>
+    <marker id="inp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none" />
+    </marker>
+  </defs>
+  <rect x="360" y="8" width="150" height="36" rx="6" strokeDasharray="5 4" />
+  <text x="435" y="31" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">rnqnx-inject (test only)</text>
+  <line x1="435" y1="44" x2="435" y2="68" markerEnd="url(#inp-arrow)" />
+
+  <rect x="10" y="70" width="140" height="56" rx="6" />
+  <text x="80" y="94" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">USB keyboard</text>
+  <text x="80" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">and mouse</text>
+  <line x1="150" y1="98" x2="188" y2="98" markerEnd="url(#inp-arrow)" />
+
+  <rect x="190" y="70" width="140" height="56" rx="6" />
+  <text x="260" y="94" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">io-hid -dusb</text>
+  <text x="260" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">/dev/io-hid/io-hid</text>
+  <line x1="330" y1="98" x2="368" y2="98" markerEnd="url(#inp-arrow)" />
+
+  <rect x="370" y="70" width="130" height="56" rx="6" />
+  <text x="435" y="94" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QNX Screen</text>
+  <text x="435" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">event queue</text>
+  <line x1="500" y1="98" x2="538" y2="98" markerEnd="url(#inp-arrow)" />
+
+  <rect x="540" y="70" width="210" height="56" rx="6" />
+  <text x="645" y="94" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Qt QNX platform plugin</text>
+  <text x="645" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">platforms/libqqnx.so</text>
+
+  <line x1="645" y1="126" x2="645" y2="168" />
+  <line x1="645" y1="150" x2="130" y2="150" />
+  <line x1="130" y1="150" x2="130" y2="188" markerEnd="url(#inp-arrow)" />
+  <line x1="365" y1="150" x2="365" y2="188" markerEnd="url(#inp-arrow)" />
+  <line x1="645" y1="150" x2="645" y2="188" markerEnd="url(#inp-arrow)" />
+
+  <rect x="10" y="190" width="240" height="70" rx="6" />
+  <text x="130" y="214" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtTouchDispatcher</text>
+  <text x="130" y="232" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">event filter, hitTest()</text>
+  <text x="130" y="250" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">mouse and touch events</text>
+
+  <rect x="270" y="190" width="190" height="70" rx="6" />
+  <text x="365" y="214" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtGestureInput</text>
+  <text x="365" y="232" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">observes, never consumes</text>
+  <text x="365" y="250" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">feeds the gesture Registry</text>
+
+  <rect x="480" y="190" width="270" height="70" rx="6" />
+  <text x="615" y="214" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QML TextInput FocusScope</text>
+  <text x="615" y="232" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Keys.onPressed, QtTextInputBridge</text>
+  <text x="615" y="250" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">key events reach the focused item</text>
+
+  <line x1="130" y1="260" x2="130" y2="298" markerEnd="url(#inp-arrow)" />
+  <line x1="365" y1="260" x2="365" y2="298" markerEnd="url(#inp-arrow)" />
+  <line x1="615" y1="260" x2="615" y2="298" markerEnd="url(#inp-arrow)" />
+
+  <rect x="10" y="300" width="240" height="70" rx="6" />
+  <text x="130" y="324" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">TouchEventEmitter</text>
+  <text x="130" y="342" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">onTouchStart / Move / End / Cancel</text>
+  <text x="130" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">then RN responder, Pressable</text>
+
+  <rect x="270" y="300" width="190" height="70" rx="6" />
+  <text x="365" y="324" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">GestureHandlerCore</text>
+  <text x="365" y="342" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">recognizers run in C++</text>
+  <text x="365" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">callbacks go to the UI runtime</text>
+
+  <rect x="480" y="300" width="270" height="70" rx="6" />
+  <text x="615" y="324" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">TextInput events</text>
+  <text x="615" y="342" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">change, selection, key, submit</text>
+  <text x="615" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">delivered through the Fabric emitter</text>
+
+  <text x="380" y="402" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">Solid boxes ran on the Pi 400. The dashed box injects events at the Screen layer.</text>
+</svg>
+
+## Hop 1 and 2: USB to Screen
+
+At boot, `/system/etc/startup/full_startup.sh` starts the USB stack (`usb_start.sh`, `usblauncher_otg`) and then `io-hid -dusb`. The script runs `chown 36 /dev/io-hid/io-hid`, so members of group 36 (`screen`) can read keyboard and mouse events. Apps run as `qnxuser`, who is in that group. The Pi 400 image runs `pi400-recover.sh` as `post_start`, which skips the stock USB block, so these lines live in `full_startup.sh` ([Run a React Native app on the Pi 400 desktop](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md)).
+
+I found no evdev code in `vnext/`, `native/` or `packages/`. On this path `io-hid` supplies events to QNX Screen, and the Qt platform plugin reads them from Screen. Source for `io-hid` itself is not in the repository.
+
+When no mouse pointer appears or clicks do nothing, the first check is `ls -l /dev/io-hid/io-hid`. The node must exist with owner 36. A missing node means `io-hid` did not start (`/tmp/pi400-usb.log`), and a mouse plugged in before `io-hid` came up needs to be re-plugged. These steps come from the troubleshooting section of the desktop guide. The run logs show the node present and `io-hid=0` at the start of the PR 149 runs (`docs/evidence/pr149-pi400-run2-2026-11-19/run.txt`).
+
+## Hop 3: Screen to Qt events
+
+Screen picks the window under the pointer, converts the position to window coordinates and sends the event to that window's owner. Qt's QNX platform plugin (`qqnxscreeneventhandler.cpp` in Qt 6.12.0) converts the event to a Qt event. For keys, it passes `flags & SCREEN_FLAG_KEY_REPEAT` to `QWindowSystemInterface::handleExtendedKeyEvent` as the auto-repeat argument (`docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md`). The plugin also reports a mouse wheel notch as 10 angle units instead of 120, according to the desktop guide, which says the project scales for this so ScrollView, FlatList and SectionList move 100 px per notch over 120 ms. I did not find that wheel code in `vnext/` or `native/` in this checkout, so the wheel behavior rests on the guide's statement alone.
+
+## Hop 4: the touch dispatcher
+
+`QtTouchDispatcher` (`vnext/src/fabric/QtTouchDispatcher.cpp`) is a `QObject` event filter on the Qt Quick window. It handles two input shapes.
+
+**Mouse.** A left-button press, move and release become one touch with identifier 0. `QMouseEvent::position()` gives the page point, `item->mapFromScene` gives the offset inside the target view, and the Qt millisecond timestamp becomes the touch timestamp. On release, the ending contact appears only in `changedTouches`. The source comment explains why: otherwise React never releases its responder.
+
+**Touch.** `QTouchEvent` points keyed by `point.id()` keep a set of active touches. `makeTouchEvent` fills `touches` with every active touch, `targetTouches` with those that started on the same view, and `changedTouches` with the one that changed.
+
+Both shapes call `hitTest`. It first checks registered input shields, then picks the topmost root surface (a LogBox surface added later wins), then walks down `deepestItemAt`. That walk sorts children by `z`, takes the last visible child that contains the point and skips items that carry the `rnqnxInputTransparent` property. The item is mapped back to a React tag by looking it up in the emitter registry. When the SVG renderer is built in, an `<Svg>` root asks its own `hitElement` which element is under the point, because an `<Svg>` paints all its elements into one item.
+
+A claimed JavaScript responder wins over the hit test for the rest of a gesture (`responderTag_`, set through `setJsResponder`). The dispatcher then calls the `TouchEventEmitter` methods, and the events reach React through the host's `EventBeat`.
+
+### Input lifecycle option
+
+The opt-in CMake option `RNQNX_ENABLE_INPUT_LIFECYCLE` (default OFF) turns on cancellation. With it, the dispatcher cancels active touches on `QEvent::TouchCancel`, `WindowDeactivate` and `UngrabMouse`, cancels a touch whose target view was removed, ignores non-left buttons and second mouse presses, and the host sets `__RNQNX_INPUT_LIFECYCLE__` so an RN patch forwards a null-target `topTouchCancel`. Without the option, the dispatcher keeps the original single-pointer mouse path.
+
+## Hop 5: keys and TextInput
+
+Key events go to the Qt Quick item that has active focus. The TextInput wrapper in `vnext/src/views/qt/QtTextInputQml.cpp` is a `FocusScope` around a QML `TextInput` or `TextEdit`. Its `Keys.onPressed` handler records the key text (`mapKeyText` maps Backspace to an empty string, Return and Enter to a newline, Tab and Backtab to a tab, Escape to `\x1B`) and emits `keyPressed()`. `QtTextInputBridge` connects that signal and the text, selection, submit and focus signals, then sends them to React as Fabric events. Each edit carries an event count, and `applyJS` rejects a JavaScript write whose count is stale. In contract mode (`RNQNX_ENABLE_TEXT_INPUT_CONTRACT`, default OFF), each editable wrapper is one tab stop through `setActiveFocusOnTab`.
+
+Modal and drawer dismissal use Qt keys directly. `QtModalQml.cpp` declares `Keys.onEscapePressed`, and run 2 on the Pi closed both a modal and a drawer with an injected Escape (`docs/evidence/pr149-pi400-run2-2026-11-19/README.md`).
+
+## Hop 6: gestures
+
+`QtGestureInput` (`vnext/src/gesture/QtGestureInput.cpp`) installs a second event filter on the window. It forwards left-button mouse events whose source is `Qt::MouseEventNotSynthesized`, touch points and cancel events to the recognizer `Registry`, and it returns `false` for every event. The dispatcher still sees them, so Pressable and Gesture Handler can respond to the same press. The source states that arbitration with Qt scrolling is not implemented. The [animation runtime](/docs/explanation/animation-runtime) page covers what happens after the Registry decides.
+
+## What the Pi 400 runs show
+
+| Claim | Evidence |
+| --- | --- |
+| Raw Fabric input reaches JavaScript: 12 callbacks in order, with native-payload parity, plus a control that fails when native code swallows events | `docs/evidence/pi400-input-js-2026-11-07.md` (`RNQNX_INPUT_JS_OK events=12 ...`) |
+| React `Pressable` handles tap, cancel, deactivate, disabled, unmount and remount | `docs/evidence/pressable-qnx-2026-11-07.md` (host and QNX; synthetic events) |
+| TextInput change, key, preedit, commit, UTF-16 selection and focus teardown, plus Tab and Backtab traversal | `docs/evidence/text-input-qnx-2026-11-07.md`, `text-input-focus-qnx-2026-11-07.md`, `text-input-readonly-blur-qnx-2026-11-07.md` |
+| Title bar drag, edge resize and double click restore, driven through Screen | `pnpm pi:mouse-smoke`, described in the desktop guide |
+| A single key-down moves sidebar focus one step; a held Down with repeat events moves it across the five tabs and wraps | `docs/evidence/pr149-pi400-run2-2026-11-19/` and `pr149-pi400-keyhold-2026-11-19/` |
+
+## Where the evidence stops
+
+Every input event in these receipts is synthetic. The Pi 400 runs used `tools/qnx-input/rnqnx-inject`, which creates its own pointer and keyboard devices with `screen_create_device_type()` and injects events through Screen. Three details of the injector came from failures. Without `SCREEN_FLAG_POSITION_VALID` in `SCREEN_PROPERTY_FLAGS`, Screen places the pointer at 0,0 and Qt sees a position outside the window. Without a device, Screen cannot find the window under the pointer. Screen leaves the timestamp at 0, so every pair of clicks read as a double click until the injector set one.
+
+That design skips hops 1 and 2. The receipts say so directly:
+
+- Run 1: "All input came from `rnqnx-inject*` through Screen, not a physical keyboard or mouse." Run 2 lists "A real keyboard held down" under not verified.
+- The held-key run: "A real USB keyboard held down ... the real keyboard path (`io-hid`) was not exercised."
+- The TextInput receipts: "no physical keyboard/HID, language engine, software IME or assistive technology session is claimed."
+
+The USB path through `io-hid` has boot-script and troubleshooting documentation, and the node was present on the board during the runs. Whether a physical USB mouse or keyboard produces the same Screen events as the injector is not verified in this repository. Other unverified items are multi-pointer touch, a keyboard-scrolled list (the held key moved a focus ring, not a ScrollView), the step counts of the held-key test (arithmetic from injector timing, not logged by the app), and the first `key tab` after a click, which showed no visible ring change.
+
+See also [Threading model](/docs/explanation/threading) for the thread that runs these callbacks, and [Component matrix](/docs/reference/component-matrix) for per-component status.

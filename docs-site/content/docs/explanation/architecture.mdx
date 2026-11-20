@@ -1,34 +1,119 @@
 ---
 title: Architecture
-description: The layers between your JavaScript and the QNX screen, and the decision behind each.
+description: The layers between your JavaScript and the QNX screen, which source file implements each one, and what the project has verified on a device.
 ---
 
-A React Native QNX app is layered like this, top to bottom.
+react-native-qnx runs React Native on QNX with Hermes as the JavaScript engine, React Native's Fabric renderer as the UI core, and a Qt Quick item tree as the view backend. This page names each layer, the class that implements it, and the evidence behind it. The renderer lives in `vnext/`, not in `native/`. The `native/` tree holds the Qt modules that sit beside it (`native/qt/*`), the window chrome (`native/window-chrome`), the lifecycle observer (`native/lifecycle`) and the QNX Screen probe (`native/platform/qnx`).
 
-| Layer             | What it is                                                                    | Decision                                                                                                |
-| ----------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Your app          | React 19.3.0 components, bundled by Metro 0.87.1 with the QNX platform config |                                                                                                         |
-| JavaScript engine | Hermes, cross-compiled for QNX                                                | [ADR-0005](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0005-hermes-only.md)       |
-| Renderer          | Fabric and JSI only. No Paper view managers, no legacy bridge                 | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md)       |
-| Layout            | Yoga is the only layout authority. Qt items get absolute geometry             | [component support](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.md) |
-| View backend      | A retained Qt Quick item tree: items, text, images, input, animation          | [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md)  |
-| Window system     | Qt's QNX platform plugin on QNX Screen                                        | ADR-0001                                                                                                |
-| Native modules    | Nitro HybridObjects with typed contracts                                      | [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md)     |
+## The layers
 
-## Why Qt Quick
+<svg
+  role="img"
+  aria-label="Layer stack from the JavaScript app down to QNX Screen, with the event beat, text measurement and touch dispatcher beside it"
+  viewBox="0 0 760 480"
+  width="100%"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+>
+  <title>Layers from JavaScript to QNX Screen</title>
+  <defs>
+    <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none" />
+    </marker>
+  </defs>
 
-The platform needs a retained native item tree for Fabric views, shaped text, images, input and accessibility. Qt Quick gives the renderer, the Fabric host, the Hermes host and the Nitro layer one native language (C++) and one event loop. QNX Screen stays the compositor beneath Qt. The direct-Screen executable `rnqnx_playground` is a probe, not the component backend. GTK4 was viable and was rejected to avoid a second object and event model.
+  <rect x="10" y="10" width="440" height="54" rx="6" />
+  <text x="230" y="34" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">JavaScript app (Metro bundle, qnx platform)</text>
+  <text x="230" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">packages/metro-config-qnx, packages/react-native-qnx</text>
+  <line x1="230" y1="64" x2="230" y2="86" markerEnd="url(#arch-arrow)" />
 
-## Why Nitro, not TurboModules
+  <rect x="10" y="88" width="440" height="54" rx="6" />
+  <text x="230" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Hermes and RuntimeScheduler</text>
+  <text x="230" y="130" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QtReactHost (makeHermesRuntime)</text>
+  <line x1="230" y1="142" x2="230" y2="164" markerEnd="url(#arch-arrow)" />
 
-TurboModules need manual C++ boilerplate and are not type-safe across the boundary. Nitro generates JSI bindings and typed C++ HybridObjects. A thin adapter satisfies React Native core interfaces that expect TurboModule semantics, and delegates to Nitro or the platform runtime. Nitro is pinned at an alpha release.
+  <rect x="10" y="166" width="440" height="54" rx="6" />
+  <text x="230" y="190" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Fabric core (React Native C++)</text>
+  <text x="230" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">UIManager, ShadowTree, Yoga, MountingCoordinator</text>
+  <line x1="230" y1="220" x2="230" y2="242" markerEnd="url(#arch-arrow)" />
 
-## Expo
+  <rect x="10" y="244" width="440" height="54" rx="6" />
+  <text x="230" y="268" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtSchedulerDelegate, ShadowViewMutationAdapter</text>
+  <text x="230" y="286" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">mutations in, mounting calls out</text>
+  <line x1="230" y1="298" x2="230" y2="320" markerEnd="url(#arch-arrow)" />
 
-Expo runs through development builds, not Expo Go ([ADR-0006](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0006-expo-dev-builds.md)). Expo Modules Core gets a QNX JSI bootstrap, and autolinking has a QNX resolver.
+  <rect x="10" y="322" width="440" height="54" rx="6" />
+  <text x="230" y="346" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtQuickMountingLayer, QtQuickItemFactory</text>
+  <text x="230" y="364" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">tag to QQuickItem, one cached QQmlComponent per type</text>
+  <line x1="230" y1="376" x2="230" y2="398" markerEnd="url(#arch-arrow)" />
 
-## What is not in the design
+  <rect x="10" y="400" width="440" height="54" rx="6" />
+  <text x="230" y="424" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Qt Quick scene on QQuickWindow</text>
+  <text x="230" y="442" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">Qt QNX platform plugin, QNX Screen</text>
 
-Skia was the first renderer choice and is superseded ([ADR-0003](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0003-skia-initial-renderer.md)). No second JavaScript engine is supported.
+  <rect x="500" y="88" width="250" height="54" rx="6" />
+  <text x="625" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtEventBeat</text>
+  <text x="625" y="130" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QtRuntimeTaskQueue</text>
+  <line x1="500" y1="115" x2="450" y2="115" markerEnd="url(#arch-arrow)" />
 
-All decisions: [architecture decisions](/docs/explanation/adr-index).
+  <rect x="500" y="166" width="250" height="54" rx="6" />
+  <text x="625" y="190" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtTextLayoutManager</text>
+  <text x="625" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">measures text with QTextLayout</text>
+  <line x1="500" y1="193" x2="450" y2="193" markerEnd="url(#arch-arrow)" />
+
+  <rect x="500" y="266" width="250" height="90" rx="6" />
+  <text x="625" y="294" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtTouchDispatcher</text>
+  <text x="625" y="312" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">Qt pointer events to</text>
+  <text x="625" y="330" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">TouchEventEmitter</text>
+  <line x1="500" y1="290" x2="450" y2="270" markerEnd="url(#arch-arrow)" />
+  <line x1="500" y1="334" x2="450" y2="427" markerEnd="url(#arch-arrow)" />
+</svg>
+
+Each box maps to a source file:
+
+| Layer | Implementation | Decision |
+| --- | --- | --- |
+| JavaScript engine | `QtReactHost::Impl` builds the runtime with `facebook::hermes::makeHermesRuntime` and the microtask queue on (`vnext/src/runtime/QtReactHost.cpp`) | [ADR-0005](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0005-hermes-only.md) |
+| Renderer core | React Native's own `Scheduler`, `UIManager` and `ShadowTree`, built from the installed React Native package | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md) |
+| Mount translation | `QtSchedulerDelegate` and `ShadowViewMutationAdapter` (`vnext/src/fabric/ShadowViewMutationAdapter.cpp`) | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md) |
+| Item tree | `QtQuickMountingLayer` and `QtQuickItemFactory` (`vnext/src/fabric/QtQuickMountingLayer.cpp`, `vnext/src/views/qt/QtQuickItemFactory.cpp`) | [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md), [ADR-0002](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0002-qt-quick-item-instantiation.md) |
+| Window system | `QQuickWindow` on Qt's QNX platform plugin, above QNX Screen | ADR-0001 |
+| Application modules | Nitro HybridObjects, plus a small TurboModule adapter for React Native core | [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md) |
+
+## Hermes and the bridgeless host
+
+`QtReactHost` owns the Hermes runtime, the `RuntimeScheduler` and React Native's `Scheduler`. React Native ships a generic host only for Android and Apple, so this class supplies the pieces that platforms normally provide: an `EventBeat`, a component registry, a `SchedulerDelegate`, timers and platform constants. Before a bundle runs it sets `RN$Bridgeless` to true and installs an empty `__fbBatchedBridgeConfig`, because React Native's JavaScript checks both. There is no legacy bridge and no Paper view manager.
+
+Core React Native JavaScript calls `TurboModuleRegistry.getEnforcing` for its own modules. `QtReactHost::installTurboModuleBinding` answers those calls with React Native's default C++ modules plus QNX ones: `QnxDeviceInfo`, `QnxSourceCode`, `QnxExceptionsManager`, `QnxImageLoader`, `QnxWebSocketModule`, `QnxFileReaderModule`, `QnxSegmentFetcher`, a native Animated module driven by a 16 ms `QTimer`, and `QnxAppStateModule` when `RNQNX_ENABLE_APP_STATE` is on. A name nobody provides returns null, so `getEnforcing` fails with that module's name. Application-facing native APIs use Nitro instead. [Threading](/docs/explanation/threading) covers how Nitro callbacks get back onto the JavaScript thread.
+
+## Fabric and the component registry
+
+`makeComponentRegistryFactory` registers these descriptors: Root, View, Paragraph, Text, RawText, Image, ScrollView, TextInput, ActivityIndicatorView, Switch, SafeAreaView and ModalHostView. Optional libraries add their own through `QtReactHost::addComponentDescriptorProvider`, which must run before the first host is constructed. The Switch descriptor reuses React Native's Apple shadow node, and `vnext/src/fabric/SwitchShadowNode.cpp` supplies its name and a 51 by 31 default size because the Apple `.mm` files do not build here.
+
+A component without a QML mapping fails its `Create` mutation with `MountError::UnknownComponentType`. The adapter does not fall back to a generic view. The next page, [Render lifecycle](/docs/explanation/render-lifecycle), follows a commit from JavaScript to Qt items.
+
+## Qt Quick as the view backend
+
+Qt Quick supplies a retained item tree, shaped text, images and input in one C++ event loop. `QtQuickItemFactory` compiles one `QQmlComponent` per React Native component type from inline QML source and caches it. `QtQuickMountingLayer` keeps a map from Fabric tag to `QQuickItem`, creates items unparented, and deletes them itself (the factory sets C++ ownership). ADR-0002 still lists its Pi 400 1,000-item benchmark and some source-ownership checks as open.
+
+In the playground host (`vnext/probes/playground/main.cpp`) the `View` type is a QML `Item` with `clip: true`, a `Rectangle` for background and border, and a `Shape` for per-corner radii. `Text` is a Qt Quick `Text`, `ScrollView` is a `Flickable` with a `WheelHandler`, and `Image` is a Qt Quick `Image` with a loading-indicator child. Optional modules register more types: `native/qt/svg`, `native/qt/rnsvg`, `native/qt/video`, `native/qt/nativeui` (drawer and tab bar) and the Expo image view in `vnext/src/views/qt/image`.
+
+Layout comes from Yoga, and Qt items are absolute leaves ([ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md)). [Layout](/docs/explanation/layout) explains how the geometry reaches each item.
+
+## The window
+
+The host creates a `QQuickWindow`, mounts the surface into `window.contentItem()` (or into `WindowChrome::contentRoot()` when the window chrome is on), and runs `QGuiApplication::exec`. Qt's QNX platform plugin sits between that window and QNX Screen. The direct-Screen executable `rnqnx_playground` (`native/platform/qnx/application/main.cpp`) fills a buffer with a solid color and is a toolchain probe. It is not a component backend. GTK4 was viable and was rejected to avoid a second object model ([ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md)).
+
+## Data flows in two directions
+
+Downward, a React commit becomes Fabric mutations and then Qt item changes. Upward, Qt pointer events go through `QtTouchDispatcher`, which hit-tests the item tree and calls the matching shadow view's `TouchEventEmitter`. Item signals (scroll position, text changes, switch values, image status) go through small bridge objects to their emitters. `QtEventBeat` tells React Native when to run queued events by posting `induce()` to the Qt event loop. The route from hardware to JavaScript, with its device evidence, is on the [input path](/docs/explanation/input-path) page.
+
+## Verified and not verified
+
+- A real React Native Hello World rendered through Fabric, Hermes and Qt Quick on a Raspberry Pi 400 under QNX 8.0.5 on 2026-11-07 (`docs/evidence/pi400-hello-world-2026-11-07.txt`). That receipt records no frame rate, startup time or memory figure.
+- `tests/cpp/ShadowTreeMountingHostTest.cpp` commits a real `ShadowTree` and checks Yoga geometry on Qt items (fixed sizes, flex distribution, padding, in-place resize, unmount). `tests/cpp/QtReactHostHostTest.cpp` and `tests/cpp/QtQuickMountingLayerHostTest.cpp` cover the host and the item layer. These are host tests.
+- Per-component device status is in the [component matrix](/docs/reference/component-matrix), and open items are in [known gaps](/docs/reference/known-gaps).
+- The Qt Quick render loop (threaded or basic) is not set anywhere in this repository. Which one the Pi 400 build uses is not verified.
+
+Skia was the first renderer choice and is superseded ([ADR-0003](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0003-skia-initial-renderer.md)). Hermes is the only supported engine. All decisions are in the [architecture decision index](/docs/explanation/adr-index).

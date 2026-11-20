@@ -1,0 +1,61 @@
+---
+title: "ADR-0020: Native bootstrap for Worklets, Reanimated and Gesture Handler"
+description: Why the platform answers three third-party TurboModule lookups by name, how each bootstrap stays thin, and where the line against stubs is drawn.
+---
+
+Record: [`docs/adr/0020-worklets-reanimated-gesture-handler-bootstrap.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0020-worklets-reanimated-gesture-handler-bootstrap.md), dated 2026-11-13.
+
+## Status
+
+The record states: "Accepted, 2026-11-13, under the owner's instruction to deliver stages 2 and 3 of the v2 plan. Worklets has a device run; the Reanimated and Gesture Handler parts are recorded in `worklets-qnx.md` and `reanimated-gesture-handler-qnx.md` with the results that actually ran." The index adds "Pi 400 runs 2026-11-13 and 2026-11-19".
+
+## Context
+
+[ADR-0004](/docs/explanation/adr/0004-nitro-modules) allows a minimal adapter for React Native core's own registry requirements and sends application APIs to Nitro. Three third-party libraries fall outside both:
+
+- `react-native-worklets` calls `TurboModuleRegistry.get('WorkletsModule')`, then `installTurboModule`, `start`, `prepareBundleMode` and `toggleSlowAnimationsOnUIRuntime`. Its native side installs `global.__workletsModuleProxy` itself.
+- `react-native-reanimated` looks up `ReanimatedModule` and expects `global.__reanimatedModuleProxy`.
+- `react-native-gesture-handler` looks up `RNGestureHandlerModule`.
+
+Their JavaScript is upstream's and stays unmodified. A Nitro HybridObject cannot answer those lookups, and an empty TurboModule would hide the failure that ADR-0004 asks the project to keep visible.
+
+## Decision
+
+The platform registers these three modules as named TurboModules through `QtReactHost::registerTurboModule`, behind switches that default to OFF (`RNQNX_ENABLE_WORKLETS` and its siblings). Each module is a thin bootstrap that forwards to the upstream C++ (`WorkletsModuleProxyInitializer` and its counterparts), which is compiled from the installed npm package and not vendored. The module returns an error for anything the platform does not implement and never returns a stub that reports success.
+
+Application-facing APIs stay on Nitro. The three registrations are the only third-party TurboModule names the platform provides, and a new name needs its own ADR. The host also gains `addTeardownHook`, so a library that owns a thread or a runtime stops it while Hermes is alive instead of relying on destructor order.
+
+## Consequences
+
+- Upstream JavaScript runs unmodified. The Babel plugin, `scheduleOnUI`, `useSharedValue` and the gesture hooks keep their published behavior.
+- The platform carries the upstream version constraint, and CMake rejects a Worklets outside 0.13.x.
+- Each patch to upstream C++ is a one-line text substitution in CMake that fails the configure step if the upstream line changes.
+- Bundle Mode, sensors, keyboard events and pseudo-selector callbacks are not provided and report that on use.
+
+## Alternatives rejected
+
+- A Nitro module that re-exports the library, because the library installs its own JSI proxy and Nitro cannot satisfy the registry lookup.
+- Forking the libraries, because it forfeits upstream fixes and the Babel plugin contract.
+- Empty TurboModules, which ADR-0004 already rejects.
+
+## Evidence
+
+Source tree:
+
+- `vnext/src/worklets/` holds `QnxWorkletsModule.cpp`, `QtFrameBridge.cpp` and the UI scheduler headers. `QtWorkletsPlatform.cpp` registers `QnxWorkletsModule::kModuleName` through `host.registerTurboModule`.
+- `vnext/src/reanimated/` (`QnxReanimatedModule.cpp`, `QtReanimatedPlatform.cpp`) and `vnext/src/gesture/` (`QnxGestureHandlerModule.cpp`, `QtGesturePlatform.cpp`, `QtGestureInput.cpp`, `GestureHandlerCore.cpp`) follow the same layout.
+- `vnext/src/runtime/QtReactHost.cpp` defines `registerTurboModule` and `addTeardownHook`.
+- `cmake/RnqnxWorklets.cmake` declares `option(RNQNX_ENABLE_WORKLETS ... OFF)` and stops with `message(FATAL_ERROR "react-native-worklets 0.13.x is required ...")` on a different version. It also carries the text substitutions the record describes, with a comment about standard algorithms that Worklets 0.13.1 uses without including their headers. `cmake/RnqnxReanimated.cmake` and `cmake/RnqnxGestureHandler.cmake` declare their own OFF-by-default options, and the Gesture Handler file stops configuration unless Worklets is enabled.
+- Design notes: `docs/worklets-qnx.md`, `docs/reanimated-gesture-handler-qnx.md`, `docs/reanimated-gesture-handler-qnx-audit.md`, `docs/reanimated-gesture-handler-qnx-map.md` and `docs/reanimated-qnx-source-audit.md`. The pinned versions in `package.json` are `react-native-worklets` 0.13.1, `react-native-reanimated` 4.7.1 and `react-native-gesture-handler` 3.4.0.
+
+Device evidence on the Raspberry Pi 400:
+
+- `docs/evidence/worklets-frame-2026-11-13/` holds the Worklets frame probe run. `docs/handoff/CURRENT_STATE.md` says the Pi completes that probe and paints intermediate timing pixels.
+- `docs/evidence/pr149-pi400-run1-2026-11-19/` is a hand-run session with Worklets, Reanimated and Gesture Handler ON and SVG OFF, built from PR 149's branch with QNX SDP 8.0.5, Qt 6.12.0 public and the -O2 runtime. Its screenshots show the Worklets UI-thread proof card, a Reanimated spring running and finishing, and Gesture Handler tap, pan with spring-back and swipe results. The README states which command lines were not preserved, and a reader should take that limit with the run.
+- `docs/evidence/pr149-pi400-run2-2026-11-19/` and `pr149-pi400-keyhold-2026-11-19/` hold the later runs. The record's index status names the 2026-11-13 and 2026-11-19 runs.
+
+`docs/handoff/CURRENT_STATE.md` carries a more cautious reading of the same work. It says Gesture Handler attachment and routing were repaired, that single tap and exclusive double tap pass on the device, and that exact-head CI and review of a later Hermes import remain open. It also states that QNX cross-build and device evidence for the integrated host was unavailable at one point and that earlier Pi results were then historical. Readers should treat that file, not this page, as the live status, and the [status](/docs/reference/status) and [module matrix](/docs/reference/module-matrix) pages as the summary.
+
+## What would reverse this
+
+The record gives no explicit trigger. A change would follow from the facts it rests on. If upstream Worklets, Reanimated or Gesture Handler stops using named TurboModule lookups, the bootstraps could shrink or go. If an upstream release moves outside the 0.13.x constraint or changes a line that one of the CMake substitutions targets, configuration fails by design and the bootstrap needs rework. A fourth library that needs the same treatment needs its own ADR, per the Decision. Bundle Mode, sensors, keyboard events and pseudo-selector callbacks remain unsupported until work lands for each.

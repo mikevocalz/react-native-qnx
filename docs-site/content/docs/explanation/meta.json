@@ -1,1 +1,21 @@
-{ "title": "Explanation", "pages": ["architecture", "threading", "adr-index", "readers"] }
+{
+  "title": "Explanation",
+  "pages": [
+    "architecture",
+    "render-lifecycle",
+    "layout",
+    "threading",
+    "input-path",
+    "image-pipeline",
+    "animation-runtime",
+    "why-fabric-only",
+    "qt-tiers-rationale",
+    "security",
+    "performance",
+    "releases",
+    "comparison",
+    "adr-index",
+    "adr",
+    "readers"
+  ]
+}

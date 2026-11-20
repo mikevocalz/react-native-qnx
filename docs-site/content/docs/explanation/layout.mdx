@@ -1,0 +1,101 @@
+---
+title: Layout
+description: How Yoga computes geometry for a React Native tree on QNX and how that geometry becomes x, y, width and height on Qt Quick items.
+---
+
+Yoga is the only layout engine. React Native's shadow tree runs it during a commit, and the QNX platform copies each node's computed frame onto the matching Qt Quick item as absolute geometry. Qt anchors and Qt Quick Layouts do not take part in placing React Native views ([ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md), `docs/adr/0011-qt-module-licensing.md` puts Qt Quick Layouts in its excluded tier for that reason). The platform contributes three inputs to Yoga (the surface size, text measurement and a few intrinsic sizes) and one output step (`QtQuickMountingLayer::updateLayout`).
+
+## Where Yoga runs
+
+Yoga is the copy bundled with the selected React Native release. The project records no separate Yoga version ([ADR-0008](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0008-version-pinning.md)). It is compiled with React Native's renderer modules and runs inside `ShadowTree::commit` on whichever thread commits. For a normal React update that is the owner thread described in [Threading](/docs/explanation/threading). `tests/cpp/ShadowTreeMountingHostTest.cpp` commits a real `ShadowTree` and asserts the resulting Qt geometry for five cases: a fixed-size view, flex children splitting the root width, padding offsetting a child origin, a second commit resizing in place, and removing a child.
+
+<svg
+  role="img"
+  aria-label="Layout path: surface constraints and text measurement feed Yoga in the shadow tree, which produces LayoutMetrics, converted by toLayoutFrame and applied by updateLayout to a QQuickItem"
+  viewBox="0 0 760 250"
+  width="100%"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+>
+  <title>From surface constraints to Qt item geometry</title>
+  <defs>
+    <marker id="lay-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none" />
+    </marker>
+  </defs>
+  <rect x="10" y="10" width="220" height="56" rx="6" />
+  <text x="120" y="34" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">makeLayoutConstraints</text>
+  <text x="120" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">surface size, left to right</text>
+  <line x1="230" y1="38" x2="290" y2="90" markerEnd="url(#lay-arrow)" />
+
+  <rect x="10" y="150" width="220" height="56" rx="6" />
+  <text x="120" y="174" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtTextLayoutManager</text>
+  <text x="120" y="192" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QTextLayout measure()</text>
+  <line x1="230" y1="178" x2="290" y2="126" markerEnd="url(#lay-arrow)" />
+
+  <rect x="292" y="80" width="170" height="56" rx="6" />
+  <text x="377" y="104" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Yoga in ShadowTree</text>
+  <text x="377" y="122" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">LayoutMetrics per node</text>
+  <line x1="462" y1="108" x2="500" y2="108" markerEnd="url(#lay-arrow)" />
+
+  <rect x="502" y="80" width="248" height="56" rx="6" />
+  <text x="626" y="104" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">toLayoutFrame, updateLayout</text>
+  <text x="626" y="122" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">x, y, width, height on QQuickItem</text>
+  <line x1="626" y1="136" x2="626" y2="170" markerEnd="url(#lay-arrow)" />
+
+  <rect x="502" y="172" width="248" height="56" rx="6" />
+  <text x="626" y="196" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">updateStyle</text>
+  <text x="626" y="214" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">adds translate, scale, rotation</text>
+</svg>
+
+## Inputs the platform supplies
+
+**Surface constraints.** `makeLayoutConstraints` in `vnext/src/runtime/QtReactHost.cpp` sets both the minimum and maximum size to the window size and the direction to left to right. The source comment gives the reason for the minimum: a zero minimum lets Yoga shrink-wrap the root, which leaves flex and percentage children laid out against an intrinsic width instead of the window. `startSurface` and `resizeSurface` both call `SurfaceHandler::constraintLayout` with these constraints.
+
+**Window dimensions.** `setWindowSize` emits `didUpdateDimensions` through `RCTDeviceEventEmitter` so `Dimensions` and `useWindowDimensions` report the window rather than the screen. A repeated size is not re-sent. Libraries such as react-navigation size headers and drawers from that value.
+
+**Text.** React Native's generic C++ text manager returns the minimum size and so collapses every `Text`. `vnext/src/text/QtTextLayoutManager.cpp` replaces `TextLayoutManager::measure` with one built on `QTextLayout`. Each fragment becomes a format range with a `QFont` from its family, pixel size, weight and italic flag. Lines wrap at word boundaries or anywhere, stop at `numberOfLines`, and the result is clamped to the constraints. An infinite maximum width is replaced with a finite value because `QTextLine` cannot take infinity. Inline attachments measure as zero-size, so inline views inside text are unsupported ([component support](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.md)).
+
+**Intrinsic sizes.** `vnext/src/fabric/SwitchShadowNode.cpp` reports 51 by 31, clamped to the constraints, as the Switch content size.
+
+## Output: from frame to item
+
+`toLayoutFrame` copies `LayoutMetrics::frame` (origin and size, both `float`) into a `LayoutFrame`. `ShadowViewMutationAdapter::applyOne` calls `QtQuickMountingLayer::updateLayout` on every `Create` and `Update`. Fabric frames are relative to the parent, and Qt child items are positioned in their parent's coordinates, so the values are applied unchanged. `updateLayout` has three cases:
+
+- **Ordinary item.** It stores `layoutX` and `layoutY` as item properties, then sets `x`, `y`, `width` and `height`.
+- **Surface root.** It sets only width and height. The host decides where the root sits, below a title bar for example, and Yoga reports the root at 0,0.
+- **Modal overlay.** It pins the item to 0,0 and sizes it to the frame, or to the surface root when the frame is empty, so the modal covers the surface.
+
+`updateStyle` runs after layout. It reads `layoutX` and `layoutY` back and sets the item's `x` and `y` to those plus `translateX` and `translateY`, then applies `scale` and `rotation`. A transform therefore moves an item without disturbing the frame Yoga gave it. Transform origin, skew, perspective and arbitrary matrices are not applied ([component support](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.md)).
+
+Three components need more than a frame:
+
+- **ScrollView.** A `Flickable` scrolls its `contentItem`, so `insert` parents children there. Qt does not infer content size from children, so `updateScrollContentSize` sets `contentWidth` and `contentHeight` to the largest `x + width` and `y + height` among them after every insert, remove and child resize. React Native computes content size in the shadow tree instead. How the two compare for children at negative offsets is not verified.
+- **TextInput.** The adapter passes Yoga's content insets (padding plus border) to the field so text starts where the shadow node expects it.
+- **Text.** `updateText` sets the Qt `Text` item to `Text.Wrap`, so the paint wraps the way the measure did. With `numberOfLines` of 1 it uses `Text.NoWrap` and `elide`. With more than 1 it sets `maximumLineCount` and `elide`.
+
+## `onLayout`
+
+`applyOne` calls `ViewEventEmitter::onLayout` on `Create` and `Update` only when `ViewProps::onLayout` is set. An emitter exists even without a listener, and an earlier version dispatched anyway. The guard follows the pinned React Native `LayoutEventEmitter.cpp`. In one paired host measurement (`docs/validation/pr161-layout-dispatch-2026-11-16.md`), mounting the Complex-1 SVG corpus scene fell from 244,535 ms to 181,239 ms, 25.9 percent. That is one host comparison with Hermes slow debug checks on, not a benchmark and not a QNX number.
+
+## Resizing
+
+The host watches the window's width and height (or the chrome content root's size when window chrome is on). A change starts a zero-interval single-shot timer, so several changes in one event coalesce. The timer calls `resizeSurface`, `setWindowSize` and `ShadowViewMutationAdapter::surfaceResized`, which re-applies open modals. React sees a new layout of the root and fires `onLayout`. Nothing remounts. The flow is in `vnext/probes/playground/main.cpp`.
+
+## Evidence
+
+| Claim | Evidence | Scope |
+| --- | --- | --- |
+| Yoga geometry lands on Qt items | `tests/cpp/ShadowTreeMountingHostTest.cpp`, `tests/cpp/QtQuickMountingLayerHostTest.cpp` (`updateLayoutAppliesAbsoluteGeometry`) | Host |
+| Gallery pages stay inside the window at 586x600, 880x600 and 1280x800, and a drawer page does not change the tab pages | `docs/evidence/gallery-yoga-layout-2026-11-13.md`, `tests/js/qnx-gallery-yoga-layout.test.mjs` | Host. It uses `yoga-layout` 3.2.1 from npm with a fixed 0.55 em text advance, so it does not exercise the Qt text measure or the native tree |
+| Live resize on the device re-flows the gallery grid | `docs/evidence/tile-layout-pi400-2026-11-13/README.md` | Pi 400, historical screenshots. The receipt records no host identity, commit or full commands, so it cannot qualify the current head |
+| Retained SVG geometry changes schedule layout | `docs/validation/pr161-geometry-2026-11-16.md` | Host, offscreen Qt Quick |
+
+No receipt measures layout time on a device. The [component matrix](/docs/reference/component-matrix) lists which components have device scenarios.
+
+## Responsive helpers
+
+`@rn-qnx/react-native-qnx/adaptive` (`packages/react-native-qnx/adaptive`) adds `getWindowSizeClass`, `getGridLayout`, `AdaptiveGrid` and `AdaptiveShell`. They are plain React Native components over `useWindowDimensions` and Yoga, with no second layout path. Its README says neither the component gallery nor the generated starter uses them yet.
+
+Related: [Render lifecycle](/docs/explanation/render-lifecycle) shows when layout runs relative to mounting, and [Architecture](/docs/explanation/architecture) shows the layers around it.

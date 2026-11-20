@@ -1,0 +1,141 @@
+---
+title: Render lifecycle
+description: What happens between a React state change and pixels on a Qt Quick window, from the JavaScript render through the Fabric commit and mount to the next frame.
+---
+
+A React update reaches the screen in six steps: React renders in JavaScript, Fabric commits a new shadow tree and runs Yoga, the scheduler announces the transaction, `QtSchedulerDelegate` pulls it, `ShadowViewMutationAdapter` turns its mutations into Qt item changes, and Qt Quick draws the next frame. Steps one through five run on the owner thread described in [Threading](/docs/explanation/threading). This page follows that path using the class and method names in `vnext/`.
+
+## Sequence
+
+<svg
+  role="img"
+  aria-label="Sequence from a React state change: completeRoot into the UIManager, Yoga layout and diff, rendering update on the RuntimeScheduler, schedulerShouldRenderTransactions on the delegate, pullTransaction, apply on the adapter, item changes in Qt Quick, reportMount, then the next frame"
+  viewBox="0 0 760 500"
+  width="100%"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+>
+  <title>Render and commit sequence</title>
+  <defs>
+    <marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none" />
+    </marker>
+  </defs>
+
+  <rect x="10" y="8" width="140" height="44" rx="6" />
+  <text x="80" y="27" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">React and</text>
+  <text x="80" y="43" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">Hermes</text>
+  <rect x="165" y="8" width="140" height="44" rx="6" />
+  <text x="235" y="27" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">UIManager and</text>
+  <text x="235" y="43" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">ShadowTree</text>
+  <rect x="320" y="8" width="140" height="44" rx="6" />
+  <text x="390" y="35" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">RuntimeScheduler</text>
+  <rect x="475" y="8" width="140" height="44" rx="6" />
+  <text x="545" y="27" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QtSchedulerDelegate,</text>
+  <text x="545" y="43" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">mutation adapter</text>
+  <rect x="630" y="8" width="120" height="44" rx="6" />
+  <text x="690" y="35" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">Qt Quick items</text>
+
+  <g strokeDasharray="4 4" strokeOpacity="0.4">
+    <line x1="80" y1="52" x2="80" y2="490" />
+    <line x1="235" y1="52" x2="235" y2="490" />
+    <line x1="390" y1="52" x2="390" y2="490" />
+    <line x1="545" y1="52" x2="545" y2="490" />
+    <line x1="690" y1="52" x2="690" y2="490" />
+  </g>
+
+  <line x1="80" y1="95" x2="235" y2="95" markerEnd="url(#seq-arrow)" />
+  <text x="158" y="86" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">1 completeRoot</text>
+
+  <text x="243" y="140" fill="currentColor" stroke="none" fontSize="12">2 commit: Yoga layout, diff</text>
+
+  <line x1="235" y1="185" x2="390" y2="185" markerEnd="url(#seq-arrow)" />
+  <text x="313" y="176" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">3 rendering update</text>
+
+  <line x1="390" y1="230" x2="545" y2="230" markerEnd="url(#seq-arrow)" />
+  <text x="468" y="221" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">4 shouldRenderTransactions</text>
+
+  <text x="553" y="275" fill="currentColor" stroke="none" fontSize="12">5 pullTransaction</text>
+
+  <line x1="545" y1="320" x2="690" y2="320" markerEnd="url(#seq-arrow)" />
+  <text x="618" y="311" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">6 apply: create, insert, layout</text>
+
+  <line x1="545" y1="365" x2="235" y2="365" markerEnd="url(#seq-arrow)" />
+  <text x="390" y="356" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">7 reportMount</text>
+
+  <text x="682" y="420" textAnchor="end" fill="currentColor" stroke="none" fontSize="12">8 next frame: sync, render</text>
+
+  <line x1="80" y1="455" x2="545" y2="455" strokeDasharray="2 5" markerEnd="url(#seq-arrow)" />
+  <text x="312" y="446" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">item signals and touch events return as emitter calls</text>
+</svg>
+
+## Startup
+
+The host builds one `QtReactHost`, then runs these calls in order (`vnext/probes/playground/main.cpp`): `installTurboModuleBinding`, `installComponentProvider`, `installPlatformConstants`, `installTimers`, `evaluate` the bundle, `startSurface`, `setWindowSize`.
+
+`startSurface` creates a `SurfaceHandler`, registers it with the `Scheduler`, sets props and layout constraints, and starts it. `UIManager::startSurface` then hops the runtime executor and calls `RN$AppRegistry.runApplication`, which makes React render the first tree. `evaluate` must return before this point, so the bundle has already registered the app component.
+
+## 1. React renders
+
+A state update runs inside a `RuntimeScheduler` task. React reconciles and drives `nativeFabricUIManager`: `createNode` for new host nodes, `createChildSet` and `appendChildToSet` to collect the surface's children, then `completeRoot`. Those calls build `ShadowNode` objects in C++ with their props and event emitters. `QtReactHost::hasFabricUIManager` checks that this global exists.
+
+## 2. Fabric commits
+
+`completeRoot` commits the new root into the surface's `ShadowTree`. During the commit Fabric runs Yoga over the tree (see [Layout](/docs/explanation/layout)) and diffs the result against the previous revision. The diff yields a list of `ShadowViewMutation` values of type `Create`, `Delete`, `Insert`, `Remove` or `Update`, held by the surface's `MountingCoordinator`. The coordinator keeps at most one pending revision. `tests/cpp/ShadowTreeMountingHostTest.cpp` commits a real `ShadowTree` and checks the mounted geometry, and `tests/cpp/QtReactHostHostTest.cpp` commits through `QtReactHost::commit`.
+
+## 3. The scheduler announces the transaction
+
+`schedulerDidFinishTransaction` fires synchronously on the committing thread and does nothing in `QtSchedulerDelegate`. Mounting waits for `schedulerShouldRenderTransactions`, which React Native dispatches as a rendering update on the `RuntimeScheduler`. That puts the mount after the current JavaScript task and its microtask checkpoint. If the call arrives on a thread other than the owner, `onOwnerOrPost` posts it to the owner thread first.
+
+## 4. The delegate pulls one transaction
+
+`schedulerShouldRenderTransactions` makes one `pullTransaction()` call per notification. It does not loop. The source comment explains why: with a `MountingOverrideDelegate` installed, Reanimated's layout-animation proxy answers every pull with a transaction, and a `while` loop spun at full CPU on the first screen that mounted a Reanimated component. Every later commit or animation frame notifies again.
+
+## 5. The adapter applies mutations
+
+`ShadowViewMutationAdapter::apply` walks the list in React Native's order. A failure is recorded and the walk continues, because stopping halfway would leave the item tree further from the shadow tree than finishing does. What each mutation does:
+
+| Mutation | Adapter behavior |
+| --- | --- |
+| `Create` | Look up the QML type mapped to the component name. Create the item unparented through `QtQuickMountingLayer::create`. Apply the first layout and props in one pass: `updateLayout`, `onLayout` if subscribed, emitter registration with `QtTouchDispatcher`, signal connections (scroll, TextInput, Switch, Image, Modal), then text, image, TextInput, ActivityIndicator, Switch, SVG and extra-component props, then `updateStyle`. Doing all of it here avoids a frame at the origin with zero size. |
+| `Insert` | `QtQuickMountingLayer::insert` parents the item (into `contentItem` for a `Flickable`) and orders it among Fabric siblings with `stackBefore`. Indices count only Fabric children, so QML-owned backgrounds do not shift them. Then `updateScrollContentSize` on the parent. |
+| `Remove` | Detach the item without destroying it, then update the parent's scroll content size. The index must agree with the item's position. |
+| `Delete` | Drop the tag from the adapter's maps and the touch dispatcher, notify the view observer, then `destroy` the item. `destroy` detaches a still-mounted item first, and refuses to delete a borrowed root. |
+| `Update` | Re-register the emitter, `updateLayout`, `onLayout` if subscribed, reconnect signals, reapply props and `updateStyle`, then refresh the parent's scroll content size. |
+
+Failures use the `MountError` values in `QtQuickMountingLayer.h`: `UnknownComponentType`, `DuplicateTag`, `UnknownTag`, `UnknownParent`, `NotAChildOfParent`, `IndexOutOfRange`, `ItemCreationFailed`, `UnsupportedTextInput` and `UnsupportedAccessibility`. The delegate prints each as `RNQNX_MOUNT_FAILURE type tag error detail` on stderr. A failed `Create` can leave a view and its subtree off screen with no other trace, so check that log first when something is missing.
+
+## 6. Mount acknowledgement
+
+When the transaction applied with no failures, the delegate calls `UIManager::reportMount` through the mount reporter. Mount hooks, including Reanimated's, resume commits only after this. The delegate never acknowledges a partly failed mount.
+
+## 7. The frame
+
+Property changes on `QQuickItem` mark items dirty. Qt Quick synchronizes the scene graph and renders on its next frame, with no further call from this code. The mount returns without waiting for the frame. `QtFrameBridge` runs worklet frame callbacks at `QQuickWindow::afterAnimating`, before the scene graph syncs, so worklet writes land in the following sync. Which render loop Qt uses on the Pi 400 is not verified.
+
+## Updates that skip the commit
+
+- **Commands.** `schedulerDidDispatchCommand` calls `ShadowViewMutationAdapter::dispatchCommand` for imperative calls such as `ScrollView.scrollTo` and `scrollToEnd`, which set `contentX` and `contentY` on the `Flickable`. The `animated` argument is accepted and ignored.
+- **Native-driven animation.** `schedulerShouldSynchronouslyUpdateViewOnUIThread` calls `synchronouslyUpdateViewOnUIThread`, which applies a prop delta (opacity, transform) straight to the mounted item without a commit. A 16 ms `QTimer` drives the Animated module that produces these.
+
+## Events returning
+
+Qt items report back through bridge objects (`QtTextInputBridge`, `QtImageBridge`, `QtSwitchBridge`, `QtModalBridge`) and through `QtTouchDispatcher`, all of which call shadow-view event emitters. React Native queues those events and runs them when `QtEventBeat` induces a beat. The hit-testing and device evidence are on the [input path](/docs/explanation/input-path) page. `QtTouchDispatcher` is constructed by the playground host only when `RNQNX_ENABLE_INPUT_LIFECYCLE` is on, and that CMake option defaults to OFF.
+
+## Resize and teardown
+
+`resizeSurface` calls `constraintLayout` with the new size. Fabric lays the tree out again and the same mount path runs. Nothing remounts.
+
+`stopSurface` stops the `SurfaceHandler`. That calls `UIManager::stopSurface`, which requires `global.RN$stopSurface`. A real bundle defines it, and `startEmptySurface` installs a no-op for surfaces with no app. Stopping produces an empty-tree commit, so `Delete` mutations arrive while the host is being destroyed. The touch dispatcher must outlive that commit for this reason.
+
+## What is verified
+
+| Claim | Evidence | Scope |
+| --- | --- | --- |
+| A React bundle renders to Qt items through this path | `docs/handoff/HISTORY_THROUGH_2026_11_07.md` (JSX to geometry on the development host), `tests/cpp/QtReactHostHostTest.cpp` | Host |
+| Hello World renders on the device | `docs/evidence/pi400-hello-world-2026-11-07.txt` | Pi 400, QNX 8.0.5. No frame rate, startup or memory figure was measured |
+| Mutation application and failure reporting | `tests/cpp/ShadowViewMutationAdapterHostTest.cpp`, `tests/cpp/QtQuickMountingLayerHostTest.cpp` | Host |
+| Mount time and frame time on the device | None | Not measured |
+
+See [Architecture](/docs/explanation/architecture) for the layers and [Layout](/docs/explanation/layout) for how frames reach items.
