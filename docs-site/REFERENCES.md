@@ -35,3 +35,14 @@ Mobbin was used for layout references, searched on 2026-11-19. No image was copi
 | [Base44, API documentation](https://mobbin.com/screens/67828c1b-90e1-4e8d-89a1-9e6f6cec99b4) | Code block with a copy button, then a schema table.                           |
 
 Mobbin previews are low resolution and cover products unrelated to QNX. They informed layout only. Visual design choices (neutral palette, system fonts, no gradients, reduced motion support) come from the design review checklist, not from copying these screens.
+
+## Changelog and component pages (docs parity pass, 2026-11-19)
+
+Searched Mobbin for a changelog and for a component reference page. The component search returned no documentation screens (Productboard, Braintrust, Subframe and Stripe dashboard screens), so no layout was taken from it. The changelog search returned one usable pattern.
+
+| Reference                                                                                          | Pattern borrowed                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [incident.io, "What's new" panel](https://mobbin.com/screens/92fe8695-3d16-4e2b-8b9a-23cf01fc5a7d) | A date and a one-line title per entry, newest first. The changelog uses a table per month with the same two fields plus the PR number and commit. |
+| [Stripe, API versions list](https://mobbin.com/screens/0d1defeb-2907-4c9e-be0d-664f5fef0f89)       | A small "Latest" or "Default" badge beside a version. Not used: there are no versions to badge.                                                   |
+
+Weak matches, not used: [Productboard releases](https://mobbin.com/screens/5d055c4b-a5cf-4113-9246-bb879a4004a6), [Upwork weekly summary](https://mobbin.com/screens/270263a9-c419-4eeb-9e93-848e7f0bfbe9), [Plane release changelog tab](https://mobbin.com/screens/c3220fd6-b32d-4ae9-8764-64617ec006c2).

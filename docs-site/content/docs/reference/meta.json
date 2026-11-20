@@ -3,12 +3,17 @@
   "pages": [
     "cli",
     "config",
+    "requirements",
+    "platform-detection",
     "component-matrix",
+    "components",
     "module-matrix",
     "qt-tiers",
     "known-gaps",
     "status",
     "release-gates",
+    "ci-checks",
+    "changelog",
     "verification-log"
   ]
 }

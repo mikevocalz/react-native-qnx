@@ -14,8 +14,11 @@
     "performance",
     "releases",
     "comparison",
+    "versioning-and-support",
+    "licensing-and-packaging",
     "adr-index",
     "adr",
-    "readers"
+    "readers",
+    "docs-parity"
   ]
 }
