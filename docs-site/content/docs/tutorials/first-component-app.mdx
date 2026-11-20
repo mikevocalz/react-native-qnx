@@ -1,0 +1,204 @@
+---
+title: Build your first component app
+description: Build a small notes screen from View, Text, Pressable and FlatList, bundle it, and render it on your computer with the host renderer.
+---
+
+By the end you will have an app called `notes` with a title, a counter and a tappable list built from `View`, `Text`, `Pressable` and `FlatList`. You will bundle it and render it. Every line of code on this page was bundled with Metro 0.87.1 and rendered by the host renderer on macOS on 2026-11-19.
+
+## Prerequisites
+
+- The [quick start](/docs/tutorials/quick-start), steps 1 to 6. You need an installed checkout and a built `build/playground/bin/rnqnx_playground_host`.
+- Node 26.13.0, pnpm 12.18.0, Qt 6.12.0, CMake 4.4.5, Ninja 1.13.2 as in the quick start.
+
+## Know what you are using
+
+The status matrix in [`docs/component-support.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.json) is the source for these levels. Host means the host renderer tests. Pi 400 means scoped proof on the one board.
+
+| Component | Host | Pi 400 | Note from the matrix |
+| --- | --- | --- | --- |
+| `View` | partial | scoped | Yoga layout, background, corner radius and opacity. Border, clipping and transform have limits. |
+| `Text` | partial | scoped | Styled, wrapped text and `numberOfLines` ellipsis. Inline attachments have zero size. |
+| `Pressable` | supported | scoped | Host pointer press delivers `onPress`. Pi 400 proof used synthetic Qt input, not a physical mouse or keyboard. |
+| `FlatList` | supported | unverified | Scroll-following virtualization and off-window cell release are host-tested. |
+
+`unverified` on the Pi 400 column means there is no device receipt for that component. It does not mean the component fails there.
+
+## 1. Create the app
+
+```bash
+pnpm qnx init notes
+pnpm install --no-frozen-lockfile
+```
+
+Expected: `Created apps/notes.`, then `Scope: all 16 workspace projects` and `Done in <time> using pnpm v12.18.0`. If you already made `dashboard` in the quick start, the scope reads 17.
+
+The template's `index.js` imports React Native through its internal `Libraries/...` paths. The public entry lets you write `import { View } from 'react-native'` instead. It is opt-in and partial. Its initial exports are `AppRegistry`, `View`, `Text`, `Image`, `ScrollView`, `FlatList`, `SectionList`, `TextInput`, `Pressable`, `ActivityIndicator`, `Switch`, `Modal`, `StyleSheet`, `Platform` and `Animated`, plus `Appearance` and `useColorScheme`, which later pages use.
+
+## 2. Turn on the public entry
+
+Replace `apps/notes/metro.config.js` with:
+
+```js
+const path = require('node:path');
+const { createRequire } = require('node:module');
+
+const withPublicEntry = require('@rn-qnx/metro-config-qnx/public-entry');
+const { getQnxMetroConfig } = require('@rn-qnx/metro-config-qnx');
+
+const workspaceRoot = path.resolve(__dirname, '..', '..');
+// Babel helpers must resolve to the copy that React Native already owns.
+const rnRequire = createRequire(require.resolve('react-native/package.json'));
+const babelRuntimeRoot = path.dirname(rnRequire.resolve('@babel/runtime/package.json'));
+
+module.exports = withPublicEntry(
+  getQnxMetroConfig(__dirname, {
+    watchFolders: [workspaceRoot],
+    resolver: {
+      extraNodeModules: { '@babel/runtime': babelRuntimeRoot },
+      nodeModulesPaths: [
+        path.join(__dirname, 'node_modules'),
+        path.join(workspaceRoot, 'node_modules'),
+      ],
+      disableHierarchicalLookup: false,
+    },
+  }),
+  'qnx'
+);
+```
+
+The `extraNodeModules` line matters. The generated app uses ES module syntax, and Babel then emits helper imports from `@babel/runtime`. The copy React Native installed is the one Metro must find. `apps/component-gallery/metro.config.js` does the same.
+
+## 3. Write the screen
+
+Replace `apps/notes/index.js`:
+
+```jsx
+import * as React from 'react';
+import { AppRegistry, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+
+const NOTES = [
+  { id: '1', title: 'Order a spare SD card' },
+  { id: '2', title: 'Label the USB Ethernet cable' },
+  { id: '3', title: 'Check the display resolution' },
+];
+
+function NoteRow({ note, done, onToggle }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => onToggle(note.id)}
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+    >
+      <View style={[styles.box, done && styles.boxDone]} />
+      <Text style={[styles.rowText, done && styles.rowTextDone]}>{note.title}</Text>
+    </Pressable>
+  );
+}
+
+function Notes() {
+  const [doneIds, setDoneIds] = React.useState(() => new Set(['2']));
+  const toggle = React.useCallback((id) => {
+    setDoneIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  return (
+    <View style={styles.screen}>
+      <Text style={styles.title}>Notes</Text>
+      <Text style={styles.subtitle}>
+        {doneIds.size} of {NOTES.length} done
+      </Text>
+      <FlatList
+        data={NOTES}
+        keyExtractor={(note) => note.id}
+        extraData={doneIds}
+        renderItem={({ item }) => (
+          <NoteRow note={item} done={doneIds.has(item.id)} onToggle={toggle} />
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, padding: 24, backgroundColor: '#102033' },
+  title: { color: '#ffffff', fontSize: 32, fontWeight: '600' },
+  subtitle: { color: '#9dafc2', fontSize: 16, marginTop: 4, marginBottom: 16 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+    borderRadius: 8,
+    backgroundColor: '#142538',
+  },
+  rowPressed: { backgroundColor: '#1b3550' },
+  box: { width: 20, height: 20, borderRadius: 4, marginRight: 12, backgroundColor: '#2c4a68' },
+  boxDone: { backgroundColor: '#79e8dc' },
+  rowText: { color: '#e9f0f7', fontSize: 18 },
+  rowTextDone: { color: '#9dafc2', textDecorationLine: 'line-through' },
+  separator: { height: 8 },
+});
+
+AppRegistry.registerComponent('RNQnxPlayground', () => Notes);
+```
+
+Three things to keep:
+
+- The registered name stays `RNQnxPlayground`. The native runner starts that name.
+- `extraData={doneIds}` tells `FlatList` to re-render rows when the set changes. `FlatList` is a pure component and skips rows whose `data` is unchanged.
+- `Pressable` passes `{ pressed }` to a style function. The pressed colour is applied while a pointer is down.
+
+## 4. Bundle
+
+```bash
+pnpm qnx bundle-qnx --app notes --out build/notes.bundle.js
+ls -l build/notes.bundle.js
+```
+
+Expected: `Done writing bundle output` and a file of 724,054 bytes. Your size can differ if Metro or Babel moves.
+
+## 5. Render
+
+```bash
+./build/playground/bin/rnqnx_playground_host \
+  --bundle build/notes.bundle.js \
+  -platform offscreen --screenshot build/notes.png
+```
+
+Expected: `RNQNX_PLAYGROUND_SCREENSHOT build/notes.png 640x480`, exit 0.
+
+### What you should see
+
+![The notes app on a dark blue background: the title Notes, the line 1 of 3 done, and three rounded rows. The middle row has a teal square and dimmed text.](/evidence/host-notes.png)
+
+The title and counter sit at the top. The second row, "Label the USB Ethernet cable", has the teal "done" square and the dimmed colour. The strike-through from `textDecorationLine: 'line-through'` is not visible in this render. The matrix does not list `textDecorationLine` as supported or unsupported, so treat it as unconfirmed and keep the colour change as your done signal.
+
+This screenshot was taken at the host's default 640x480. The host render has no touch input in the headless mode. To confirm the press handler, run the same bundle in a live window without `-platform offscreen --screenshot` and click a row. That click was not run for this page. Pressable's `onPress` on the host rests on the matrix entry and its tests.
+
+## Common errors
+
+| What you see | Cause and fix |
+| --- | --- |
+| `bundle-qnx exited with code 1` and Metro stops at `1%` | This is what a first attempt without the `extraNodeModules` line did here: Metro could not finish the first file. Redo step 2 and read the Metro error above the summary. |
+| The bundle builds but the window is blank | The component name is not `RNQnxPlayground`. |
+| `Bundle output must be inside this checkout's build/ directory.` | Write to `build/<name>.bundle.js`. |
+| A row does not update when you press it | `extraData` is missing, so `FlatList` skipped the re-render. |
+
+## Next steps
+
+<Cards>
+  <Card title="Styling and theming" href="/docs/tutorials/styling-and-theming">
+    Move the colours into a theme with a dark and a light set.
+  </Card>
+  <Card title="Navigation with expo-router" href="/docs/tutorials/navigation-expo-router">
+    Put this screen in a drawer and tabs.
+  </Card>
+  <Card title="Component matrix" href="/docs/reference/component-matrix">
+    Every component and its support level.
+  </Card>
+</Cards>

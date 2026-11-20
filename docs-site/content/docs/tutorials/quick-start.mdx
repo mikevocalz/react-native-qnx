@@ -1,36 +1,47 @@
 ---
 title: Quick start
-description: Create a React Native QNX app and produce a QNX JavaScript bundle on macOS or Linux, using commands that a verifier ran from a fresh clone.
+description: Create a React Native QNX app on macOS or Linux, bundle it with Metro, and render it in a Qt Quick window on your own computer, using commands that were run from a fresh clone.
 ---
 
-By the end you will have a new app in `apps/dashboard` and a production Metro bundle at `build/dashboard.bundle.js`. This page covers the host side only. Running the bundle on a device needs a QNX SDP and a board; see [first device run](/docs/tutorials/first-device-run).
+By the end you will have a new app in `apps/dashboard`, a production Metro bundle at `build/dashboard.bundle.js`, and a PNG of that app rendered by the host renderer. Nothing here needs a QNX SDP or a board. It proves that your JavaScript bundles and renders through Hermes, Fabric, Yoga and Qt Quick on your machine. It proves nothing about QNX.
 
-Every command below was run from a fresh clone on macOS arm64 with Node 26.13.0 and pnpm 12.18.0. The verifier ran it at commit `be7560b`, and a cold reader repeated it at `73e5972` (current `main` when written) with the same results. The results are in the [verification log](/docs/reference/verification-log).
+The commands were run from a fresh clone on macOS arm64. The bundle and install commands were run twice: once by a verifier at commit `be7560b` and again by a cold reader at `73e5972`. The host render was run for this page on 2026-11-19 at `8d7deaa`. The [verification log](/docs/reference/verification-log) has the raw results.
 
-Allow about 1 GB of disk (83 MB for the clone, about 730 MB after install). A first install downloads about 520 packages, so it takes longer on a slow network than the few seconds shown below.
+<Callout type="warn">
+  Budget disk and time for step 6. The first CMake configure clones Hermes (about 140 MB) and the
+  build compiles 854 targets. The build tree was about 4 GB and the configure took 50 seconds and the build
+  about eight minutes of wall time on an Apple silicon laptop, including the Hermes clone. Steps 1 to 5 need about 1 GB.
+</Callout>
 
-## Before you start
+## Prerequisites
 
-You need:
+| Tool | Version used | Notes |
+| --- | --- | --- |
+| Node | 26.13.0 | 26 or newer. `package.json` requires `>=26.0.0`. |
+| pnpm | 12.18.0 | Exactly this version. The repository pins it in `packageManager`. |
+| Git | any recent | |
+| CMake | 4.4.5 | `pnpm qnx doctor` requires 3.31.9 or newer. |
+| Ninja | 1.13.2 | `pnpm qnx doctor` requires 1.11 or newer. |
+| Qt | 6.12.0 | 6.11.1 or newer. Needs Core, Gui, Qml and Quick. Step 6 only. |
 
-- Node 26 or newer.
-- pnpm 12.18.0 exactly. The repository's `packageManager` field pins it.
-- Git.
+Check what you have:
 
-Check pnpm first:
+```bash
+node --version
+cmake --version | head -1
+ninja --version
+qmake --version
+```
+
+Expected on the verified machine: `v26.13.0`, `cmake version 4.4.5`, `1.13.2` and `Using Qt version 6.12.0 in /opt/homebrew/lib`. Your paths differ. [Set up the toolchain](/docs/how-to/set-up-toolchain) covers installing each one.
+
+Check pnpm separately:
 
 ```bash
 pnpm --version
 ```
 
-If it does not print `12.18.0`, an older global pnpm tries to switch itself and can fail with `Failed to switch pnpm to v12.18.0`. Install the pinned version:
-
-```bash
-npm install -g pnpm@12.18.0
-pnpm --version
-```
-
-To leave your global pnpm alone, install into a prefix and put it first on your PATH:
+If it does not print `12.18.0`, an older global pnpm tries to switch itself and can fail with `Failed to switch pnpm to v12.18.0`. Either install the pinned version globally or put a prefixed copy first on your PATH:
 
 ```bash
 npm install --prefix ~/pnpm12 pnpm@12.18.0
@@ -38,7 +49,7 @@ export PATH=~/pnpm12/node_modules/.bin:$PATH
 pnpm --version
 ```
 
-npm may warn that pnpm's install scripts were blocked. pnpm still runs. Both routes printed `12.18.0`.
+npm warns that pnpm's install scripts were blocked. Plain `pnpm` commands still run. Programs that start `pnpm` from Node with `spawnSync`, such as `pnpm test:js`, fail with `ENOEXEC` until you run `node ~/pnpm12/node_modules/pnpm/install.js` once. That swaps the shell stub for the native binary.
 
 ## 1. Clone and install
 
@@ -48,7 +59,7 @@ cd react-native-qnx
 pnpm install --frozen-lockfile
 ```
 
-Expected: `Scope: all 15 workspace projects`, then `Done in <time> using pnpm v12.18.0`.
+Expected: `Scope: all 15 workspace projects`, then `Done in <time> using pnpm v12.18.0`. The first install downloads about 520 packages and takes longer on a slow network than the 2 to 3 seconds shown with a warm store.
 
 ## 2. Check the pinned dependencies
 
@@ -64,7 +75,7 @@ Expected: a list of `PIN:` and `SOURCE:` checks, ending with `validate:dependenc
 pnpm qnx --help
 ```
 
-Expected: usage text listing `init`, `bundle-qnx`, `doctor`, `configure-qnx`, `build-qnx`, `deploy-qnx`, `run-qnx`, `log-qnx` and `evidence verify`.
+Expected: usage text that lists `init`, `bundle-qnx`, `doctor`, `configure-qnx`, `build-qnx`, `deploy-qnx`, `run-qnx`, `log-qnx` and `evidence verify`, then the `project` and `runner` subcommands. Every command has its own `--help`. The [CLI reference](/docs/reference/cli) lists them.
 
 ## 4. Create an app
 
@@ -73,9 +84,22 @@ pnpm qnx init dashboard
 pnpm install --no-frozen-lockfile
 ```
 
-Expected: `Created apps/dashboard.` The second install links the new workspace app. Its scope reads 16 workspace projects. It adds about 13 lines to the tracked `pnpm-lock.yaml`. Commit the app and the lockfile together.
+Expected: `Created apps/dashboard.` The second install links the new workspace app, and its scope line reads `Scope: all 16 workspace projects`. It adds about 13 lines to the tracked `pnpm-lock.yaml`. Commit the app and the lockfile together.
 
-Choose a lowercase name made of letters, digits and hyphens. The command refuses an existing destination.
+Choose a lowercase name made of letters, digits and hyphens. The command refuses to overwrite an existing app.
+
+The template is five files:
+
+```text
+apps/dashboard/
+  babel.config.js    presets: ['babel-preset-expo']
+  index.js           registers the component named RNQnxPlayground
+  metro.config.js    getQnxMetroConfig plus the pnpm module paths
+  package.json       react 19.3.0, react-native 0.88.1
+  README.md
+```
+
+Keep the registration name `RNQnxPlayground`. The native runner starts that name.
 
 ## 5. Bundle the app for QNX
 
@@ -84,19 +108,50 @@ pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js
 ls -l build/dashboard.bundle.js
 ```
 
-Expected: Metro v0.87.1 output ending with `Done writing bundle output`, and a file of about 480,000 bytes (`ls -l` shows 482873 here). The last two lines of the output carry the result; the rest is Metro's banner and progress bar.
+Expected: Metro v0.87.1 output that ends with `Done writing bundle output`, and a file of about 480,000 bytes (`ls -l` showed 482873). The last two lines carry the result. The rest is Metro's banner and progress bar. A Watchman recrawl warning can appear above them. It is harmless.
 
-The output must be inside the checkout's `build/` directory. A path elsewhere fails with `Bundle output must be inside this checkout's build/ directory.`
+The output path must be inside the checkout's `build/` directory. A path elsewhere fails with `Bundle output must be inside this checkout's build/ directory.`
 
-## 6. Preview a deploy without doing it
+## 6. Render the bundle on your computer
+
+This builds the host renderer, `rnqnx_playground_host`, and runs it headless.
+
+```bash
+cmake -S . -B build/playground -G Ninja -DCMAKE_BUILD_TYPE=Debug -DRNQNX_BUILD_HERMES=ON
+cmake --build build/playground --target rnqnx_playground_host
+```
+
+Expected from the configure: `-- Qt 6.12.0 found; building Qt Quick host targets (minimum 6.11.1)`, then `-- Configuring done` and `-- Build files have been written to: .../build/playground`. The build counts to `[854/854]` and the last line is `Linking CXX executable bin/rnqnx_playground_host`. The binary is 40 MB.
+
+Now render:
+
+```bash
+./build/playground/bin/rnqnx_playground_host \
+  --bundle build/dashboard.bundle.js \
+  -platform offscreen --screenshot build/dashboard.png
+```
+
+Expected: the line `RNQNX_PLAYGROUND_SCREENSHOT build/dashboard.png 640x480` and exit code 0. A Qt font warning about `Sans Serif` and a few `Scheduler::~Scheduler()` lines from Google logging appear around it. They are normal at shutdown.
+
+Drop `-platform offscreen --screenshot build/dashboard.png` to open a live window instead.
+
+### What you should see
+
+Open `build/dashboard.png`. It is 640 by 480 with a dark blue background and one white line of text.
+
+![The host renderer's output for the new dashboard app: white text reading dashboard on React Native QNX, centred on a dark blue field.](/evidence/host-dashboard.png)
+
+If you see this, Metro, Hermes, React, Fabric, Yoga and Qt Quick all worked on your machine.
+
+## 7. Preview a deploy without doing it
 
 ```bash
 pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run
 ```
 
-Expected: JSON naming `scripts/deploy-qnx.sh` (as an absolute path under your checkout) and its arguments. Nothing is deployed. `--dry-run` works on every executable command.
+Expected: JSON that names `scripts/deploy-qnx.sh` as an absolute path under your checkout, with the arguments `aarch64`, `rnqnx_playground` and `Release`. Nothing is deployed. The top-level executable commands accept `--dry-run`. The `project` subcommands do not all accept it: `project dev` and `project run` reject it with `Unknown option '--dry-run'`.
 
-## 7. Check your checkout
+## 8. Check your checkout
 
 ```bash
 pnpm validate:docs
@@ -105,22 +160,35 @@ pnpm typecheck
 
 Expected: `Documentation validated: 24 components, 11 release gates.` and no type errors.
 
+## Common errors
+
+| What you see | Cause and fix |
+| --- | --- |
+| `Failed to switch pnpm to v12.18.0` | An older global pnpm. Use the prefixed install above. |
+| `Bundle output must be inside this checkout's build/ directory.` | Pass `--out build/<name>.js`. |
+| `bundle-qnx exited with code 1. Read the Metro error above` | The CLI's own message. A missing module usually means `pnpm install --no-frozen-lockfile` was not run after `init`. Re-run it and read the Metro error above the summary. |
+| The `rnqnx_playground_host` target is missing | CMake did not find Qt 6.11.1 or newer, so it defines no host target. Point `CMAKE_PREFIX_PATH` at your Qt. Add `-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON` to fail at configure time instead of skipping the target. |
+| The build disk fills up | The tree is about 4 GB. Delete `build/playground` when you are done. It is not needed to bundle. |
+| `pnpm qnx doctor` exits 1 | Expected without a QNX SDP. The error reads `The QNX SDP environment is not loaded`. See [first device run](/docs/tutorials/first-device-run). |
+| `pnpm test:js` stops at `braces-security.test.mjs` with `ERR_INVALID_ARG_TYPE` | Node cannot start your prefixed pnpm. Run `install.js` as described above. After that the suite reaches `qnx-consumer-native-config.test.mjs` and fails there on macOS, because that test configures the QNX consumer without a QNX toolchain. It is not a quick-start step. |
+
 ## What you have and what you do not
 
-You have JavaScript that the QNX runner can load. You do not have a native binary, and nothing ran on a device. A bundle does not establish device compatibility.
+You have JavaScript that the QNX runner can load, and a picture of it rendered on your host. You do not have a native QNX binary, and nothing ran on a device. A host render does not establish device compatibility. The [status page](/docs/reference/status) lists what ran on the board.
 
-To render the bundle in a window on your Mac or Linux machine, build the host playground. That needs Qt 6.11.1 or newer, CMake and Ninja, and it builds Hermes from source. The steps are in [the CLI guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/qnx-cli.md#render-your-bundle-on-the-host). The verifier did not run them, so they are not in the verification log.
-
-## Next
+## Next steps
 
 <Cards>
-  <Card title="First device run" href="/docs/tutorials/first-device-run">
-    What a Pi 400 run needs.
+  <Card title="Build your first component app" href="/docs/tutorials/first-component-app">
+    Replace the hello screen with a list you can tap.
   </Card>
-  <Card title="Set up Expo" href="/docs/how-to/expo-setup">
-    Use a shared Expo app instead of a workspace app.
+  <Card title="First device run" href="/docs/tutorials/first-device-run">
+    What a Raspberry Pi 400 run needs, and the steps in order.
+  </Card>
+  <Card title="Set up the toolchain" href="/docs/how-to/set-up-toolchain">
+    Install and check each tool, including the QNX side.
   </Card>
   <Card title="Troubleshooting" href="/docs/troubleshooting">
-    Fixes for the errors above.
+    Fixes for more errors.
   </Card>
 </Cards>
