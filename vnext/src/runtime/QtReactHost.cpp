@@ -117,8 +117,7 @@ void QtEventBeat::request() const {
   // instead. React Native's OwnerBox does not help: it is checked inside
   // induce(), which is already too late for a dangling `this`
   // (EventBeat.cpp:62-66).
-  QMetaObject::invokeMethod(
-      context_.get(), [this]() { induce(); }, Qt::QueuedConnection);
+  context_->postCall([this]() { induce(); });
 }
 
 QtSchedulerDelegate::QtSchedulerDelegate(
@@ -850,7 +849,7 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter, Options opt
     impl_ = std::make_unique<Impl>(adapter, guiThread_, nullptr);
     return;
   }
-  guiContext_ = std::make_unique<QObject>();
+  guiContext_ = std::make_unique<QueuedCallTarget>();
   const auto screen = QnxDeviceInfo::readPrimaryScreen();
   jsThread_ = std::make_unique<QtJsThread>();
   jsThread_->call([&] {
@@ -872,7 +871,7 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
     impl_ = std::make_unique<Impl>(adapter, guiThread_, nullptr, std::move(trace));
     return;
   }
-  guiContext_ = std::make_unique<QObject>();
+  guiContext_ = std::make_unique<QueuedCallTarget>();
   const auto screen = QnxDeviceInfo::readPrimaryScreen();
   jsThread_ = std::make_unique<QtJsThread>();
   jsThread_->call([&] {
@@ -901,9 +900,9 @@ QtReactHost::~QtReactHost() {
 }
 
 void QtReactHost::setGuiOwnerPoster() {
-  QObject* gui = guiContext_.get();
+  QueuedCallTarget* gui = guiContext_.get();
   impl_->delegate.setOwnerPoster([gui](std::function<void()> work) {
-    QMetaObject::invokeMethod(gui, std::move(work), Qt::QueuedConnection);
+    gui->postCall(std::move(work));
   });
 }
 
@@ -953,7 +952,7 @@ void QtReactHost::flushMounts() {
   // Only the GUI thread may apply a mount. A call from another thread leaves
   // them to the GUI event loop.
   if (guiContext_ && std::this_thread::get_id() == guiThread_) {
-    QCoreApplication::sendPostedEvents(guiContext_.get(), QEvent::MetaCall);
+    QCoreApplication::sendPostedEvents(guiContext_.get(), 0);
   }
 }
 

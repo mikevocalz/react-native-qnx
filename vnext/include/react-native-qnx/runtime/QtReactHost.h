@@ -47,7 +47,7 @@ class QtEventBeat final : public facebook::react::EventBeat {
  private:
   /// The receiver for queued beats. Owning it here is what bounds a posted
   /// `induce()` to this beat's lifetime; see request().
-  std::unique_ptr<QObject> context_{std::make_unique<QObject>()};
+  std::unique_ptr<QueuedCallTarget> context_{std::make_unique<QueuedCallTarget>()};
 };
 
 /// Applies mount transactions to Qt Quick items.
@@ -419,7 +419,7 @@ class QtReactHost {
   // outlive the thread and the runtime, because mounts queued by the runtime
   // are dropped with it.
   std::thread::id guiThread_;
-  std::unique_ptr<QObject> guiContext_;
+  std::unique_ptr<QueuedCallTarget> guiContext_;
   std::unique_ptr<QtJsThread> jsThread_;
   std::unique_ptr<Impl> impl_;
   mutable std::vector<JavaScriptError> errorSnapshot_;

@@ -30,11 +30,11 @@ changes: one thread, same code path, same tests.
 
 ### Thread map (flag on)
 
-| Thread | Owns | Never does |
-| --- | --- | --- |
-| GUI (constructing) thread | `QQuickWindow`, every `QQuickItem`, `QtQuickMountingLayer`, `ShadowViewMutationAdapter`, `QtTouchDispatcher`, `QtSchedulerDelegate` mount calls, the title bar chrome, `QScreen` reads, the UI-worklet runtime when Worklets is enabled (ADR-0020) | Touch Hermes, JSI values or the `RuntimeScheduler` |
-| JS thread `rnqnx-js` (`QtJsThread`, a `QThread` with an event loop and an 8 MiB stack) | Hermes, `RuntimeScheduler`, `Scheduler` and `UIManager`, JS timers (`QTimer`), the animation `QTimer`, `QtRuntimeTaskQueue` and its wakeup `QObject`, `QtEventBeat`, TurboModule instances, `QtReactHost::Impl` | Touch a Qt Quick item |
-| Qt thread pool, module-owned threads | Image I/O and decode, Nitro engines | Touch JSI values; they complete through `QtRuntimeTaskQueue::post` |
+| Thread                                                                                 | Owns                                                                                                                                                                                                                                               | Never does                                                         |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| GUI (constructing) thread                                                              | `QQuickWindow`, every `QQuickItem`, `QtQuickMountingLayer`, `ShadowViewMutationAdapter`, `QtTouchDispatcher`, `QtSchedulerDelegate` mount calls, the title bar chrome, `QScreen` reads, the UI-worklet runtime when Worklets is enabled (ADR-0020) | Touch Hermes, JSI values or the `RuntimeScheduler`                 |
+| JS thread `rnqnx-js` (`QtJsThread`, a `QThread` with an event loop and an 8 MiB stack) | Hermes, `RuntimeScheduler`, `Scheduler` and `UIManager`, JS timers (`QTimer`), the animation `QTimer`, `QtRuntimeTaskQueue` and its wakeup `QObject`, `QtEventBeat`, TurboModule instances, `QtReactHost::Impl`                                    | Touch a Qt Quick item                                              |
+| Qt thread pool, module-owned threads                                                   | Image I/O and decode, Nitro engines                                                                                                                                                                                                                | Touch JSI values; they complete through `QtRuntimeTaskQueue::post` |
 
 `QtReactHost::Impl` is constructed, used and destroyed on the JS thread. The
 constructor of `QtRuntimeTaskQueue` records that thread as its owner, so
@@ -85,7 +85,7 @@ same way.
 rendering update of a scheduler task. `QtSchedulerDelegate` is constructed with
 the GUI thread id as its owner. `onOwnerOrPost` finds the caller is not the
 owner and posts the same call to the GUI thread through a `QObject` the host
-creates there, with `Qt::QueuedConnection`. The GUI thread pulls the
+creates there (`QueuedCallTarget::postCall`). The GUI thread pulls the
 transaction from the `MountingCoordinator`, applies it to the adapter and
 reports the mount. This is the path the UI-worklet thread already uses
 (`setOwnerPoster`); the host now installs it by default in this mode.
@@ -139,14 +139,27 @@ is free. `QtJsThread::post` and `call` check `isRunning()` and then enqueue; a
 
 ## Results
 
-Filled in after the runs below. Every row names its target.
+Every row names its target. All host runs: macOS arm64, Apple clang, Qt 6.12.0
+(Homebrew), Hermes built from the pinned source in Debug, offscreen platform,
+software Qt Quick, window chrome ON.
 
-| Check | Target | Result |
-| --- | --- | --- |
-| `qt_react_host_js_thread_host_test`, 6 cases, ASan, title bar ON | host: macOS 26 arm64, Qt 6.12.0, Hermes Debug, offscreen | see PR |
-| JS blocked 5 s: pan tracks, minimize and close act, resize calls return, heartbeat runs | host, same build | see PR |
-| ThreadSanitizer | host | see PR |
-| Same checks on QNX VM, Pi 400 and the release board | not run | The Pi and the T9 drive were not available for a device run |
+| Check                                                                                          | Target   | Result                                                                                       |
+| ---------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `qt_react_host_js_thread_host_test`, 6 cases, ASan                                             | host     | 6/6 pass. In the blocked case: block 5001 ms, 234 heartbeats of 10 ms by 2500 ms, 484 in all |
+| Same case with the flag off (mutation: `Fixture(false)`)                                       | host     | fails at `!blockDone`, as it must                                                            |
+| `qt_react_host_host_test`, flag off                                                            | host     | 62/62 pass                                                                                   |
+| Same JS-thread test, whole graph built with `-fsanitize=thread`                                | host     | exit 0, 0 ThreadSanitizer reports                                                            |
+| Negative control: the acquire in `QueuedCallTarget::event` removed                             | host     | 42 reports, so the run can see the hand-off                                                  |
+| Linux, Qt 6.11.1 (CI): both renderer legs run the test; the ThreadSanitizer workflow is manual | Linux CI | see PR #201                                                                                  |
+| QNX VM, Pi 400, release board                                                                  | not run  | The Pi and the T9 drive were not available for a device run                                  |
+
+Scope of the ThreadSanitizer result: Qt, the C++ runtime and system libraries
+are not instrumented. Qt's own queue cannot be seen, so every hand-off the host
+makes goes through `QueuedCallTarget`, which carries its work in a `QEvent` the
+host allocates and marks release and acquire under ThreadSanitizer. Before that
+change the same run reported 93 races, all of them the callable crossing Qt's
+queue. Anything that reaches the JS thread by another route would be reported
+or, if it only touches uninstrumented code, missed.
 
 ## Consequences
 
@@ -177,7 +190,9 @@ Filled in after the runs below. Every row names its target.
 
 - `vnext/include/react-native-qnx/runtime/QtJsThread.h`, `vnext/src/runtime/QtJsThread.cpp`
 - `vnext/include/react-native-qnx/runtime/QtReactHost.h`, `vnext/src/runtime/QtReactHost.cpp`
+- `vnext/include/react-native-qnx/runtime/QueuedCallTarget.h`, `vnext/src/runtime/QueuedCallTarget.cpp`
 - `vnext/src/runtime/QtRuntimeTaskQueue.cpp`
+- `.github/workflows/js-thread-tsan.yml` (manual dispatch)
 - `tests/cpp/QtReactHostJsThreadHostTest.cpp`
 - `docs/adr/0016-window-chrome-on-qnx-screen.md`, `docs/adr/0020-worklets-reanimated-gesture-handler-bootstrap.md`
 - `docs-site/content/docs/explanation/threading.mdx`

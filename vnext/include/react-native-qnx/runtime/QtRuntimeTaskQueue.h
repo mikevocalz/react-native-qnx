@@ -2,6 +2,8 @@
 
 #include "react-native-qnx/runtime/RuntimeTrace.h"
 
+#include "react-native-qnx/runtime/QueuedCallTarget.h"
+
 #include <QObject>
 
 #include <list>
@@ -49,7 +51,7 @@ class QtRuntimeTaskQueue final
   unsigned entryDepth_{0};  // Owner-thread only.
   // Distinct from RN's uninstrumented deque<Task> template in host ASan builds.
   std::list<Task> pending_;
-  std::unique_ptr<QObject> context_{std::make_unique<QObject>()};
+  std::unique_ptr<QueuedCallTarget> context_{std::make_unique<QueuedCallTarget>()};
 #if RNQNX_ENABLE_FRAME_TRACE
   std::shared_ptr<RuntimeTrace> trace_;
 #endif

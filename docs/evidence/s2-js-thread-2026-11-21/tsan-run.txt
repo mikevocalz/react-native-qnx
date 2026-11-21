@@ -1,0 +1,8 @@
+[PASS] jsRunsOnItsOwnThread
+[PASS] mountsAreAppliedOnTheGuiThread
+[PASS] timersAndCompletionsRunOnTheJsThread
+[PASS] resizeAndWindowSizeDoNotWaitForJavaScript
+blocked=5005ms beats@2501ms=233 total=484
+[PASS] blockedJavaScriptLeavesTheGuiThreadResponsive
+[PASS] teardownWithQueuedWorkIsClean
+All 6 JS-thread host tests passed.

@@ -2,6 +2,8 @@
 
 #include <QObject>
 
+#include "react-native-qnx/runtime/QueuedCallTarget.h"
+
 #include <functional>
 #include <memory>
 #include <thread>
