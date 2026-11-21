@@ -2,7 +2,7 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-# Exact Expo 58.0.24 graph published inside the release-age window (2026-11-11).
+# Exact Expo 58.0.26 graph published inside the release-age window (2026-11-11).
 # Remove each entry once its version passes minimumReleaseAge.
 minimumReleaseAgeExclude:
   - '@expo/cli@58.1.20'
@@ -19,7 +19,7 @@ minimumReleaseAgeExclude:
   - '@expo/prebuild-config@58.0.20'
   - '@expo/require-utils@58.0.6'
   - '@expo/router-server@58.0.22'
-  - babel-preset-expo@58.0.25
+  - babel-preset-expo@58.0.26
   - expo-asset@58.0.21
   - expo-constants@58.0.16
   - expo-font@58.0.12
@@ -29,7 +29,7 @@ minimumReleaseAgeExclude:
   - expo-modules-core@58.1.0
   - expo-modules-jsi@58.0.23
   - expo-server@58.1.0
-  - expo@58.0.24
+  - expo@58.0.26
 
 overrides:
   '@expo/plist>@xmldom/xmldom': 0.8.15

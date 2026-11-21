@@ -50,7 +50,7 @@ try {
   const qnxManifest = JSON.parse(await readFile(path.join(qnx, 'package.json'), 'utf8'));
   assert.equal(qnxManifest.private, true);
   assert.equal((await lstat(path.join(qnx, 'build', 'qnx'))).isDirectory(), true);
-  assert.equal(qnxManifest.dependencies.expo, '58.0.24');
+  assert.equal(qnxManifest.dependencies.expo, '58.0.26');
   assert.ok(qnxManifest.dependencies['@rn-qnx/react-native-qnx'].startsWith('file:vendor/'));
   assert.equal(qnxManifest.dependencies['@rn-qnx/react-native-marathon'], undefined);
   assert.equal(

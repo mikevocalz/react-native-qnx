@@ -234,7 +234,7 @@ try {
   await mkdir(fresh);
   await writeFile(
     path.join(fresh, 'package.json'),
-    '{\n\t"name": "fresh",\n\t"main": "index.js",\n\t"dependencies": {\n\t\t"expo": "58.0.24"\n\t}\n}\n'
+    '{\n\t"name": "fresh",\n\t"main": "index.js",\n\t"dependencies": {\n\t\t"expo": "58.0.26"\n\t}\n}\n'
   );
   await writeFile(
     path.join(fresh, 'app.json'),
@@ -287,7 +287,7 @@ try {
   await mkdir(dynamicListed);
   await writeFile(
     path.join(dynamicListed, 'package.json'),
-    JSON.stringify({ name: 'dyn2', dependencies: { expo: '58.0.24' } })
+    JSON.stringify({ name: 'dyn2', dependencies: { expo: '58.0.26' } })
   );
   await writeFile(
     path.join(dynamicListed, 'app.config.js'),

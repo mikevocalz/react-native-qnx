@@ -41,11 +41,11 @@ The project targets one line. The direct pins in the [compatibility matrix](http
 | --------------- | ----------------------- |
 | React Native    | `0.88.1`                |
 | React           | `19.3.0`                |
-| Expo            | `58.0.24` (Expo SDK 58) |
+| Expo            | `58.0.26` (Expo SDK 58) |
 | Metro           | `0.87.1`                |
 | Hermes compiler | `260318099.0.5`         |
 | Node            | `>=26.0.0`              |
-| pnpm            | `pnpm@12.18.0`          |
+| pnpm            | `pnpm@12.21.0`          |
 
 The matrix holds two upgrades on purpose. React stays at `19.3.0` because React Native 0.88.1 ships a renderer built from React `19.3.0`. Metro stays at `0.87.1` because React Native 0.88.1 depends on `^0.87.1`. The matrix also says these versions do not imply upstream QNX support. [ADR-0008](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0008-version-pinning.md) covers version pinning, and [CONTRIBUTING.md](https://github.com/mikevocalz/react-native-qnx/blob/main/CONTRIBUTING.md) requires exact direct pins and a frozen pnpm lockfile.
 
