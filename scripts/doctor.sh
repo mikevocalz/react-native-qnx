@@ -257,9 +257,9 @@ check_cmd node "26.0.0" "install Node.js 26 or newer from https://nodejs.org (or
 # The pin comes from package.json "packageManager", so a pnpm bump needs no edit here.
 # A missing package.json must not abort here: the check below reports it.
 PNPM_PIN="$(sed -n 's/.*"packageManager": *"pnpm@\([^"]*\)".*/\1/p' "${PROJECT_ROOT}/package.json" 2>/dev/null || true)"
-# packageManager may carry an integrity suffix such as 12.18.0+sha512.<hash>.
+# packageManager may carry an integrity suffix such as 12.21.0+sha512.<hash>.
 PNPM_PIN="${PNPM_PIN%%+*}"
-PNPM_PIN="${PNPM_PIN:-12.18.0}"
+PNPM_PIN="${PNPM_PIN:-12.21.0}"
 PNPM_FIX="install pnpm ${PNPM_PIN}: npm install -g pnpm@${PNPM_PIN} (Node 26 does not bundle Corepack)"
 if ! command -v pnpm >/dev/null 2>&1; then
   fail "pnpm is not installed or not on PATH." "${PNPM_FIX}"

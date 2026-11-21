@@ -25,14 +25,14 @@ presets, or SSH deploys to a board without root.
 | ----------------------------------------- | ------------------------------------------------------------------------------------- |
 | macOS laptop, often Apple Silicon         | an x86-64 Linux host for QNX builds                                                   |
 | Node from Homebrew or a version manager   | Node 26 specifically                                                                  |
-| a global pnpm (often 9 or 10) or only npm | the pinned pnpm (12.18.0 since the main merge); Node 26 ships no Corepack to fetch it |
+| a global pnpm (often 9 or 10) or only npm | the pinned pnpm (12.21.0 since the main merge); Node 26 ships no Corepack to fetch it |
 | Xcode command line tools, maybe CMake     | Ninja, CMake 3.31.9+, Qt 6.11.1+ host tools                                           |
 | nothing QNX                               | a QNX license, SDP 8.0.5, the board's QSTI package                                    |
 
 ## Where the guides lost them
 
 Ordered by where the walk stopped first. The walk ran when the pin was pnpm
-12.8.1; the repository now pins 12.18.0.
+12.8.1; the repository now pins 12.21.0.
 
 1. **Installing dependencies.** The README said "use pnpm 12.8.1" and went
    straight to `pnpm install`. With Homebrew pnpm 10 in a fresh HOME, pnpm tried

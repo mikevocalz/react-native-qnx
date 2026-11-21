@@ -1,7 +1,7 @@
 {
   "schema": "rnqnx-expo-sdk-support/v1",
   "sdk": 58,
-  "expoVersion": "58.0.24",
+  "expoVersion": "58.0.26",
   "generatedBy": "scripts/expo-sdk58-support.mjs --write",
   "evidenceScope": "Published package contents via jsDelivr. No status is a device run.",
   "counts": {
@@ -72,8 +72,8 @@
     },
     {
       "name": "@expo/ui",
-      "range": "~58.0.28",
-      "resolved": "58.0.28",
+      "range": "~58.0.29",
+      "resolved": "58.0.29",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -693,7 +693,7 @@
     {
       "name": "@sentry/react-native",
       "range": "~8.28.0",
-      "resolved": "8.28.0",
+      "resolved": "8.28.1",
       "status": "unsupported",
       "reason": "Native code for android only; no qnx implementation.",
       "evidence": {
@@ -1829,8 +1829,8 @@
     },
     {
       "name": "expo-app-intents",
-      "range": "~0.5.17",
-      "resolved": "0.5.17",
+      "range": "~0.5.18",
+      "resolved": "0.5.18",
       "status": "unsupported",
       "reason": "Native code for apple only; no qnx implementation.",
       "evidence": {
@@ -2188,8 +2188,8 @@
     },
     {
       "name": "expo-auth-session",
-      "range": "~58.0.18",
-      "resolved": "58.0.18",
+      "range": "~58.0.19",
+      "resolved": "58.0.19",
       "status": "js-only",
       "reason": "No native code published; bundles as JavaScript.",
       "evidence": {
@@ -2376,8 +2376,8 @@
     },
     {
       "name": "expo-calendar",
-      "range": "~58.0.6",
-      "resolved": "58.0.6",
+      "range": "~58.0.8",
+      "resolved": "58.0.8",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -2433,6 +2433,7 @@
           "/android/src/main/java/expo/modules/calendar/next/domain/dto/event/EventExceptionInput.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/dto/event/EventInput.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/dto/event/EventUpdate.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/dto/extendedproperty/ExtendedPropertyInput.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/dto/reminder/ReminderInput.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/attendee/AttendeeEntity.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/attendee/AttendeeRole.kt",
@@ -2442,12 +2443,15 @@
           "/android/src/main/java/expo/modules/calendar/next/domain/model/calendar/AllowedAvailability.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/calendar/AllowedReminder.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/calendar/CalendarAccessLevel.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/model/calendar/CalendarAccount.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/calendar/CalendarEntity.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/event/AccessLevel.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/event/Availability.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/event/EventEntity.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/event/RecurrenceRule.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/event/Status.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/model/extendedproperty/ExtendedPropertyEntity.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/model/extendedproperty/ExtendedPropertyName.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/instance/InstanceEntity.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/reminder/Method.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/model/reminder/ReminderEntity.kt",
@@ -2459,17 +2463,22 @@
           "/android/src/main/java/expo/modules/calendar/next/domain/repositories/CursorExtensions.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/repositories/event/EventCursorExtensions.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/repositories/event/EventRepository.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/repositories/extendedproperty/ExtendedPropertyCursorExtensions.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/repositories/extendedproperty/ExtendedPropertyRepository.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/repositories/instance/InstanceCursorExtensions.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/repositories/instance/InstanceRepository.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/repositories/reminder/ReminderCursorExtensions.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/repositories/reminder/ReminderRepository.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/repositories/SyncAdapterUri.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/wrappers/AttendeeId.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/wrappers/CalendarId.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/wrappers/EventId.kt",
+          "/android/src/main/java/expo/modules/calendar/next/domain/wrappers/ExtendedPropertyId.kt",
           "/android/src/main/java/expo/modules/calendar/next/domain/wrappers/ReminderId.kt",
           "/android/src/main/java/expo/modules/calendar/next/exceptions/CalendarExceptions.kt",
           "/android/src/main/java/expo/modules/calendar/next/exceptions/EventsAttendeeExceptions.kt",
           "/android/src/main/java/expo/modules/calendar/next/exceptions/EventsExceptions.kt",
+          "/android/src/main/java/expo/modules/calendar/next/exceptions/ExtendedPropertiesExceptions.kt",
           "/android/src/main/java/expo/modules/calendar/next/exceptions/GeneralExceptions.kt",
           "/android/src/main/java/expo/modules/calendar/next/exceptions/PermissionExceptions.kt",
           "/android/src/main/java/expo/modules/calendar/next/exceptions/QueryExceptions.kt",
@@ -2486,6 +2495,7 @@
           "/android/src/main/java/expo/modules/calendar/next/mappers/CalendarMapper.kt",
           "/android/src/main/java/expo/modules/calendar/next/mappers/EventMapper.kt",
           "/android/src/main/java/expo/modules/calendar/next/mappers/ExpoCalendarEventMapper.kt",
+          "/android/src/main/java/expo/modules/calendar/next/mappers/ExtendedPropertyMapper.kt",
           "/android/src/main/java/expo/modules/calendar/next/mappers/ReminderMapper.kt",
           "/android/src/main/java/expo/modules/calendar/next/permissions/CalendarPermissionsDelegate.kt",
           "/android/src/main/java/expo/modules/calendar/next/records/AddEventWithFormOptionsRecord.kt",
@@ -2495,6 +2505,7 @@
           "/android/src/main/java/expo/modules/calendar/next/records/CalendarUpdateRecord.kt",
           "/android/src/main/java/expo/modules/calendar/next/records/EventRecord.kt",
           "/android/src/main/java/expo/modules/calendar/next/records/EventUpdateRecord.kt",
+          "/android/src/main/java/expo/modules/calendar/next/records/ExtendedPropertyRecord.kt",
           "/android/src/main/java/expo/modules/calendar/next/utils/CalendarNextUtils.kt",
           "/android/src/main/java/expo/modules/calendar/next/utils/DateTimeUtils.kt",
           "/android/src/main/java/expo/modules/calendar/next/utils/EventNextUtils.kt",
@@ -2698,8 +2709,8 @@
     },
     {
       "name": "expo-contacts",
-      "range": "~58.0.10",
-      "resolved": "58.0.10",
+      "range": "~58.0.11",
+      "resolved": "58.0.11",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -3010,8 +3021,8 @@
     },
     {
       "name": "expo-dev-client",
-      "range": "~58.0.19",
-      "resolved": "58.0.19",
+      "range": "~58.0.21",
+      "resolved": "58.0.21",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -3102,8 +3113,8 @@
     },
     {
       "name": "expo-file-system",
-      "range": "~58.0.13",
-      "resolved": "58.0.13",
+      "range": "~58.0.14",
+      "resolved": "58.0.14",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -3766,8 +3777,8 @@
     },
     {
       "name": "expo-location",
-      "range": "~58.0.21",
-      "resolved": "58.0.21",
+      "range": "~58.0.22",
+      "resolved": "58.0.22",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -3782,6 +3793,9 @@
           "/android/src/main/java/expo/modules/location/LocationParams.kt",
           "/android/src/main/java/expo/modules/location/LocationRequestCallbacks.kt",
           "/android/src/main/java/expo/modules/location/next/Constants.kt",
+          "/android/src/main/java/expo/modules/location/next/geocoding/Geocoding.kt",
+          "/android/src/main/java/expo/modules/location/next/geocoding/GeocodingExceptions.kt",
+          "/android/src/main/java/expo/modules/location/next/geocoding/GeocodingRecords.kt",
           "/android/src/main/java/expo/modules/location/next/locationForegroundService/BackgroundSessionOptions.kt",
           "/android/src/main/java/expo/modules/location/next/locationForegroundService/BackgroundSessionTypes.kt",
           "/android/src/main/java/expo/modules/location/next/locationForegroundService/ForegroundServiceExceptions.kt",
@@ -3813,6 +3827,14 @@
           "/ios/LocationModule.swift",
           "/ios/LocationOptions.swift",
           "/ios/LocationUtils.swift",
+          "/ios/next/Geocoding/Address.swift",
+          "/ios/next/Geocoding/AddressNormalization.swift",
+          "/ios/next/Geocoding/CompatibilityGeocoder.swift",
+          "/ios/next/Geocoding/GeocodeOptions.swift",
+          "/ios/next/Geocoding/GeocoderNext.swift",
+          "/ios/next/Geocoding/MapKitGeocoder.swift",
+          "/ios/next/Geocoding/ReverseGeocodeOptions.swift",
+          "/ios/next/Geocoding/String+toLocale.swift",
           "/ios/next/LocationModuleNext.swift",
           "/ios/next/LocationNextExceptions.swift",
           "/ios/next/LocationUpdatesHandle/LocationUpdatesHandle.swift",
@@ -5216,8 +5238,8 @@
     },
     {
       "name": "expo-router",
-      "range": "~58.0.31",
-      "resolved": "58.0.31",
+      "range": "~58.0.32",
+      "resolved": "58.0.32",
       "status": "partial",
       "reason": "Upstream native code is iOS/Android/web; packages/expo-router-qnx provides Tabs and Drawer. No stack navigator is provided.",
       "evidence": {
@@ -5507,8 +5529,8 @@
     },
     {
       "name": "expo-sqlite",
-      "range": "~58.0.16",
-      "resolved": "58.0.16",
+      "range": "~58.0.18",
+      "resolved": "58.0.18",
       "status": "unsupported",
       "reason": "Native code for apple, android, devtools only; no qnx implementation.",
       "evidence": {
@@ -6188,8 +6210,8 @@
     },
     {
       "name": "expo-web-browser",
-      "range": "~58.0.8",
-      "resolved": "58.0.8",
+      "range": "~58.1.0",
+      "resolved": "58.1.0",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -6219,8 +6241,8 @@
     },
     {
       "name": "expo-widgets",
-      "range": "~58.0.28",
-      "resolved": "58.0.28",
+      "range": "~58.0.29",
+      "resolved": "58.0.29",
       "status": "unsupported",
       "reason": "Native code for apple, android only; no qnx implementation.",
       "evidence": {
@@ -6295,8 +6317,8 @@
     },
     {
       "name": "jest-expo",
-      "range": "~58.0.14",
-      "resolved": "58.0.14",
+      "range": "~58.0.15",
+      "resolved": "58.0.15",
       "status": "host-tooling",
       "reason": "Test preset; runs on the development host.",
       "evidence": {
@@ -6307,7 +6329,7 @@
     {
       "name": "lottie-react-native",
       "range": "~7.5.0",
-      "resolved": "7.5.0",
+      "resolved": "7.5.1",
       "status": "unsupported",
       "reason": "Native code for ios/android only; no qnx implementation.",
       "evidence": {

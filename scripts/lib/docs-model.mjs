@@ -9,6 +9,45 @@ async function json(file) {
   return JSON.parse(await readFile(file, 'utf8'));
 }
 
+/** @param {string} source */
+function withoutCodeFences(source) {
+  return source.replace(/^```[\s\S]*?^```/gm, '');
+}
+
+/**
+ * GitHub heading anchors: lowercase, markup and punctuation dropped, spaces to hyphens.
+ * @param {string} source
+ */
+function markdownAnchors(source) {
+  const anchors = new Set();
+  for (const match of withoutCodeFences(source).matchAll(/^#{1,6}\s+(.+?)\s*#*\s*$/gm)) {
+    anchors.add(
+      match[1]
+        .toLowerCase()
+        .replace(/[`*_]/g, '')
+        .replace(/[^\p{L}\p{N}\- ]/gu, '')
+        .replace(/ /g, '-')
+    );
+  }
+  return anchors;
+}
+
+/**
+ * @param {string} root
+ * @param {string} directory
+ * @returns {Promise<string[]>}
+ */
+async function markdownIn(root, directory) {
+  const { readdir } = await import('node:fs/promises');
+  const found = [];
+  for (const entry of await readdir(path.join(root, directory), { withFileTypes: true })) {
+    const relative = `${directory}/${entry.name}`;
+    if (entry.isDirectory()) found.push(...(await markdownIn(root, relative)));
+    else if (entry.name.endsWith('.md')) found.push(relative);
+  }
+  return found;
+}
+
 /**
  * Resolves `<name>/package.json`. A few packages (@legendapp/list) publish an
  * `exports` map that does not list it, so `require.resolve` throws
@@ -269,27 +308,39 @@ export async function syncDocs(root, write = false, release = false) {
       throw new Error(`${file} is stale. Run pnpm docs:sync and review the generated diff.`);
     }
   }
-  const documents = [...outputs.keys()]
+  const documents = [...new Set([...outputs.keys()])]
     .filter((file) => file.endsWith('.md'))
     .concat([
       'docs/handoff/CURRENT_STATE.md',
-      'docs/getting-started/qnx-cli.md',
       'docs/policy/premium-components.md',
       'docs/adr/index.md',
-      'docs/v1/README.md',
-      'docs/v1/evidence-gallery.md',
-      'docs/v1/app-design-handoff.md',
       'TODO.md',
       'THIRD_PARTY_NOTICES.md',
       'SECURITY.md',
       'CODE_OF_CONDUCT.md',
-    ]);
-  for (const file of documents) {
+    ])
+    .concat(await markdownIn(root, 'docs/getting-started'))
+    .concat(await markdownIn(root, 'docs/v1'));
+  const headingAnchors = new Map();
+  for (const file of new Set(documents)) {
     const source = await readFile(path.join(root, file), 'utf8');
-    for (const match of source.matchAll(/\]\(([^)]+)\)/g)) {
-      const target = match[1].split('#')[0];
-      if (!target || /^[a-z]+:/i.test(target)) continue;
-      await access(path.resolve(root, path.dirname(file), decodeURIComponent(target)));
+    for (const match of withoutCodeFences(source).matchAll(/(?<!!)\[[^\]]*\]\(([^)\s]+)\)/g)) {
+      const [rawTarget, fragment] = match[1].split('#');
+      if (/^[a-z]+:/i.test(match[1])) continue;
+      const target = rawTarget
+        ? path.resolve(root, path.dirname(file), decodeURIComponent(rawTarget))
+        : path.join(root, file);
+      await access(target);
+      if (fragment && target.endsWith('.md')) {
+        if (!headingAnchors.has(target)) {
+          headingAnchors.set(target, markdownAnchors(await readFile(target, 'utf8')));
+        }
+        if (!headingAnchors.get(target).has(decodeURIComponent(fragment))) {
+          throw new Error(
+            `${file} links to #${fragment}, which is not a heading in ${path.relative(root, target)}`
+          );
+        }
+      }
     }
   }
   if (release) {
