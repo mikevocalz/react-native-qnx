@@ -14,7 +14,7 @@ For Marathon, wrap the result of `getMarathonMetroConfig` and pass `marathon`. R
 
 ## What the entry exports
 
-The source of truth is [`packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js). It exports 48 names, listed below in source order. Each is a lazy getter, so a module loads only when the name is first read. The object is frozen.
+The source of truth is [`packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js). It exports 53 names, listed below in source order, with the five added in this release (`VirtualizedList`, `VirtualizedSectionList`, `Button`, `ImageBackground`, `SafeAreaView`) last. Each is a lazy getter, so a module loads only when the name is first read. The object is frozen.
 
 Any other name throws `React Native QNX public export "<name>" is not implemented in this experimental entry.` when read. `__esModule`, `default` and `then` return `undefined` instead, so CommonJS interop and promise introspection work. No export is a stub that returns a fake value.
 
@@ -70,10 +70,15 @@ Any other name throws `React Native QNX public export "<name>" is not implemente
 | `TouchableOpacity`         | `Components/Touchable/TouchableOpacity`          | upstream     | supported   |                                                                                                                                                   |
 | `TouchableHighlight`       | `Components/Touchable/TouchableHighlight`        | upstream     | unverified  |                                                                                                                                                   |
 | `TouchableWithoutFeedback` | `Components/Touchable/TouchableWithoutFeedback`  | upstream     | unverified  |                                                                                                                                                   |
+| `VirtualizedList`          | `Lists/VirtualizedList`                          | upstream     | supported   | Re-exports `VirtualizedList` from `@react-native/virtualized-lists`. `FlatList` builds on it.                                                     |
+| `VirtualizedSectionList`   | `Lists/VirtualizedSectionList`                   | upstream     | unverified  | Re-exports `VirtualizedSectionList` from `@react-native/virtualized-lists`. `SectionList` builds on it.                                           |
+| `Button`                   | `Components/Button`                              | upstream     | supported   | Renders `TouchableOpacity` off Android.                                                                                                           |
+| `ImageBackground`          | `Image/ImageBackground`                          | QNX override | supported   | Override. Paints an explicitly sized `Image`, then the children in an overlay `View`.                                                             |
+| `SafeAreaView`             | `Components/SafeAreaView/SafeAreaView`           | upstream     | partial     | Upstream selects the native component on iOS only; elsewhere it is `View`, so there are no insets.                                                |
 
 ## Names with a support row that this entry does not export
 
-`VirtualizedList`, `VirtualizedSectionList`, `Button`, `ImageBackground`, `SafeAreaView`, `QtVideo` and `QtAudio` have rows in the support matrix and are not exported here, so a named import of them throws the error above. Import them from their own module paths.
+`QtVideo` and `QtAudio` have rows in the support matrix and are not exported here, so a named import of them throws the error above. Import them from their own module paths.
 
 ## What this does not cover
 
@@ -81,4 +86,4 @@ This is not Expo Router, native screen-stack, Worklets, Reanimated or Gesture Ha
 
 ## Tests
 
-`tests/js/qnx-public-entry.test.mjs` checks the lazy wiring with synthetic module objects, the exact export list and the error for unknown names. `tests/js/public-entry-doc.test.mjs` fails when an export in `PublicAPI.js` is missing from the table above, when the table lists a name the source does not export, when the count in this page differs from the source, or when a Source or Support row cell no longer matches the repository. Other tests cover resolver preservation, real Metro bundles and a shared Linux Qt and Hermes host capture. Linux rendering of both platform bundles is not physical QNX or Marathon shell qualification. No support rows or release gates are promoted by this experiment.
+`tests/js/qnx-public-entry.test.mjs` checks the lazy wiring with synthetic module objects, the exact export list and the error for unknown names. `tests/js/qnx-public-entry-render.test.mjs` mounts `VirtualizedList`, `VirtualizedSectionList`, `Button`, `ImageBackground` and `SafeAreaView` through this entry with the host test renderer, running the installed React Native 0.88.1 modules and `@react-native/virtualized-lists`; only the native leaf components are host elements. `tests/js/public-entry-doc.test.mjs` fails when an export in `PublicAPI.js` is missing from the table above, when the table lists a name the source does not export, when the count in this page differs from the source, or when a Source or Support row cell no longer matches the repository. Other tests cover resolver preservation, real Metro bundles and a shared Linux Qt and Hermes host capture. Linux rendering of both platform bundles is not physical QNX or Marathon shell qualification. No support rows or release gates are promoted by this experiment.

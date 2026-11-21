@@ -105,7 +105,7 @@
       "host": "supported",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Covered transitively by the FlatList virtualization test.",
+      "notes": "Covered transitively by the FlatList virtualization test. Importable from react-native through the QNX public entry; the render test mounts it there.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
@@ -113,7 +113,7 @@
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
         "status": "failed",
-        "summary": "Public entry throws \"VirtualizedList is not implemented in this experimental entry\" (issue #178); the deep import renders 200 rows.",
+        "summary": "Public entry throws \"VirtualizedList is not implemented in this experimental entry\" (issue #178); the deep import renders 200 rows. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
         "evidence": [
           "docs/evidence/qnx-vm-2026-11-20/captures/virtualized-list.png",
           "docs/evidence/qnx-vm-2026-11-20/README.md"
@@ -145,7 +145,7 @@
       "host": "unverified",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Direct component coverage is unverified.",
+      "notes": "Mounted directly through the public entry in the host render test (headers and rows). Scrolling, viewability and sticky headers are unverified. Importable from react-native through the QNX public entry; the render test mounts it there.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
@@ -153,7 +153,7 @@
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
         "status": "failed",
-        "summary": "Public entry throws \"VirtualizedSectionList is not implemented in this experimental entry\" (issue #178); the deep import renders two sections.",
+        "summary": "Public entry throws \"VirtualizedSectionList is not implemented in this experimental entry\" (issue #178); the deep import renders two sections. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
         "evidence": [
           "docs/evidence/qnx-vm-2026-11-20/captures/virtualized-section-list.png",
           "docs/evidence/qnx-vm-2026-11-20/README.md"
@@ -165,7 +165,7 @@
       "host": "supported",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Mounts and reports presses; opacity press animation reaches the connected NativeAnimated backend.",
+      "notes": "Mounts and reports presses; opacity press animation reaches the connected NativeAnimated backend. Importable from react-native through the QNX public entry; the render test mounts it there.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
@@ -173,7 +173,7 @@
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
         "status": "failed",
-        "summary": "Public entry throws \"Button is not implemented in this experimental entry\"; the deep import renders an enabled and a disabled button.",
+        "summary": "Public entry throws \"Button is not implemented in this experimental entry\"; the deep import renders an enabled and a disabled button. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
         "evidence": [
           "docs/evidence/qnx-vm-2026-11-20/captures/button.png",
           "docs/evidence/qnx-vm-2026-11-20/README.md"
@@ -245,7 +245,7 @@
       "host": "supported",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Composes View and Image; paints the image behind children and forwards resizeMode.",
+      "notes": "Composes View and Image; paints the image behind children and forwards resizeMode. Importable from react-native through the QNX public entry; the render test mounts it there.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
@@ -253,7 +253,7 @@
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
         "status": "failed",
-        "summary": "Public entry throws \"ImageBackground is not implemented in this experimental entry\"; the deep import paints the image behind the child.",
+        "summary": "Public entry throws \"ImageBackground is not implemented in this experimental entry\"; the deep import paints the image behind the child. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
         "evidence": [
           "docs/evidence/qnx-vm-2026-11-20/captures/image-background.png",
           "docs/evidence/qnx-vm-2026-11-20/README.md"
@@ -327,7 +327,7 @@
       "host": "partial",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Mounts as a View with zero insets. System safe-area integration is absent.",
+      "notes": "Mounts as a View with zero insets. System safe-area integration is absent. Importable from react-native through the QNX public entry; the render test mounts it there.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
@@ -335,7 +335,7 @@
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
         "status": "failed",
-        "summary": "Public entry throws \"SafeAreaView is not implemented in this experimental entry\"; the deep import renders a View-like box with no visible inset.",
+        "summary": "Public entry throws \"SafeAreaView is not implemented in this experimental entry\"; the deep import renders a View-like box with no visible inset. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
         "evidence": [
           "docs/evidence/qnx-vm-2026-11-20/captures/safe-area-view.png",
           "docs/evidence/qnx-vm-2026-11-20/README.md"

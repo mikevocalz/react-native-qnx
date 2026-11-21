@@ -88,6 +88,13 @@ issue #178 text names `VirtualizedList` and `VirtualizedSectionList`;
 `Button`, `ImageBackground` and `SafeAreaView` fail the same way. An app that
 imports any of them from `react-native` throws on QNX. This was not fixed here.
 
+Follow-up, host only: the public entry now exports all five
+(`packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`), and
+`tests/js/qnx-public-entry-render.test.mjs` mounts each through it. The captures
+and results in this directory were taken before that change and are unchanged.
+VM re-capture of the fixed entry: not run, the drive holding the VM image was
+offline.
+
 ## Other things the logs show
 
 - The gallery logs `Could not parse yoga::PositionType: left` once

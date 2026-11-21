@@ -5,16 +5,7 @@ import { ProofShell, resolveComponent } from './proofCard';
 
 function ButtonProof() {
   const [presses, setPresses] = React.useState(0);
-  const resolved = React.useMemo(
-    () =>
-      resolveComponent('Button', [
-        [
-          "require('react-native/Libraries/Components/Button')",
-          () => require('react-native/Libraries/Components/Button'),
-        ],
-      ]),
-    []
-  );
+  const resolved = React.useMemo(() => resolveComponent('Button', []), []);
   return (
     <ProofShell name="Button" resolved={resolved}>
       {(Button) => (

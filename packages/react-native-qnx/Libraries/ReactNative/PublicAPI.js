@@ -27,29 +27,6 @@ const api = Object.freeze({
   get SectionList() {
     return require('react-native/Libraries/Lists/SectionList').default;
   },
-  // FlatList and SectionList are built on these two. Upstream
-  // Libraries/Lists/VirtualizedList.js and VirtualizedSectionList.js re-export
-  // VirtualizedList and VirtualizedSectionList from @react-native/virtualized-lists.
-  get VirtualizedList() {
-    return require('react-native/Libraries/Lists/VirtualizedList').default;
-  },
-  get VirtualizedSectionList() {
-    return require('react-native/Libraries/Lists/VirtualizedSectionList').default;
-  },
-  // Upstream Button renders TouchableOpacity on every platform but Android.
-  get Button() {
-    return require('react-native/Libraries/Components/Button').default;
-  },
-  // Upstream ImageBackground composes View and Image, which resolve to the QNX
-  // Image override through the QNX resolver.
-  get ImageBackground() {
-    return require('react-native/Libraries/Image/ImageBackground').default;
-  },
-  // Upstream SafeAreaView selects the native component on iOS only and is View
-  // everywhere else, so it is View on QNX.
-  get SafeAreaView() {
-    return require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
-  },
   get TextInput() {
     return require('react-native/Libraries/Components/TextInput/TextInput').default;
   },
@@ -191,6 +168,31 @@ const api = Object.freeze({
   },
   get TouchableWithoutFeedback() {
     return require('react-native/Libraries/Components/Touchable/TouchableWithoutFeedback').default;
+  },
+  // Each of the next five is the default export of the upstream
+  // react-native@0.88.1 module of the same name, except ImageBackground, which
+  // has a QNX override at the same path. They sit at the end of the object so
+  // the line numbers cited for the earlier exports stay valid.
+  get VirtualizedList() {
+    // Re-exports VirtualizedList from @react-native/virtualized-lists, which
+    // FlatList builds on.
+    return require('react-native/Libraries/Lists/VirtualizedList').default;
+  },
+  get VirtualizedSectionList() {
+    // Re-exports VirtualizedSectionList from @react-native/virtualized-lists,
+    // which SectionList builds on.
+    return require('react-native/Libraries/Lists/VirtualizedSectionList').default;
+  },
+  get Button() {
+    // Renders TouchableOpacity on every platform except Android.
+    return require('react-native/Libraries/Components/Button').default;
+  },
+  get ImageBackground() {
+    return require('react-native/Libraries/Image/ImageBackground').default;
+  },
+  get SafeAreaView() {
+    // Upstream selects the native component on iOS only; elsewhere it is View.
+    return require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
 });
 

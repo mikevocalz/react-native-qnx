@@ -27,6 +27,15 @@ const overridesRoot = path.join(root, 'packages/react-native-qnx/Libraries');
 const publicApiPath = path.join(overridesRoot, 'ReactNative/PublicAPI.js');
 const h = React.createElement;
 
+// @react-native/babel-preset compiles a console.warn into every deep import of
+// react-native/Libraries. The QNX sources use them on purpose (the QNX resolver
+// maps them), so drop that one message and keep every other warning.
+const warn = console.warn;
+console.warn = (message, ...rest) => {
+  if (typeof message !== 'string' || !message.startsWith('Deep imports from'))
+    warn(message, ...rest);
+};
+
 const host = (name) => {
   const Component = React.forwardRef((props, ref) => h(name, { ...props, ref }));
   Component.displayName = name;
@@ -75,16 +84,12 @@ const compiled = new Map();
 function compile(file) {
   if (file === publicApiPath) return readFileSync(file, 'utf8'); // plain CommonJS
   if (!compiled.has(file)) {
-    // The Babel preset warns about every deep import in the override sources.
-    const warn = console.warn;
-    console.warn = () => {};
     const out = babel.transformSync(readFileSync(file, 'utf8'), {
       filename: file,
       babelrc: false,
       configFile: false,
       presets: [presetRequire.resolve('@react-native/babel-preset')],
     });
-    console.warn = warn;
     compiled.set(file, out.code);
   }
   return compiled.get(file);

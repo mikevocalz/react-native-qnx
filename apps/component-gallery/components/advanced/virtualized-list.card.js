@@ -1,4 +1,4 @@
-// VirtualizedList on its own. Issue #178: the public entry has no getter for it.
+// VirtualizedList on its own, imported from the public entry (issue #178).
 import * as React from 'react';
 import { Text, View } from 'react-native';
 import { INK, MUTED } from '../../ui';
@@ -10,16 +10,7 @@ const DATA = Array.from({ length: 200 }, (_, index) => ({
 }));
 
 function VirtualizedListProof() {
-  const resolved = React.useMemo(
-    () =>
-      resolveComponent('VirtualizedList', [
-        [
-          "require('react-native/Libraries/Lists/VirtualizedList')",
-          () => require('react-native/Libraries/Lists/VirtualizedList'),
-        ],
-      ]),
-    []
-  );
+  const resolved = React.useMemo(() => resolveComponent('VirtualizedList', []), []);
   return (
     <ProofShell name="VirtualizedList" resolved={resolved}>
       {(VirtualizedList) => (

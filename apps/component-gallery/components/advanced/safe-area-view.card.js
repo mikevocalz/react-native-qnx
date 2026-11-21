@@ -4,16 +4,7 @@ import { INK } from '../../ui';
 import { ProofShell, resolveComponent } from './proofCard';
 
 function SafeAreaViewProof() {
-  const resolved = React.useMemo(
-    () =>
-      resolveComponent('SafeAreaView', [
-        [
-          "require('react-native/Libraries/Components/SafeAreaView/SafeAreaView')",
-          () => require('react-native/Libraries/Components/SafeAreaView/SafeAreaView'),
-        ],
-      ]),
-    []
-  );
+  const resolved = React.useMemo(() => resolveComponent('SafeAreaView', []), []);
   return (
     <ProofShell name="SafeAreaView" resolved={resolved}>
       {(SafeAreaView) => (
