@@ -2,6 +2,7 @@
 // log: no board, no QNX. A run on the Pi 400 or the release board is a separate receipt.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { chmod, cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -119,7 +120,10 @@ if (verb === 'drag') {
   ])
     await chmod(f, 0o755);
   const appLog = path.join(tree, 'app.log');
-  await writeFile(appLog, 'RNQNX_WINDOW_CHROME platform=qnx\n');
+  await writeFile(
+    appLog,
+    'RNQNX_NODE name=rnqnxTitleBar visible=1\nRNQNX_WINDOW_CHROME platform=qnx\n'
+  );
   const env = {
     ...process.env,
     PATH: `${bin}${path.delimiter}${process.env.PATH}`,
@@ -147,7 +151,10 @@ if (verb === 'drag') {
   check(green.status === 0, `mouse smoke, app logs frames: ${green.stdout}${green.stderr}`);
   check(/mouse smoke: all checks passed/.test(green.stdout), green.stdout);
 
-  await writeFile(appLog, 'RNQNX_WINDOW_CHROME platform=qnx\n');
+  await writeFile(
+    appLog,
+    'RNQNX_NODE name=rnqnxTitleBar visible=1\nRNQNX_WINDOW_CHROME platform=qnx\n'
+  );
   await rm(`${appLog}.n`, { force: true });
   const red = mouse('red', { FAKE_MODE: 'drop-frame' });
   check(red.status !== 0, 'mouse smoke goes red when the frame line never arrives');
@@ -159,7 +166,10 @@ if (verb === 'drag') {
     red.stdout
   );
 
-  await writeFile(appLog, 'RNQNX_WINDOW_CHROME platform=qnx\n');
+  await writeFile(
+    appLog,
+    'RNQNX_NODE name=rnqnxTitleBar visible=1\nRNQNX_WINDOW_CHROME platform=qnx\n'
+  );
   await rm(`${appLog}.n`, { force: true });
   const noAction = mouse('noaction', { FAKE_MODE: 'drop-action' });
   check(noAction.status !== 0, 'mouse smoke goes red when the action line never arrives');
@@ -169,6 +179,18 @@ if (verb === 'drag') {
     ),
     noAction.stdout
   );
+
+  // The injection starts only after the app has printed its title bar node. A
+  // log without that line, with a frame already logged, must not be driven.
+  await writeFile(appLog, 'RNQNX_WINDOW_CHROME platform=qnx\n');
+  await rm(`${appLog}.n`, { force: true });
+  const noNode = mouse('nonode', {});
+  check(noNode.status !== 0, 'mouse smoke goes red when the title bar node line never arrives');
+  check(
+    /timed out after 2s waiting for node 'rnqnxTitleBar'/.test(noNode.stderr + noNode.stdout),
+    noNode.stderr + noNode.stdout
+  );
+  check(!existsSync(`${appLog}.n`), 'mouse smoke injected nothing before the node line');
 
   // install-pi.sh against a synthetic target: the screenshot waits for the first-frame line.
   await writeFile(
