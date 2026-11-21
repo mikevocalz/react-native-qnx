@@ -1,0 +1,7 @@
+QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le
+CPU:AARCH64 Release:8.0.0  FreeMem:2855MB/3072MB BootTime:Nov 21 12:39:26 UTC 2026
+Processes: 22, Threads: 138
+Processor1: 1092604016 Cortex-A57 0MHz FPU 
+Processor2: 1092604016 Cortex-A57 0MHz FPU 
+Processor3: 1092604016 Cortex-A57 0MHz FPU 
+Processor4: 1092604016 Cortex-A57 0MHz FPU 

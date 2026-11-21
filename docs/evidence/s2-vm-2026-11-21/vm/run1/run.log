@@ -1,0 +1,73 @@
+QQnxIntegration: no EGL display (3008), continuing without OpenGL
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+[INFO] platform=qnx blockMs=5000 responsiveMs=500
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1121 15:59:11.828855     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9af34748).
+W1121 15:59:11.835753     9 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9c00c868).
+W1121 15:59:11.836223     9 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9af34ab8).
+W1121 15:59:11.879073     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b995f93d8).
+W1121 15:59:11.880503     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9a41acb8).
+W1121 15:59:11.880980     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b995f9998).
+[PASS] jsRunsOnItsOwnThread
+W1121 15:59:12.169189     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b995c7498).
+W1121 15:59:12.171429     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9af32ab8).
+W1121 15:59:12.171772     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b995c7808).
+[PASS] mountsAreAppliedOnTheGuiThread
+W1121 15:59:12.432401     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9c029e18).
+W1121 15:59:12.433651     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9a445538).
+W1121 15:59:12.433990     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9c02a188).
+[PASS] timersAndCompletionsRunOnTheJsThread
+W1121 15:59:14.114879     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b99396788).
+W1121 15:59:14.116343     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b99377568).
+W1121 15:59:14.116725     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b99396af8).
+[PASS] resizeAndWindowSizeDoNotWaitForJavaScript
+[RESULT] grab flag-on-after-pan-mid-block 640x480 /data/vm/s2out/r1/shots/flag-on-after-pan-mid-block.png
+[RESULT] grab flag-on-after-restore-first-frame-mid-block 640x480 /data/vm/s2out/r1/shots/flag-on-after-restore-first-frame-mid-block.png
+[RESULT] grab flag-on-after-restore-400ms-mid-block 640x480 /data/vm/s2out/r1/shots/flag-on-after-restore-400ms-mid-block.png
+[RESULT] item grab flag-on-after-restore-item-tree-mid-block 640x480 /data/vm/s2out/r1/shots/flag-on-after-restore-item-tree-mid-block.png exposed=yes
+[RESULT] flag=on blockMs=5000 blocked=5019ms heartbeats@2500ms=196 total=447 panMs=101 contentY=-0->48 minimizeMs=11 closeMs=5 resizeMs=0 touchDispatchedNatively=10 touchSeenByJs=6 (starts 2, moves 2 coalesced from 6, ends 2) responsiveBoundMs=500
+blocked=5023ms beats@2500ms=196 total=447
+W1121 15:59:19.327755     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b993e5258).
+W1121 15:59:19.328975     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9c029ff8).
+W1121 15:59:19.329329     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b993e55c8).
+[PASS] blockedJavaScriptLeavesTheGuiThreadResponsive
+[RESULT] flag=off blockMs=5000 blocked=5000ms heartbeatsDuringBlock=0 firstHeartbeatAt=5008ms lastHeartbeatAt=5008ms contentYAtBlockEnd=-0 closeActionAt=5004ms (queued click ran only after the block)
+W1121 15:59:24.528383     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9936e528).
+W1121 15:59:24.530393     6 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9af25e58).
+W1121 15:59:24.530767     6 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9936e898).
+[PASS] blockedJavaScriptFreezesTheGuiThreadWithTheFlagOff
+W1121 15:59:24.751595     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9951ccb8).
+W1121 15:59:24.753701     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9a4456e8).
+W1121 15:59:24.754256     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9951d028).
+W1121 15:59:24.965044     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9c02b178).
+W1121 15:59:24.966892     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9a428838).
+W1121 15:59:24.967455     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9c02b4e8).
+W1121 15:59:25.184167     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9c02af58).
+W1121 15:59:25.186311     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b995c2c48).
+W1121 15:59:25.186695     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9c02b2c8).
+[PASS] teardownWithQueuedWorkIsClean
+[RESULT] refusal Worklets: Worklets is not supported with QtReactHost JS-thread mode yet (ADR-0021)
+[RESULT] refusal Reanimated: Reanimated is not supported with QtReactHost JS-thread mode yet (ADR-0021)
+[RESULT] refusal Gesture Handler: Gesture Handler is not supported with QtReactHost JS-thread mode yet (ADR-0021)
+[RESULT] refusal AppState: threw: Exception in HostObject::get for prop 'AppState': AppState is not supported with QtReactHost JS-thread mode yet (ADR-0021)
+W1121 15:59:25.375491     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9af48688).
+W1121 15:59:25.377251     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9afb4d98).
+W1121 15:59:25.377609     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9af489f8).
+[PASS] unmovedLibrariesRefuseWithAClearError
+[RESULT] FileReader readAsText -> rejected: FileReaderModule is not implemented on this platform
+[RESULT] ImageLoader getSize(37x23 png) -> 37x23, settled on the JS thread
+W1121 15:59:25.637434     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b995d3228).
+W1121 15:59:25.638453     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9af138a8).
+W1121 15:59:25.638885     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b995d3598).
+[PASS] turboModulesResolveAndCompleteOnTheJsThread
+[RESULT] WebSocketModule connect, send, echo, close over loopback: events delivered on the JS thread
+W1121 15:59:26.115521     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b9af150d8).
+W1121 15:59:26.116719     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9afb3d88).
+W1121 15:59:26.117049     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b9af15448).
+[PASS] webSocketModuleRoundTripsWithTheJsThread
+[RESULT] Nitro installQnxNitroRuntime on the JS thread: async callback and native Promise round trip
+W1121 15:59:26.307845     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2b995b2f98).
+W1121 15:59:26.309801     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2b9935f718).
+W1121 15:59:26.310105     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2b995b3308).
+[PASS] nitroInstallerAndDispatcherUseTheJsThread
+All 11 JS-thread tests passed.
