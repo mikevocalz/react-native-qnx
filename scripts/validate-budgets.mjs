@@ -27,12 +27,17 @@ const STATUSES = ['measured', 'unmeasured', 'not-applicable', 'blocked'];
 const MIN_WINDOW_FRAMES = 30;
 
 /** Nearest-rank percentile of an ascending array. */
+/**
+ * @param {number[]} sorted
+ * @param {number} p
+ */
 export function percentile(sorted, p) {
   if (sorted.length === 0) throw new RangeError('percentile of an empty set');
   const rank = Math.max(1, Math.ceil((p / 100) * sorted.length));
   return sorted[rank - 1];
 }
 
+/** @param {number[]} values */
 export function median(values) {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = sorted.length >> 1;
@@ -40,7 +45,13 @@ export function median(values) {
 }
 
 /** Validates one --timing-json result and returns the four metrics (null when not applicable). */
+/**
+ * @param {any} result
+ * @param {{ needsFrames: boolean }} options
+ * @returns {Record<string, number | null>}
+ */
 export function summarizeRun(result, { needsFrames }) {
+  /** @param {string} why */
   const fail = (why) => {
     throw new Error(`invalid timing result: ${why}`);
   };
@@ -57,6 +68,7 @@ export function summarizeRun(result, { needsFrames }) {
   if (!result.frameMs.includes(result.firstFrameMs)) fail('firstFrameMs is not one of frameMs');
   if (!(result.surfaceStartedMs <= result.firstFrameMs)) fail('first frame precedes surface start');
   if (!Number.isFinite(result.peakRssKiB) || result.peakRssKiB <= 0) fail('peakRssKiB is missing');
+  /** @type {Record<string, number | null>} */
   const metrics = {
     startupToFirstFrameMs: result.firstFrameMs,
     frameIntervalP95Ms: null,
@@ -67,9 +79,9 @@ export function summarizeRun(result, { needsFrames }) {
     if (result.wheelNotchesSent < 1 || result.wheelFirstMs == null || result.wheelLastMs == null) {
       fail('no wheel script ran, so there is no animated window');
     }
-    const window = result.frameMs.filter(
-      (t) => t >= result.wheelFirstMs && t <= result.wheelLastMs
-    );
+    /** @type {number[]} */
+    const all = result.frameMs;
+    const window = all.filter((t) => t >= result.wheelFirstMs && t <= result.wheelLastMs);
     if (window.length < MIN_WINDOW_FRAMES) {
       fail(`only ${window.length} swaps in the wheel window, need ${MIN_WINDOW_FRAMES}`);
     }
@@ -83,13 +95,23 @@ export function summarizeRun(result, { needsFrames }) {
   return metrics;
 }
 
+/**
+ * @param {number} maxValue
+ * @param {number} factor
+ */
 export function ceilingFor(maxValue, factor) {
   return Math.ceil(maxValue * factor);
 }
 
 /** Returns a list of problems; empty when the budgets file is consistent. */
+/**
+ * @param {any} file
+ * @returns {string[]}
+ */
 export function checkBudgetsFile(file) {
+  /** @type {string[]} */
   const problems = [];
+  /** @param {string} m */
   const add = (m) => problems.push(m);
   if (file.schemaVersion !== 1) add('schemaVersion must be 1');
   if (file.gate !== 'performance') add('gate must be "performance"');
@@ -97,7 +119,9 @@ export function checkBudgetsFile(file) {
   if (!(method.regressionFactor >= 1)) add('method.regressionFactor must be at least 1');
   if (!(method.hostRunsPerCheck >= 3)) add('method.hostRunsPerCheck must be at least 3');
   if (!(method.baselineMinRuns >= 20)) add('method.baselineMinRuns must be at least 20');
-  if (!file.knownConstraints?.some((c) => c.setting === 'HERMESVM_ALLOW_JIT=0')) {
+  if (
+    !file.knownConstraints?.some((/** @type {any} */ c) => c.setting === 'HERMESVM_ALLOW_JIT=0')
+  ) {
     add('knownConstraints must record HERMESVM_ALLOW_JIT=0');
   }
   for (const lane of LANES) {
@@ -159,6 +183,11 @@ export function checkBudgetsFile(file) {
   return problems;
 }
 
+/**
+ * @param {string} dir
+ * @param {string} workload
+ * @returns {Promise<any[]>}
+ */
 async function readResults(dir, workload) {
   const names = (await readdir(dir))
     .filter((n) => n.startsWith(`${workload}-`) && n.endsWith('.json'))
@@ -169,6 +198,10 @@ async function readResults(dir, workload) {
 }
 
 /** Compares the median of each metric across runs with the host ceilings. */
+/**
+ * @param {any} file
+ * @param {string} dir
+ */
 export async function checkRun(file, dir) {
   const rows = [];
   let failed = false;
@@ -183,7 +216,7 @@ export async function checkRun(file, dir) {
     for (const metric of METRICS) {
       const budget = file.workloads[workload].metrics[metric].budgets.host;
       if (budget.status !== 'measured') continue;
-      const value = median(runs.map((r) => r[metric]));
+      const value = median(runs.map((r) => /** @type {number} */ (r[metric])));
       const ok = value <= budget.ceiling;
       if (!ok) failed = true;
       rows.push({
@@ -200,7 +233,13 @@ export async function checkRun(file, dir) {
 }
 
 /** Per workload and metric: min, p50 and max across the run files. */
+/**
+ * @param {any} file
+ * @param {string} dir
+ * @returns {Promise<Record<string, any>>}
+ */
 export async function derive(file, dir) {
+  /** @type {Record<string, any>} */
   const out = {};
   for (const workload of ['hello-world', 'list-1000']) {
     const results = await readResults(dir, workload);
@@ -223,6 +262,11 @@ export async function derive(file, dir) {
   return out;
 }
 
+/**
+ * @param {any} file
+ * @param {string} dir
+ * @param {string} source
+ */
 export async function applyBaseline(file, dir, source) {
   const derived = await derive(file, dir);
   for (const [workload, metrics] of Object.entries(derived)) {
@@ -246,6 +290,7 @@ export async function applyBaseline(file, dir, source) {
   return file;
 }
 
+/** @param {string[]} argv */
 async function main(argv) {
   const root = process.cwd();
   const file = JSON.parse(await readFile(path.join(root, BUDGETS_PATH), 'utf8'));

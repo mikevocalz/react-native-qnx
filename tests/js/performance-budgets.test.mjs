@@ -31,7 +31,7 @@ for (const workload of Object.values(committed.workloads)) {
   }
 }
 assert.equal(
-  committed.knownConstraints.some((c) => c.setting === 'HERMESVM_ALLOW_JIT=0'),
+  committed.knownConstraints.some((/** @type {any} */ c) => c.setting === 'HERMESVM_ALLOW_JIT=0'),
   true
 );
 assert.equal(committed.workloads['drawer-drag'].metrics.peakRssKiB.budgets.host.status, 'blocked');

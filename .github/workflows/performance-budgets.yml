@@ -110,6 +110,16 @@ jobs:
           cp "$evidence/once.json" "$evidence/once.before"
           expect_config_error 'existing output' --bundle "$bundle" --timing-json "$evidence/once.json"
           cmp "$evidence/once.json" "$evidence/once.before"
+          for failing in start-failure stop-failure; do
+            set +e
+            "$host" --bundle "$PWD/tests/fixtures/runtime-baseline/$failing.js" \
+              --timing-json "$evidence/$failing.json" > "$evidence/$failing.log" 2>&1
+            code=$?
+            set -e
+            test "$code" -eq 1 || { echo "$failing: exit $code, wanted 1"; exit 1; }
+            grep -F 'RNQNX_PLAYGROUND_RENDER_FAILED' "$evidence/$failing.log"
+            test ! -e "$evidence/$failing.json"
+          done
           rm -f "$evidence/once.json" "$evidence/once.before" "$evidence/once.log" "$evidence/reject.log"
       - name: Run each workload and record timing
         run: |
