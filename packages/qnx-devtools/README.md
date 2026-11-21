@@ -84,6 +84,20 @@ See the upstream [ssh manual](https://man.openbsd.org/ssh.1) for `-L`, `-N`
 and `-F`, and [ssh_config](https://man.openbsd.org/ssh_config.5) for
 `ExitOnForwardFailure`, `StrictHostKeyChecking` and `BatchMode`.
 
+## Wait for the app instead of sleeping
+
+`scripts/lib/wait-log.sh` holds `rnqnx_wait_log FILE ERE MIN_COUNT TIMEOUT_S WHAT`
+and `rnqnx_wait_node FILE NAME MIN_COUNT TIMEOUT_S`. They return as soon as the
+app has logged the line (`RNQNX_NODE name=<objectName>` for a named node) and
+fail with status 124 after the timeout, naming what they waited for.
+`scripts/lib/qnx-wait.sh` runs the same functions in the target's `sh` over SSH.
+`pnpm pi:mouse-smoke` and `pnpm pi:install` use them in place of fixed sleeps.
+The functions check once per `RNQNX_WAIT_POLL_S` seconds (default 1); the
+interval spaces the checks and never decides the result. Host Qt tests use
+`rnqnx::testing::waitForNode` from `native/testing` for the same job on an
+object tree. Neither runs a QNX device check by itself: the device paths have
+only run against a synthetic target.
+
 ## Preview or recover
 
 Add `--dry-run` to print the local executable, arguments, timeout and output

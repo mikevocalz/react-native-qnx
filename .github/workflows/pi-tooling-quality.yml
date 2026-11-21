@@ -40,6 +40,9 @@ jobs:
             scripts/lib/qnx-target.sh \
             scripts/pi-preflight.sh \
             scripts/install-pi.sh \
+            scripts/pi-mouse-smoke.sh \
+            scripts/lib/qnx-wait.sh \
+            scripts/lib/wait-log.sh \
             scripts/validate-runtime-qnx.sh \
             scripts/deploy-qnx.sh \
             scripts/run-qnx.sh \
@@ -49,11 +52,14 @@ jobs:
 
       - name: ShellCheck
         run: |
-          shellcheck \
+          shellcheck -x \
             scripts/doctor.sh \
             scripts/lib/qnx-target.sh \
+            scripts/lib/qnx-wait.sh \
+            scripts/lib/wait-log.sh \
             scripts/pi-preflight.sh \
             scripts/install-pi.sh \
+            scripts/pi-mouse-smoke.sh \
             scripts/deploy-qnx.sh \
             scripts/run-qnx.sh \
             scripts/log-qnx.sh \

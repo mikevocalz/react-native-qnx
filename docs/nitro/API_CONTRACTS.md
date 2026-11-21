@@ -112,7 +112,7 @@ TurboModule startup plumbing remains; Nitro serves this app-native proof.
 
 ## Native tree query for tests: `rnqnx::testing::waitForNode` (S3)
 
-Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an *app-facing* native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR.
+Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an _app-facing_ native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR.
 
 Review: `ecc:cpp-reviewer` (a lane other than the author) reviewed the first draft before any C++ existed and returned "approve with changes". This text carries those changes: the application event filter is replaced by `QAbstractEventDispatcher::aboutToBlock()` (the filter saw its own timer events and spun, and only reaches main-thread objects), designated initializers are gone (the repo builds C++17 with `-Wpedantic -Werror`), the result gained a status enum, and matching, visibility and reentrancy are defined.
 
@@ -177,14 +177,14 @@ QVERIFY(t::findNode(&window, bar) == nullptr);
 
 ### Error set
 
-| Condition | Result |
-| --- | --- |
-| `root` null, `objectName` empty, `timeout` not positive | `std::invalid_argument` (a programming error, not a test failure) |
-| `root` lives in another thread, a nested `waitForNode` (detected with a `thread_local` flag), no `QCoreApplication`, `requireVisible` on a type with no visibility | `std::logic_error` naming the call |
-| Timeout | status `TimedOut`, error as above |
-| Node found but not visible at the deadline | status `NotVisible`, error says the node exists and is not visible |
-| `root` destroyed while waiting | status `RootDestroyed` |
-| `QCoreApplication::quit()` while waiting | status `AppQuit` |
+| Condition                                                                                                                                                          | Result                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `root` null, `objectName` empty, `timeout` not positive                                                                                                            | `std::invalid_argument` (a programming error, not a test failure)  |
+| `root` lives in another thread, a nested `waitForNode` (detected with a `thread_local` flag), no `QCoreApplication`, `requireVisible` on a type with no visibility | `std::logic_error` naming the call                                 |
+| Timeout                                                                                                                                                            | status `TimedOut`, error as above                                  |
+| Node found but not visible at the deadline                                                                                                                         | status `NotVisible`, error says the node exists and is not visible |
+| `root` destroyed while waiting                                                                                                                                     | status `RootDestroyed`                                             |
+| `QCoreApplication::quit()` while waiting                                                                                                                           | status `AppQuit`                                                   |
 
 Callers branch on `status`. The `error` string is for people.
 
@@ -202,9 +202,9 @@ The library is `rnqnx_native_testing` in `native/testing`: static, built only un
 
 ### What each platform promises
 
-| Platform | Promise |
-| --- | --- |
-| Host (macOS, Linux, Qt 6.11+) | Built and run by the `native-testing` CTest lane under `QT_QPA_PLATFORM=offscreen`. |
+| Platform                      | Promise                                                                                                                                                     |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host (macOS, Linux, Qt 6.11+) | Built and run by the `native-testing` CTest lane under `QT_QPA_PLATFORM=offscreen`.                                                                         |
 | QNX VM, Pi 400, release board | Not built. The library is not linked into any QNX target in this slice. Device smoke paths wait on app-emitted log lines through `scripts/lib/wait-log.sh`. |
 
 The accessibility tree (`QAccessible`) is not queried. The `objectName` tree covers every node the smoke paths need, and the offscreen platform does not install an accessibility bridge, so an accessibility query would not run in the host lane.

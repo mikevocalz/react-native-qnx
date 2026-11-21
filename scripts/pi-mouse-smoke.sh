@@ -89,7 +89,7 @@ expect() {
     got=$(last_frame)
   fi
   if [[ "${got}" =~ ^([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+)$ ]] && ((BASH_REMATCH[1] == ew && BASH_REMATCH[2] == eh)) &&
-    ((${BASH_REMATCH[3]} - ex <= 2 && ex - ${BASH_REMATCH[3]} <= 2 && ${BASH_REMATCH[4]} - ey <= 2 && ey - ${BASH_REMATCH[4]} <= 2)); then
+    ((BASH_REMATCH[3] - ex <= 2 && ex - BASH_REMATCH[3] <= 2 && BASH_REMATCH[4] - ey <= 2 && ey - BASH_REMATCH[4] <= 2)); then
     log "PASS ${name}: ${got}"
     x=${BASH_REMATCH[3]} y=${BASH_REMATCH[4]} w=${BASH_REMATCH[1]}
     bar=$((y + 22))
@@ -127,5 +127,5 @@ if (($(actions) == before + 1)); then log "PASS double-click maximise: one RNQNX
 inject dclick 960 22
 wait_logged RNQNX_WINDOW_ACTION $((before + 2)) "RNQNX_WINDOW_ACTION line after the restore double click" || true
 if (($(actions) == before + 2)); then log "PASS double-click restore: second RNQNX_WINDOW_ACTION logged"; else log "FAIL double-click restore: expected two new RNQNX_WINDOW_ACTION lines"; fails=$((fails + 1)); fi
-((fails == 0)) && log "mouse smoke: all checks passed" || log "mouse smoke: ${fails} failed"
+if ((fails == 0)); then log "mouse smoke: all checks passed"; else log "mouse smoke: ${fails} failed"; fi
 exit $((fails != 0))
