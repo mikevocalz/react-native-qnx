@@ -45,3 +45,16 @@ the hover to clear before grabbing.
 - Tile label fit and the icon in every location on a device (`app-identity`).
 - Rendered contrast on QNX; the ratios are from solid colours, see
   `docs/v1/design/contrast.json` (`s8Pairs`).
+
+## Reviews (lanes other than the author)
+
+| Reviewer            | Target                                   | Result                                                                                                                                                                                                                  |
+| ------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ecc:cpp-reviewer`  | `native/window-chrome` diff              | No critical or high findings. Folded in: layout-name signal ordering, GUI-thread assertion, dead-window guard, two comments. Rejected: dedicated inset signal (no consumer yet), `light` test hook kept with a comment. |
+| `ecc:code-reviewer` | docs, contrast.json, evidence, readiness | One high (stale generated docs-site API pages) and one medium (how-to page) fixed; wording nits fixed.                                                                                                                  |
+| `ecc:architect`     | windows API contract, revision 1         | Five blocking and several high findings, all folded into revision 2 of the contract. Revision 2 still needs a second review before any spec or C++.                                                                     |
+
+`pnpm validate:docs` and the docs-site `generate-api --check`, `generate-data --check` and
+`check-content` pass. `node scripts/run-js-tests.mjs` was started and stopped at
+`braces-security.test.mjs`, which needs a corepack-installed pnpm 12.18.0 that this host lacks; the
+tests before it passed.

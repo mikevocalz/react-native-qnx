@@ -392,39 +392,64 @@ The library is `rnqnx_native_testing` in `native/testing`: static, built only un
 
 The accessibility tree (`QAccessible`) is not queried. The `objectName` tree covers every node the smoke paths need, and the offscreen platform does not install an accessibility bridge, so an accessibility query would not run in the host lane.
 
-## Windows API (S8, gate `window-chrome`): contract draft, not implemented
+## Windows API (S8, gate `window-chrome`): contract draft, revision 2, not implemented
 
 Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`)
 has not run: there is no `.nitro.ts` spec, no codegen output and no C++. Per the closing brief,
-no C++ is written until a lane other than the author has reviewed this contract. The review
-record goes in the S8 receipt. This section is a proposal and changes no shipped API.
+no C++ is written until a lane other than the author has reviewed this contract. Revision 1 was
+reviewed by `ecc:architect` (a lane other than the author), which found five blocking problems
+(close that cannot resolve, unguardable close paths, getters that break once JavaScript has its own
+thread, callback ownership, reload and minimize lifecycle) and several shapes Nitrogen cannot bind.
+This revision folds them in. A second review of revision 2 is still needed before step 2. Nothing
+here is compiled or generated, and the Nitro claims come from reading the pinned
+`nitro-core` headers, not from a build.
 
 Skill sources: Margelo `api-design` and `cpp` at
-`margelo/react-native-skills@1e9e17be6f41c838db472d6a4b943fc26355a3be`. This draft was written
-from the existing chrome sources (`native/window-chrome`) and ADR-0016, not from a skill run by
-the review lane.
+`margelo/react-native-skills@1e9e17be6f41c838db472d6a4b943fc26355a3be`. The draft was written from
+the existing chrome sources and ADR-0016, not from a skill run by the review lane.
 
 ### Why it is not a spec yet
 
 `scripts/nitro-platform-codegen.mjs` accepts one class (`PlatformInfo`) with string properties and
-one two-number method. The windows API needs booleans, objects, callbacks that return Promises and
-listener handles, none of which it emits, and Nitrogen has no QNX target. Writing a spec now would
-leave a file nothing generates from, and hand-writing the binding is not allowed. The next step is
-to extend the adapter (with a generated-output check, as `nitro:platform:check` does today) and to
+one two-number method. The windows API needs booleans, named structs, callbacks that return Promises
+and listener handles, none of which it emits, and Nitrogen has no QNX target. Writing a spec now
+would leave a file nothing generates from, and hand-writing the binding is not allowed. The next step
+is to extend the adapter (with a generated-output check, as `nitro:platform:check` does today) and to
 compile the result against the pinned `nitro-core` source in the `nitro-v1-host` lane.
+
+### Shape decisions
+
+- Three HybridObjects, split by lifecycle (decision 2): `QnxWindows` (actions, guards, state),
+  and `QnxTitleBarInset` (see "Inset and SafeAreaView"). One instance per app: a JS wrapper
+  (`getQnxWindows()`, the `createQnxPlatformInfo` pattern) returns the same object each time, and
+  native state is per window, so a second construction shares guards and listeners.
+- Only named interfaces cross the boundary (Nitrogen needs them for structs). A synchronous
+  guard result is accepted by the JS wrapper and turned into a Promise before it reaches native.
+- Listeners follow decision 8: additive `addOn...Listener` with an idempotent remove handle, and
+  typed payloads, so a listener never re-reads a getter that can race the next change.
+- Reads are snapshots published by the GUI thread (below), not live reads of Qt objects.
 
 ### Public TypeScript contract
 
 ```ts
 export type WindowControlsLayout = 'macos' | 'windows';
-export type WindowAction = 'close' | 'minimize' | 'maximize';
-export type CloseReason = 'control' | 'keyboard' | 'app' | 'system';
+/** What this target can do, from the platform capabilities, not from which controls are drawn. */
+export type WindowCapability = 'close' | 'minimize' | 'maximize' | 'move' | 'resize';
+export type CloseReason = 'control' | 'app' | 'system';
 
 export interface Rect {
   x: number;
   y: number;
   width: number;
   height: number;
+}
+export interface Size {
+  width: number;
+  height: number;
+}
+export interface Point {
+  x: number;
+  y: number;
 }
 
 /** Device-independent pixels, relative to the React surface. */
@@ -437,122 +462,191 @@ export interface TitleBarInset {
   overlay: Rect;
 }
 
-export type WindowEventName = 'focus' | 'blur' | 'visible' | 'hidden' | 'layout' | 'inset';
+/** One immutable snapshot of the window, outer size (title bar included), device-independent pixels. */
+export interface WindowState {
+  title: string;
+  size: Size;
+  position: Point;
+  focused: boolean;
+  visible: boolean;
+  maximized: boolean;
+  controlsLayout: WindowControlsLayout;
+}
 
-/** Returns true to let the window close, false to keep it open. */
-export type CloseGuard = (request: { reason: CloseReason }) => boolean | Promise<boolean>;
+export interface CloseRequest {
+  reason: CloseReason;
+  /** Milliseconds until the process is killed, when the source has a deadline; absent otherwise. */
+  deadlineMs?: number;
+}
 
-/** Call the returned function to remove. Calling it again does nothing. */
+/** Resolve true to let the window close, false to keep it open. */
+export type CloseGuard = (request: CloseRequest) => Promise<boolean>;
+/** Call to remove. Calling it again, or after teardown, does nothing. */
 export type Unsubscribe = () => void;
 
-export declare class QnxWindows extends HybridObject {
-  /** v1 has one window per app. See "Multi-window scope". */
-  readonly scope: 'single-window';
-  /** Which of close, minimize and maximize this target can run. A hidden control is absent. */
-  readonly availableActions: WindowAction[];
-  readonly titleBarInset: TitleBarInset;
-  readonly controlsLayout: WindowControlsLayout;
-  readonly title: string;
-  readonly size: { width: number; height: number };
-  readonly position: { x: number; y: number };
-  readonly focused: boolean;
-  readonly visible: boolean;
+export interface QnxWindows extends HybridObject<{ qnx: 'c++' }> {
+  /** Fixed: v1 has one window per app. */
+  readonly capabilities: WindowCapability[];
+  /** The last state the GUI thread published. */
+  getState(): WindowState;
 
   setControlsLayout(layout: WindowControlsLayout): Promise<void>;
   setTitle(title: string): Promise<void>;
-  setSize(width: number, height: number): Promise<void>;
-  setPosition(x: number, y: number): Promise<void>;
+  /** Resolves with the rectangle actually applied (clamped to the screen and the minimum size). */
+  setBounds(bounds: Rect): Promise<Rect>;
   minimize(): Promise<void>;
-  /** Runs the close guards first. Resolves true if the window closed, false if a guard cancelled. */
-  close(): Promise<boolean>;
+  toggleMaximize(): Promise<void>;
+  /** Runs the guards. Resolves false if one cancelled; true means the close was accepted. */
+  close(options?: { force?: boolean }): Promise<boolean>;
+
   addCloseGuard(guard: CloseGuard): Unsubscribe;
-  addListener(event: WindowEventName, listener: () => void): Unsubscribe;
+  addOnFocusChangedListener(listener: (focused: boolean) => void): Unsubscribe;
+  addOnVisibilityChangedListener(listener: (visible: boolean) => void): Unsubscribe;
+  addOnStateChangedListener(listener: (state: WindowState) => void): Unsubscribe;
+}
+
+export interface QnxTitleBarInset extends HybridObject<{ qnx: 'c++' }> {
+  getInset(): TitleBarInset;
+  addOnInsetChangedListener(listener: (inset: TitleBarInset) => void): Unsubscribe;
 }
 ```
 
-`titleBarInset`, `size`, `position`, `focused` and `visible` are snapshots read when accessed. The
-`layout` and `inset` events fire when they change; `layout` covers size, position and layout
-switches.
+`capabilities` comes from `capabilitiesForPlatform` plus `withSizeKeepingWindowManager`. It does
+not depend on whether a control is drawn, so `titleBarStyle: 'none'` still lets `close()` and
+`minimize()` run, and `unavailableControls: 'disable'` does not change it. `move` and `resize`
+are present only under `rnqnx-winmgr` (`clientMoveResize`) and for a contained window with
+`initialSize`; a full-screen app has neither.
 
 ### Typed call sites
 
 ```ts
-import { QnxWindows } from '@rn-qnx/qnx-nitro-runtime';
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { getQnxWindows } from '@rn-qnx/qnx-nitro-runtime';
 
-// 1. Keep content out from under floating controls (titleBarStyle "hidden").
-const windows = new QnxWindows();
-function useTitleBarInset() {
-  const [inset, setInset] = useState(windows.titleBarInset);
-  useEffect(() => windows.addListener('inset', () => setInset(windows.titleBarInset)), []);
-  return inset;
-}
-// <View style={{ paddingTop: useTitleBarInset().top }} />
+const windows = getQnxWindows();
 
-// 2. Ask before closing with unsaved work; the guard cancels or lets the close proceed.
-const removeGuard = windows.addCloseGuard(async ({ reason }) => {
+// 1. Ask before closing with unsaved work. A guard that returns false cancels the close.
+const removeGuard = windows.addCloseGuard(async ({ reason, deadlineMs }) => {
   if (!hasUnsavedChanges()) return true;
-  return await confirmDiscard(reason); // false keeps the window open
+  if (deadlineMs !== undefined) return true; // the system kills the app soon; do not stall
+  return await confirmDiscard(reason);
 });
 
-// 3. Minimize only where the target can. On a target that hides it, the call is an error.
-if (windows.availableActions.includes('minimize')) await windows.minimize();
-await windows.setControlsLayout('windows');
+// 2. React to focus with a typed payload, no re-read of state.
+const off = windows.addOnFocusChangedListener((focused) => setDimmed(!focused));
+
+// 3. Minimize only where the target can. Elsewhere the call rejects.
+if (windows.capabilities.includes('minimize')) await windows.minimize();
+const applied = await windows.setBounds({ x: 40, y: 40, width: 900, height: 600 });
 ```
 
 ### Error set
 
-Every method that cannot do what it says rejects (or throws, for the synchronous constructor
-and listener methods). None returns a success value that hides a failure.
+Methods that cannot do what they say reject. The wrapper turns the native message prefix
+(`CODE: reason`) into `error.code`, because Nitro carries only the message.
 
-| Condition                                                                    | Error code                    | Notes                                                                    |
-| ---------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------ |
-| Constructed before the native installer ran, or on Marathon                  | `WINDOWS_UNAVAILABLE`         | An installation failure; no fallback object.                             |
-| Action hidden on this target (for example maximize on a full-screen QNX app) | `WINDOW_ACTION_UNSUPPORTED`   | The same reason string the chrome logs as `RNQNX_WINDOW_CHROME hidden=`. |
-| Argument not finite, negative size, unknown layout or event                  | `INVALID_ARGUMENT`            | Names the argument.                                                      |
-| Object or window already disposed                                            | `WINDOWS_DISPOSED`            | After runtime teardown or window close.                                  |
-| A close guard throws or rejects                                              | none; the close is cancelled  | Reported once through the host error reporter. Proposed; see questions.  |
-| A close guard does not settle                                                | none; the close stays pending | Proposed: no timeout in the API; the app owns its guard. See questions.  |
+| Condition                                                                         | Code                        | Notes                                                                               |
+| --------------------------------------------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------- |
+| Native installer not run, built without `RNQNX_ENABLE_WINDOW_CHROME`, or Marathon | `WINDOWS_UNAVAILABLE`       | An installation failure; no fallback object.                                        |
+| Capability absent on this target                                                  | `WINDOW_ACTION_UNSUPPORTED` | Reason text matches the `RNQNX_WINDOW_CHROME hidden=` log line.                     |
+| A number that is not finite, or a negative size                                   | `INVALID_ARGUMENT`          | Names the argument. An unknown layout string fails in the Nitro converter first.    |
+| Runtime torn down                                                                 | `WINDOWS_DISPOSED`          | Every later call rejects; guards and listeners no longer run.                       |
+| A guard rejects or throws                                                         | none                        | The close is cancelled and the error reported once through the host error reporter. |
 
-### Disposal, ordering and cancellation
+### Reads and threads
+
+- The GUI thread owns the `QWindow` and `WindowChrome`. After every change it publishes a new
+  immutable `WindowState` and `TitleBarInset` (`shared_ptr<const T>`). `getState()` and `getInset()`
+  read the latest pointer; they never touch Qt objects. The pointer swap uses a short mutex that
+  holds no callback and calls into nothing.
+- Mutating calls cross once, at this boundary, through `QtNitroDispatcher`, and settle after the
+  GUI thread applied them. Nothing blocks the GUI thread waiting for JavaScript.
+- Guard and listener callbacks are `Callback` objects holding JSI handles. They are created, copied,
+  invoked and destroyed on the JS-owned side only. The GUI side holds ids and posts "close
+  requested" or "state changed" to the JS side. Dispatch copies the registered list, releases any
+  lock, then calls, so a guard that removes itself or a listener that unsubscribes cannot invalidate
+  the iteration.
+- `QT_DISPATCHER.md` records that listener cancellation, reload and HybridClass disposal are not
+  yet established. The exit criteria for this API include tests for each, and a TSan run once JS has
+  its own thread (S2).
+
+### Closing, guards and who can be asked
+
+A guard hooks `QEvent::Close` on the `QQuickWindow`: the handler ignores the event, runs the guards,
+then re-issues the close with a bypass flag so the guards do not run twice. Rewriting the control's
+`trigger("close")` alone would miss the other paths.
+
+| Close source                                                           | `reason`  | Guardable                                                                                                                    |
+| ---------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Close control or Enter and Space on it                                 | `control` | Yes.                                                                                                                         |
+| `windows.close()`                                                      | `app`     | Yes, unless `force`.                                                                                                         |
+| Window manager close event (rnqnx-winmgr, `Frame=Y` fullscreen-winmgr) | `system`  | Yes, but the manager sends SIGTERM after its grace period (3 s for rnqnx-winmgr, ADR-0016 item 11). `deadlineMs` carries it. |
+| `--replace` quit from a second launch                                  | none      | No. The launcher sends SIGTERM after 5000 ms. The guard is not asked.                                                        |
+| SIGTERM, or `Frame=N` fullscreen-winmgr                                | none      | No.                                                                                                                          |
 
 - Guards run in registration order. The first `false` cancels and later guards do not run.
-  `close()` resolves to the final decision. A second `close()` while one is pending joins it.
-- Removing a guard or listener is idempotent. After runtime teardown no guard or listener runs,
-  matching decision 8 in "API design review". The native side stops delivering before Hermes is
-  destroyed, in the order `docs/nitro/QT_DISPATCHER.md` sets for the dispatcher.
-- Mutating calls settle after the action has been applied on the window's owner thread, so a
-  resolved `setSize` means the size changed. Today JS and the window share the Qt GUI thread. Once
-  JS has its own thread (S2) these calls cross threads once, at this boundary, through
-  `QtNitroDispatcher`. No call blocks the GUI thread waiting for JS: a guard runs as a JS task and
-  the close waits on its Promise, not on a lock.
-- A call made while the JS thread is blocked does not run until it unblocks. The chrome controls do
-  not depend on this API, so they stay operable (that part is the S2 acceptance).
+- A second `close()`, or a press on the close control, while a close is pending joins it and does
+  not start a second guard run.
+- `close()` resolves `true` as "accepted": it settles before the native close is posted, because the
+  event loop and the JS runtime stop right after (ADR-0016 context, `QT_DISPATCHER.md` teardown). It
+  never resolves after the window is gone.
+- A guard that never settles leaves the close pending. The API has no timeout; the table above shows
+  the deadlines the app does not control. `close({ force: true })` skips the guards and is the
+  app's own way out of a guard it wrote badly.
+- A throwing or rejecting guard cancels the close, which protects data, and reports once.
+
+### Lifecycle
+
+- **Dev reload.** The window and chrome survive a reload; the runtime that registered the guards
+  does not. Guards and listeners from the old runtime are dropped. A close that arrives with no live
+  runtime proceeds unguarded. A new bundle starts with no guards.
+- **Minimize on QNX.** Under `fullscreen-winmgr` minimize destroys the native window and keeps the
+  `QWindow` (ADR-0016 item 3). That is not `WINDOWS_DISPOSED`. `setTitle` and `setBounds` while
+  minimized are stored and take effect on restore, and resolve once stored. The visibility listener
+  fires `false` on minimize and `true` on restore, then the focus listener fires.
+- **`AppState`.** Proposed: `background` before the native window is released and `active` after it
+  is restored, supplied by the chrome through an explicit `QtApplicationLifecycle` record, because
+  Qt does not report `ApplicationHidden` when the native window is destroyed. Under rnqnx-winmgr the
+  same two transitions wrap its minimize and restore messages. The host logs `RNQNX_APPSTATE` lines
+  for the gate receipt. This needs an ADR-0016 amendment (item 3 says `AppState` does not change),
+  and the amendment also corrects "the chrome never calls into JavaScript", which stops being true
+  once the close control waits on guards. Not implemented.
+
+### Bounds
+
+`setBounds` takes the outer window rectangle in device-independent pixels, title bar included
+(ADR-0016 item 8), in display coordinates. It moves `normalFrame` for a contained window and the
+native window under `rnqnx-winmgr`. It clamps to the screen and to the 400 by 300 minimum, and
+resolves with the rectangle it applied, so the caller sees the clamp. Without `move` and `resize`
+capabilities it rejects with `WINDOW_ACTION_UNSUPPORTED`. `setTitle` changes the title bar text and
+the accessible name; whether the `rnqnx-winmgr` dock label follows is open (ADR-0016 item 5 fixes
+the title to `expo.name` today).
+
+### Inset and SafeAreaView
+
+The gate asks for the inset to reach JavaScript and `SafeAreaView`. `QnxTitleBarInset` serves
+JavaScript readers. `SafeAreaView` and the `safe-area-context` shim should not import a windows API:
+the host feeds the native inset into the SafeAreaView state in `QtReactHost` (today it notes zero
+insets on QNX), so both read it with no JS import. Neither path is implemented; host tests cover
+only the native values (`titleBarInset*` in `WindowChromeQuickTest.cpp`).
 
 ### What each platform promises
 
-| Platform                               | Promise                                                                                                                                                                                                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Host (macOS, Linux), Qt Quick          | Everything above, as far as the host QPA allows; verified only by host tests once written. Labelled `host`.                                                                                                                                                  |
-| QNX Screen (VM, Pi 400, release board) | The same API, with `availableActions` reflecting `capabilitiesForPlatform("qnx")`: close and minimize on a full-screen app, plus maximize with `initialSize`. `minimize` releases the native window (ADR-0016 item 3). Nothing here is verified on a device. |
-| Marathon                               | Not supported in v1 (frozen target). Construction fails with `WINDOWS_UNAVAILABLE`.                                                                                                                                                                          |
+| Platform                               | Promise                                                                                                                                      |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host (macOS, Linux), Qt Quick          | Everything above as far as the host QPA allows, verified only by host tests once written. Labelled `host`.                                   |
+| QNX Screen (VM, Pi 400, release board) | The same API with `capabilities` from the QNX capability rules. `minimize` releases the native window. Nothing here is verified on a device. |
+| Marathon                               | Not supported in v1 (frozen target). Construction fails with `WINDOWS_UNAVAILABLE`.                                                          |
 
 ### Multi-window scope
 
-v1 has one window per app: one `QnxWindows` object, one set of guards and listeners, one title bar.
-Opening, listing or targeting other windows is outside v1. A multi-window API would be a separate
-HybridObject with its own lifecycle (hardening item H7 asks for per-root state and exactly-once event
-delivery first). The `scope` field makes the limit visible to callers.
+v1 has one window per app, one set of guards and listeners, one title bar. Opening, listing or
+targeting other windows is outside v1. A multi-window API would be a separate HybridObject with its
+own lifecycle (hardening item H7 asks for per-root state and exactly-once event delivery first).
 
-### Open questions for the review lane
+### Open questions for the second review
 
-1. A throwing guard: cancel (proposed, avoids losing data) or allow (avoids a window that cannot be
-   closed)? A `force` option on `close()` is the other way out.
-2. A guard that never settles: leave the close pending (proposed) or add a documented timeout? Any
-   number would be a design choice, not a measurement.
-3. `AppState`: minimize releases the native window, and ADR-0016 says `AppState` does not change.
-   The gate asks for the transition to be logged. Proposed: `background` before the release and
-   `active` on restore, which needs an ADR-0016 amendment and a change to `QnxAppStateModule`.
-4. Whether the inset belongs on this object or on a smaller object the `safe-area-context` shim can
-   read without importing the whole windows API.
+1. `deadlineMs` values: 3000 and 5000 come from `CLOSE_GRACE_S` and `quitTimeoutMs`. Confirm they are
+   read from those constants at run time rather than copied.
+2. A keyboard close shortcut (Alt+F4 or Ctrl+W) does not exist; the earlier `keyboard` reason was
+   removed. Add one only if the design sequence wants it.
+3. Whether `setTitle` should update the window manager's dock label.
