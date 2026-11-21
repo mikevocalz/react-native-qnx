@@ -1,0 +1,27 @@
+# configure-only checks, fresh tree /work/dist-root2, 2026-11-21T21:36:32Z
+# host: container qnx805-build (Linux aarch64 on Colima), QNX SDP 8.0.5 qcc
+CMAKE_BUILD_TYPE:STRING=Release
+CMAKE_CXX_FLAGS_RELEASE:STRING=-DNDEBUG   -DNDEBUG -O2
+CMAKE_C_FLAGS_RELEASE:STRING=-DNDEBUG   -DNDEBUG -O2
+CMAKE_TOOLCHAIN_FILE:FILEPATH=/work/dist-root2/scripts/qt612-public-qnx-aarch64le.cmake
+QT_QMAKE_TARGET_MKSPEC:STRING=qnx-aarch64le-qcc
+# compile FLAGS lines in build.ninja by -O level
+total  : 3132
+-O2    : 2485
+-O3    : 647
+no -O  : 0
+# ninja -n (dry run, nothing compiled) for the configure-qnx.sh target list
+[1860/1860] Linking CXX shared module qtbase/qml/QtQuick/Shapes/libqmlshapesplugin.so
+# FEATURE_* values, fresh configure vs the 2026-11-12 -O2 build cache (qnx-build/CMakeCache.txt)
+161a162
+> FEATURE_jasper:BOOL=OFF
+196a198
+> FEATURE_mng:BOOL=OFF
+379a382,383
+> FEATURE_system_tiff:BOOL=ON
+> FEATURE_system_webp:BOOL=OFF
+399a404
+> FEATURE_tiff:BOOL=ON
+448a454
+> FEATURE_webp:BOOL=ON
+diff exit 1 (1 = differences listed above)

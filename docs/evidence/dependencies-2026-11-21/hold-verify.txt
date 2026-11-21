@@ -1,0 +1,79 @@
+## reanimated 4.8.0 peers
+[
+  {
+    "react": "*",
+    "react-native": "0.87 - 0.89",
+    "react-native-worklets": "0.14.x"
+  }
+]
+## expo 58.0.26 bundledNativeModules (via installed)
+react-native-reanimated 4.7.1
+react-native-worklets 0.13.0
+react-native-gesture-handler ~3.3.0
+react-native-svg 15.16.0
+expo-router ~58.0.32
+react 19.3.0
+react-native 0.88.1
+## RN 0.88.1 deps
+[
+  {
+    "dependencies.@react-native/community-cli-plugin": "0.88.1",
+    "dependencies.hermes-compiler": "260318099.0.5",
+    "peerDependencies.react": "^19.3.0"
+  }
+]
+## cli-plugin metro
+^0.87.1
+## babel-preset
+^7.25.2
+## RN versions
+[
+  {
+    "0.67-stable": "0.67.5",
+    "0.66-stable": "0.66.5",
+    "0.65-stable": "0.65.3",
+    "0.64-stable": "0.64.4",
+    "0.63-stable": "0.63.5",
+    "0.68-stable": "0.68.7",
+    "0.70-stable": "0.70.15",
+    "0.71-stable": "0.71.19",
+    "0.72-stable": "0.72.17",
+    "0.73-stable": "0.73.11",
+    "0.74-stable": "0.74.7",
+    "0.75-stable": "0.75.5",
+    "0.76-stable": "0.76.9",
+    "0.78-stable": "0.78.3",
+    "0.77-stable": "0.77.3",
+    "0.79-stable": "0.79.7",
+    "0.80-stable": "0.80.3",
+    "0.81-stable": "0.81.6",
+    "0.83-stable": "0.83.10",
+    "0.86-stable": "0.86.3",
+    "latest": "0.88.1",
+    "next": "0.89.0-rc.2",
+    "nightly": "0.90.0-nightly-20261121-32a5aa6ad"
+  }
+]
+## ts
+[
+  {
+    "dev": "3.9.4",
+    "tag-for-publishing-older-releases": "4.1.6",
+    "insiders": "4.6.2-insiders.20220225",
+    "rc": "7.0.1-rc",
+    "latest": "7.0.2",
+    "beta": "7.1.0-beta",
+    "next": "7.1.0-dev.20261121.1"
+  }
+]
+## hermes-compiler
+[
+  {
+    "latest-v0": "0.17.0",
+    "nightly": "0.18.0-commitly-202606121333-9d66efec4",
+    "latest": "250829098.0.19",
+    "latest-v1": "260318099.0.8"
+  }
+]
+## node lts
+[('v26.13.1', 'Lithium'), ('v26.13.0', 'Lithium'), ('v26.12.1', False), ('v26.12.0', False)]

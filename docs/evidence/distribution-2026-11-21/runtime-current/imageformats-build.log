@@ -1,0 +1,308 @@
+/work/qt-6.12.0-public/download/qt-everywhere-src-6.12.0.tar.xz: OK
+'/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/bin/../libexec/qt-cmake-private' '-DFEATURE_system_webp=OFF' '-DFEATURE_system_tiff=OFF' '-DFEATURE_jasper=OFF' '-DFEATURE_mng=OFF' '-DQT_INTERNAL_CALLED_FROM_CONFIGURE:BOOL=TRUE' '/work/dist-root2/src/qt-everywhere-src-6.12.0/qtimageformats'
+-- The CXX compiler identification is QCC 12.2.0
+-- The C compiler identification is QCC 12.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /work/qnx800/host/linux/x86_64/usr/bin/q++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /work/qnx800/host/linux/x86_64/usr/bin/qcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Performing Test HAVE_EGL
+-- Performing Test HAVE_EGL - Success
+-- Found EGL: /work/qnx800/target/qnx/usr/include (found version "1.5")
+-- Performing Test HAVE_GLESv2
+-- Performing Test HAVE_GLESv2 - Success
+-- Force setting build type to 'Release'.
+-- Checking for feature set changes
+-- CMAKE_STRIP (original): /work/qnx800/host/linux/x86_64/usr/bin/ntoaarch64-strip
+-- Performing Test strip --keep-section
+-- Performing Test strip --keep-section - TRUE
+-- CMAKE_STRIP (used by Qt): /work/qnx800/host/linux/x86_64/usr/bin/ntoaarch64-strip
+-- Found JPEG: /work/qnx800/target/qnx/aarch64le/lib/libjpeg.so (found version "100")
+-- Could NOT find Jasper (missing: JASPER_LIBRARIES JASPER_INCLUDE_DIR) 
+-- Found TIFF: /work/qnx800/target/qnx/aarch64le/usr/lib/libtiff.so (found version "4.7.1")
+-- Could NOT find WrapWebP (missing: WebP_INCLUDE_DIR WebP_LIBRARY WebP_demux_INCLUDE_DIR WebP_demux_LIBRARY WebP_mux_INCLUDE_DIR WebP_mux_LIBRARY) 
+-- Could NOT find Libmng (missing: LIBMNG_LIBRARY LIBMNG_INCLUDE_DIR) 
+-- Using Qt bundled Jpeg.
+-- Found WrapJpeg: TRUE (found version "6.12.0")
+-- The following packages have been found:
+
+ * Qt6BuildInternals (required version >= 6.12.0)
+ * Qt6CorePrivate (required version == 6.12.0)
+ * Qt6Core (required version >= 6.12.0)
+ * EGL, A platform-agnostic mechanism for creating rendering surfaces for use with other graphics libraries, such as OpenGL|ES and OpenVG., <https://www.khronos.org/egl/>
+ * Qt6CoreTools (required version >= 6.12.0)
+ * Qt6GuiTools (required version >= 6.12.0)
+ * Qt6GuiPrivate (required version == 6.12.0)
+ * Qt6Gui (required version >= 6.12.0)
+ * JPEG
+ * TIFF
+ * Qt6ZlibPrivate
+ * Qt6BundledLibjpeg
+ * WrapJpeg
+ * Qt6HostInfo
+ * Qt6JpegPrivate
+ * Qt6
+
+-- The following OPTIONAL packages have not been found:
+
+ * PlatformGraphics
+ * Jasper
+ * WrapJasper
+ * Tiff
+ * WebP
+ * WrapWebP
+ * PkgConfig
+ * Libmng
+
+
+-- Configuration summary shown below. It has also been written to /home/qnxbuild/dist-build2/imageformats-qnx/config.summary
+-- Configure with --log-level=STATUS or higher to increase CMake's message verbosity. The log level does not persist across reconfigurations.
+ 
+-- Configure summary:
+
+Further Image Formats:
+  JasPer ................................. no
+  MNG .................................... no
+  TIFF ................................... yes
+    Using system libtiff ................. no
+  WEBP ................................... yes
+    Using system libwebp ................. no
+SBOM:
+  Generate SBOM .......................... no
+  Generate source SPDX SBOM .............. no
+ 
+
+Note: Due to CMAKE_STAGING_PREFIX usage and an unfixed CMake bug,
+      to ensure correct build time rpaths, directory-level install
+      rules like ninja src/gui/install will not work.
+      Check QTBUG-102592 for further details.
+
+-- Configuring done (9.5s)
+-- Generating done (0.3s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    QT_USE_ORIGINAL_COMPILER
+
+
+-- Build files have been written to: /home/qnxbuild/dist-build2/imageformats-qnx
+[1/201] Generating version linker script for target QTgaPlugin
+[2/201] Generating version linker script for target QWbmpPlugin
+[3/201] Generating version linker script for target QTiffPlugin
+[4/201] Automatic MOC for target QTgaPlugin
+[5/201] Automatic MOC for target QWbmpPlugin
+[6/201] Automatic MOC for target QTiffPlugin
+[7/201] Running AUTOMOC file extraction for target QTgaPlugin
+[8/201] Running AUTOMOC file extraction for target QWbmpPlugin
+[9/201] Running AUTOMOC file extraction for target QTiffPlugin
+[10/201] Running moc --collect-json for target QWbmpPlugin
+[11/201] Running moc --collect-json for target QTgaPlugin
+[12/201] Running moc --collect-json for target QTiffPlugin
+[13/201] Building CXX object src/plugins/imageformats/tga/CMakeFiles/QTgaPlugin.dir/QTgaPlugin_autogen/mocs_compilation.cpp.o
+[14/201] Building CXX object src/plugins/imageformats/wbmp/CMakeFiles/QWbmpPlugin.dir/QWbmpPlugin_autogen/mocs_compilation.cpp.o
+[15/201] Building CXX object src/plugins/imageformats/tga/CMakeFiles/QTgaPlugin.dir/main.cpp.o
+[16/201] Building CXX object src/plugins/imageformats/tga/CMakeFiles/QTgaPlugin.dir/qtgahandler.cpp.o
+[17/201] Building CXX object src/plugins/imageformats/tga/CMakeFiles/QTgaPlugin.dir/qtgafile.cpp.o
+[18/201] Linking CXX shared module plugins/imageformats/libqtga.so
+[19/201] Building CXX object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/QTiffPlugin_autogen/mocs_compilation.cpp.o
+[20/201] Building CXX object src/plugins/imageformats/wbmp/CMakeFiles/QWbmpPlugin.dir/main.cpp.o
+[21/201] Building CXX object src/plugins/imageformats/wbmp/CMakeFiles/QWbmpPlugin.dir/qwbmphandler.cpp.o
+[22/201] Linking CXX shared module plugins/imageformats/libqwbmp.so
+[23/201] Building CXX object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/main.cpp.o
+[24/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_close.c.o
+[25/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_aux.c.o
+[26/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_codec.c.o
+[27/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_color.c.o
+[28/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_compress.c.o
+[29/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_dir.c.o
+[30/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_dirinfo.c.o
+[31/201] Building CXX object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/qtiffhandler.cpp.o
+[32/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_dumpmode.c.o
+[33/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_dirwrite.c.o
+[34/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_error.c.o
+[35/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_dirread.c.o
+[36/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_extension.c.o
+[37/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_fax3sm.c.o
+[38/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_flush.c.o
+[39/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_hash_set.c.o
+[40/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_fax3.c.o
+[41/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_getimage.c.o
+[42/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_luv.c.o
+[43/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_lzw.c.o
+[44/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_next.c.o
+[45/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_packbits.c.o
+[46/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_open.c.o
+[47/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_pixarlog.c.o
+[48/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_print.c.o
+[49/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_predict.c.o
+[50/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_swab.c.o
+[51/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_strip.c.o
+[52/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_read.c.o
+[53/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_version.c.o
+[54/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_tile.c.o
+[55/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_thunder.c.o
+[56/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_warning.c.o
+[57/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_zip.c.o
+[58/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_write.c.o
+[59/201] Generating version linker script for target QWebpPlugin
+[60/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_unix.c.o
+[61/201] Automatic MOC for target QWebpPlugin
+[62/201] Building C object src/plugins/imageformats/tiff/CMakeFiles/QTiffPlugin.dir/__/__/__/3rdparty/libtiff/libtiff/tif_jpeg.c.o
+[63/201] Running AUTOMOC file extraction for target QWebpPlugin
+[64/201] Generating version linker script for target QICNSPlugin
+[65/201] Running moc --collect-json for target QWebpPlugin
+[66/201] Linking CXX shared module plugins/imageformats/libqtiff.so
+[67/201] Building CXX object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/QWebpPlugin_autogen/mocs_compilation.cpp.o
+[68/201] Automatic MOC for target QICNSPlugin
+[69/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/sharpyuv/sharpyuv.c.o
+[70/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/sharpyuv/sharpyuv_cpu.c.o
+[71/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/sharpyuv/sharpyuv_csp.c.o
+[72/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/sharpyuv/sharpyuv_dsp.c.o
+[73/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/sharpyuv/sharpyuv_gamma.c.o
+[74/201] Building CXX object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/main.cpp.o
+[75/201] Building CXX object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/qwebphandler.cpp.o
+[76/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/sharpyuv/sharpyuv_sse2.c.o
+[77/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/alpha_dec.c.o
+[78/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/buffer_dec.c.o
+[79/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/frame_dec.c.o
+[80/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/idec_dec.c.o
+[81/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/quant_dec.c.o
+[82/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/io_dec.c.o
+[83/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/tree_dec.c.o
+[84/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/vp8_dec.c.o
+[85/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/vp8l_dec.c.o
+[86/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dec/webp_dec.c.o
+[87/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/demux/anim_decode.c.o
+[88/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/alpha_processing.c.o
+[89/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/alpha_processing_mips_dsp_r2.c.o
+[90/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/demux/demux.c.o
+[91/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/alpha_processing_sse2.c.o
+[92/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/alpha_processing_sse41.c.o
+[93/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/cost_mips32.c.o
+[94/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/cost_mips_dsp_r2.c.o
+[95/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/cost.c.o
+[96/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/cost_sse2.c.o
+[97/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/cpu.c.o
+[98/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/cost_neon.c.o
+[99/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec_clip_tables.c.o
+[100/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec_mips32.c.o
+[101/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec.c.o
+[102/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec_mips_dsp_r2.c.o
+[103/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec_msa.c.o
+[104/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec_sse2.c.o
+[105/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec_sse41.c.o
+[106/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/enc_mips32.c.o
+[107/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/enc_mips_dsp_r2.c.o
+[108/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/enc_msa.c.o
+[109/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/enc_sse2.c.o
+[110/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/enc.c.o
+[111/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/enc_sse41.c.o
+[112/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/filters_mips_dsp_r2.c.o
+[113/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/filters_msa.c.o
+[114/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/filters.c.o
+[115/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/filters_sse2.c.o
+[116/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_avx2.c.o
+[117/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc_avx2.c.o
+[118/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc_mips32.c.o
+[119/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc.c.o
+[120/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless.c.o
+[121/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc_mips_dsp_r2.c.o
+[122/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc_msa.c.o
+[123/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc_sse2.c.o
+[124/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_sse2.c.o
+[125/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc_sse41.c.o
+[126/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_mips_dsp_r2.c.o
+[127/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/rescaler_mips32.c.o
+[128/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_sse41.c.o
+[129/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/rescaler_mips_dsp_r2.c.o
+[130/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/rescaler_msa.c.o
+[131/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/rescaler.c.o
+[132/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/rescaler_sse2.c.o
+[133/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/ssim_sse2.c.o
+[134/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/upsampling_mips_dsp_r2.c.o
+[135/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/ssim.c.o
+[136/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/upsampling_sse2.c.o
+[137/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/upsampling_msa.c.o
+[138/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/upsampling.c.o
+[139/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/yuv_mips32.c.o
+[140/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/upsampling_sse41.c.o
+[141/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/yuv_mips_dsp_r2.c.o
+[142/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/yuv_sse2.c.o
+[143/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/yuv.c.o
+[144/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/yuv_sse41.c.o
+[145/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/alpha_enc.c.o
+[146/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/analysis_enc.c.o
+[147/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/backward_references_cost_enc.c.o
+[148/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/config_enc.c.o
+[149/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/backward_references_enc.c.o
+[150/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/cost_enc.c.o
+[151/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/filter_enc.c.o
+[152/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/frame_enc.c.o
+[153/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/histogram_enc.c.o
+[154/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/iterator_enc.c.o
+[155/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/near_lossless_enc.c.o
+[156/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/picture_enc.c.o
+[157/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/picture_csp_enc.c.o
+[158/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/picture_psnr_enc.c.o
+[159/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/picture_rescale_enc.c.o
+[160/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/picture_tools_enc.c.o
+[161/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/predictor_enc.c.o
+[162/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/syntax_enc.c.o
+[163/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/quant_enc.c.o
+[164/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/tree_enc.c.o
+[165/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/token_enc.c.o
+[166/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/webp_enc.c.o
+[167/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/enc/vp8l_enc.c.o
+[168/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/mux/anim_encode.c.o
+[169/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/mux/muxedit.c.o
+[170/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/mux/muxinternal.c.o
+[171/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/mux/muxread.c.o
+[172/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/bit_reader_utils.c.o
+[173/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/color_cache_utils.c.o
+[174/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/bit_writer_utils.c.o
+[175/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/filters_utils.c.o
+[176/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/huffman_encode_utils.c.o
+[177/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/huffman_utils.c.o
+[178/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/palette.c.o
+[179/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/quant_levels_utils.c.o
+[180/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/quant_levels_dec_utils.c.o
+[181/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/random_utils.c.o
+[182/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/thread_utils.c.o
+[183/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/rescaler_utils.c.o
+[184/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/utils/utils.c.o
+[185/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/sharpyuv/sharpyuv_neon.c.o
+[186/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/alpha_processing_neon.c.o
+[187/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/dec_neon.c.o
+[188/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/filters_neon.c.o
+[189/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/enc_neon.c.o
+[190/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_enc_neon.c.o
+[191/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/rescaler_neon.c.o
+[192/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/lossless_neon.c.o
+[193/201] Running AUTOMOC file extraction for target QICNSPlugin
+[194/201] Running moc --collect-json for target QICNSPlugin
+[195/201] Building CXX object src/plugins/imageformats/icns/CMakeFiles/QICNSPlugin.dir/QICNSPlugin_autogen/mocs_compilation.cpp.o
+[196/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/yuv_neon.c.o
+[197/201] Building C object src/plugins/imageformats/webp/CMakeFiles/QWebpPlugin.dir/__/__/__/3rdparty/libwebp/src/dsp/upsampling_neon.c.o
+[198/201] Linking CXX shared module plugins/imageformats/libqwebp.so
+[199/201] Building CXX object src/plugins/imageformats/icns/CMakeFiles/QICNSPlugin.dir/main.cpp.o
+[200/201] Building CXX object src/plugins/imageformats/icns/CMakeFiles/QICNSPlugin.dir/qicnshandler.cpp.o
+[201/201] Linking CXX shared module plugins/imageformats/libqicns.so
+total 1572
+-rwxr-xr-x 1 qnxbuild qnxbuild   52128 Nov 21 21:45 libqicns.so
+-rwxr-xr-x 1 qnxbuild qnxbuild   33632 Nov 21 21:44 libqtga.so
+-rwxr-xr-x 1 qnxbuild qnxbuild 1008304 Nov 21 21:44 libqtiff.so
+-rwxr-xr-x 1 qnxbuild qnxbuild   32520 Nov 21 21:44 libqwbmp.so
+-rwxr-xr-x 1 qnxbuild qnxbuild  474288 Nov 21 21:45 libqwebp.so
+EXIT=0 2026-11-21T21:45:34Z

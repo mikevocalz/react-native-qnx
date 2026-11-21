@@ -46,3 +46,22 @@ The `dependencies` gate stays pending until the required hosted workflows pass o
 | expo, babel-preset-expo                        | 58.0.24, 58.0.25       | 58.0.26                | Bumped | Exact pins, `sdk58-support.json`, the capability table and the version tables regenerated. `validate:dependencies`, `validate:expo-sdk58-support`, `validate:qnx-expo-modules`, `validate:qnx-expo-autolinking`, host `test:js` and the docs-site checks pass (host).                                                                                                      |
 | expo-router                                    | 58.0.31                | 58.0.32                | Hold   | The Pi 400 router and tab receipts ran 58.0.31 ([route receipt](../validation/pr159-drawer-route-2026-11-13.md), [prop audit](../evidence/router-prop-audit-2026-11-13.md)), and the resolver shims patch named files inside that package. Expo 58.0.26 lists `~58.0.32`, so the generated SDK 58 table shows 58.0.32 as the Expo range while the repository pins 58.0.31. |
 | prettier, pnpm, @legendapp/list                | 3.9.10, 12.18.0, 3.7.2 | 3.10.1, 12.21.0, 3.7.3 | Bumped | `format:check` passes on prettier 3.10.1. pnpm 12.21.0 is pinned in `package.json`, every workflow, the scripts and the docs; the lockfile was regenerated with it (host).                                                                                                                                                                                                 |
+
+## Re-check on `main` at `fb20c3ad`, 2026-11-21
+
+Every Bump row has landed. Every Hold row, including those in the `pnpm outdated -r` table above,
+now has its reason under a "Held:" heading in the
+[compatibility matrix](../getting-started/compatibility-matrix.md). Evidence, all labelled host or
+hosted: [dependencies-2026-11-21](../evidence/dependencies-2026-11-21/README.md).
+
+- `pnpm outdated -r` on this commit lists only items held above
+  ([output](../evidence/dependencies-2026-11-21/pnpm-outdated.txt)).
+- `validate:dependencies`, `audit:dependencies` (0 advisories), `typecheck`, the Expo SDK 58
+  validators, `validate:docs` and host `test:js` exit 0 (host).
+- `v1-candidate` run [44951214656](https://github.com/mikevocalz/react-native-qnx/actions/runs/44951214656)
+  passed all 21 hosted jobs on this commit (hosted).
+- Checked 2026-11-21: react-native `next` is `0.89.0-rc.2`, hermes-compiler `latest-v1` is
+  `260318099.0.8`. Both stay held.
+
+Not closed here: the Qt host floor `Decide` row (owner), the Qt device `Rebuild` row (`distribution`
+gate) and the QNX SDP `Re-check` row.

@@ -11,6 +11,7 @@ set -euo pipefail
 # frame is read from the log or given in RNQNX_MOUSE_FRAME=WxH+X+Y. It needs
 # sudo without a password on the Pi (the injector is an input provider) and a
 # window at least 700 wide. It never starts or stops an app.
+# It first waits for the app to log `RNQNX_NODE name=rnqnxTitleBar`.
 # After each injected event it waits for the app to log the result (a new
 # RNQNX_WINDOW_FRAME or RNQNX_WINDOW_ACTION line) for up to RNQNX_MOUSE_WAIT_S
 # seconds (default 10) and names the line it waited for when none arrives.
@@ -99,6 +100,13 @@ expect() {
   fi
 }
 
+# The app prints RNQNX_NODE for its title bar once the bar is visible and a
+# frame has been presented (native/window-chrome/NodeBeacon.h). Nothing is
+# injected before that line.
+if ! err=$(rnqnx_wait_node_remote "${APP_LOG}" rnqnxTitleBar 1 "${WAIT_S}" 2>&1); then
+  log "${err}"
+  exit 1
+fi
 start=${RNQNX_MOUSE_FRAME:-$(last_frame)}
 [[ -n "${start}" ]] || {
   echo "ERROR: the app has not logged a window frame yet. Set RNQNX_MOUSE_FRAME=WxH+X+Y to the window's current frame (a restored, unmaximized window)." >&2

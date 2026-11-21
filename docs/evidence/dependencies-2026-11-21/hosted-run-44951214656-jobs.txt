@@ -1,0 +1,26 @@
+success app-identity / identity (OFF)
+success app-identity / identity (ON)
+success expo-modules-qnx-source-check / source-contract
+success expo-qnx-autolinking / autolinking
+success hermes-qnx-source-check / patch
+success host-renderer / Qt 6.11 / RN 0.88 / Hermes (input lifecycle OFF)
+success host-renderer / Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON)
+success image-loader / image-cache
+success nitro-qnx-source-check / source-contract
+success nitro-v1-host / source-and-compile
+success performance-budgets / Host lane, startup, frame swaps and RSS (Qt 6.11, Release, offscreen software)
+success phase-public-host / render
+success phase4-lifecycle / observer (OFF)
+success phase4-lifecycle / observer (ON)
+success phase6-doctor / diagnostics
+success phase7-release-dossier / dossier
+success pi-tooling-quality / Shell syntax and lint
+success qnx-create-app / create
+skipped qnx-cross / QNX aarch64 cross-build (SDP 8.0.5, self-hosted)
+success qnx-native-consumer-build / native-consumer
+skipped qnx-vm / QNX VM (QEMU, TCG, software render)
+success react-qnx-source-check / source-contract
+success runtime-appstate / native-runtime (OFF)
+success runtime-appstate / native-runtime (ON)
+success sdk58-validation / validate
+success v1 candidate aggregate

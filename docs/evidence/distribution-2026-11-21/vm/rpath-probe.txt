@@ -1,0 +1,20 @@
+uname: QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le
+--- A: absolute DT_RPATH (build-host dir exists, holds v1); user replacement v2 on LD_LIBRARY_PATH. Expect v2 if replacement works.
+libfoo version 1
+libs: find_file:2522: name=libfoo.so.1 libpath=/data/dist-probe/user rpath=/data/dist-probe/buildhost runpath=NULL
+libs: object libfoo.so.1 loaded; real soname: libfoo.so.1 loaded from: /data/dist-probe/buildhost/libfoo.so.1
+--- O: DT_RPATH $ORIGIN/lib, libfoo v1 in origin/lib, run from /tmp. Expect v1 if $ORIGIN is expanded.
+ldd:FATAL: Could not load library libfoo.so.1
+libs: searchpath:2475: trying $ORIGIN/lib/libfoo.so.1
+libs: searchpath:2475: trying /proc/boot/libfoo.so.1
+libs: searchpath:2475: trying /system/lib/libfoo.so.1
+libs: searchpath:2475: trying /system/lib/dll/libfoo.so.1
+--- B: normalize-rpath.py --runpath /data/dist-probe/rp/lib (DT_RUNPATH); no LD_LIBRARY_PATH. Expect v1.
+libfoo version 1
+--- C: same binary, user replacement v2 on LD_LIBRARY_PATH. Expect v2.
+libfoo version 2
+libs: find_file:2522: name=libfoo.so.1 libpath=/data/dist-probe/user rpath=NULL runpath=/data/dist-probe/rp/lib
+libs: object libfoo.so.1 loaded; real soname: libfoo.so.1 loaded from: /data/dist-probe/user/libfoo.so.1
+--- D: same binary, v2 copied over the file in the runpath directory, no LD_LIBRARY_PATH. Expect v2.
+libfoo version 2
+libs: object libfoo.so.1 loaded; real soname: libfoo.so.1 loaded from: /data/dist-probe/rp/lib/libfoo.so.1

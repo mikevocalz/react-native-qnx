@@ -35,12 +35,15 @@ add_executable(rnqnx_window_chrome_model_test WindowChromeModelTest.cpp)
 target_link_libraries(rnqnx_window_chrome_model_test PRIVATE rnqnx_window_chrome Qt6::Test)
 add_executable(rnqnx_window_chrome_quick_test WindowChromeQuickTest.cpp)
 target_link_libraries(rnqnx_window_chrome_quick_test PRIVATE rnqnx_window_chrome Qt6::Test)
+add_executable(rnqnx_node_beacon_test NodeBeaconTest.cpp)
+target_link_libraries(rnqnx_node_beacon_test PRIVATE rnqnx_window_chrome Qt6::Test)
 
 
 include(CTest)
 set(test_env "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1")
 add_test(NAME rnqnx_window_chrome_model COMMAND rnqnx_window_chrome_model_test)
 add_test(NAME rnqnx_window_chrome_quick COMMAND rnqnx_window_chrome_quick_test)
+add_test(NAME rnqnx_node_beacon COMMAND rnqnx_node_beacon_test)
 # Same chrome under a 2x device pixel ratio: logical sizes must not change and
 # the rendered bar must double in device pixels.
 add_test(NAME rnqnx_window_chrome_quick_dpr2 COMMAND rnqnx_window_chrome_quick_test)
@@ -48,6 +51,8 @@ add_test(NAME rnqnx_window_chrome_quick_dpr2 COMMAND rnqnx_window_chrome_quick_t
 # 2x, so a window counts as expanded only when a test makes it fill the screen.
 set(quick_env "QT_QPA_PLATFORM=offscreen:configfile=${CMAKE_CURRENT_SOURCE_DIR}/fixtures/offscreen-screen.json;QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1")
 set_tests_properties(rnqnx_window_chrome_model PROPERTIES
+  TIMEOUT 60 ENVIRONMENT "${test_env}")
+set_tests_properties(rnqnx_node_beacon PROPERTIES
   TIMEOUT 60 ENVIRONMENT "${test_env}")
 set_tests_properties(rnqnx_window_chrome_quick PROPERTIES
   TIMEOUT 60 ENVIRONMENT "${quick_env}")

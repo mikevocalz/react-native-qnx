@@ -32,6 +32,7 @@
 #endif
 #include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #if RNQNX_ENABLE_WINDOW_CHROME
+#include "NodeBeacon.h"
 #include "WindowChrome.h"
 #include "WindowHost.h"
 #ifdef RNQNX_CONSUMER_WINDOW_HEADER
@@ -779,6 +780,7 @@ int main(int argc, char** argv) {
   // Declared after the engine and before the mounting layer, so the layer
   // unmounts first and the chrome items go before the engine.
   std::unique_ptr<rnqnx::window::WindowChrome> chrome;
+  std::unique_ptr<rnqnx::window::NodeBeacon> beacon;
   if (!parser.isSet(fullscreenOption) &&
       chromeConfig.titleBarStyle != rnqnx::window::TitleBarStyle::None) {
     const QStringList platformOptions =
@@ -815,6 +817,11 @@ int main(int argc, char** argv) {
       return 1;
     }
     mountRoot = &chrome->contentRoot();
+    // scripts/pi-mouse-smoke.sh waits for these lines before it injects input.
+    QStringList beaconNodes;
+    if (chrome->barHeight() > 0) beaconNodes.append(QStringLiteral("rnqnxWindowChrome"));
+    if (chrome->barVisible()) beaconNodes.append(QStringLiteral("rnqnxTitleBar"));
+    beacon = std::make_unique<rnqnx::window::NodeBeacon>(window, *chrome->chromeItem(), beaconNodes);
     std::printf("RNQNX_WINDOW_CHROME platform=%s controls=%s style=%s inset=%g window=%dx%d mode=%s\n",
         QGuiApplication::platformName().toUtf8().constData(),
         rnqnx::window::nameOf(chromeConfig.controls).toUtf8().constData(),

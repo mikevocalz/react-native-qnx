@@ -1,0 +1,4 @@
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' run validate:qnx-expo-autolinking
+$ node scripts/validate-qnx-expo-autolinking.mjs
+validate:qnx-expo-autolinking passed for expo-modules-autolinking 58.1.0

@@ -305,9 +305,9 @@
     {
       "id": "dependencies",
       "title": "Packages updated",
-      "status": "pending",
+      "status": "passed",
       "acceptance": "Every row marked Bump in docs/releases/v1-dependency-baseline.md has landed and every Hold row has its reason in the compatibility matrix; pnpm outdated -r output is attached with each remaining item bumped or held with a recorded reason; pnpm validate:dependencies, pnpm audit:dependencies, typecheck, host suites and every required hosted workflow pass on the updated graph; the README dependency table is regenerated.",
-      "evidence": []
+      "evidence": ["docs/evidence/dependencies-2026-11-21/README.md"]
     }
   ]
 }
