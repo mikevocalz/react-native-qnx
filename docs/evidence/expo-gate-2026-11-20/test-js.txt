@@ -1,0 +1,2100 @@
+Running /Volumes/QNX/clones/s7-expo/tests/js/accessibility-action-controls.test.mjs...
+Accessibility action controls enforce exact exit status and reject sanitizer output.
+Running /Volumes/QNX/clones/s7-expo/tests/js/accessibility-action-fixture-config.test.mjs...
+AccessibilityAction fixture configuration: normal host/QNX generation, cached HBC dependency and invalid-path rejection passed (host graph only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/accessibility-view-config.test.mjs...
+BaseViewConfig admits standard accessibility props and direct action events.
+Running /Volumes/QNX/clones/s7-expo/tests/js/app-identity.test.mjs...
+{
+  "action": "dry-run",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/prepared/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/Volumes/QNX/clones/s7-expo/template/qnx/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/Volumes/QNX/clones/s7-expo/template/qnx/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/auto-built/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/host-a/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes JS",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/art/tile.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-app-config-js/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 80,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Pad",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/art/tile.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-WZ3KoC/from-plugin-options/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 30,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+App identity: 84 checks passed (protocol stand-in; Qt measurement runs in native/app-identity CTest).
+Running /Volumes/QNX/clones/s7-expo/tests/js/braces-security.test.mjs...
+braces security: patched-source, regression, tamper, and audit-policy checks passed.
+Running /Volumes/QNX/clones/s7-expo/tests/js/cli-entry-symlink.test.mjs...
+cli-entry-symlink: 9 entry points behave the same through a symlink.
+Running /Volumes/QNX/clones/s7-expo/tests/js/compression-security.test.mjs...
+Running /Volumes/QNX/clones/s7-expo/tests/js/docs-validation.test.mjs...
+docs-validation.test.mjs passed (stale pins, installed drift, evidence requirements, duplicate components, markers and release blockers)
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-capability-table.test.mjs...
+expo-capability-table: 142 checks passed.
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-config-resolution.test.mjs...
+(node:37889) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Expo config resolution: 56 checks passed (app.json, app.config.js, app.config.ts).
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-dual-discovery.test.mjs...
+real Expo qnx discovery and CMake INTERFACE linkage passed; no native runtime claim
+real Expo marathon discovery and CMake INTERFACE linkage passed; no native runtime claim
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-dual-platform.test.mjs...
+expo-dual-platform: 31 checks passed (descriptor/generator host fixtures).
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-modules2-compat.test.mjs...
+expo-modules2-compat.test.mjs passed (source only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-prebuild-idempotent.test.mjs...
+expo-prebuild-idempotent: 14 checks passed (host; stand-in identity tool unless RNQNX_IDENTITY_TOOL is set).
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-qnx-autolinking.test.mjs...
+expo-qnx-autolinking.test.mjs passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-qnx-discovery.test.mjs...
+Expo QNX: real Expo discovery, deterministic preparation and CMake target wiring passed.
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-qnx-prepare.test.mjs...
+expo-qnx-prepare: 58 checks passed (host files/generation only).
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-router-qnx.test.mjs...
+expo-router-qnx tests passed.
+Running /Volumes/QNX/clones/s7-expo/tests/js/expo-sdk58-support.test.mjs...
+Expo SDK 58 support list: 14 checks passed ({"unsupported":101,"host-tooling":6,"js-only":8,"no-op":4,"partial":4,"platform":1}).
+Running /Volumes/QNX/clones/s7-expo/tests/js/host-renderer-contract.test.mjs...
+Running /Volumes/QNX/clones/s7-expo/tests/js/js-runner.test.mjs...
+js-runner.test.mjs passed (missing suite, empty suite and missing test input fail)
+Running /Volumes/QNX/clones/s7-expo/tests/js/marathon-development-launcher.test.mjs...
+Marathon launcher: non-Linux rejection passed; Linux process/socket suite not run.
+Running /Volumes/QNX/clones/s7-expo/tests/js/marathon-metro-platform.test.mjs...
+marathon-metro-platform.test.mjs passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/marathon-native-host-contract.test.mjs...
+marathon-native-host-contract.test.mjs passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/marathon-overrides.test.mjs...
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+marathon-overrides.test.mjs passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/nitro-api-skill-contract.test.mjs...
+Nitro API/JS/native source contracts passed (NOT compiled or device-tested)
+Running /Volumes/QNX/clones/s7-expo/tests/js/nitro-dual-host-contract.test.mjs...
+nitro-dual-host-contract.test.mjs passed (source-check only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/nitro-platform-codegen.test.mjs...
+Platform Nitro v1 binding check passed
+nitro-platform-codegen.test.mjs passed (generated bindings only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/nitro-v1-native-migration.test.mjs...
+nitro-v1-native-migration.test.mjs passed (source only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/override-paths-match-upstream.test.mjs...
+override paths: 18 overrides match react-native@0.88.1
+Running /Volumes/QNX/clones/s7-expo/tests/js/pi-evidence.test.mjs...
+pi-evidence.test.mjs passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/pressable-cancellation.test.mjs...
+Pressable cancellation: exact installed dev/prod guards, OFF parity and null-target error propagation passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/pressable-fixture-config.test.mjs...
+Pressable fixture configuration: normal host/QNX generation, cached HBC dependency and invalid-path rejection passed (host graph only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/public-entry-doc.test.mjs...
+public entry doc matches PublicAPI.js (48 exports)
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-adaptive-layout.test.mjs...
+Adaptive layout: logical breakpoints, bounded grid sizing, stable element ancestry, and menu focus transitions passed (JS host fixture; no native input claim).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-add-to-existing-expo.test.mjs...
+Add QNX to an existing Expo app: 36 checks passed (fixture outside the checkout).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-appstate-optional-registry.test.mjs...
+AppState optional registry: null when disabled, actual native module when enabled (host VM only).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-cli-evidence.test.mjs...
+qnx-cli-evidence.test.mjs passed (dry-run, real verifier, SHA-256 manifest, newest run, errors; synthetic host fixture only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-cli.test.mjs...
+qnx-cli.test.mjs passed (init safety, output symlink confinement, option rejection, dry-run, real shell failure propagation; no device connection)
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-component-conformance.test.mjs...
+qnx-component-conformance.test.mjs passed (deterministic fixtures, no false device passes, source-checkout entry contract; no QNX run)
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-consumer-doctor-installed.test.mjs...
+Consumer doctor: both target CLI reports matched the actual installed workspace graph; native/runtime not verified.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-consumer-doctor.test.mjs...
+Consumer doctor: 55 checks passed (metadata fixtures; actual Node minimum enforced, no config execution or device proof).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-consumer-native-config.test.mjs...
+{
+  "action": "dry-run",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "qnx",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "qnx",
+      "status": "not-measured",
+      "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "qnx",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "qnx",
+      "status": "not-measured",
+      "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "qnx",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/qnx/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "qnx",
+      "status": "not-measured",
+      "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "dry-run",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-native-config-68sqDr/one external app/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+Consumer native configuration: 51 checks passed (real file/hash/CMake generation; native compilation separate). Linux host-preview generation assertions not run on darwin; the host refusal was asserted instead.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-desktop-entry.test.mjs...
+qnx-desktop-entry: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-dev-server.test.mjs...
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+dev-server launch command, resolver fallback, /message and /status passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-device-tools.test.mjs...
+qnx-device-tools: 57 checks passed (synthetic SSH/remote shell, no device).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-environment-doctor.test.mjs...
+qnx-environment-doctor: 14 prerequisite checks passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-expo-host-polyfill.test.mjs...
+QNX Expo host polyfill: resolver override and globalThis.expo classes verified.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-expo-module-registration.test.mjs...
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.example.constants",
+    "displayName": "Constants App",
+    "componentName": "ConstantsApp",
+    "platform": "qnx",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/app.hbc",
+    "bundleSha256": "a349357b4f8038fbb7f7910d3ef1995e4d495b18f0245baa386f8f5a53e64ed8",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "expoModules": [
+      {
+        "package": "@rn-qnx/expo-constants-qnx",
+        "version": "0.1.0",
+        "root": "/Volumes/QNX/clones/s7-expo/packages/expo-constants-qnx",
+        "cmakeLists": "/Volumes/QNX/clones/s7-expo/packages/expo-constants-qnx/CMakeLists.txt",
+        "target": "expo_constants_qnx",
+        "initializer": "rnqnx::expo::constants::registerModule"
+      }
+    ],
+    "expoConfig": {
+      "name": "Constants App",
+      "slug": "constants-app",
+      "version": "2.3.0",
+      "icon": "./icon.png",
+      "extra": {
+        "rnqnx": {
+          "appId": "org.example.constants",
+          "componentName": "ConstantsApp"
+        }
+      },
+      "platforms": []
+    },
+    "shortName": "Constants App",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-modules-qhVStq/app/build/qnx/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "qnx",
+      "status": "not-measured",
+      "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+Expo module registration: 24 checks passed (discovery, descriptor, plan, CMake host compile; no QNX build or device run).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-external-project-metro.test.mjs...
+external qnx Metro: 482694 bytes; bundle only, no native run
+external marathon Metro: 483098 bytes; bundle only, no native run
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-external-project.test.mjs...
+{
+  "command": "bundle",
+  "platform": "qnx",
+  "project": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app",
+  "projectName": "external-app",
+  "entry": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/index.js",
+  "config": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/metro.config.js",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/build/qnx/app.bundle.js",
+  "executable": "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+  "metroCli": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": true,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "command": "bundle",
+  "platform": "qnx",
+  "project": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app",
+  "projectName": "external-app",
+  "entry": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/index.js",
+  "config": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/metro.config.js",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/build/qnx/app.bundle.js",
+  "executable": "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+  "metroCli": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false,
+  "action": "bundled",
+  "bytes": 413
+}
+{
+  "command": "inspect",
+  "platform": "qnx",
+  "project": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app",
+  "projectName": "external-app",
+  "entry": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/index.js",
+  "config": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/metro.config.js",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/build/qnx/app.bundle.js",
+  "executable": "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+  "metroCli": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "command": "bundle",
+  "platform": "marathon",
+  "project": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app",
+  "projectName": "external-app",
+  "entry": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/index.js",
+  "config": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/metro.marathon.config.js",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/build/marathon/app.bundle.js",
+  "executable": "/opt/homebrew/Cellar/node/26.13.0_2/bin/node",
+  "metroCli": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-external-eqHErZ/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false,
+  "action": "bundled",
+  "bytes": 432
+}
+qnx-external-project: 39 checks passed (synthetic Metro process, no native run).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-gallery-asset-staging.test.mjs...
+qnx-gallery-asset-staging: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-gallery-drawer-selection.test.mjs...
+Gallery drawer: active navigator destination survives child tabs, route changes and reopen.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-gallery-yoga-layout.test.mjs...
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+qnx-gallery-yoga-layout: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-hermes-selection.test.mjs...
+QNX Hermes CMake selection: release lean, development/worklets full, missing full rejected
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-integrated-consumer.test.mjs...
+integrated external app qnx: doctor/discovery/public Metro passed; host render=false
+integrated external app marathon: doctor/discovery/public Metro passed; host render=false
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-native-consumer-build.test.mjs...
+Native consumer build planning: 10 checks passed (no native build or device claim). Linux-only assertions not run on darwin (host refusal asserted instead): explicit Linux preview; Marathon Linux target; stale bundle rejects; identity drift rejects; icon and tile label drift rejects; dry run does not create build.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-nitro-package-metadata.test.mjs...
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.example.gauge",
+    "displayName": "Gauge",
+    "componentName": "Gauge",
+    "platform": "qnx",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/app.hbc",
+    "bundleSha256": "a349357b4f8038fbb7f7910d3ef1995e4d495b18f0245baa386f8f5a53e64ed8",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "nitroModules": [
+      {
+        "package": "@acme/nitro-gauge",
+        "version": "0.3.0",
+        "root": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/store/@acme+nitro-gauge@0.3.0/node_modules/@acme/nitro-gauge",
+        "cmakeLists": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/store/@acme+nitro-gauge@0.3.0/node_modules/@acme/nitro-gauge/CMakeLists.txt",
+        "target": "AcmeGauge",
+        "initializer": "registerAcmeGauge"
+      },
+      {
+        "package": "react-native-qnx-battery",
+        "version": "2.1.0",
+        "root": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/node_modules/react-native-qnx-battery",
+        "cmakeLists": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/node_modules/react-native-qnx-battery/qnx/CMakeLists.txt",
+        "target": "QnxBattery",
+        "initializer": "margelo::nitro::battery::registerQnxHybridClasses"
+      }
+    ],
+    "shortName": "Gauge",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-nitro-metadata-zsFiHX/apps/gauge app/build/qnx/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "qnx",
+      "status": "not-measured",
+      "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+Nitro package metadata: 57 checks passed (discovery, descriptor, plan, CMake host compile; no QNX build or device run).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-performance-lab.test.mjs...
+performance-lab bundle hello-world: 482928 bytes 5e29d392aad17de8fc40e71416b10421e4f42738a0693b1f9e26356b8c54a0a7
+performance-lab bundle list-1000: 771268 bytes 09c3d5630a8d0bd41008d0d7db76083e72b4754a0f89b991ad6db7151200a49e
+Performance workload bundles passed; no device, FPS, RSS or startup claim.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-project-create.test.mjs...
+QNX project create: real local archives, independent QNX and dual-target source, identity, hash, refusal and no-overwrite checks passed; native runtime not tested.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-public-entry-metro.test.mjs...
+public-entry qnx: 719581 bytes (real Metro, runtime separate)
+public-entry marathon: 721020 bytes (real Metro, runtime separate)
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-public-entry.test.mjs...
+public-entry exports/resolver, Switch styles/events and Image loader contracts passed (host VM only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-public-runtime-staging.test.mjs...
+test_attribution_output_escape_preserves_previous_runtime (__main__.StagingTest.test_attribution_output_escape_preserves_previous_runtime) ... ok
+test_existing_lock_refuses_concurrent_staging (__main__.StagingTest.test_existing_lock_refuses_concurrent_staging) ... ok
+test_failed_promotion_restores_previous_runtime (__main__.StagingTest.test_failed_promotion_restores_previous_runtime) ... note: no QtSvg build at /var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-stage-test-19yjusbw/build/svg-qnx; the runtime will not decode SVG images
+ok
+test_imageformat_plugins_and_multiple_audit_notices_are_staged (__main__.StagingTest.test_imageformat_plugins_and_multiple_audit_notices_are_staged) ... ok
+test_imageformat_source_symlink_escape_preserves_previous_runtime (__main__.StagingTest.test_imageformat_source_symlink_escape_preserves_previous_runtime) ... ok
+test_imageformats_build_output_collision_is_rejected (__main__.StagingTest.test_imageformats_build_output_collision_is_rejected) ... ok
+test_malformed_audit_preserves_previous_runtime (__main__.StagingTest.test_malformed_audit_preserves_previous_runtime) ... ok
+test_malformed_second_audit_preserves_previous_runtime (__main__.StagingTest.test_malformed_second_audit_preserves_previous_runtime) ... ok
+test_missing_codec_attribution_preserves_previous_runtime (__main__.StagingTest.test_missing_codec_attribution_preserves_previous_runtime) ... ok
+test_missing_imageformat_plugin_preserves_previous_runtime (__main__.StagingTest.test_missing_imageformat_plugin_preserves_previous_runtime) ... ok
+test_missing_library_preserves_previous_runtime (__main__.StagingTest.test_missing_library_preserves_previous_runtime) ... ok
+test_missing_plugin_preserves_previous_runtime (__main__.StagingTest.test_missing_plugin_preserves_previous_runtime) ... ok
+test_missing_qt_dependency_preserves_previous_runtime (__main__.StagingTest.test_missing_qt_dependency_preserves_previous_runtime) ... ok
+test_missing_svg_plugin_preserves_previous_runtime (__main__.StagingTest.test_missing_svg_plugin_preserves_previous_runtime) ... ok
+test_no_audit_with_bundled_codec_plugins_preserves_previous_runtime (__main__.StagingTest.test_no_audit_with_bundled_codec_plugins_preserves_previous_runtime) ... ok
+test_output_symlink_is_rejected (__main__.StagingTest.test_output_symlink_is_rejected) ... ok
+test_protected_output_is_rejected (__main__.StagingTest.test_protected_output_is_rejected) ... ok
+test_readelf_failure_preserves_previous_runtime (__main__.StagingTest.test_readelf_failure_preserves_previous_runtime) ... ok
+test_separate_imageformats_notice_escape_preserves_previous_runtime (__main__.StagingTest.test_separate_imageformats_notice_escape_preserves_previous_runtime) ... ok
+test_separate_imageformats_source_notices_are_staged (__main__.StagingTest.test_separate_imageformats_source_notices_are_staged) ... ok
+test_separate_imageformats_source_output_collision_is_rejected (__main__.StagingTest.test_separate_imageformats_source_output_collision_is_rejected) ... ok
+test_source_symlink_escape_preserves_previous_runtime (__main__.StagingTest.test_source_symlink_escape_preserves_previous_runtime) ... ok
+test_success_replaces_runtime_and_hashes_actual_files (__main__.StagingTest.test_success_replaces_runtime_and_hashes_actual_files) ... ok
+test_svg_addon_is_staged_with_notices_and_dependency_closure (__main__.StagingTest.test_svg_addon_is_staged_with_notices_and_dependency_closure) ... ok
+test_svg_build_output_collision_is_rejected (__main__.StagingTest.test_svg_build_output_collision_is_rejected) ... ok
+test_svg_source_symlink_escape_preserves_previous_runtime (__main__.StagingTest.test_svg_source_symlink_escape_preserves_previous_runtime) ... ok
+test_terminated_publication_retains_recoverable_previous_runtime (__main__.StagingTest.test_terminated_publication_retains_recoverable_previous_runtime) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 8.674s
+
+OK
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-qualification.test.mjs...
+qualification: nearest-rank percentiles and input preserved
+qualification: physical-labelled complete report never promotes release
+qualification: reject host promotion
+qualification: reject qnx-vm promotion
+qualification: reject marathon-physical promotion
+qualification: label queued as incomplete presentation evidence
+qualification: label js-callback as incomplete presentation evidence
+qualification: reject invalid timing 0
+qualification: reject invalid timing -1
+qualification: reject invalid timing NaN
+qualification: reject invalid timing Infinity
+qualification: empty sample array rejected
+qualification: exhausted warmup rejected
+qualification: fractional RSS rejected
+qualification: missing workload rejected
+qualification: unrecognized schema and abbreviated source rejected
+qualification: 20 power cycles complete; 19 do not
+qualification: reboot is not a cold power cycle
+qualification: app-relaunch is not a cold power cycle
+qualification: failure resets consecutive sequence
+qualification: duplicate boot identity rejected
+qualification: overlapping timestamps rejected
+qualification: sequence gaps and contradictory passing boot rejected
+qualification: raw capture hash actually verified
+qualification: tampered raw capture rejected
+qualification: unsafe artifact path ../raw.log
+qualification: unsafe artifact path /raw.log
+qualification: unsafe artifact path a/../raw.log
+qualification: unsafe artifact path C:\raw.log
+qualification: symlink file and directory rejected
+qualification: empty, absent and duplicate artifacts rejected
+qualification: every boot needs a hashed log
+qualification: CLI preserves input and fails closed for incomplete evidence
+qnx-qualification: 33 cases passed; synthetic host fixtures only.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-release-dossier.test.mjs...
+qnx-release-dossier: 59 checks passed (synthetic Git and artifacts only; no release qualification).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-release-matrix.test.mjs...
+QNX 8.0.5 release source matrix validated; vendor-installed versions NOT inspected.
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-router-badge-palette.test.mjs...
+qnx-router-badge-palette: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-router-drawer-settlement.test.mjs...
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+qnx-router-drawer-settlement: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-router-keyboard-space.test.mjs...
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+qnx-router-keyboard-space: real BottomTabView context, JS/native bars and cleanup passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-router-native-drawer.test.mjs...
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+qnx-router-native-drawer: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-router-rendering.test.mjs...
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+qnx-router-rendering: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-router-tab-options.test.mjs...
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+qnx-router-tab-options: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-run-app-guard.test.mjs...
+qnx-run-app-guard: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-runner-manifest.test.mjs...
+Runner manifest client: 80 checks passed (local fixture server, synthetic archives).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-sdk-container.test.mjs...
+qnx-sdk-container.test.mjs passed (12 inert host-command scenarios; no device run)
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-swap-winmgr.test.mjs...
+qnx-swap-winmgr: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-target-runtime-doctor.test.mjs...
+QNX target doctor: 47 observation scenarios plus file/CLI boundaries passed (host fixtures only).
+Running /Volumes/QNX/clones/s7-expo/tests/js/qnx-winmgr-appkey.test.mjs...
+qnx-winmgr-appkey: ok
+Running /Volumes/QNX/clones/s7-expo/tests/js/qt-package-exports.test.mjs...
+qnx Metro / qnx: installed root, subpath and RN fallback passed
+qnx Metro / ios: installed root, subpath and RN fallback passed
+qnx Metro / android: installed root, subpath and RN fallback passed
+qnx Metro / web: installed root, subpath and RN fallback passed
+marathon Metro / marathon: installed root, subpath and RN fallback passed
+marathon Metro / ios: installed root, subpath and RN fallback passed
+marathon Metro / android: installed root, subpath and RN fallback passed
+marathon Metro / web: installed root, subpath and RN fallback passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/qt-video.test.mjs...
+qt-video JavaScript tests passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/rn-version-single-source.test.mjs...
+Running /Volumes/QNX/clones/s7-expo/tests/js/rnsvg-corpus-packing.test.mjs...
+SVG corpus packing: 149 fixtures, 16 bounded batches, four nonempty shards
+Running /Volumes/QNX/clones/s7-expo/tests/js/rnsvg-layout-transport.test.mjs...
+SVG layout transport: real platform filtering, generated metadata and create/diff lifecycle passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/rnsvg-overlay-render.test.mjs...
+react-native-svg overlay: 57 qnx probes checked, 57 ios probes untouched
+Running /Volumes/QNX/clones/s7-expo/tests/js/rnsvg-overlay-resolver.test.mjs...
+react-native-svg overlay resolver: 24 files, qnx only
+Running /Volumes/QNX/clones/s7-expo/tests/js/runtime-baseline-qnx.test.mjs...
+QNX target watchdog: success, failure, crash, timeout, recovery, stale-state and interrupted-child cleanup checks passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/runtime-baseline.test.mjs...
+Runtime baseline supervisor: repeated capture, missing marker, truncated PNG, crash, watchdog, TERM/HUP cleanup and stale artifact checks passed.
+Running /Volumes/QNX/clones/s7-expo/tests/js/sdk58-stable-manifest-pins.test.mjs...
+sdk58-stable-manifest-pins.test.mjs passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/shell-quote-security.test.mjs...
+Running /Volumes/QNX/clones/s7-expo/tests/js/source-map-security.test.mjs...
+Running /Volumes/QNX/clones/s7-expo/tests/js/text-input-fixture-config.test.mjs...
+TextInput fixture configuration: normal host/QNX generation, cached HBC dependency and invalid-path rejection passed (host graph only)
+Running /Volumes/QNX/clones/s7-expo/tests/js/text-input-qml-source.test.mjs...
+Shared TextInput QML: compiled OFF bytes match baseline; ON endpoint observers present.
+Running /Volumes/QNX/clones/s7-expo/tests/js/text-input-state.test.mjs...
+TextInput per-instance state, controlled acknowledgment, ref/event forwarding and secure gate passed.
+Running /Volumes/QNX/clones/s7-expo/tests/js/window-chrome-descriptor.test.mjs...
+window-chrome-descriptor: 9 checks passed
+Running /Volumes/QNX/clones/s7-expo/tests/js/worklets-frame-probe.test.mjs...
+Worklets frame probe: transformed UI closure completes 30 frames (host VM only)
+All JavaScript tests passed.
+exit=0

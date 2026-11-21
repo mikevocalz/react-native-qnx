@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { renderCapabilityTable } from '../../scripts/expo-capability-table.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const site = resolve(here, '..');
@@ -246,6 +247,22 @@ componentPages['content/docs/reference/components/meta.json'] =
     2
   ) + '\n';
 
+// Expo SDK 58 capability table, rendered by the same function that writes
+// docs/expo-delivery/sdk58-capability-table.md.
+const expoSupportPath = 'docs/expo-delivery/sdk58-support.json';
+const expoSupport = JSON.parse(readFileSync(join(repo, expoSupportPath), 'utf8'));
+const expoCapabilityPage = [
+  '---',
+  'title: Expo package capabilities',
+  'description: Per-package capability of the Expo SDK 58 packages on QNX, generated from the support list.',
+  '---',
+  '',
+  renderCapabilityTable(expoSupport, {
+    comment: (t) =>
+      `{/* ${t.replace('scripts/expo-capability-table.mjs', 'docs-site/scripts/generate-data.mjs')} */}`,
+  }),
+].join('\n');
+
 // Changelog from merged pull requests. The boundary commit lives in
 // changelog-through.txt so the page does not change every time main moves.
 // `npm run data -- --advance` moves the boundary to HEAD.
@@ -363,6 +380,7 @@ const outputs = {
   'content/docs/reference/release-gates.mdx': gatePage,
   'content/docs/explanation/adr-index.mdx': adrPage,
   'content/docs/reference/changelog.mdx': changelogPage,
+  'content/docs/reference/expo-capabilities.mdx': expoCapabilityPage,
   ...componentPages,
   'src/generated/status.json': JSON.stringify(data, null, 2) + '\n',
 };

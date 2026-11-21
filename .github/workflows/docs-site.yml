@@ -6,6 +6,8 @@ on:
     paths:
       - 'docs-site/**'
       - 'docs/component-support.json'
+      - 'docs/expo-delivery/sdk58-support.json'
+      - 'scripts/expo-capability-table.mjs'
       - 'docs/releases/v1-readiness.json'
       - 'docs/adr/**'
       - '.github/workflows/docs-site.yml'
