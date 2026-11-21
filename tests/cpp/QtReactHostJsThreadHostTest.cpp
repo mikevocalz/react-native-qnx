@@ -141,6 +141,7 @@ class Fixture {
   QtReactHost host_;
 };
 
+#if RNQNX_ENABLE_WINDOW_CHROME
 QQuickItem* findItemNamed(QQuickItem* root, const QString& name) {
   if (root == nullptr) return nullptr;
   if (root->objectName() == name) return root;
@@ -149,6 +150,7 @@ QQuickItem* findItemNamed(QQuickItem* root, const QString& name) {
   }
   return nullptr;
 }
+#endif
 
 /// Installs a module that records the window size JavaScript is told about.
 bool installDimensionsRecorder(QtReactHost& host) {
