@@ -15,18 +15,18 @@ This guide installs and checks the tools in two groups. The host group lets you 
 | Tool   | Version                           | Used by                                                  |
 | ------ | --------------------------------- | -------------------------------------------------------- |
 | Node   | 26 or newer (26.13.0 verified)    | Everything. `package.json` requires `>=26.0.0`.          |
-| pnpm   | 12.18.0 exactly                   | The workspace. The `packageManager` field pins it.       |
+| pnpm   | 12.21.0 exactly                   | The workspace. The `packageManager` field pins it.       |
 | CMake  | 3.31.9 or newer (4.4.5 verified)  | Host renderer, QNX builds.                               |
 | Ninja  | 1.11 or newer (1.13.2 verified)   | Host renderer, QNX builds.                               |
 | Qt     | 6.11.1 or newer (6.12.0 verified) | Host renderer only. A warning in `doctor`, not an error. |
 | Python | 3.11 or newer (3.13.3 verified)   | Helper scripts.                                          |
 
-On macOS, `./scripts/bootstrap-macos.sh` prepares a machine. It checks Node against 26.0.0 and pnpm against 12.18.0 and installs nothing proprietary. On Ubuntu, `./scripts/bootstrap-host.sh` installs CMake, Ninja, Node, pnpm and Python. It does not install or license the SDP.
+On macOS, `./scripts/bootstrap-macos.sh` prepares a machine. It checks Node against 26.0.0 and pnpm against 12.21.0 and installs nothing proprietary. On Ubuntu, `./scripts/bootstrap-host.sh` installs CMake, Ninja, Node, pnpm and Python. It does not install or license the SDP.
 
-If your global pnpm is older, it tries to switch itself and can fail with `Failed to switch pnpm to v12.18.0`. Use a prefixed copy:
+If your global pnpm is older, it tries to switch itself and can fail with `Failed to switch pnpm to v12.21.0`. Use a prefixed copy:
 
 ```bash
-npm install --prefix ~/pnpm12 pnpm@12.18.0
+npm install --prefix ~/pnpm12 pnpm@12.21.0
 export PATH=~/pnpm12/node_modules/.bin:$PATH
 node ~/pnpm12/node_modules/pnpm/install.js
 pnpm --version
@@ -44,7 +44,7 @@ ninja --version
 qmake --version
 ```
 
-Verified output: `v26.13.0`, `12.18.0`, `cmake version 4.4.5`, `1.13.2`, `Using Qt version 6.12.0 in /opt/homebrew/lib`.
+Verified output: `v26.13.0`, `12.21.0`, `cmake version 4.4.5`, `1.13.2`, `Using Qt version 6.12.0 in /opt/homebrew/lib`.
 
 Then run the doctor from the checkout:
 
@@ -67,7 +67,7 @@ On a Mac with no SDP the doctor exits 1. That is expected. The verified output:
   OK: Qt 6.12.0 host tools found (qtpaths6)
 [4/8] Node.js tooling
   OK: node 26.13.0 satisfies >=26.0.0
-  OK: pnpm 12.18.0 matches the repository pin
+  OK: pnpm 12.21.0 matches the repository pin
 [5/8] Python
   OK: python3 3.13.3 satisfies >=3.11
 [7/8] Target device configuration
@@ -109,7 +109,7 @@ Qt for the target is a public-source 6.12.0 build made by [`scripts/qt-public/`]
 
 | What you see                                    | Cause and fix                                                                                 |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `Failed to switch pnpm to v12.18.0`             | Old global pnpm. Use the prefixed copy above.                                                 |
+| `Failed to switch pnpm to v12.21.0`             | Old global pnpm. Use the prefixed copy above.                                                 |
 | `qcc` unavailable on macOS with the SDP sourced | `QNX_HOST` selects Windows host tools. Correct. Build on x86-64 Ubuntu.                       |
 | Qt is missing in `doctor`                       | A warning only the host renderer and `rnqnx_playground_qnx` need. Install Qt 6.11.1 or newer. |
 | `The QNX SDP environment is not loaded`         | Source `qnxsdp-env.sh` in the same shell.                                                     |

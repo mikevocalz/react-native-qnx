@@ -1,0 +1,10 @@
+QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le
+** Prelude: read and verify superblocks **
+** Pass 1 : verify bitmap and inodes **
+** Pass 2 : verify directory hierarchy **
+** Summary: 14013/91140 blocks, 153/1152 inodes **
+====
+** Prelude: read and verify superblocks **
+** Pass 1 : verify bitmap and inodes **
+** Pass 2 : verify directory hierarchy **
+** Summary: 63313/909052 blocks, 270/200064 inodes **

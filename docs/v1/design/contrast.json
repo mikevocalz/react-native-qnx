@@ -61,5 +61,74 @@
       "background": "#2b3a4f",
       "ratio": 10.64
     }
+  ],
+  "s8Method": "Same method. Values after the 2026-11-21 token changes in native/window-chrome/WindowChrome.qml. The dark and light ring-on-bar and inactive-title pairs are also asserted by focusRingContrastMeetsNonTextMinimum in WindowChromeQuickTest.cpp; hover and pressed fills are hand-calculated from the QML literals.",
+  "s8Pairs": [
+    {
+      "name": "S8 dark inactive title",
+      "foreground": "#8391a1",
+      "background": "#172433",
+      "ratio": 4.885
+    },
+    {
+      "name": "S8 light inactive title",
+      "foreground": "#595963",
+      "background": "#f6f6f6",
+      "ratio": 6.405
+    },
+    {
+      "name": "S8 dark focus ring on active bar",
+      "foreground": "#79e8dc",
+      "background": "#13202f",
+      "ratio": 11.283
+    },
+    {
+      "name": "S8 dark focus ring on inactive bar",
+      "foreground": "#79e8dc",
+      "background": "#172433",
+      "ratio": 10.766
+    },
+    {
+      "name": "S8 dark focus ring on windows hover",
+      "foreground": "#79e8dc",
+      "background": "#223142",
+      "ratio": 9.073
+    },
+    {
+      "name": "S8 dark focus ring on windows pressed",
+      "foreground": "#79e8dc",
+      "background": "#2c3b4d",
+      "ratio": 7.821
+    },
+    {
+      "name": "S8 light focus ring on inactive bar",
+      "foreground": "#0a64d6",
+      "background": "#f6f6f6",
+      "ratio": 5.104
+    },
+    {
+      "name": "S8 light focus ring on windows hover",
+      "foreground": "#0a64d6",
+      "background": "#e0e0e0",
+      "ratio": 4.179
+    },
+    {
+      "name": "S8 light focus ring on windows pressed",
+      "foreground": "#0a64d6",
+      "background": "#cccccc",
+      "ratio": 3.435
+    },
+    {
+      "name": "S8 close hover focus ring (white)",
+      "foreground": "#ffffff",
+      "background": "#e81123",
+      "ratio": 4.63
+    },
+    {
+      "name": "S8 close pressed focus ring (ink)",
+      "foreground": "#1d1d1f",
+      "background": "#f1707a",
+      "ratio": 5.882
+    }
   ]
 }

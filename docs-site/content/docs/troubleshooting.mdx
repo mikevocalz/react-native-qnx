@@ -17,8 +17,8 @@ Source: [`docs/handoff/HANDOFF_2026-11-13.md`](https://github.com/mikevocalz/rea
 ### `Failed to switch pnpm` with `ENOEXEC`
 
 - **Symptom:** `pnpm install --frozen-lockfile` stops in about 2 seconds with `Failed to switch pnpm to v... ENOEXEC`.
-- **Cause:** The repository pins pnpm through `packageManager`, currently `pnpm@12.18.0`. An older global pnpm (the clean-host run used Homebrew pnpm 10.32.1) downloads the pinned version and fails to execute it. Node 26 ships no `corepack` binary, so Corepack is not a fallback.
-- **Fix:** Install the pinned version, for example `npm install -g pnpm@12.18.0`, or run it once with `npx -y pnpm@12.18.0`. The handoff uses the `npx` form because the Homebrew pnpm cannot switch versions. The clean-host receipt notes that the npm route was not executed on a clean machine.
+- **Cause:** The repository pins pnpm through `packageManager`, currently `pnpm@12.21.0`. An older global pnpm (the clean-host run used Homebrew pnpm 10.32.1) downloads the pinned version and fails to execute it. Node 26 ships no `corepack` binary, so Corepack is not a fallback.
+- **Fix:** Install the pinned version, for example `npm install -g pnpm@12.21.0`, or run it once with `npx -y pnpm@12.21.0`. The handoff uses the `npx` form because the Homebrew pnpm cannot switch versions. The clean-host receipt notes that the npm route was not executed on a clean machine.
 - **Evidence:** `docs/evidence/clean-host-sim-2026-11-12-b51b49c.md` (steps 2 and 2a), `package.json`, `docs/handoff/HANDOFF_2026-11-13.md`.
 
 ### `pnpm test:js` stops at the first failing file on macOS

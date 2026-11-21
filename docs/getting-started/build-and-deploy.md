@@ -20,7 +20,7 @@ pnpm validate:macos
 ```
 
 The dependency audit verifies the workspace pins listed in the
-[README dependency table](../../README.md#know-what-is-supported) (generated from
+[README dependency table](../../README.md#dependencies) (generated from
 the root manifest), resolved Expo packages, Hermes source identity, and
 installed source symbols.
 

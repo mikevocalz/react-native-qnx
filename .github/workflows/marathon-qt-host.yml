@@ -57,7 +57,7 @@ jobs:
         with:
           node-version: 26.13.1
           package-manager-cache: false
-      - run: npm install --global pnpm@12.18.0
+      - run: npm install --global pnpm@12.21.0
       - name: Frozen SDK58 workspace
         run: |
           pnpm install --frozen-lockfile

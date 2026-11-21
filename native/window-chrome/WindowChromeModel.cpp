@@ -225,6 +225,12 @@ QString windowedPlatformSpec(const QString& environmentSpec, bool defaultIsQnx) 
   return specs.join(QLatin1Char(';'));
 }
 
+std::vector<WindowAction> controlOrder(ControlsLayout layout) {
+  if (layout == ControlsLayout::MacOS)
+    return {WindowAction::Close, WindowAction::Minimize, WindowAction::Maximize};
+  return {WindowAction::Minimize, WindowAction::Maximize, WindowAction::Close};
+}
+
 ChromeLayout layoutChrome(const WindowChromeConfig& config,
                           const WindowCapabilities& capabilities,
                           qreal windowWidth) {
@@ -232,9 +238,7 @@ ChromeLayout layoutChrome(const WindowChromeConfig& config,
   if (config.titleBarStyle == TitleBarStyle::None) return layout;
 
   const bool mac = config.controls == ControlsLayout::MacOS;
-  const std::vector<WindowAction> order =
-      mac ? std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize, WindowAction::Maximize}
-          : std::vector<WindowAction>{WindowAction::Minimize, WindowAction::Maximize, WindowAction::Close};
+  const std::vector<WindowAction> order = controlOrder(config.controls);
   std::vector<std::pair<WindowAction, ActionSupport>> shown;
   for (const auto action : order) {
     ActionSupport support = action == WindowAction::Close      ? ActionSupport{true, {}}
@@ -267,7 +271,15 @@ ChromeLayout layoutChrome(const WindowChromeConfig& config,
   layout.barHeight = kBarHeight;
   layout.barVisible = config.titleBarStyle == TitleBarStyle::Default;
   layout.contentInset = layout.barVisible ? kBarHeight : 0;
-  if (!layout.barVisible) return layout;
+  if (!layout.barVisible) {
+    if (!layout.controls.empty()) {
+      layout.inset.top = kBarHeight;
+      QRectF overlay = layout.controls.front().hitRect;
+      for (const auto& slot : layout.controls) overlay = overlay.united(slot.hitRect);
+      layout.inset.overlay = overlay;
+    }
+    return layout;
+  }
 
   if (mac) {
     // Centre on the window, keeping the same clearance on both sides so the

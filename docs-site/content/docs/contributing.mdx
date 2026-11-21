@@ -26,13 +26,13 @@ CONTRIBUTING.md fixes these. A change that breaks one is rejected before review.
 | Field            | Value          |
 | ---------------- | -------------- |
 | `engines.node`   | `>=26.0.0`     |
-| `engines.pnpm`   | `>=12.18.0`    |
-| `packageManager` | `pnpm@12.18.0` |
+| `engines.pnpm`   | `>=12.21.0`    |
+| `packageManager` | `pnpm@12.21.0` |
 
-CI installs pnpm with `npm install --global pnpm@12.18.0` (`.github/workflows/sdk58-validation.yml`), and the repository documents the same command. Install that exact version, then use the frozen lockfile:
+CI installs pnpm with `npm install --global pnpm@12.21.0` (`.github/workflows/sdk58-validation.yml`), and the repository documents the same command. Install that exact version, then use the frozen lockfile:
 
 ```bash
-npm install -g pnpm@12.18.0
+npm install -g pnpm@12.21.0
 git clone https://github.com/mikevocalz/react-native-qnx.git
 cd react-native-qnx
 pnpm install --frozen-lockfile
