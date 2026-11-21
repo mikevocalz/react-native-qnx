@@ -1,0 +1,4 @@
+8bdc33d8dba54242a44e180310a982a63cfa2a0bf44a03c269b92e587a78f0c2  qt/lib/libQt6Core.so.6.12.0 (VM-deployed build, DT_RPATH rewritten to DT_RUNPATH /data/dist-test/qt/lib)
+5e1bd40c6872c64abb296f0656031c34e846d3e798bc30f9faff078fc717ef14  app/org.rnqnx.showcase (DT_RPATH rewritten to DT_RUNPATH /data/dist-test/qt/lib:/data/dist-test/app)
+38dca9e606dd023c02b1dfb8dc6cb1aba862e9a8261773ace9c67d17c4b68800  replace/libQt6Core.so.6 (runtime-o2 libQt6Core.so.6.12.0, the replacement library)
+b4e67b3c50d1db8c30fce6a9208cbfb161e8c4ec15034d29a93bec141074673e  norm-run1.png and repl-run1.png (byte-identical)

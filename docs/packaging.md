@@ -69,7 +69,14 @@ with every runtime file's SHA-256 in
   `98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`, MD5
   `ac677cc64158740f257fd37a5b4c5ffb`. No 6.12.1 was published on 2026-11-12.
   The three published qtbase 6.12 security diffs (`CVE-2026-116337` 0001 and
-  0002, `CVE-2026-105924`) are applied to `src/` before building.
+  0002, `CVE-2026-105924`) are applied to `src/` before building. A fourth,
+  `CVE-2026-105943-qtbase-6.12.diff` (SHA-256
+  `dd22629ce948cf0a900421323cca331907180242a9b51c3fd75b25c75f068099`), was
+  published on 2026-11-13 and is not applied: it changes only code under
+  `QT_CONFIG(sspi)` (Windows SSPI), and this configuration has
+  `FEATURE_sspi=OFF`. Check `download.qt.io/official_releases/qt/6.12/` again
+  before each release; the recheck on 2026-11-21 is in
+  [the distribution receipt](evidence/distribution-2026-11-21/README.md).
 - **Modules:** qtbase (Core, Gui, Network, OpenGL), qtdeclarative (Qml,
   QmlMeta, QmlModels, QmlWorkerScript, Quick, QuickShapes) and the QNX QPA
   plugin `plugins/platforms/libqqnx.so`, plus the QtQml, Models, WorkerScript,
@@ -140,15 +147,29 @@ that includes these Qt libraries carries:
    files in the runtime directory. The Pi 400 receipt shows this path working:
    application binaries linked against the evaluation libraries ran
    unchanged on the public-source libraries.
-   Shipped application binaries must not carry a build-host `DT_RPATH`. The
-   current RN executables have
-   `/home/qnxbuild/qt612-qnx/qtbase/lib:/home/qnxbuild/rn-build/hermes/lib`,
-   and QNX's loader searches `DT_RPATH` before `LD_LIBRARY_PATH`. On the Pi
-   the replacement worked only because those directories do not exist there;
-   on a machine where they do, the user's library would be ignored. Strip the
-   RPATH at link or install time, or set it to a relative `$ORIGIN` path
-   inside the package, so `LD_LIBRARY_PATH` or the runtime directory decides
-   which Qt is loaded. For a locked-down device
+   Shipped Qt libraries, plugins and application binaries must not carry a
+   build-host `DT_RPATH`. They do today: all 16 ELF files in the staged `-O2`
+   runtime have one (`/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib`;
+   `libQt6Core` has 23 empty entries, which mean the current directory), and
+   the RN executable has
+   `/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:/home/qnxbuild/qt-6.12.0-public/svg-qnx/lib:/home/qnxbuild/hermes-qnx-full/lib:`.
+   QNX's loader searches `DT_RPATH` before `LD_LIBRARY_PATH`. On the QNX VM a
+   probe whose build-host directory exists loaded that directory's library and
+   ignored the one on `LD_LIBRARY_PATH`
+   ([probe](evidence/distribution-2026-11-21/vm/rpath-probe.txt)). On the Pi
+   the replacement worked only because those directories do not exist there.
+   `$ORIGIN` does not fix this: QNX 8.0.5's loader does not expand it (same
+   probe, the loader tries the literal `$ORIGIN/lib/libfoo.so.1`). Rewrite
+   each file's `DT_RPATH` to a `DT_RUNPATH` that names the install directory
+   with [`normalize-rpath.py`](../scripts/qt-public/normalize-rpath.py), then
+   check the result with
+   [`verify-closure.py`](../scripts/qt-public/verify-closure.py). A
+   `DT_RUNPATH` is searched after `LD_LIBRARY_PATH`, so a user's library on
+   `LD_LIBRARY_PATH` or a file copied over the one in the runtime directory
+   decides which Qt is loaded; both worked for the RN gallery app on the QNX
+   VM ([receipt](evidence/distribution-2026-11-21/README.md)). The long-term
+   fix is to stop the build from writing the RPATH; that needs a rebuild and
+   is not done. For a locked-down device
    ("User Product" under LGPL-3.0 section 4e and GPL-3.0 section 6), the
    installation information needed to run a modified library must also be
    supplied.

@@ -1,0 +1,18 @@
+{
+  "entries": 208,
+  "elf": 26,
+  "non_qt_system_libraries": [
+    "libEGL.so.1",
+    "libGLESv2.so.1",
+    "libc++.so.2",
+    "libc.so.6",
+    "libeventfd.so.1",
+    "libfsnotify.so.1",
+    "libgcc_s.so.1",
+    "libm.so.3",
+    "libscreen.so.1",
+    "libslog2.so.1",
+    "libsocket.so.4",
+    "libzstd.so.1"
+  ]
+}

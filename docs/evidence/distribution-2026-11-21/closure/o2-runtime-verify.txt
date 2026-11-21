@@ -1,0 +1,25 @@
+# verify-closure.py on the staged -O2 runtime (runtime-o2, 159 files), host run 2026-11-21T21:39:35Z
+# its tarball sha256 452bb9fb7e9c2e7b5520a620655fd9b14963a662498d0ab4f3c58c62be94189e matches docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md
+PASS sums (159 listed, 159 files)
+PASS needed (16 ELF files, system libraries used: 12)
+PASS qt-closed
+FAIL rpath
+     lib/libQt6Core.so.6.12.0 DT_RPATH '::::::::::::::::::::::'
+     lib/libQt6Gui.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6Network.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6OpenGL.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6Qml.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QmlMeta.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QmlModels.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QmlWorkerScript.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6Quick.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QuickShapes.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     plugins/platforms/libqqnx.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQml/Models/libmodelsplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQml/WorkerScript/libworkerscriptplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQml/libqmlplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQuick/Shapes/libqmlshapesplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQuick/libqtquick2plugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+PASS no-sdp
+PASS notices
+RESULT FAIL

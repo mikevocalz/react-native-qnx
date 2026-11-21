@@ -1,0 +1,2 @@
+ac677cc64158740f257fd37a5b4c5ffb  qt-everywhere-src-6.12.0.tar.xz
+64889aee0623311cce096be5f445c7d1  qt-everywhere-src-6.12.0.zip

@@ -1,0 +1,32 @@
+# verify-closure.py on the Qt tree deployed to the QNX VM (/data/vm/qt plus libQt6Svg from /data/vm/app), pulled to the host, 2026-11-21T21:39:36Z
+# SHA256SUMS here was generated from the pulled files. The 35 file hashes in docs/evidence/qnx-vm-2026-11-20/vm/deploy.sha256 were compared separately and all equal.
+PASS sums (36 listed, 36 files)
+PASS needed (23 ELF files, system libraries used: 10)
+PASS qt-closed
+FAIL rpath
+     lib/libQt6Core.so.6.12.0 DT_RPATH '::::::::::::::::::::::'
+     lib/libQt6Gui.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6Network.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6OpenGL.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6Qml.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QmlMeta.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QmlModels.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QmlWorkerScript.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6Quick.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6QuickShapes.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     lib/libQt6Svg.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     plugins/imageformats/libqgif.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     plugins/imageformats/libqjpeg.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     plugins/imageformats/libqsvg.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/svg-qnx/lib:/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     plugins/platforms/libqqnx.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     plugins/tls/libqopensslbackend.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQml/Models/libmodelsplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQml/WorkerScript/libworkerscriptplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQml/libqmlplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQuick/Shapes/libqmlshapesplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+     qml/QtQuick/libqtquick2plugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'
+FAIL no-sdp
+     lib/libeventfd.so.1
+FAIL notices
+     licenses/ missing
+RESULT FAIL

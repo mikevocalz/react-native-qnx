@@ -268,3 +268,28 @@ python3 stage-runtime.py  # stages both files when the build exists
 ```
 
 Qt Quick and `QImageReader` find the plugin through `QT_PLUGIN_PATH`.
+
+## Closure check and RPATH
+
+`stage-runtime.py` does not remove the build-host `DT_RPATH` that the build
+writes into every Qt library and plugin. QNX's loader searches `DT_RPATH` before
+`LD_LIBRARY_PATH`, so a user's replacement Qt library is ignored whenever the
+build-host directory exists, and it does not expand `$ORIGIN`
+([QNX VM probe](../../docs/evidence/distribution-2026-11-21/vm/rpath-probe.txt)).
+After staging, rewrite the search path and check the result, then write the
+`SHA256SUMS` (the rewrite changes file hashes):
+
+```sh
+python3 -I normalize-rpath.py "$QT_PUBLIC_ROOT/runtime" --runpath /data/qt612-public/lib
+python3 -I verify-closure.py "$QT_PUBLIC_ROOT/runtime" --runpath-prefix /data/qt612-public/ \
+  --json "$QT_PUBLIC_ROOT/runtime-closure.json"
+```
+
+`normalize-rpath.py` turns each `DT_RPATH` (and any `DT_RUNPATH` with an absolute
+or empty entry) into a `DT_RUNPATH` holding the given absolute path, in place;
+it never grows a string, and `--check` reports what would change without writing.
+`verify-closure.py` reads the ELF dynamic section itself (no SDK needed) and fails on
+a missing or unlisted file, a hash mismatch, an unresolved `libQt6*` dependency, any
+`DT_RPATH`, a build-host `DT_RUNPATH`, a QNX system library in the runtime, or missing
+license texts. App executables take the same tools with the app's install paths,
+for example `--runpath /data/app/qt/lib:/data/app` (the new string must fit in the old one).

@@ -1,0 +1,330 @@
+Bundled third-party code compiled into this Qt 6.12.0 runtime.
+Generated from qt_attribution.json entries listed by the SPDX audit.
+
+BLAKE2 (reference implementation) ed1974ea83433eba7b2d95c5dcd9ac33cb847913
+  Source: qtbase/src/3rdparty/blake2
+  License: CC0-1.0 OR Apache-2.0
+  Copyright: Copyright 2012, Samuel Neves <sneves@dei.uc.pt>
+  License texts: licenses/qtbase/CC0-1.0.txt, licenses/qtbase/Apache-2.0.txt, licenses/qtbase/attributed/src/3rdparty/blake2/COPYING
+
+Efficient Binary-Decimal and Decimal-Binary Conversion Routines for IEEE Doubles 3.4.0
+  Source: qtbase/src/3rdparty/double-conversion
+  License: BSD-3-Clause
+  Copyright: Copyright 2006-2012, the V8 project authors
+  License texts: licenses/qtbase/BSD-3-Clause.txt, licenses/qtbase/attributed/src/3rdparty/double-conversion/LICENSE
+
+Easing Equations by Robert Penner
+  Source: qtbase/src/3rdparty/easing
+  License: BSD-3-Clause
+  Copyright: Copyright (c) 2001 Robert Penner
+  License texts: licenses/qtbase/BSD-3-Clause.txt, licenses/qtbase/attributed/src/3rdparty/easing/LICENSE
+
+Emoji Segmenter 0.4.0
+  Source: qtbase/src/3rdparty/emoji-segmenter
+  License: Apache-2.0
+  Copyright: Copyright 2019 Google LLC
+  License texts: licenses/qtbase/Apache-2.0.txt
+
+forkfd
+  Source: qtbase/src/3rdparty/forkfd
+  License: MIT
+  Copyright: Copyright (C) 2016 Intel Corporation
+Copyright (C) 2015 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+  License texts: licenses/qtbase/MIT.txt, licenses/qtbase/attributed/src/3rdparty/forkfd/LICENSE
+
+Freetype 2 2.14.3
+  Source: qtbase/src/3rdparty/freetype
+  License: FTL OR GPL-2.0-only
+  Copyright: Copyright (c) 2007-2014 Adobe Systems Incorporated
+    Copyright (c) 2004-2026 Albert Chin-A-Young
+    Copyright (c) 2018-2026 Armin Hasitzka, David Turner, Robert Wilhelm, and Werner Lemberg
+    Copyright (c) 2000 Computing Research Labs, New Mexico State University
+    Copyright (c) 1996-2026 David Turner, Robert Wilhelm, Dominik Röttsches, and Werner Lemberg
+    Copyright (c) 2004-2026 David Turner, Robert Wilhelm, Werner Lemberg and George Williams
+    Copyright (c) 2022-2026 David Turner, Robert Wilhelm, Werner Lemberg, and Moazin Khatti
+    Copyright (c) 2008-2026 David Turner, Robert Wilhelm, Werner Lemberg, and suzuki toshiya
+    Copyright (c) 2003-2026 David Turner, Robert Wilhelm, and Werner Lemberg
+    Copyright (c) 2005-2026 David Turner
+    Copyright (c) 2007-2026 Derek Clegg and Michael Toftdal
+    Copyright (c) 2007 Dmitry Timoshkov for Codeweavers
+    Copyright (c) 2001-2015 Francesco Zappa Nardelli
+    Copyright (c) 2005, 2007, 2008, 2013 George Williams
+    Copyright (c) 2013-2026 Google, Inc. Google Author(s) Behdad Esfahbod and Stuart Gill
+    Copyright (c) 2013-2022 Google, Inc.
+    Copyright (c) 2003 Huw D M Davies for Codeweavers
+    Copyright (c) 2010-2026 Joel Klinghed
+    Copyright (c) 1996-2026 Just van Rossum, David Turner, Robert Wilhelm, and Werner Lemberg
+    Copyright (c) 2003-2026 Masatake YAMATO and Redhat K.K.
+    Copyright (c) 2004-2026 Masatake YAMATO, Redhat K.K, David Turner, Robert Wilhelm, and Werner Lemberg
+    Copyright (c) 2019-2026 Nikhil Ramakrishnan, David Turner, Robert Wilhelm, and Werner Lemberg
+    Copyright (c) 2009-2026 Oran Agra and Mickey Gabel
+    Copyright (c) 2007-2026 Rahul Bhalerao <rahul.bhalerao@redhat.com>
+    Copyright (c) 2002-2026 Roberto Alameda
+    Copyright (c) 2015-2026 Werner Lemberg
+    Copyright (c) 2004-2026 suzuki toshiya, Masatake YAMATO, Red Hat K.K., David Turner, Robert Wilhelm, and Werner Lemberg
+    Copyright (c) 2019 nyorain
+    Copyright (c) 2022-2026 David Turner, Robert Wilhelm, Werner Lemberg, George Williams, and Dominik Röttsches
+    Copyright (C) 2009, 2023  Red Hat, Inc.
+  License texts: licenses/qtbase/FTL.txt, licenses/qtbase/GPL-2.0-only.txt, licenses/qtbase/attributed/src/3rdparty/freetype/LICENSE.txt
+
+Freetype 2 - zlib
+  Source: qtbase/src/3rdparty/freetype
+  License: Zlib
+  Copyright: Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
+  License texts: licenses/qtbase/Zlib.txt, licenses/qtbase/attributed/src/3rdparty/freetype/ZLIB-LICENSE.txt
+
+Freetype 2 - Bitmap Distribution Format (BDF) support
+  Source: qtbase/src/3rdparty/freetype
+  License: MIT
+  Copyright: Copyright (c) 2000 Computing Research Labs, New Mexico State University
+    Copyright (c) 2001-2014 Francesco Zappa Nardelli
+  License texts: licenses/qtbase/MIT.txt, licenses/qtbase/attributed/src/3rdparty/freetype/BDF-LICENSE.txt
+
+Freetype 2 - Portable Compiled Format (PCF) support
+  Source: qtbase/src/3rdparty/freetype
+  License: MIT AND MIT-open-group
+  Copyright: Copyright (c) 2001, 2012 David Turner, Robert Wilhelm, and Werner Lemberg
+    Copyright (c) 2000-2014 Francesco Zappa Nardelli
+    Copyright (c) 1990, 1994, 1998 The Open Group
+  License texts: licenses/qtbase/MIT.txt, licenses/qtbase/MIT-open-group.txt, licenses/qtbase/attributed/src/3rdparty/freetype/PCF-LICENSE.txt
+
+HarfBuzz-NG 14.5.0
+  Source: qtbase/src/3rdparty/harfbuzz-ng
+  License: MIT
+  Copyright: Copyright © 2010-2022  Google, Inc.
+    Copyright © 2015-2020  Ebrahim Byagowi
+    Copyright © 2019,2020  Facebook, Inc.
+    Copyright © 2012,2015  Mozilla Foundation
+    Copyright © 2011  Codethink Limited
+    Copyright © 2008,2010  Nokia Corporation and/or its subsidiary(-ies)
+    Copyright © 2009  Keith Stribley
+    Copyright © 2011  Martin Hosken and SIL International
+    Copyright © 2007  Chris Wilson
+    Copyright © 2005,2006,2020,2021,2022,2023  Behdad Esfahbod
+    Copyright © 2004,2007,2008,2009,2010,2013,2021,2022,2023  Red Hat, Inc.
+    Copyright © 1998-2005  David Turner and Werner Lemberg
+    Copyright © 2016  Igalia S.L.
+    Copyright © 2022  Matthias Clasen
+    Copyright © 2018,2021  Khaled Hosny
+    Copyright © 2018,2019,2020  Adobe, Inc
+    Copyright © 2013-2015  Alexei Podtelezhnikov
+  License texts: licenses/qtbase/MIT.txt, licenses/qtbase/attributed/src/3rdparty/harfbuzz-ng/COPYING
+
+LibJPEG-turbo 3.2.0
+  Source: qtbase/src/3rdparty/libjpeg
+  License: IJG AND BSD-3-Clause
+  Copyright: (see license text)
+  License texts: licenses/qtbase/IJG.txt, licenses/qtbase/BSD-3-Clause.txt, licenses/qtbase/attributed/src/3rdparty/libjpeg/LICENSE, licenses/qtbase/attributed/src/3rdparty/libjpeg/ijg-license.txt
+
+LibPNG 1.6.58
+  Source: qtbase/src/3rdparty/libpng
+  License: Libpng AND libpng-2.0
+  Copyright: Copyright (c) 1995-2026 The PNG Reference Library Authors
+    Copyright (c) 2000-2026 Cosmin Truta
+    Copyright (c) 1998-2018 Glenn Randers-Pehrson
+    Copyright (c) 1996-1997 Andreas Dilger
+    Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
+    Copyright (c) 2000-2017 Simon-Pierre Cadieux
+    Copyright (c) 2000-2017 Eric S. Raymond
+    Copyright (c) 2000-2017 Mans Rullgard
+    Copyright (c) 2000-2017 Gilles Vollant
+    Copyright (c) 2000-2017 James Yu
+    Copyright (c) 2000-2017 Mandar Sahastrabuddhe
+    Copyright (c) 1998-2000 Tom Lane
+    Copyright (c) 1998-2000 Willem van Schaik
+    Copyright (c) 1996-1997 John Bowler
+    Copyright (c) 1996-1997 Kevin Bracey
+    Copyright (c) 1996-1997 Sam Bushell
+    Copyright (c) 1996-1997 Magnus Holmgren
+    Copyright (c) 1996-1997 Greg Roelofs
+    Copyright (c) 1996-1997 Tom Tanner
+    Copyright (c) 1995-1996 Dave Martindale
+    Copyright (c) 1995-1996 Paul Schmidt
+    Copyright (c) 1995-1996 Tim Wegner
+  License texts: licenses/qtbase/Libpng.txt, licenses/qtbase/libpng-2.0.txt, licenses/qtbase/attributed/src/3rdparty/libpng/LICENSE
+
+The Public Suffix List 2026-05-14_08-35-31_UTC
+  Source: qtbase/src/3rdparty/libpsl
+  License: MPL-2.0
+  Copyright: The list was originally provided by Jo Hermans <jo.hermans@gmail.com>.
+It is now maintained on github (https://github.com/publicsuffix/list).
+  License texts: licenses/qtbase/MPL-2.0.txt, licenses/qtbase/attributed/src/3rdparty/libpsl/PSL-LICENSE.txt
+
+libpsl - C library to handle the Public Suffix List 664f3dc85259ec65e30248a61fa1c45b7b0e4c3f
+  Source: qtbase/src/3rdparty/libpsl
+  License: BSD-3-Clause
+  Copyright: Copyright 2014-2016 The Chromium Authors. All rights reserved.
+  License texts: licenses/qtbase/BSD-3-Clause.txt, licenses/qtbase/attributed/src/3rdparty/libpsl/src/LICENSE.chromium
+
+MD4
+  Source: qtbase/src/3rdparty/md4
+  License: CC0-1.0
+  Copyright: Written by Alexander Peslyak - better known as Solar Designer <solar@openwall.com> - in 2001, and placed in the public domain. There's absolutely no warranty.
+  License texts: licenses/qtbase/CC0-1.0.txt
+
+MD4C 0.5.3
+  Source: qtbase/src/3rdparty/md4c
+  License: MIT
+  Copyright: Copyright © 2016-2024 Martin Mitáš
+  License texts: licenses/qtbase/MIT.txt, licenses/qtbase/attributed/src/3rdparty/md4c/LICENSE.md
+
+MD5
+  Source: qtbase/src/3rdparty/md5
+  License: CC0-1.0
+  Copyright: Written by Colin Plumb in 1993, no copyright is claimed. Ian Jackson <ian@chiark.greenend.org.uk>.
+  License texts: licenses/qtbase/CC0-1.0.txt
+
+PCRE2 10.48
+  Source: qtbase/src/3rdparty/pcre2
+  License: LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception
+  Copyright: Copyright (c) 1997-2007 University of Cambridge
+    Copyright (c) 2007-2024 Philip Hazel
+    Copyright (c) 2010-2024 Zoltan Herczeg
+  License texts: licenses/qtbase/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt, licenses/qtbase/attributed/src/3rdparty/pcre2/LICENCE.md
+
+PCRE2 - Stack-less Just-In-Time Compiler 10.48
+  Source: qtbase/src/3rdparty/pcre2
+  License: BSD-2-Clause
+  Copyright: Copyright Zoltan Herczeg
+  License texts: licenses/qtbase/BSD-2-Clause.txt, licenses/qtbase/attributed/src/3rdparty/pcre2/LICENSE-SLJIT
+
+Secure Hash Algorithms SHA-384 and SHA-512
+  Source: qtbase/src/3rdparty/rfc6234
+  License: BSD-3-Clause
+  Copyright: Copyright (c) 2011 IETF Trust and the persons identified as authors of the code.
+  License texts: licenses/qtbase/BSD-3-Clause.txt, licenses/qtbase/attributed/src/3rdparty/rfc6234/LICENSE
+
+Secure Hash Algorithm SHA-1
+  Source: qtbase/src/3rdparty/sha1
+  License: LicenseRef-SHA1-Public-Domain
+  Copyright: Copyright (C) Dominik Reichl <dominik.reichl@t-online.de>
+    Copyright (C) 2016 The Qt Company Ltd
+  License texts: licenses/qtbase/LicenseRef-SHA1-Public-Domain.txt
+
+Secure Hash Algorithm SHA-3 - brg_endian 1.0.0
+  Source: qtbase/src/3rdparty/sha3
+  License: BSD-2-Clause
+  Copyright: Copyright (c) 1998-2013, Brian Gladman, Worcester, UK. All rights reserved.
+  License texts: licenses/qtbase/BSD-2-Clause.txt, licenses/qtbase/attributed/src/3rdparty/sha3/BRG_ENDIAN_LICENSE
+
+Secure Hash Algorithm SHA-3 - Keccak 3.2
+  Source: qtbase/src/3rdparty/sha3
+  License: CC0-1.0
+  Copyright: Guido Bertoni, Joan Daemen, Michaël Peeters and Gilles Van Assche.
+To the extent possible under law, the implementers have waived all copyright
+and related or neighboring rights to the source code in this file.
+  License texts: licenses/qtbase/CC0-1.0.txt, licenses/qtbase/attributed/src/3rdparty/sha3/CC0_LICENSE
+
+SipHash Algorithm
+  Source: qtbase/src/3rdparty/siphash
+  License: CC0-1.0
+  Copyright: Copyright (C) 2012-2014 Jean-Philippe Aumasson
+    Copyright (C) 2012-2014 Daniel J. Bernstein <djb@cr.yp.to>
+    Copyright (C) 2016 Intel Corporation
+  License texts: licenses/qtbase/CC0-1.0.txt
+
+TinyCBOR 7.0
+  Source: qtbase/src/3rdparty/tinycbor
+  License: MIT
+  Copyright: Copyright (C) 2015-2025 Intel Corporation
+  License texts: licenses/qtbase/MIT.txt, licenses/qtbase/attributed/src/3rdparty/tinycbor/LICENSE
+
+Data Compression Library (zlib) 1.3.2
+  Source: qtbase/src/3rdparty/zlib
+  License: Zlib
+  Copyright: (C) 1995-2026 Jean-loup Gailly and Mark Adler
+  License texts: licenses/qtbase/Zlib.txt, licenses/qtbase/attributed/src/3rdparty/zlib/LICENSE
+
+JavaScriptCore Macro Assembler
+  Source: qtdeclarative/src/3rdparty/masm
+  License: BSD-2-Clause
+  Copyright: Copyright (C) 2003-2018 Apple Inc. All rights reserved.
+    Copyright (C) 2007 Justin Haygood (jhaygood@reaktix.com)
+    Copyright (C) 2007-2009 Torch Mobile, Inc. All rights reserved. (http://www.torchmobile.com/)
+    Copyright (C) 2009, 2010 University of Szeged
+    Copyright (C) 2009-2011 STMicroelectronics. All rights reserved.
+    Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.
+    Copyright (C) 2010 Peter Varga (pvarga@inf.u-szeged.hu), University of Szeged
+    Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.
+    Copyright (C) 2010, 2011 Research In Motion Limited. All rights reserved.
+    Copyright (C) 2011 Google Inc. All rights reserved.
+    Copyright (C) 2013 Samsung Electronics. All rights reserved.
+    Copyright (C) 2015 Cisco Systems, Inc. All rights reserved.
+    Copyright (c) 2002-2009 Vivek Thampi
+  License texts: licenses/qtdeclarative/BSD-2-Clause.txt, licenses/qtdeclarative/attributed/src/3rdparty/masm/LICENSE
+
+tl::expected
+  Source: qtbase/src/corelib/global
+  License: CC0-1.0
+  Copyright: To the extent possible under law, Sy Brand has waived all copyright and related or neighboring rights to the expected library. This work is published from: United Kingdom.
+  License texts: licenses/qtbase/CC0-1.0.txt
+
+Unicode Character Database (UCD)
+  Source: qtbase/src/corelib/text
+  License: Unicode-3.0
+  Copyright: Copyright (C) 1991-2025 Unicode, Inc.
+  License texts: licenses/qtbase/Unicode-3.0.txt
+
+Unicode Common Locale Data Repository (CLDR)
+  Source: qtbase/src/corelib/text
+  License: Unicode-3.0
+  Copyright: Copyright (C) 2004-2025 Unicode, Inc.
+  License texts: licenses/qtbase/Unicode-3.0.txt
+
+OpenGL ES 2 Headers
+  Source: qtbase/src/gui/opengl
+  License: MIT
+  Copyright: Copyright (c) 2013-2014 The Khronos Group Inc.
+  License texts: licenses/qtbase/MIT.txt, licenses/qtbase/attributed/src/gui/opengl/LICENSE.KHRONOS.txt
+
+Anti-aliasing rasterizer from FreeType 2
+  Source: qtbase/src/gui/painting
+  License: FTL OR GPL-2.0-only
+  Copyright: Copyright 2000-2016 by David Turner, Robert Wilhelm, and Werner Lemberg.
+  License texts: licenses/qtbase/FTL.txt, licenses/qtbase/GPL-2.0-only.txt, licenses/qtbase/attributed/src/3rdparty/freetype/LICENSE.txt
+
+Smooth Scaling Algorithm
+  Source: qtbase/src/gui/painting
+  License: BSD-2-Clause AND Imlib2
+  Copyright: Copyright (C) 2004, 2005 Daniel M. Duley.
+    (C) Carsten Haitzler and various contributors.
+    (C) Willem Monsuwe <willem@stack.nl>
+  License texts: licenses/qtbase/BSD-2-Clause.txt, licenses/qtbase/Imlib2.txt, licenses/qtbase/attributed/src/gui/painting/LICENSE.QIMAGETRANSFORM.txt
+
+X Server helper
+  Source: qtbase/src/gui/painting
+  License: X11 AND HPND
+  Copyright: Copyright (c) 1987, 1988 X Consortium
+    Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts.
+  License texts: licenses/qtbase/X11.txt, licenses/qtbase/HPND.txt, licenses/qtbase/attributed/src/gui/painting/LICENSE.XCONSORTIUM.txt
+
+Adobe Glyph List For New Fonts
+  Source: qtbase/src/gui/text
+  License: BSD-3-Clause
+  Copyright: Copyright 2002, 2003, 2005, 2006, 2008, 2010, 2015 Adobe Systems
+  License texts: licenses/qtbase/BSD-3-Clause.txt, licenses/qtbase/attributed/src/gui/text/LICENSE.AGLFN.txt
+
+XSVG
+  Source: qtbase/src/gui/util
+  License: HPND-sell-variant
+  Copyright: Copyright 2002 USC/Information Sciences Institute
+  License texts: licenses/qtbase/attributed/src/gui/util/LICENSE.XSVG.txt
+
+TIFF Software Distribution (libtiff) 4.7.2
+  Source: qtimageformats/src/3rdparty/libtiff
+  License: libtiff
+  Copyright: Copyright (c) 1988-1997 Sam Leffler
+Copyright (c) 1991-1997 Silicon Graphics, Inc.
+  License texts: licenses/qtimageformats/libtiff.txt, licenses/qtimageformats/attributed/src/3rdparty/libtiff/COPYRIGHT
+
+WebP (libwebp) 1.6.0
+  Source: qtimageformats/src/3rdparty/libwebp
+  License: BSD-3-Clause
+  Copyright: Copyright (c) 2010, Google Inc. All rights reserved.
+  License texts: licenses/qtimageformats/BSD-3-Clause.txt, licenses/qtimageformats/attributed/src/3rdparty/libwebp/COPYING
+
+Data Compression Library (zlib) 1.3.2
+  Source: qtbase/src/3rdparty/zlib
+  License: Zlib
+  Copyright: (C) 1995-2026 Jean-loup Gailly and Mark Adler
+  License texts: licenses/qtbase/Zlib.txt, licenses/qtbase/attributed/src/3rdparty/zlib/LICENSE
