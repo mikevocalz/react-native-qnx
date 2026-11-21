@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   host-budgets:
-    name: Host lane: startup, frame swaps and RSS (Qt 6.11, Release, offscreen software)
+    name: 'Host lane, startup, frame swaps and RSS (Qt 6.11, Release, offscreen software)'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
