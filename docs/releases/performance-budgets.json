@@ -58,8 +58,15 @@
           "description": "Startup to first frame",
           "budgets": {
             "host": {
-              "status": "unmeasured",
-              "reason": "Host baseline not recorded yet."
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 100.124,
+                "p50": 101.299,
+                "max": 103.444,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 156
             },
             "qnx-vm": {
               "status": "unmeasured",
@@ -124,8 +131,15 @@
           "description": "Peak resident set",
           "budgets": {
             "host": {
-              "status": "unmeasured",
-              "reason": "Host baseline not recorded yet."
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 71264,
+                "p50": 71652,
+                "max": 71840,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 107760
             },
             "qnx-vm": {
               "status": "unmeasured",
@@ -159,8 +173,15 @@
           "description": "Startup to first frame",
           "budgets": {
             "host": {
-              "status": "unmeasured",
-              "reason": "Host baseline not recorded yet."
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 157.712,
+                "p50": 160.149,
+                "max": 164.692,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 248
             },
             "qnx-vm": {
               "status": "unmeasured",
@@ -181,8 +202,15 @@
           "description": "Frame interval p95 during a 40-notch wheel script",
           "budgets": {
             "host": {
-              "status": "unmeasured",
-              "reason": "Host baseline not recorded yet."
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 18.488000000000056,
+                "p50": 18.652000000000044,
+                "max": 19.539999999999964,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 30
             },
             "qnx-vm": {
               "status": "unmeasured",
@@ -203,8 +231,15 @@
           "description": "Frame interval maximum during a 40-notch wheel script",
           "budgets": {
             "host": {
-              "status": "unmeasured",
-              "reason": "Host baseline not recorded yet."
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 19.722999999999956,
+                "p50": 21.634000000000015,
+                "max": 21.91899999999987,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 33
             },
             "qnx-vm": {
               "status": "unmeasured",
@@ -225,8 +260,15 @@
           "description": "Peak resident set",
           "budgets": {
             "host": {
-              "status": "unmeasured",
-              "reason": "Host baseline not recorded yet."
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 96248,
+                "p50": 96596,
+                "max": 96908,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 145362
             },
             "qnx-vm": {
               "status": "unmeasured",

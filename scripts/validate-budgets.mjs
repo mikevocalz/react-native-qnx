@@ -163,6 +163,9 @@ export function checkBudgetsFile(file) {
             add(`${where} baseline.source does not name the ${lane} lane label`);
           }
         } else {
+          if (lane === 'host' && file.lanes?.host?.enforced && b.status === 'unmeasured') {
+            add(`${where} is unmeasured but the host lane is enforced`);
+          }
           for (const k of ['baseline', 'ceiling']) {
             if (k in b) add(`${where} is ${b.status} and must not carry ${k}`);
           }

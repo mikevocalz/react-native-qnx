@@ -38,6 +38,16 @@ assert.equal(committed.workloads['drawer-drag'].metrics.peakRssKiB.budgets.host.
 
 // Mutations of the file are caught.
 {
+  const hostGap = clone();
+  hostGap.workloads['list-1000'].metrics.peakRssKiB.budgets.host = {
+    status: 'unmeasured',
+    reason: 'x',
+  };
+  assert.match(
+    checkBudgetsFile(hostGap).join('\n'),
+    /list-1000.peakRssKiB.host is unmeasured but the host lane is enforced/
+  );
+
   const withGuess = clone();
   withGuess.workloads['hello-world'].metrics.peakRssKiB.budgets.pi400.ceiling = 90000;
   assert.match(checkBudgetsFile(withGuess).join('\n'), /pi400.*must not carry ceiling/);
@@ -125,7 +135,15 @@ assert.throws(
 // Apply a baseline, then check runs against it, then show that a regression fails.
 const dir = await mkdtemp(path.join(tmpdir(), 'budgets-test-'));
 try {
+  // Start from a file with no host numbers, as it was before the first baseline.
   let file = clone();
+  for (const workload of ['hello-world', 'list-1000']) {
+    for (const metric of Object.values(file.workloads[workload].metrics)) {
+      if (metric.budgets.host.status === 'measured') {
+        metric.budgets.host = { status: 'unmeasured', reason: 'reset for the test' };
+      }
+    }
+  }
   for (let i = 0; i < 20; i++) {
     await writeFile(
       path.join(dir, `hello-world-${i}.json`),
@@ -137,7 +155,8 @@ try {
     );
   }
   file = await applyBaseline(file, dir, 'host test fixture');
-  assert.deepEqual(checkBudgetsFile(file), []);
+  const afterApply = checkBudgetsFile(file);
+  assert.deepEqual(afterApply, []);
   const startup = file.workloads['hello-world'].metrics.startupToFirstFrameMs.budgets.host;
   assert.equal(startup.baseline.max, 104);
   assert.equal(startup.ceiling, 156);
