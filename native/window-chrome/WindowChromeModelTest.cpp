@@ -318,6 +318,40 @@ class WindowChromeModelTest : public QObject {
     }
   }
 
+  // Gate window-chrome: the inset the React content keeps clear of.
+  void titleBarInsetPerStyle() {
+    WindowChromeConfig config;
+    const auto caps = capabilitiesForPlatform(QStringLiteral("cocoa"), {}, SurfaceResize::FollowsWindow);
+    // default: the bar is outside the Fabric root, so nothing overlaps content.
+    TitleBarInset none;
+    QVERIFY(layoutChrome(config, caps, 800).inset == none);
+    config.titleBarStyle = TitleBarStyle::None;
+    QVERIFY(layoutChrome(config, caps, 800).inset == none);
+    // hidden: the controls float over content that starts at the top edge.
+    config.titleBarStyle = TitleBarStyle::Hidden;
+    const ChromeLayout mac = layoutChrome(config, caps, 800);
+    QCOMPARE(mac.contentInset, 0.0);
+    QCOMPARE(mac.inset.top, kBarHeight);
+    QCOMPARE(mac.inset.left, 0.0);
+    QCOMPARE(mac.inset.right, 0.0);
+    QCOMPARE(mac.inset.bottom, 0.0);
+    QCOMPARE(mac.inset.overlay, QRectF(kEdgePadding, 0, 3 * kMacHitWidth, kBarHeight));
+    config.controls = ControlsLayout::Windows;
+    const ChromeLayout win = layoutChrome(config, caps, 800);
+    QCOMPARE(win.inset.overlay, QRectF(800 - 3 * kWindowsHitWidth, 0, 3 * kWindowsHitWidth, kBarHeight));
+    // Hidden controls shrink the overlay to what is drawn.
+    const ChromeLayout qnx = layoutChrome(config, capabilitiesForPlatform(QStringLiteral("qnx")), 1920);
+    QCOMPARE(qnx.inset.overlay.width(), 2 * kWindowsHitWidth);
+    QCOMPARE(qnx.inset.overlay.right(), 1920.0);
+  }
+
+  void controlOrderIsPhysical() {
+    QCOMPARE(controlOrder(ControlsLayout::MacOS),
+             (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize, WindowAction::Maximize}));
+    QCOMPARE(controlOrder(ControlsLayout::Windows),
+             (std::vector<WindowAction>{WindowAction::Minimize, WindowAction::Maximize, WindowAction::Close}));
+  }
+
   // A full-screen QNX app (no initialSize): maximize is the only control that
   // cannot run, and the remaining two close up.
   void hiddenControlsCloseUpOnQnx() {

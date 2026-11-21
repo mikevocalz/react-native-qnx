@@ -21,7 +21,9 @@
 #include <QThread>
 #include <QStyleHints>
 
+#include <algorithm>
 #include <atomic>
+#include <cmath>
 #include <cstring>
 #include <vector>
 #include <memory>
@@ -331,6 +333,152 @@ class WindowChromeQuickTest : public QObject {
         QCOMPARE(maximize->x(), before);
       QVERIFY(findItem(maximize, QStringLiteral("focusRing"))->isVisible());
     }
+  }
+
+  // Gate window-chrome: macos and windows layouts selectable at runtime. The
+  // controls are the same items before and after, the focused one keeps focus,
+  // and Tab follows the new on-screen order.
+  void runtimeLayoutSwitchKeepsFocusAndTabOrder() {
+    Harness harness({});
+    QVERIFY(QTest::qWaitForWindowActive(harness.window.get()));
+    QSignalSpy switched(harness.chrome.get(), &WindowChrome::controlsLayoutChanged);
+    QPointer<QQuickItem> minimize = harness.control(QStringLiteral("minimize"));
+    QPointer<QQuickItem> close = harness.control(QStringLiteral("close"));
+    minimize->forceActiveFocus(Qt::TabFocusReason);
+    QCOMPARE(harness.chrome->controlsLayout(), QStringLiteral("macos"));
+    QVERIFY(harness.chrome->titleCentered());
+    QVERIFY(minimize->x() < 400);
+
+    // A slot on the layout-name signal already sees the new geometry.
+    QString firstSeen;
+    QObject::connect(harness.chrome.get(), &WindowChrome::controlsLayoutChanged, harness.chrome.get(),
+                     [&] { firstSeen = harness.chrome->controlOrder().value(0); });
+    QVERIFY(harness.chrome->setControlsLayout(QStringLiteral("windows")));
+    QCOMPARE(firstSeen, QStringLiteral("minimize"));
+    QCOMPARE(switched.count(), 1);
+    QCOMPARE(harness.chrome->controlsLayout(), QStringLiteral("windows"));
+    QVERIFY(!harness.chrome->titleCentered());
+    QCOMPARE(harness.chrome->controlOrder(),
+             (QStringList{QStringLiteral("minimize"), QStringLiteral("maximize"), QStringLiteral("close")}));
+    QVERIFY2(minimize && close, "a control was destroyed by the layout switch");
+    QCOMPARE(harness.control(QStringLiteral("minimize")), minimize.data());
+    QCOMPARE(harness.window->activeFocusItem(), minimize.data());
+    QVERIFY(minimize->x() > 400);
+    QVERIFY(close->x() > harness.control(QStringLiteral("maximize"))->x());
+    QVERIFY(findItem(minimize, QStringLiteral("focusRing"))->isVisible());
+    // The glyph drawing follows the layout: the round macOS light is gone.
+    QCOMPARE(harness.chrome->chromeItem()->property("macos").toBool(), false);
+
+    // Tab enters the chrome from the content at the control that is first on
+    // screen, then runs in on-screen order. A rotation of the same three items
+    // would hide a stale order, so the entry point from outside is what counts.
+    QQuickItem probe;
+    probe.setParentItem(harness.fabric.get());
+    probe.setActiveFocusOnTab(true);
+    probe.forceActiveFocus(Qt::TabFocusReason);
+    QStringList order;
+    for (int i = 0; i < 3; ++i) {
+      QTest::keyClick(harness.window.get(), Qt::Key_Tab);
+      order.append(harness.window->activeFocusItem()->objectName().mid(19));
+    }
+    QCOMPARE(order, (QStringList{QStringLiteral("minimize"), QStringLiteral("maximize"),
+                                 QStringLiteral("close")}));
+
+    // And back to macOS: close is first on screen again.
+    QVERIFY(harness.chrome->setControlsLayout(QStringLiteral("macos")));
+    QCOMPARE(switched.count(), 2);
+    QCOMPARE(harness.chrome->controlOrder(),
+             (QStringList{QStringLiteral("close"), QStringLiteral("minimize"), QStringLiteral("maximize")}));
+    QVERIFY(close);
+    probe.forceActiveFocus(Qt::TabFocusReason);
+    QTest::keyClick(harness.window.get(), Qt::Key_Tab);
+    QCOMPARE(harness.window->activeFocusItem(), close.data());
+  }
+
+  void runtimeLayoutSwitchRejectsUnknownNames() {
+    Harness harness({});
+    QSignalSpy switched(harness.chrome.get(), &WindowChrome::controlsLayoutChanged);
+    for (const char* name : {"", "linux", "MacOS", "windows ", "macos;windows"})
+      QVERIFY2(!harness.chrome->setControlsLayout(QString::fromLatin1(name)), name);
+    QCOMPARE(switched.count(), 0);
+    QCOMPARE(harness.chrome->controlsLayout(), QStringLiteral("macos"));
+    // Same layout again is accepted and emits nothing.
+    QVERIFY(harness.chrome->setControlsLayout(QStringLiteral("macos")));
+    QCOMPARE(switched.count(), 0);
+  }
+
+  // A layout switch on QNX, where maximize is hidden, keeps the two live
+  // controls and still moves them to the other side.
+  void runtimeLayoutSwitchOnQnxKeepsLiveControls() {
+    Harness harness({}, capabilitiesForPlatform(QStringLiteral("qnx")), QSize(1920, 1080));
+    QVERIFY(harness.chrome->setControlsLayout(QStringLiteral("windows")));
+    QCOMPARE(controlNames(harness), (QStringList{QStringLiteral("close"), QStringLiteral("minimize")}));
+    QCOMPARE(harness.chrome->controlOrder(),
+             (QStringList{QStringLiteral("minimize"), QStringLiteral("close")}));
+    QVERIFY(harness.control(QStringLiteral("close"))->x() > 1800);
+  }
+
+  // The inset reaches the controller property the windows API reads.
+  void titleBarInsetFollowsStyleAndLayout() {
+    {
+      Harness harness({});
+      const QVariantMap inset = harness.chrome->titleBarInset();
+      QCOMPARE(inset.value(QStringLiteral("top")).toDouble(), 0.0);
+      QCOMPARE(inset.value(QStringLiteral("overlay")).toMap().value(QStringLiteral("width")).toDouble(), 0.0);
+    }
+    WindowChromeConfig config;
+    config.titleBarStyle = TitleBarStyle::Hidden;
+    Harness harness(config);
+    QSignalSpy changed(harness.chrome.get(), &WindowChrome::layoutChanged);
+    QVariantMap inset = harness.chrome->titleBarInset();
+    QCOMPARE(inset.value(QStringLiteral("top")).toDouble(), kBarHeight);
+    QVariantMap overlay = inset.value(QStringLiteral("overlay")).toMap();
+    QCOMPARE(overlay.value(QStringLiteral("x")).toDouble(), kEdgePadding);
+    QCOMPARE(overlay.value(QStringLiteral("width")).toDouble(), 3 * kMacHitWidth);
+    QVERIFY(harness.chrome->setControlsLayout(QStringLiteral("windows")));
+    QVERIFY(changed.count() > 0);
+    overlay = harness.chrome->titleBarInset().value(QStringLiteral("overlay")).toMap();
+    QCOMPARE(overlay.value(QStringLiteral("x")).toDouble(), 800.0 - 3 * kWindowsHitWidth);
+    QCOMPARE(overlay.value(QStringLiteral("width")).toDouble(), 3 * kWindowsHitWidth);
+    harness.window->resize(1000, 700);
+    QTRY_COMPARE(harness.chrome->titleBarInset().value(QStringLiteral("overlay")).toMap()
+                     .value(QStringLiteral("x")).toDouble(), 1000.0 - 3 * kWindowsHitWidth);
+  }
+
+  // WCAG 1.4.11: the focus ring is at least 3:1 against the active and inactive
+  // bar, in both colour schemes. The hover and pressed fills are hand-calculated
+  // in docs/v1/design/contrast.json and are not asserted here.
+  void focusRingContrastMeetsNonTextMinimum() {
+    const auto luminance = [](const QColor& c) {
+      const auto lin = [](qreal v) { return v <= 0.03928 ? v / 12.92 : std::pow((v + 0.055) / 1.055, 2.4); };
+      return 0.2126 * lin(c.redF()) + 0.7152 * lin(c.greenF()) + 0.0722 * lin(c.blueF());
+    };
+    const auto ratio = [&](const QColor& a, const QColor& b) {
+      const qreal hi = std::max(luminance(a), luminance(b));
+      const qreal lo = std::min(luminance(a), luminance(b));
+      return (hi + 0.05) / (lo + 0.05);
+    };
+    for (const bool light : {false, true}) {
+      Harness harness({});
+      QVERIFY(QTest::qWaitForWindowActive(harness.window.get()));
+      QQuickItem* bar = harness.chrome->chromeItem();
+      bar->setProperty("light", light);
+      QCOMPARE(bar->property("light").toBool(), light);
+      const QColor ring = bar->property("focusRingColor").value<QColor>();
+      const QColor active = bar->property("barColor").value<QColor>();
+      QVERIFY2(ratio(ring, active) >= 3.0, qPrintable(QString::number(ratio(ring, active))));
+      // Inactive bar, and the inactive title against its bar (1.4.3).
+      QQuickWindow other;
+      other.resize(100, 100);
+      other.show();
+      other.requestActivate();
+      QVERIFY(QTest::qWaitFor([&] { return !harness.chrome->active(); }));
+      const QColor inactive = bar->property("barColor").value<QColor>();
+      QVERIFY2(ratio(ring, inactive) >= 3.0, qPrintable(QString::number(ratio(ring, inactive))));
+      QVERIFY2(ratio(bar->property("titleColor").value<QColor>(), inactive) >= 4.5,
+               qPrintable(QString::number(ratio(bar->property("titleColor").value<QColor>(), inactive))));
+    }
+    QGuiApplication::styleHints()->unsetColorScheme();
   }
 
   // Review item 2: with a surface that keeps its first size, maximize is not
@@ -847,6 +995,33 @@ class WindowChromeQuickTest : public QObject {
       const QImage frame = harness.window->grabWindow();
       QVERIFY(!frame.isNull());
       if (!dir.isEmpty()) QVERIFY(frame.save(dir + QLatin1Char('/') + QLatin1String(item.name) + QStringLiteral(".png")));
+    }
+  }
+
+  // Reference frames for the runtime layout switch and the focus ring in both
+  // colour schemes (RNQNX_CHROME_FRAMES_DIR, as above).
+  void rendersSwitchAndFocusFrames() {
+    const QString dir = qEnvironmentVariable("RNQNX_CHROME_FRAMES_DIR");
+    for (const bool light : {false, true}) {
+      const QString tag = light ? QStringLiteral("light") : QStringLiteral("dark");
+      Harness harness({}, capabilitiesForPlatform(QStringLiteral("cocoa"), {}, SurfaceResize::FollowsWindow), QSize(480, 160));
+      harness.window->setColor(QColor(QStringLiteral("#dbe7f5")));
+      QVERIFY(QTest::qWaitForWindowActive(harness.window.get()));
+      harness.chrome->chromeItem()->setProperty("light", light);
+      harness.control(QStringLiteral("minimize"))->forceActiveFocus(Qt::TabFocusReason);
+      QTest::qWait(100);  // Lets a hover under the stationary test cursor settle.
+      const QImage before = harness.window->grabWindow();
+      QVERIFY(harness.chrome->setControlsLayout(QStringLiteral("windows")));
+      // The cursor stays at (8,8) over the macOS close light; the Windows close
+      // cell moved away from it, so its hover state must clear.
+      QTRY_VERIFY(!harness.control(QStringLiteral("close"))->property("hovered").toBool());
+      const QImage after = harness.window->grabWindow();
+      QVERIFY(!before.isNull() && !after.isNull());
+      QVERIFY(before != after);
+      if (!dir.isEmpty()) {
+        QVERIFY(before.save(dir + QStringLiteral("/focus-macos-") + tag + QStringLiteral(".png")));
+        QVERIFY(after.save(dir + QStringLiteral("/focus-switched-windows-") + tag + QStringLiteral(".png")));
+      }
     }
   }
 

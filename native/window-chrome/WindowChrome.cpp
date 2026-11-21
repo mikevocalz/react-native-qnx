@@ -11,6 +11,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QThread>
 #include <QUrl>
 #include <QVariantMap>
 
@@ -92,6 +93,61 @@ QVariantMap WindowChrome::controlGeometry() const {
                                                    {QStringLiteral("height"), slot.hitRect.height()}});
   }
   return result;
+}
+
+QStringList WindowChrome::controlOrder() const {
+  QStringList order;
+  for (const auto& slot : layout_.controls) order.append(nameOf(slot.action));
+  return order;
+}
+
+QVariantMap WindowChrome::titleBarInset() const {
+  const TitleBarInset& inset = layout_.inset;
+  return QVariantMap{{QStringLiteral("top"), inset.top},
+                     {QStringLiteral("right"), inset.right},
+                     {QStringLiteral("bottom"), inset.bottom},
+                     {QStringLiteral("left"), inset.left},
+                     {QStringLiteral("overlay"),
+                      QVariantMap{{QStringLiteral("x"), inset.overlay.x()},
+                                  {QStringLiteral("y"), inset.overlay.y()},
+                                  {QStringLiteral("width"), inset.overlay.width()},
+                                  {QStringLiteral("height"), inset.overlay.height()}}}};
+}
+
+// Qt Quick walks the Tab chain in sibling order. Restacking the existing
+// control items to the new physical order keeps the same items, and so the
+// focused one, while Tab follows the order the controls appear in.
+void WindowChrome::applyTabOrder() {
+  if (!chrome_) return;
+  QQuickItem* previous = nullptr;
+  for (const QString& action : controlOrder()) {
+    QQuickItem* item = nullptr;
+    for (QQuickItem* child : chrome_->childItems())
+      if (child->objectName() == QStringLiteral("rnqnxWindowControl_") + action) item = child;
+    if (item == nullptr) continue;
+    if (previous != nullptr) item->stackAfter(previous);
+    previous = item;
+  }
+}
+
+bool WindowChrome::setControlsLayout(const QString& name) {
+  Q_ASSERT(thread() == QThread::currentThread());  // GUI thread only.
+  ControlsLayout parsed;
+  try {
+    parsed = parseControlsLayout(name);
+  } catch (const std::invalid_argument&) {
+    return false;
+  }
+  if (!window_) return false;
+  if (parsed == config_.controls) return true;
+  config_.controls = parsed;
+  // Recompute first and announce the layout name before the geometry, so a
+  // slot that reads both sees the new name and the new geometry.
+  relayout(false);
+  applyTabOrder();
+  Q_EMIT controlsLayoutChanged();
+  Q_EMIT layoutChanged();
+  return true;
 }
 
 qreal WindowChrome::windowWidth() const { return frame_.width(); }
@@ -176,7 +232,7 @@ void WindowChrome::beginSystemMove() {
   if (window_ && capabilities_.systemMove) window_->startSystemMove();
 }
 
-void WindowChrome::relayout() {
+void WindowChrome::relayout(bool announce) {
   if (!window_) return;
   const QRectF whole(0, 0, window_->width(), window_->height());
   if (!contained_ || frameExpanded_) {
@@ -196,7 +252,7 @@ void WindowChrome::relayout() {
   layout_ = layoutChrome(config_, capabilities_, frame_.width());
   content_->setPosition(QPointF(frame_.x(), frame_.y() + layout_.contentInset));
   content_->setSize(QSizeF(frame_.width(), std::max<qreal>(0, frame_.height() - layout_.contentInset)));
-  Q_EMIT layoutChanged();
+  if (announce) Q_EMIT layoutChanged();
 }
 
 void WindowChrome::setResizeHint(Qt::Edges edges, QPointF pointer) {

@@ -12,12 +12,17 @@ Item {
     // Light only when the platform says the system is light (macOS, Windows).
     // QNX reports no colour scheme, so the bar is dark there, like the QNX
     // desktop launcher and most QNX apps (ADR-0016 item 10).
-    readonly property bool light: Qt.styleHints.colorScheme === Qt.ColorScheme.Light
+    // Not readonly: the offscreen QPA used by host tests cannot override the
+    // system scheme, so tests assign this to render and measure both schemes.
+    property bool light: Qt.styleHints.colorScheme === Qt.ColorScheme.Light
     readonly property color barColor: light ? (chrome.active ? "#ececec" : "#f6f6f6")
                                             : (chrome.active ? "#13202f" : "#172433")
     readonly property color separatorColor: light ? "#d0d0d0" : "#060c14"
-    readonly property color titleColor: light ? (chrome.active ? "#1d1d1f" : "#86868b")
-                                              : (chrome.active ? "#e6edf3" : "#7d8a99")
+    readonly property color titleColor: light ? (chrome.active ? "#1d1d1f" : "#595963")
+                                              : (chrome.active ? "#e6edf3" : "#8391a1")
+    // Keyboard focus ring. 3:1 against every bar and hover fill it sits on
+    // (WCAG 1.4.11); docs/v1/design/contrast.json holds the measured ratios.
+    readonly property color focusRingColor: light ? "#0a64d6" : "#79e8dc"
     readonly property color glyphInk: light ? "#1d1d1f" : "#e6edf3"
     readonly property color unavailableLight: light ? "#d4d4d4" : "#3b4858"
 
@@ -298,7 +303,11 @@ Item {
                 color: "transparent"
                 radius: root.macos ? width / 2 : 2
                 border.width: 2
-                border.color: "#0a64d6"
+                // Red close fill (Windows layout hover) swallows the blue and
+                // mint rings; white, or dark ink while pressed, stays visible.
+                border.color: !root.macos && control.action === "close" && control.live
+                    ? (control.pressed ? "#1d1d1f" : control.hovered ? "#ffffff" : root.focusRingColor)
+                    : root.focusRingColor
             }
         }
     }
