@@ -353,6 +353,23 @@ else()
               "RNQNX_HERMES_OK arithmetic es6 async-arrow host-function"
           )
 
+          # The VM must not be the HERMES_SLOW_DEBUG build (Hermes.cmake forces
+          # it off). Host only: this reads HermesInternal, which the QNX lean VM
+          # does not provide.
+          add_executable(rnqnx_hermes_build_mode vnext/probes/hermes/build_mode.cpp)
+          target_link_libraries(rnqnx_hermes_build_mode PRIVATE rnqnx_hermes)
+          rnqnx_enable_strict_warnings(rnqnx_hermes_build_mode)
+          set_target_properties(rnqnx_hermes_build_mode PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+          )
+          add_test(NAME rnqnx_hermes_build_mode
+            COMMAND $<TARGET_FILE:rnqnx_hermes_build_mode>)
+          set_tests_properties(rnqnx_hermes_build_mode PROPERTIES
+            TIMEOUT 30
+            PASS_REGULAR_EXPRESSION "RNQNX_HERMES_BUILD_MODE (Debug|Release)"
+            FAIL_REGULAR_EXPRESSION "RNQNX_HERMES_BUILD_MODE_FAIL"
+          )
+
           # The runtime/renderer host: the five pieces React Native ships no
           # generic implementation of. Built after the renderer modules, so the
           # target is declared here and its sources added below.

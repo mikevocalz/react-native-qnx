@@ -16,6 +16,7 @@ if (process.platform === 'linux') {
     'rnqnx_g0_cxx20_probe',
     'qnx_screen_surface_host_test',
     'rnqnx_hermes_probe',
+    'rnqnx_hermes_build_mode',
     'qt_react_host_host_test',
     'rnqnx_rn_headers_probe',
     'shadow_view_mutation_adapter_host_test',
