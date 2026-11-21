@@ -178,7 +178,7 @@ void mustRun(QtReactHost& host, const char* name) {
 /// The capability set the chrome is built for. The offscreen platform has no
 /// window manager, so the host run asks for the desktop set, as the title bar
 /// does under a real one; QNX gets its own.
-QString chromePlatform() {
+[[maybe_unused]] QString chromePlatform() {
   return QGuiApplication::platformName() == QLatin1String("qnx") ? QStringLiteral("qnx")
                                                                  : QStringLiteral("cocoa");
 }
@@ -353,7 +353,7 @@ void sendMouse(QQuickWindow& window, QEvent::Type type, QPointF point, Qt::Mouse
 
 /// Renders the item tree to a file, which does not depend on the platform
 /// window's buffer, and reports whether the chrome and surface are in it.
-void grabItems(QQuickWindow& window, const char* name) {
+[[maybe_unused]] void grabItems(QQuickWindow& window, const char* name) {
   const char* directory = std::getenv("RNQNX_JS_THREAD_SHOTS");
   if (directory == nullptr || *directory == '\0') return;
   const QSharedPointer<QQuickItemGrabResult> grabbed = window.contentItem()->grabToImage();
