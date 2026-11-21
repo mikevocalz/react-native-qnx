@@ -68,11 +68,35 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(HAVE_LSEEK64 OFF CACHE INTERNAL "off_t is 64-bit on LP64 Linux" FORCE)
 endif()
 
+# Hermes defaults HERMES_SLOW_DEBUG to ON, and in a Debug configuration that
+# compiles heap and card-table validation into every young-generation
+# collection. The host Debug graph carried it (HERMES_SLOW_DEBUG:BOOL=ON in the
+# evidence caches), and docs/validation/pr161-layout-dispatch-2026-11-16.md
+# measured 97.3 percent of corpus sample time inside the Hermes VM. Force it off.
+# rnqnx_hermes_build_mode fails if the VM still reports Build "SlowDebug".
+#
+# A Debug configuration also has no optimisation level of its own, so the Hermes
+# VM was compiled at -O0. Append -O2 for the Hermes subtree only: the variables
+# are read when the directory finishes, so they are restored right after it and
+# this repository's own targets keep the flags they were configured with.
+# -O2 does not define NDEBUG, so Hermes keeps its Debug assertions.
+set(HERMES_SLOW_DEBUG OFF CACHE BOOL
+  "Hermes slow debug checks: forced off by react-native-qnx" FORCE)
+set(_rnqnx_saved_c_flags "${CMAKE_C_FLAGS}")
+set(_rnqnx_saved_cxx_flags "${CMAKE_CXX_FLAGS}")
+string(APPEND CMAKE_C_FLAGS " -O2")
+string(APPEND CMAKE_CXX_FLAGS " -O2")
+
 add_subdirectory(
   "${rnqnx_hermes_SOURCE_DIR}"
   "${CMAKE_BINARY_DIR}/hermes"
   EXCLUDE_FROM_ALL
 )
+
+set(CMAKE_C_FLAGS "${_rnqnx_saved_c_flags}")
+set(CMAKE_CXX_FLAGS "${_rnqnx_saved_cxx_flags}")
+unset(_rnqnx_saved_c_flags)
+unset(_rnqnx_saved_cxx_flags)
 
 add_library(rnqnx_hermes INTERFACE)
 target_link_libraries(rnqnx_hermes INTERFACE hermesvm)

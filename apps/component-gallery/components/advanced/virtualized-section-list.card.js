@@ -1,4 +1,4 @@
-// VirtualizedSectionList on its own. Issue #178: the public entry has no getter for it.
+// VirtualizedSectionList on its own, imported from the public entry (issue #178).
 import * as React from 'react';
 import { Text, View } from 'react-native';
 import { INK, ACCENT } from '../../ui';
@@ -10,16 +10,7 @@ const SECTIONS = [
 ];
 
 function VirtualizedSectionListProof() {
-  const resolved = React.useMemo(
-    () =>
-      resolveComponent('VirtualizedSectionList', [
-        [
-          "require('react-native/Libraries/Lists/VirtualizedSectionList')",
-          () => require('react-native/Libraries/Lists/VirtualizedSectionList'),
-        ],
-      ]),
-    []
-  );
+  const resolved = React.useMemo(() => resolveComponent('VirtualizedSectionList', []), []);
   return (
     <ProofShell name="VirtualizedSectionList" resolved={resolved}>
       {(VirtualizedSectionList) => (

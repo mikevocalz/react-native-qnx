@@ -932,7 +932,7 @@ const rules = [
   {
     re: /^native\/testing\//,
     cls: 'internal',
-    why: 'Test-support library. It is built for native tests and not installed.',
+    why: 'Test-support library for native tests and Pi smoke scripts. Only test executables link it; no shipped library exports this directory.',
     ev: [
       line(
         'native/testing/CMakeLists.txt',

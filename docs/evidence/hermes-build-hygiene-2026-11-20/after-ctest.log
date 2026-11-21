@@ -1,0 +1,9 @@
+Test project <clone>/build/h
+    Start 4: rnqnx_hermes_probe
+1/2 Test #4: rnqnx_hermes_probe ...............   Passed    0.27 sec
+    Start 5: rnqnx_hermes_build_mode
+2/2 Test #5: rnqnx_hermes_build_mode ..........   Passed    0.04 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.36 sec

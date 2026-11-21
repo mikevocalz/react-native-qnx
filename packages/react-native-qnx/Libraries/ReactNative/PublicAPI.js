@@ -169,6 +169,31 @@ const api = Object.freeze({
   get TouchableWithoutFeedback() {
     return require('react-native/Libraries/Components/Touchable/TouchableWithoutFeedback').default;
   },
+  // Each of the next five is the default export of the upstream
+  // react-native@0.88.1 module of the same name, except ImageBackground, which
+  // has a QNX override at the same path. They sit at the end of the object so
+  // the line numbers cited for the earlier exports stay valid.
+  get VirtualizedList() {
+    // Re-exports VirtualizedList from @react-native/virtualized-lists, which
+    // FlatList builds on.
+    return require('react-native/Libraries/Lists/VirtualizedList').default;
+  },
+  get VirtualizedSectionList() {
+    // Re-exports VirtualizedSectionList from @react-native/virtualized-lists,
+    // which SectionList builds on.
+    return require('react-native/Libraries/Lists/VirtualizedSectionList').default;
+  },
+  get Button() {
+    // Renders TouchableOpacity on every platform except Android.
+    return require('react-native/Libraries/Components/Button').default;
+  },
+  get ImageBackground() {
+    return require('react-native/Libraries/Image/ImageBackground').default;
+  },
+  get SafeAreaView() {
+    // Upstream selects the native component on iOS only; elsewhere it is View.
+    return require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
+  },
 });
 
 module.exports = new Proxy(api, {

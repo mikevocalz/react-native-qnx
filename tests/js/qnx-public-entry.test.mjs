@@ -71,6 +71,11 @@ const expected = [
   'TouchableOpacity',
   'TouchableHighlight',
   'TouchableWithoutFeedback',
+  'VirtualizedList',
+  'VirtualizedSectionList',
+  'Button',
+  'ImageBackground',
+  'SafeAreaView',
 ];
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);
