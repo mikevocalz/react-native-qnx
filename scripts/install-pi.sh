@@ -145,6 +145,8 @@ while [ "$run" -le "$runs" ]; do
     if ! rnqnx_wait_log "$log_file" '^rnqnx_playground: first frame presented$' 1 "$frame_wait" "${app} first frame presented (run 1)"; then
       kill "$pid" 2>/dev/null
       wait "$pid" 2>/dev/null
+      cat "$log_file"
+      echo "RNQNX_FIRST_FRAME_TIMEOUT=${run}/${runs}"
       exit 31
     fi
     if command -v screenshot >/dev/null 2>&1; then
@@ -169,6 +171,10 @@ set -e
 
 printf '%s\n' "${RUN_OUTPUT}" | tee "${EVIDENCE_DIR}/playground-output.txt"
 
+if ((RUN_RC == 31)); then
+  echo "ERROR: the probe never printed its first-frame line within ${FRAME_WAIT_S}s; its log is above." >&2
+  exit 31
+fi
 if ((RUN_RC != 0)); then
   echo "ERROR: target app exited with status ${RUN_RC}." >&2
   exit "${RUN_RC}"

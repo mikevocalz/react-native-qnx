@@ -9,7 +9,8 @@
 # message that names WHAT, the pattern and how many lines matched. Returns 2 for
 # bad arguments. The wait is bounded by counting checks (one per
 # RNQNX_WAIT_POLL_S seconds, default 1), so it needs no `date +%s`, which the
-# target's date may lack. The interval only spaces the checks. It never stands
+# target's date may lack. The wait lasts at least TIMEOUT_S, plus the time the
+# checks take, and at least RNQNX_WAIT_POLL_S when that is larger. The interval only spaces the checks. It never stands
 # in for a condition: a node that does not appear fails the wait.
 #
 #   rnqnx_wait_node FILE NAME MIN_COUNT TIMEOUT_S
@@ -39,13 +40,13 @@ rnqnx_wait_log() {
   _rw_limit=$((_rw_timeout / _rw_poll))
   [ "$_rw_limit" -ge 1 ] || _rw_limit=1
   while :; do
-    _rw_seen=$(grep -a -c -E -e "$_rw_re" "$_rw_file" 2>/dev/null)
+    _rw_seen=$(grep -a -c -E -e "$_rw_re" "$_rw_file" 2>/dev/null) || true
     case "$_rw_seen" in '' | *[!0-9]*) _rw_seen=0 ;; esac
     if [ "$_rw_seen" -ge "$_rw_min" ]; then
       return 0
     fi
     if [ "$_rw_checks" -ge "$_rw_limit" ]; then
-      echo "ERROR: timed out after ${_rw_timeout}s waiting for ${_rw_what}: ${_rw_seen} of ${_rw_min} lines matching '${_rw_re}' in ${_rw_file}" >&2
+      printf '%s\n' "ERROR: timed out after ${_rw_timeout}s waiting for ${_rw_what}: ${_rw_seen} of ${_rw_min} lines matching '${_rw_re}' in ${_rw_file}" >&2
       return 124
     fi
     _rw_checks=$((_rw_checks + 1))

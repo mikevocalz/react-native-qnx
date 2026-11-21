@@ -6,7 +6,9 @@ namespace rnqnx::testing {
 
 QObject* findNode(QObject* root, const NodeQuery& query) {
   detail::checkQuery(root, query, "findNode");
-  return detail::scanTree(root, query).node;
+  const detail::ScanOutcome outcome = detail::scanTree(root, query);
+  detail::throwIfUnsupported(outcome, "findNode");
+  return outcome.node;
 }
 
 }  // namespace rnqnx::testing

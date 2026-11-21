@@ -21,8 +21,9 @@ class NodeWaitSmokeTest final : public QObject {
     QVERIFY2(view.status() == QQuickView::Ready, "fixture QML did not load");
     const QByteArray renamed = qgetenv("RNQNX_FIXTURE_NODE_NAME");
     if (!renamed.isEmpty()) view.rootObject()->setProperty("nodeName", QString::fromUtf8(renamed));
+    // The fixture creates its node 150 ms after the scene starts running; the
+    // first scan must therefore miss it and the wait must do the work.
     view.show();
-    QVERIFY(QTest::qWaitForWindowExposed(&view));
 
     t::NodeQuery query;
     query.objectName = QStringLiteral("fixtureReady");
@@ -30,6 +31,7 @@ class NodeWaitSmokeTest final : public QObject {
     const t::NodeWaitResult result = t::waitForNode(view.rootObject(), query, 3s);
     QVERIFY2(result.found(), qPrintable(result.error));
     QCOMPARE(result.node->objectName(), QStringLiteral("fixtureReady"));
+    QVERIFY2(result.elapsed > 0ms, "the node existed before the wait: it did not test the wait");
   }
 };
 

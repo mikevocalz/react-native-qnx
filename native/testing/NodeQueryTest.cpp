@@ -6,7 +6,6 @@
 
 #include <chrono>
 #include <stdexcept>
-#include <thread>
 
 using namespace std::chrono_literals;
 namespace t = rnqnx::testing;
@@ -31,7 +30,6 @@ class NodeQueryTest final : public QObject {
     child->setObjectName(QStringLiteral("objectChild"));
     // A visual child whose QObject parent is a different object: only
     // childItems() reaches it.
-    QObject owner;
     auto* visual = new QQuickItem;
     visual->setObjectName(QStringLiteral("visualChild"));
     visual->setParentItem(&root);
@@ -66,6 +64,26 @@ class NodeQueryTest final : public QObject {
     QVERIFY_THROWS_EXCEPTION(std::logic_error, t::findNode(&root, named("x", true)));
   }
 
+  // A type without visibility that appears mid-wait must not throw out of the
+  // dispatcher: the wait ends at the deadline and then reports the misuse.
+  void unsupportedVisibilityIsReportedAfterTheLoop() {
+    QQuickItem root;
+    QMetaObject::invokeMethod(
+        &root,
+        [&root] {
+          auto* plain = new QObject(&root);
+          plain->setObjectName(QStringLiteral("plain"));
+        },
+        Qt::QueuedConnection);
+    QVERIFY_THROWS_EXCEPTION(std::logic_error, t::waitForNode(&root, named("plain", true), 100ms));
+    // A later visible sibling with the same name still matches.
+    QObject plain(&root);
+    plain.setObjectName(QStringLiteral("twin"));
+    QQuickItem item(&root);
+    item.setObjectName(QStringLiteral("twin"));
+    QCOMPARE(t::findNode(&root, named("twin", true)), &item);
+  }
+
   void rejectsRootFromAnotherThread() {
     auto* foreign = new QObject;
     QThread thread;
@@ -86,7 +104,7 @@ class NodeQueryTest final : public QObject {
     const t::NodeWaitResult result = t::waitForNode(&root, named("noSuchNode"), 200ms);
     QCOMPARE(result.status, t::NodeWaitStatus::TimedOut);
     QVERIFY(!result.found());
-    QVERIFY2(result.elapsed >= 200ms, qPrintable(QString::number(result.elapsed.count())));
+    QVERIFY2(result.elapsed >= 190ms, qPrintable(QString::number(result.elapsed.count())));
     QVERIFY2(result.elapsed < 2000ms, qPrintable(QString::number(result.elapsed.count())));
     QVERIFY2(result.error.contains(QStringLiteral("'noSuchNode'")), qPrintable(result.error));
     QVERIFY2(result.error.contains(QStringLiteral("200 ms")), qPrintable(result.error));

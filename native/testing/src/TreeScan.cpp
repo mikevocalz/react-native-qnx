@@ -13,26 +13,33 @@ namespace rnqnx::testing::detail {
 namespace {
 
 // Visibility by dynamic type, so the scan reads no user-defined getter.
-bool isVisibleObject(QObject* object, const char* call) {
+// `supported` is false for a type with no visibility.
+bool isVisibleObject(QObject* object, bool& supported) {
+  supported = true;
   if (const auto* item = qobject_cast<QQuickItem*>(object)) return item->isVisible();
   if (const auto* window = qobject_cast<QWindow*>(object)) return window->isVisible();
-  throw std::logic_error(std::string(call) + ": requireVisible needs a QQuickItem or QWindow, '" +
-                         object->metaObject()->className() + "' has no visibility");
+  supported = false;
+  return false;
 }
 
 class Scan {
  public:
-  Scan(const NodeQuery& query, const char* call) : query_(query), call_(call) {}
+  explicit Scan(const NodeQuery& query) : query_(query) {}
 
   void visit(QObject* object) {
     if (outcome_.node != nullptr || object == nullptr || visited_.contains(object)) return;
     visited_.insert(object);
     if (object->objectName() == query_.objectName) {
-      if (!query_.requireVisible || isVisibleObject(object, call_)) {
+      bool supported = true;
+      if (!query_.requireVisible || isVisibleObject(object, supported)) {
         outcome_.node = object;
         return;
       }
-      outcome_.nameMatchedHidden = true;
+      // A match without visibility is not a match; a later sibling may still
+      // satisfy the query. The caller reports it if nothing does.
+      if (supported) outcome_.nameMatchedHidden = true;
+      else if (outcome_.unsupportedClass.isEmpty())
+        outcome_.unsupportedClass = QString::fromLatin1(object->metaObject()->className());
     }
     // Copy the lists: visiting reads only, but a copy keeps the walk valid if a
     // getter ever changes the tree.
@@ -49,7 +56,6 @@ class Scan {
 
  private:
   const NodeQuery& query_;
-  const char* call_;
   QSet<const QObject*> visited_;
   ScanOutcome outcome_;
 };
@@ -57,9 +63,15 @@ class Scan {
 }  // namespace
 
 ScanOutcome scanTree(QObject* root, const NodeQuery& query) {
-  Scan scan(query, "scanTree");
+  Scan scan(query);
   scan.visit(root);
   return scan.outcome();
+}
+
+void throwIfUnsupported(const ScanOutcome& outcome, const char* call) {
+  if (outcome.node == nullptr && !outcome.unsupportedClass.isEmpty())
+    throw std::logic_error(std::string(call) + ": requireVisible needs a QQuickItem or QWindow, '" +
+                           outcome.unsupportedClass.toStdString() + "' has no visibility");
 }
 
 void checkQuery(QObject* root, const NodeQuery& query, const char* call) {

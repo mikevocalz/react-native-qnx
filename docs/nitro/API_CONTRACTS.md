@@ -148,7 +148,7 @@ NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
 }
 ```
 
-Matching: the first object in pre-order that satisfies every field of the query. At each object, `QObject::children()` come before `QQuickItem::childItems()`. Each object is visited once. The root can match. `requireVisible` reads `QQuickItem::isVisible()` or `QWindow::isVisible()` by dynamic type, so the scan runs no user code. For any other type it throws `std::logic_error`. A visible node does not imply a nonzero size, opacity or an exposed window. The scan does not reach the content of a closed `Popup` and does not follow `QWindow` children except through `QObject::children()`.
+Matching: the first object in pre-order that satisfies every field of the query. At each object, `QObject::children()` come before `QQuickItem::childItems()`. Each object is visited once. The root can match. `requireVisible` reads `QQuickItem::isVisible()` or `QWindow::isVisible()` by dynamic type, so the scan runs no user code. A name match on any other type is not a match, so a later sibling can still satisfy the query. When nothing matches and such a type was seen, the call throws `std::logic_error` naming the class. That throw happens after the event loop ends, never inside a dispatcher slot. A `QQuickWindow` is walked through its `contentItem` as well. A visible node does not imply a nonzero size, opacity or an exposed window. The scan does not reach the content of a closed `Popup` and does not follow `QWindow` children except through `QObject::children()`.
 
 ### Call sites
 

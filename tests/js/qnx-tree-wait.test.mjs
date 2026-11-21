@@ -105,6 +105,7 @@ if (verb === 'drag') {
   // start 800x600+300+200: the drag moves it by -100,-60, the edge drag trims 100 px
   fs.appendFileSync(log, n === 0 ? 'RNQNX_WINDOW_FRAME 800x600+200+140\\n' : 'RNQNX_WINDOW_FRAME 700x600+200+140\\n');
 } else if (verb === 'dclick') {
+  if (process.env.FAKE_MODE === 'drop-action') process.exit(0);
   fs.appendFileSync(log, 'RNQNX_WINDOW_ACTION maximize\\n');
 }
 `
@@ -156,6 +157,17 @@ if (verb === 'drag') {
       red.stdout
     ),
     red.stdout
+  );
+
+  await writeFile(appLog, 'RNQNX_WINDOW_CHROME platform=qnx\n');
+  await rm(`${appLog}.n`, { force: true });
+  const noAction = mouse('noaction', { FAKE_MODE: 'drop-action' });
+  check(noAction.status !== 0, 'mouse smoke goes red when the action line never arrives');
+  check(
+    /timed out after 2s waiting for RNQNX_WINDOW_ACTION line after the maximise double click/.test(
+      noAction.stdout
+    ),
+    noAction.stdout
   );
 
   // install-pi.sh against a synthetic target: the screenshot waits for the first-frame line.

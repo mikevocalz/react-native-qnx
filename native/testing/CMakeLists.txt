@@ -43,7 +43,8 @@ set_tests_properties(rnqnx_node_query PROPERTIES TIMEOUT 60 ENVIRONMENT "${test_
 
 # Smoke: a QML scene creates its node after a deferred Loader activates. The
 # test waits for that node by name. The mutated case renames the node in the
-# fixture; the same test must then fail, so CTest expects a failure.
+# fixture; the same test must then fail with the wait timeout naming the node,
+# and CTest passes only when that message appears.
 add_executable(rnqnx_node_wait_smoke NodeWaitSmokeTest.cpp)
 target_link_libraries(rnqnx_node_wait_smoke PRIVATE rnqnx_native_testing Qt6::Quick Qt6::Test)
 target_compile_definitions(rnqnx_node_wait_smoke PRIVATE
@@ -52,5 +53,6 @@ add_test(NAME rnqnx_node_wait_smoke COMMAND rnqnx_node_wait_smoke)
 set_tests_properties(rnqnx_node_wait_smoke PROPERTIES TIMEOUT 60 ENVIRONMENT "${test_env}")
 add_test(NAME rnqnx_node_wait_smoke_mutated COMMAND rnqnx_node_wait_smoke)
 set_tests_properties(rnqnx_node_wait_smoke_mutated PROPERTIES
-  TIMEOUT 60 WILL_FAIL TRUE
+  TIMEOUT 60
+  PASS_REGULAR_EXPRESSION "timed out after 3000 ms waiting for node 'fixtureReady'"
   ENVIRONMENT "${test_env};RNQNX_FIXTURE_NODE_NAME=renamedReadyNode")

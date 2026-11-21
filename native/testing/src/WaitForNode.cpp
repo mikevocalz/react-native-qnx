@@ -7,6 +7,8 @@
 #include <QEventLoop>
 #include <QTimer>
 
+#include <algorithm>
+#include <climits>
 #include <stdexcept>
 
 namespace rnqnx::testing {
@@ -64,11 +66,13 @@ NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
 
   detail::ScanOutcome first = detail::scanTree(root, query);
   if (first.node != nullptr) return finished(NodeWaitStatus::Found, first.node, QString());
+  detail::throwIfUnsupported(first, "waitForNode");
 
   bool decided = false;
   NodeWaitStatus status = NodeWaitStatus::AppQuit;  // stays if the loop ends without a verdict
   QObject* hit = nullptr;
   bool hiddenMatch = first.nameMatchedHidden;
+  QString unsupported = first.unsupportedClass;
 
   QEventLoop loop;
   QTimer deadline;
@@ -86,10 +90,12 @@ NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
     if (guard.isNull()) return conclude(NodeWaitStatus::RootDestroyed, nullptr);
     const detail::ScanOutcome outcome = detail::scanTree(root, query);
     hiddenMatch = hiddenMatch || outcome.nameMatchedHidden;
+    if (unsupported.isEmpty()) unsupported = outcome.unsupportedClass;
     if (outcome.node != nullptr) conclude(NodeWaitStatus::Found, outcome.node);
   };
 
   QAbstractEventDispatcher* dispatcher = QAbstractEventDispatcher::instance();
+  if (dispatcher == nullptr) throw std::logic_error("waitForNode: no event dispatcher");
   QObject::connect(dispatcher, &QAbstractEventDispatcher::aboutToBlock, &loop, rescan);
   QObject::connect(root, &QObject::destroyed, &loop,
                    [&] { conclude(NodeWaitStatus::RootDestroyed, nullptr); });
@@ -97,8 +103,16 @@ NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
     rescan();  // a node that arrived in the deadline's own turn still counts
     if (!decided) conclude(hiddenMatch ? NodeWaitStatus::NotVisible : NodeWaitStatus::TimedOut, nullptr);
   });
-  deadline.start(static_cast<int>(timeout.count()));
+  const auto budget = std::min<std::chrono::milliseconds::rep>(timeout.count(), INT_MAX);
+  deadline.start(static_cast<int>(budget));
   loop.exec();
+
+  // Thrown here, after the loop, never from a dispatcher slot.
+  if (status == NodeWaitStatus::TimedOut || status == NodeWaitStatus::NotVisible) {
+    detail::ScanOutcome late;
+    late.unsupportedClass = unsupported;
+    detail::throwIfUnsupported(late, "waitForNode");
+  }
 
   const QString name = query.objectName;
   switch (status) {
