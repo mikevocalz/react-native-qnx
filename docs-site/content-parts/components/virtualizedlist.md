@@ -2,9 +2,9 @@
 
 `VirtualizedList` is upstream JavaScript from `@react-native/virtualized-lists` (pinned through `react-native` 0.88.1 in `pnpm-lock.yaml`, where `@react-native/virtualized-lists@0.88.1` is a dependency). No QNX override exists in `packages/react-native-qnx/Libraries`, and no native component is registered for it in `vnext/src/runtime/QtReactHost.cpp`. It renders a `ScrollView`, which QNX mounts as a Qt Quick `Flickable`.
 
-Import path matters. React Native 0.88.1's own `index.js` exports `VirtualizedList` (line 174) and `VirtualizedSectionList` (line 177). The QNX opt-in public entry, `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`, does not: it exports `FlatList` and `SectionList` only, and its Proxy throws `React Native QNX public export "VirtualizedList" is not implemented in this experimental entry.` for any other name (`PublicAPI.js:170-185`; the list of exports is asserted in `tests/js/qnx-public-entry.test.mjs:27-72`). Projects made by `project create` and `add-qnx` set `withPublicEntry` in Metro (`packages/react-native-qnx-cli/src/create-project.mjs:188-192`, `add-qnx.mjs:63-65`), so for them `import { VirtualizedList } from 'react-native'` fails at runtime. The example below imports the component from `@react-native/virtualized-lists` for that reason.
+Import path: `import { VirtualizedList } from 'react-native'` works on QNX. The public entry, `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`, has a getter for it that requires `react-native/Libraries/Lists/VirtualizedList`, the upstream React Native 0.88.1 file that re-exports `VirtualizedList` from `@react-native/virtualized-lists`. Until this was added (issue #178), the entry's Proxy threw `React Native QNX public export "VirtualizedList" is not implemented in this experimental entry.` for it. Projects made by `project create` and `add-qnx` set `withPublicEntry` in Metro (`packages/react-native-qnx-cli/src/create-project.mjs:188-192`, `add-qnx.mjs:63-65`). The export list is asserted in `tests/js/qnx-public-entry.test.mjs`, and `tests/js/qnx-public-entry-render.test.mjs` mounts `VirtualizedList` through the entry with the host test renderer. The [2026-11-20 VM capture](/docs/reference/component-matrix) predates the fix and recorded the throw; no VM or device run of the fixed entry exists yet.
 
-The generated notes give its host coverage as "covered transitively by the FlatList virtualization test". `FlatList` is a thin wrapper over `VirtualizedList` (`FlatList.js:683`), so that test runs `VirtualizedList` code. No test uses `VirtualizedList` directly.
+The generated notes give its host coverage as "covered transitively by the FlatList virtualization test". `FlatList` is a thin wrapper over `VirtualizedList` (`FlatList.js:683`), so that test runs `VirtualizedList` code. `tests/js/qnx-public-entry-render.test.mjs` also mounts `VirtualizedList` directly through the public entry and asserts that only the first window of 200 rows renders.
 
 | Prop                                                            | Type     | Status                                   | Source-backed note                                                                          |
 | --------------------------------------------------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -39,14 +39,11 @@ Because the list is JavaScript, its behavior on QNX is bounded by the ScrollView
 
 ## Minimal example
 
-The QNX public entry has no `VirtualizedList` export, so the example takes it from the package that defines it. The app must list `@react-native/virtualized-lists` (0.88.1, the version the lockfile pins) as its own dependency. This import was not run on QNX.
+The example imports `VirtualizedList` from the QNX public entry. This import was not run on QNX; the host render test runs it.
 
 ```tsx
 import React from 'react';
-import { Text, View } from 'react-native';
-import VirtualizedLists from '@react-native/virtualized-lists';
-
-const { VirtualizedList } = VirtualizedLists;
+import { Text, View, VirtualizedList } from 'react-native';
 
 type Row = { key: string; label: string };
 const getItem = (_data: unknown, index: number): Row => ({
@@ -75,9 +72,9 @@ export default function App() {
 
 ## Known gaps
 
-- No direct test. The only evidence is the transitive FlatList host test, run on the offscreen Qt platform on 2026-08-14, and the SectionList test for `onViewableItemsChanged`.
+- Direct host coverage is the render test in `tests/js/qnx-public-entry-render.test.mjs`, plus the transitive FlatList host test (offscreen Qt platform, 2026-08-14) and the SectionList test for `onViewableItemsChanged`.
 - No Pi 400 or Pi 4 QSTI receipt.
 - Scroll in the test was produced by writing `contentY`, so real touch or wheel scrolling of a virtualized list has no recorded run.
-- `VirtualizedList` is not reachable through the QNX public entry. Getting it requires the `@react-native/virtualized-lists` import path, which has no recorded run.
+- The public entry export has host test coverage only. No VM or device run of `import { VirtualizedList } from 'react-native'` exists; the 2026-11-20 VM capture predates the export.
 
 Tracked in [issue 178](https://github.com/mikevocalz/react-native-qnx/issues/178).

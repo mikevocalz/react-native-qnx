@@ -4,16 +4,7 @@ import { INK } from '../../ui';
 import { ProofShell, resolveComponent } from './proofCard';
 
 function ImageBackgroundProof() {
-  const resolved = React.useMemo(
-    () =>
-      resolveComponent('ImageBackground', [
-        [
-          "require('react-native/Libraries/Image/ImageBackground')",
-          () => require('react-native/Libraries/Image/ImageBackground'),
-        ],
-      ]),
-    []
-  );
+  const resolved = React.useMemo(() => resolveComponent('ImageBackground', []), []);
   return (
     <ProofShell name="ImageBackground" resolved={resolved}>
       {(ImageBackground) => (

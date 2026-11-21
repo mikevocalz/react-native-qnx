@@ -930,6 +930,17 @@ const rules = [
     ],
   },
   {
+    re: /^native\/testing\//,
+    cls: 'internal',
+    why: 'Test-support library for native tests and Pi smoke scripts. Only test executables link it; no shipped library exports this directory.',
+    ev: [
+      line(
+        'native/testing/CMakeLists.txt',
+        /target_include_directories\(rnqnx_native_testing PUBLIC include\)/.source
+      ),
+    ],
+  },
+  {
     re: /^vnext\/src\//,
     cls: 'internal',
     why: 'Private source directory. The only CMake use is a PRIVATE include of a test target.',
