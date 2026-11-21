@@ -110,6 +110,189 @@ also has physical callback/Promise/checkpoint/teardown evidence. General QNX
 codegen and third-party Nitro modules remain unverified. The normal upstream RN
 TurboModule startup plumbing remains; Nitro serves this app-native proof.
 
+## S4 frame and startup timing probe (internal, no JavaScript API)
+
+Added 2026-11-20 for the `performance` gate. This section is the `api-design`
+output (Margelo skill, step 1) and the `build-nitro-modules` decision (step 2)
+for the timing probe. An independent review (`ecc:code-reviewer`, a lane other
+than the author) ran on the first draft before any C++ was written and asked
+for the changes now folded in; its record goes in the S4 receipt.
+
+### Decision: no HybridObject, no `.nitro.ts` spec
+
+The probe measures the native host from outside the React tree. Nothing in
+JavaScript needs to start it, read it or stop it. Plan 03 keeps tracing
+internal ("no general application-facing Nitro performance API is required for
+the first slice"), and the pinned `api-design` skill says to keep
+implementation strategy out of the public shape. `build-nitro-modules` applies
+only where a HybridObject is exposed. So:
+
+- There is no new `.nitro.ts`, no entry in `scripts/nitro-platform-codegen.mjs`
+  and no generated or hand-written Nitrogen-looking output.
+- The surface is a native C++ class used by the playground host and a few
+  command line options.
+- If a later slice needs JavaScript-visible timing, it starts again at step 1
+  with a typed spec, and this section stops being the contract.
+
+Why not extend `RuntimeTrace` (`RNQNX_ENABLE_FRAME_TRACE`): its `record()` takes
+a mutex while copying a record, and Plan 03 asks for no mutex on a callback
+path. `RuntimeTrace` also has no Qt render-loop stage and its schema has no
+frame field. The timing probe is a separate, smaller recorder with one writer
+and no lock. It does not implement Plan 03's thread identity or its ON/OFF
+overhead gate: no overhead comparison has been measured, so budgets recorded
+with the probe on carry that caveat, and the probe is default OFF.
+
+### Public contract
+
+Command line, accepted only when the host is built with
+`RNQNX_ENABLE_TIMING_PROBE=ON` (default OFF; CMake rejects it on QNX and on
+any system other than Linux or Darwin):
+
+| Option                       | Meaning                                                                                                                                                     |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--timing-json <path>`       | Run the bundle, record, write a new JSON file and exit. The path must not exist; this is checked at option parse, before the workload, and again at export. |
+| `--timing-settle-ms <n>`     | Milliseconds to keep running after the first frame before the wheel script. Default 500, range 0 to 60000.                                                  |
+| `--timing-wheel-notches <n>` | Post `n` wheel notches to the window after settling, one every `--timing-wheel-gap-ms`. Default 0, range 0 to 1000.                                         |
+| `--timing-wheel-gap-ms <n>`  | Gap between notches. Default 200, range 1 to 5000.                                                                                                          |
+
+`--timing-json` requires `--bundle` and is rejected together with `--screenshot`
+with `--replace`, `--restore-only` and `--stop-running`, and with `--dev-server` (the dev path wraps the run in a reload loop, which has
+no single origin). Any value outside its range, a non-integer value, or a
+timing option without `--timing-json` exits 2 with
+`RNQNX_TIMING_CONFIG_ERROR <reason>` on stderr and runs no workload.
+
+C++ (`vnext/probes/playground/TimingProbe.h`), namespace `rnqnx::probe`:
+
+```cpp
+struct TimingConfig {
+  int settleMs, wheelNotches, wheelGapMs;
+  int frameCapacity;  // internal, 4096; tests lower it to exercise overflow
+  // Empty string keeps the default. Returns nullopt and sets `error` on a bad value.
+  static std::optional<TimingConfig> fromStrings(const QString& settleMs,
+      const QString& wheelNotches, const QString& wheelGapMs, QString* error);
+};
+
+class TimingProbe final : public QObject {
+ public:
+  // `origin` is the steady_clock reading main() takes as its first statement.
+  // Connects to `window` with Qt::DirectConnection before the window is shown.
+  TimingProbe(QQuickWindow& window, TimingConfig config,
+              std::chrono::steady_clock::time_point origin);
+  ~TimingProbe() override;              // disconnects; safe at any point after construction
+  TimingProbe(const TimingProbe&) = delete;
+  TimingProbe& operator=(const TimingProbe&) = delete;
+
+  void markBundleEvaluated() noexcept;  // GUI thread, once
+  void markSurfaceStarted() noexcept;   // GUI thread, once, after host.startSurface returns
+  // Waits for the first swap after markSurfaceStarted, settles, posts the wheel
+  // script, snapshots, then calls `done` once on the GUI thread. done(false)
+  // means no swap arrived within 30 s of start().
+  void start(std::function<void(bool)> done);
+  // Valid after done(true). Returns an error string, empty on success.
+  QString writeJson(const QString& path) const;
+};
+```
+
+Semantics:
+
+- The origin is the `steady_clock` reading `main()` takes as its first
+  statement, before `QGuiApplication` exists. It excludes dynamic loading before
+  `main()`. The JSON says so in `scope`.
+- `firstFrameMs` is the first `QQuickWindow::frameSwapped` delivered after
+  `markSurfaceStarted()`. A swap of the empty window before the surface starts
+  is stored in `frameMs` but is not `firstFrameMs`. `surfaceStartedMs` and
+  `bundleEvaluatedMs` are recorded separately.
+- A frame record is the `steady_clock` reading taken inside the signal handler,
+  in nanoseconds from the origin. The connection is `Qt::DirectConnection`, so
+  the reading is taken on the thread that emits (the render thread under the
+  threaded loop, the GUI thread under the basic and software loops). It is
+  not a display presentation timestamp and no JSON field claims it is. Whether
+  the offscreen platform and software backend emit `frameSwapped` the same way
+  as a windowed GL backend is not assumed: the JSON records `platform` and
+  `renderBackend`, and the S4 receipt states what the host run showed.
+- Only the app window is connected. A second window (for example the LogBox
+  surface) is excluded.
+- Storage is one fixed array of 4096 slots allocated at construction, sized for
+  the workloads in this slice (500 ms settle plus 40 notches at 200 ms is about
+  8.5 s, a few hundred frames), not as a general bound. There is one writer,
+  the signal handler. It does `n = total.load(relaxed)`, stores the slot when
+  `n < 4096`, then `total.store(n + 1, release)`. There is no read-modify-write
+  and no lock, allocation, file write or formatting on that path.
+- The handler and its storage live in a `shared_ptr<State>` captured by the
+  connection functor. `~TimingProbe` disconnects and sets `State::stopped`
+  (release); the handler checks it first. A handler already running on the
+  render thread therefore never touches freed memory, whatever the destruction
+  order of the probe and the window.
+- At `done` the probe loads `total` once with acquire order. `storedFrames` is
+  `min(total, 4096)` and `droppedFrames` is `total - storedFrames`, both from
+  that one load. Swaps after `done` are ignored by the export. A capture with
+  `droppedFrames > 0` is invalid for budgets and the validator rejects it.
+- RSS is read once, after the wheel script ends. `rssKiB` is the resident set
+  and `peakRssKiB` is the peak, both from the OS (Linux `/proc/self/status`
+  `VmRSS` and `VmHWM`; macOS `task_info` `resident_size` and `getrusage`
+  `ru_maxrss`, which macOS reports in bytes, divided by 1024). Nothing is
+  estimated.
+- The wheel script uses `QCoreApplication::postEvent`, not `sendEvent`, so it
+  does not run inside the timer callback that schedules it.
+- The probe leaves the existing 16 ms microtask `drainTimer` in place. Timing
+  runs include its quantisation; it is part of what is measured, and the JSON
+  does not hide it.
+
+Error set (every failure exits nonzero and writes no JSON file):
+
+| Condition                                                                        | Exit | Message                                            |
+| -------------------------------------------------------------------------------- | ---- | -------------------------------------------------- |
+| option out of range or malformed, or a rejected combination                      | 2    | `RNQNX_TIMING_CONFIG_ERROR`                        |
+| output path exists at parse time                                                 | 2    | `RNQNX_TIMING_CONFIG_ERROR`                        |
+| no frame swapped after surface start within 30 s of `start()`                    | 1    | `RNQNX_TIMING_NO_FRAME`                            |
+| bundle or surface start failed, or `applicationFailure()` non-empty at any check | 1    | the existing `RNQNX_PLAYGROUND_*_FAILED` lines     |
+| `stopSurface` or its drain reports a failure after the run                       | 1    | the existing `RNQNX_PLAYGROUND_RENDER_FAILED` line |
+| output path appears before export, or write fails                                | 1    | `RNQNX_TIMING_EXPORT_FAILED`                       |
+
+The run tears down like the screenshot path: after `done`, `stopSurface`, drain
+20 times, recheck `applicationFailure()`, then export. The output directory must exist and be writable, checked at parse time. The export writes a
+temporary file in the destination directory and links it into place without
+overwriting, so a failed write leaves nothing at the destination. The file has mode 0600. SIGINT and
+SIGTERM end the process without a JSON file.
+
+Disposal and cancellation: `TimingProbe` is stack-owned by `main`. It is
+destroyed after the host and before the window, which is safe because it never
+calls into the host and no event loop runs in between. The 30 s watchdog is a single-shot `QTimer`
+owned by the probe. There is no cancel call.
+
+JSON (`schema` 1) fields: `schema`, `scope`, `clock`, `platform`
+(`QGuiApplication::platformName()`), `renderBackend`, `os`, `bundleEvaluatedMs`,
+`surfaceStartedMs`, `firstFrameMs`, `frameMs` (every stored record, milliseconds
+from origin), `totalFrames`, `droppedFrames`, `wheelNotchesSent`, `wheelFirstMs` and
+`wheelLastMs` (when each notch was posted; `null` without a script), `rssKiB`,
+`peakRssKiB`, `rssSource`. Intervals, percentiles and budget comparison are
+computed outside the host by `scripts/validate-budgets.mjs` (added in this
+slice) from `frameMs`, so the host records no derived statistic that could hide
+a dropped record.
+
+### Call sites
+
+```sh
+# Hello World, startup and RSS only
+rnqnx_playground_host --bundle hello-world.bundle.js --timing-json /tmp/hello.json
+
+# 1000-row list, 40 wheel notches 200 ms apart after a 500 ms settle
+rnqnx_playground_host --bundle list-1000.bundle.js --timing-json /tmp/list.json \
+  --timing-wheel-notches 40
+
+# Failure: the output file exists
+rnqnx_playground_host --bundle hello-world.bundle.js --timing-json /tmp/hello.json
+# stderr: RNQNX_TIMING_CONFIG_ERROR output exists; exit 2; no workload ran
+```
+
+### What each platform promises
+
+| Platform                                   | Promise                                                                                                                                                                                                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host (Linux, macOS), offscreen or windowed | Startup to the first swap after surface start, stored swap instants, RSS. Labelled `host`.                                                                                                                                                     |
+| QNX Screen (VM, Pi 400, release board)     | None in this slice. CMake rejects `RNQNX_ENABLE_TIMING_PROBE=ON` when `CMAKE_SYSTEM_NAME` is `QNX`. The device and VM budget fields stay `unmeasured` until a QNX reader and clock mapping are written, reviewed and run on a QNX target (S9). |
+| Marathon                                   | Not in scope (frozen).                                                                                                                                                                                                                         |
+
 ## Native tree query for tests: `rnqnx::testing::waitForNode` (S3)
 
 Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an _app-facing_ native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR.

@@ -941,6 +941,18 @@ const rules = [
     ],
   },
   {
+    re: /^vnext\/probes\//,
+    cls: 'internal',
+    why: 'Host probe sources. The only CMake use is a PRIVATE include of the playground host executable.',
+    ev: [
+      line(
+        'CMakeLists.txt',
+        /target_include_directories\(rnqnx_playground_host PRIVATE vnext\/probes\/playground\)/
+          .source
+      ),
+    ],
+  },
+  {
     re: /^vnext\/src\//,
     cls: 'internal',
     why: 'Private source directory. The only CMake use is a PRIVATE include of a test target.',

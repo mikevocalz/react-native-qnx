@@ -28,6 +28,7 @@
     "audit:dependencies": "node scripts/audit-dependencies.mjs",
     "validate:dependencies": "node scripts/validate-dependencies.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
+    "validate:budgets": "node scripts/validate-budgets.mjs --check-file",
     "validate:architecture": "node scripts/validate-architecture.mjs",
     "pi:preflight": "bash scripts/pi-preflight.sh",
     "pi:install": "bash scripts/install-pi.sh",

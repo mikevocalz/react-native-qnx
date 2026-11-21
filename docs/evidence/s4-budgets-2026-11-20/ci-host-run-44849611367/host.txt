@@ -1,0 +1,1 @@
+host: 4 cpus, INTEL(R) XEON(R) PLATINUM 8573C

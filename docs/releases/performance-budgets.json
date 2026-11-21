@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "gate": "performance",
+  "description": "Budgets for startup to first frame, presented-frame intervals and RSS. A value exists only where a run on that lane produced it. Fields marked unmeasured hold no number.",
+  "method": {
+    "hostRunsPerCheck": 5,
+    "baselineMinRuns": 20,
+    "regressionFactor": 1.5,
+    "ceilingRule": "ceiling = ceil(baseline.max * regressionFactor), written by scripts/validate-budgets.mjs --apply-baseline",
+    "checkRule": "A host check runs the workload hostRunsPerCheck times and compares the median of each metric with its ceiling. A median above the ceiling fails the lane.",
+    "percentile": "nearest-rank",
+    "frameInterval": "Gaps between consecutive QQuickWindow::frameSwapped instants that fall between the first and last posted wheel notch. At least 30 swaps must fall in that window. A swap is the end of a scene-graph swap, not a display presentation.",
+    "startup": "steady_clock from the first statement of main() to the first frameSwapped after the surface started. Excludes dynamic loading before main().",
+    "rss": "peakRssKiB from the OS after the run (Linux VmHWM, macOS ru_maxrss).",
+    "invalidRun": "A result with droppedFrames above 0, a missing RSS, or too few swaps in the window is rejected, never averaged in.",
+    "changePolicy": "A ceiling does not change without an ADR and the owner. --apply-baseline refuses to raise a measured ceiling."
+  },
+  "knownConstraints": [
+    {
+      "id": "hermes-no-jit",
+      "setting": "HERMESVM_ALLOW_JIT=0",
+      "effect": "Hermes runs as an interpreter in every build here, host and QNX. Every budget in this file was measured without a JIT. A budget would need a new measurement and an ADR if that setting changes.",
+      "evidence": [
+        "docs/handoff/HERMES_QNX.md",
+        "docs/evidence/pr149-on-native-build-2026-11-14/CMakeCache.final.txt (HERMESVM_ALLOW_JIT:STRING=0)"
+      ]
+    }
+  ],
+  "lanes": {
+    "host": {
+      "label": "host",
+      "description": "GitHub-hosted ubuntu-24.04, Qt 6.11.1 offscreen platform, software scene graph backend, Release-equivalent playground. Enforced in CI by host-renderer.yml. Says nothing about QNX.",
+      "enforced": true
+    },
+    "qnx-vm": {
+      "label": "QNX VM",
+      "description": "QEMU QNX target. Not measured.",
+      "enforced": false
+    },
+    "pi400": {
+      "label": "Pi 400",
+      "description": "Raspberry Pi 400 custom image. Not measured.",
+      "enforced": false
+    },
+    "release-board": {
+      "label": "release board",
+      "description": "The board the device-parity gate names. Not measured; S9.",
+      "enforced": false
+    }
+  },
+  "workloads": {
+    "hello-world": {
+      "bundle": "apps/performance-lab/hello-world.js",
+      "timingArgs": ["--timing-settle-ms", "500"],
+      "metrics": {
+        "startupToFirstFrameMs": {
+          "unit": "ms",
+          "description": "Startup to first frame",
+          "budgets": {
+            "host": {
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 100.124,
+                "p50": 101.299,
+                "max": 103.444,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 156
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        },
+        "frameIntervalP95Ms": {
+          "unit": "ms",
+          "description": "Frame interval p95",
+          "budgets": {
+            "host": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            },
+            "qnx-vm": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            },
+            "pi400": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            },
+            "release-board": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            }
+          }
+        },
+        "frameIntervalMaxMs": {
+          "unit": "ms",
+          "description": "Frame interval maximum",
+          "budgets": {
+            "host": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            },
+            "qnx-vm": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            },
+            "pi400": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            },
+            "release-board": {
+              "status": "not-applicable",
+              "reason": "Hello World does not animate, so it has no presented-frame interval to budget."
+            }
+          }
+        },
+        "peakRssKiB": {
+          "unit": "KiB",
+          "description": "Peak resident set",
+          "budgets": {
+            "host": {
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 71264,
+                "p50": 71652,
+                "max": 71840,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 107760
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        }
+      }
+    },
+    "list-1000": {
+      "bundle": "apps/performance-lab/index.js",
+      "timingArgs": [
+        "--timing-settle-ms",
+        "500",
+        "--timing-wheel-notches",
+        "40",
+        "--timing-wheel-gap-ms",
+        "100"
+      ],
+      "metrics": {
+        "startupToFirstFrameMs": {
+          "unit": "ms",
+          "description": "Startup to first frame",
+          "budgets": {
+            "host": {
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 157.712,
+                "p50": 160.149,
+                "max": 164.692,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 248
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        },
+        "frameIntervalP95Ms": {
+          "unit": "ms",
+          "description": "Frame interval p95 during a 40-notch wheel script",
+          "budgets": {
+            "host": {
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 18.488000000000056,
+                "p50": 18.652000000000044,
+                "max": 19.539999999999964,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 30
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        },
+        "frameIntervalMaxMs": {
+          "unit": "ms",
+          "description": "Frame interval maximum during a 40-notch wheel script",
+          "budgets": {
+            "host": {
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 19.722999999999956,
+                "p50": 21.634000000000015,
+                "max": 21.91899999999987,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 33
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        },
+        "peakRssKiB": {
+          "unit": "KiB",
+          "description": "Peak resident set",
+          "budgets": {
+            "host": {
+              "status": "measured",
+              "baseline": {
+                "runs": 20,
+                "min": 96248,
+                "p50": 96596,
+                "max": 96908,
+                "source": "host: GitHub Actions run 44849611367 at cc20adfe, ubuntu-24.04, 4 cpus Intel Xeon Platinum 8573C, Qt 6.11.1 offscreen software, Release, base runtime, 20 runs per workload"
+              },
+              "ceiling": 145362
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        }
+      }
+    },
+    "drawer-drag": {
+      "bundle": null,
+      "timingArgs": [],
+      "metrics": {
+        "startupToFirstFrameMs": {
+          "unit": "ms",
+          "description": "Drawer drag startupToFirstFrameMs",
+          "budgets": {
+            "host": {
+              "status": "blocked",
+              "reason": "apps/performance-lab/fixtures.js marks drawer-drag blocked: it needs the qualified Gesture Handler and Worklets path, and a scripted position change would not qualify it."
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        },
+        "frameIntervalP95Ms": {
+          "unit": "ms",
+          "description": "Drawer drag frameIntervalP95Ms",
+          "budgets": {
+            "host": {
+              "status": "blocked",
+              "reason": "apps/performance-lab/fixtures.js marks drawer-drag blocked: it needs the qualified Gesture Handler and Worklets path, and a scripted position change would not qualify it."
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        },
+        "frameIntervalMaxMs": {
+          "unit": "ms",
+          "description": "Drawer drag frameIntervalMaxMs",
+          "budgets": {
+            "host": {
+              "status": "blocked",
+              "reason": "apps/performance-lab/fixtures.js marks drawer-drag blocked: it needs the qualified Gesture Handler and Worklets path, and a scripted position change would not qualify it."
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        },
+        "peakRssKiB": {
+          "unit": "KiB",
+          "description": "Drawer drag peakRssKiB",
+          "budgets": {
+            "host": {
+              "status": "blocked",
+              "reason": "apps/performance-lab/fixtures.js marks drawer-drag blocked: it needs the qualified Gesture Handler and Worklets path, and a scripted position change would not qualify it."
+            },
+            "qnx-vm": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "pi400": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            },
+            "release-board": {
+              "status": "unmeasured",
+              "reason": "No QNX measurement exists. The timing probe is host only (docs/nitro/API_CONTRACTS.md); the QNX reader and clock mapping come with S9."
+            }
+          }
+        }
+      }
+    }
+  }
+}

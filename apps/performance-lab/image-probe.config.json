@@ -1,0 +1,6 @@
+{
+  "url": "http://127.0.0.1:8099/probe-640x427.jpg",
+  "attempts": 5,
+  "heartbeatMs": 50,
+  "attemptTimeoutMs": 60000
+}
