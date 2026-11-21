@@ -152,6 +152,25 @@ The result on the Pi 400, from a probe that decodes an animated GIF and an
 animated WebP, is in
 [the image formats receipt](../../docs/evidence/pi-image-formats-2026-11-13.md).
 
+## Software scene graph patch
+
+[`patches/qtbase-qnx-software-grab.patch`](patches/qtbase-qnx-software-grab.patch)
+makes the qnx plugin usable with `QT_QUICK_BACKEND=software` on a machine
+without a GPU. It is not in `apply-qnx-patches.sh`: the 2026-11-20 QEMU VM runs
+applied it by hand after the two patches below, on a tree that already had
+them (`git apply --check -p1` passed there), and it was not run through the
+script. It does two things:
+
+- `QQnxRasterBackingStore::toImage()` returns a copy of the current render
+  buffer. Without it the base class returns a null image, so `grabWindow()` and
+  the host's `--screenshot` produce nothing in software mode.
+- `QQnxIntegration::createEglDisplay()` warns and continues, instead of
+  calling `qFatal`, when no EGL display exists and `QT_QUICK_BACKEND` is
+  `software` or `softwarecontext`.
+
+Receipt: [QEMU VM captures](../../docs/evidence/qnx-vm-2026-11-20/README.md).
+This patch has not run on the Pi 400.
+
 ## QNX platform plugin patch
 
 [`patches/qtbase-qnx-offscreen-surface.patch`](patches/qtbase-qnx-offscreen-surface.patch)

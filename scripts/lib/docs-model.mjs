@@ -137,9 +137,30 @@ export async function syncDocs(root, write = false, release = false) {
     if (typeof component.notes !== 'string' || !component.notes.trim()) {
       throw new Error(`Missing component limits: ${component.name}`);
     }
+    // QEMU VM evidence is kept apart from the board lanes. It never changes
+    // the pi400 or pi4Qsti status.
+    let vmNote = '';
+    if (component.vm !== undefined) {
+      if (
+        !['scoped', 'failed'].includes(component.vm.status) ||
+        typeof component.vm.summary !== 'string' ||
+        !component.vm.summary.trim() ||
+        !component.vm.evidence?.length
+      ) {
+        throw new Error(`Invalid vm evidence: ${component.name}`);
+      }
+      await checkEvidence(root, component.vm.evidence);
+      const links = component.vm.evidence
+        .map(
+          (/** @type {string} */ p) =>
+            `[${path.posix.basename(p, path.posix.extname(p))}](${path.posix.relative('docs', p)})`
+        )
+        .join(', ');
+      vmNote = ` QEMU VM evidence, not a board (${component.vm.status}): ${component.vm.summary} (${links})`;
+    }
     counts.set(component.host, (counts.get(component.host) ?? 0) + 1);
     rows.push(
-      `| \`${component.name}\` | ${component.host} | ${devices.join(' | ')} | ${cell(component.notes)} |`
+      `| \`${component.name}\` | ${component.host} | ${devices.join(' | ')} | ${cell(component.notes + vmNote)} |`
     );
   }
   const ids = new Set();

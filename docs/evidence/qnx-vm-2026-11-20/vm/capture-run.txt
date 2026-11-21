@@ -1,0 +1,13 @@
+virtualized-list exit=0 41836
+section-list exit=0 28355
+virtualized-section-list exit=0 38403
+button exit=0 32750
+touchable-opacity exit=0 30290
+touchable-highlight exit=0 29192
+touchable-without-feedback exit=0 34407
+image-background exit=0 54798
+keyboard-avoiding-view exit=0 40670
+refresh-control exit=0 31749
+safe-area-view exit=0 42462
+status-bar exit=0 31603
+gallery exit=0 163691
