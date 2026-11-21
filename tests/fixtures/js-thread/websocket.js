@@ -5,7 +5,7 @@ globalThis.__rctDeviceEventEmitter = {
     globalThis.wsEvents.push({ name, inJs: RNQNX_ON_JS(), data: event.data, code: event.code });
   },
 };
-const socket = __turboModuleProxy('WebSocketModule');
+const socket = nativeModuleProxy.WebSocketModule;
 globalThis.wsSocket = socket;
 socket.addListener('websocketOpen');
 socket.connect(globalThis.RNQNX_WS_URL, [], {}, 7);

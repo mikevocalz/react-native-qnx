@@ -174,6 +174,14 @@ void mustRun(QtReactHost& host, const char* name) {
   }
 }
 
+/// The capability set the chrome is built for. The offscreen platform has no
+/// window manager, so the host run asks for the desktop set, as the title bar
+/// does under a real one; QNX gets its own.
+QString chromePlatform() {
+  return QGuiApplication::platformName() == QLatin1String("qnx") ? QStringLiteral("qnx")
+                                                                 : QStringLiteral("cocoa");
+}
+
 class Fixture {
  public:
   explicit Fixture(bool jsThread = true)
@@ -181,8 +189,7 @@ class Fixture {
 #if RNQNX_ENABLE_WINDOW_CHROME
         chrome_(window_, engine_, rnqnx::window::WindowChromeConfig{},
                 rnqnx::window::capabilitiesForPlatform(
-                    QGuiApplication::platformName(), {},
-                    rnqnx::window::SurfaceResize::FollowsWindow)),
+                    chromePlatform(), {}, rnqnx::window::SurfaceResize::FollowsWindow)),
         factory_(engine_),
         layer_(factory_, chrome_.contentRoot(), kSurfaceId),
 #else
@@ -461,6 +468,20 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
   const std::string block = scriptSource("block");
   std::atomic<bool> blockDone{false};
   std::atomic<int> queuedRan{0};
+  // The posted work captures the locals above by reference. If a check throws
+  // while JavaScript is still blocked, leave only after both ran.
+  struct DrainOnExit {
+    std::atomic<bool>& done;
+    std::atomic<int>& queued;
+    ~DrainOnExit() {
+      QElapsedTimer wait;
+      wait.start();
+      while ((!done.load() || queued.load() == 0) && wait.elapsed() < 60000) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 5);
+        QThread::msleep(2);
+      }
+    }
+  } drain{blockDone, queuedRan};
   QElapsedTimer blocked;
   host.postToJsThread([&] {
     host.evaluate(block, "block.js");
@@ -621,29 +642,40 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
             "the surface was laid out at the new size");
   // The touch events dispatched during the block reached JavaScript after it,
   // none lost, the first one a start.
-  waitUntil(
-      [&] {
-        runScript(host, "touch-check");
-        return readNumber(host, "touchCount") >= dispatched;
-      },
-      5000, "touch events reached JavaScript after the block");
-  const double touchCount = readNumber(host, "touchCount");
-  if (touchCount != dispatched) {
+  try {
+    waitUntil(
+        [&] {
+          runScript(host, "touch-check");
+          return readNumber(host, "touchEnds") >= 2.0;
+        },
+        5000, "touch events reached JavaScript after the block");
+  } catch (const TestFailure&) {
     std::ostringstream detail;
-    detail << "native dispatched " << dispatched << ", JavaScript saw " << touchCount;
-    fail("every touch event dispatched during the block reached JavaScript", __FILE__, __LINE__,
-         detail.str());
+    detail << "native dispatched " << dispatched << ", JavaScript saw "
+           << readNumber(host, "touchCount") << " (ends " << readNumber(host, "touchEnds") << ")";
+    fail("touch events reached JavaScript after the block", __FILE__, __LINE__, detail.str());
   }
+  const double touchCount = readNumber(host, "touchCount");
+  // Fabric coalesces touchMove events that wait in its queue for the same view
+  // (EventQueue::enqueueUniqueEvent), so a long block delivers one move per
+  // view and every start and end. Two gestures went in: the pan on the scroll
+  // view (a press, five moves, a release) and the tap on the filler (a press,
+  // a move, a release).
+  EXPECT(readNumber(host, "touchStarts") == 2.0);
+  EXPECT(readNumber(host, "touchEnds") == 2.0);
+  EXPECT(readNumber(host, "touchMoves") >= 2.0);
+  EXPECT(readNumber(host, "touchMoves") <= 6.0);
   EXPECT(readNumber(host, "touchAfterBlock") == 1.0);
   EXPECT(readNumber(host, "touchOrdered") == 1.0);
-  EXPECT(readNumber(host, "touchStarts") >= 2.0);
-  EXPECT(readNumber(host, "touchEnds") >= 2.0);
   std::ostringstream summary;
   summary << "flag=on blockMs=" << kBlockMs << " blocked=" << blocked.elapsed()
           << "ms heartbeats@" << sampled << "ms=" << beatsAtSample << " total=" << beats
           << " panMs=" << panMs << " contentY=" << panFrom << "->" << panTo
           << " minimizeMs=" << minimizeMs << " closeMs=" << closeMs << " resizeMs=" << resizeMs
-          << " touchDispatched=" << dispatched << " touchSeenByJs=" << touchCount
+          << " touchDispatchedNatively=" << dispatched << " touchSeenByJs=" << touchCount
+          << " (starts " << readNumber(host, "touchStarts") << ", moves "
+          << readNumber(host, "touchMoves") << " coalesced from 6, ends "
+          << readNumber(host, "touchEnds") << ")"
           << " responsiveBoundMs=" << kResponsiveMs;
   result(summary.str());
   std::cout << "blocked=" << blocked.elapsed() << "ms beats@" << sampled << "ms=" << beatsAtSample
@@ -847,9 +879,10 @@ void turboModulesResolveAndCompleteOnTheJsThread() {
   auto& host = fixture.host();
   host.installTurboModuleBinding();
   mustRun(host, "turbo-lookup");
-  EXPECT(readEntry(host, "lookups", "FileReaderModule") == "ok");
-  EXPECT(readEntry(host, "lookups", "ImageLoader") == "ok");
-  EXPECT(readEntry(host, "lookups", "WebSocketModule") == "ok");
+  for (const char* name : {"FileReaderModule", "ImageLoader", "WebSocketModule"}) {
+    const std::string found = readEntry(host, "lookups", name);
+    if (found != "ok") fail(name, __FILE__, __LINE__, "lookup gave " + found);
+  }
 
   // FileReader reports its documented answer through a Promise settled on the
   // JS thread.

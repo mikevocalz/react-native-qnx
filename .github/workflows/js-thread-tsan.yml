@@ -60,7 +60,14 @@ jobs:
             -DRNQNX_FETCH_REACT_NATIVE_DEPS=ON -DRNQNX_ENABLE_HOST_SANITIZERS=OFF \
             -DRNQNX_ENABLE_WINDOW_CHROME=ON
           cmake --build build/js-thread-tsan --target qt_react_host_js_thread_host_test --parallel 2
-          TSAN_OPTIONS=halt_on_error=0 build/js-thread-tsan/bin/qt_react_host_js_thread_host_test \
+          # Qt is not instrumented. Without ignore_noninstrumented_modules the
+          # allocations Qt makes on one thread and frees on another (its QML
+          # loader thread) read as races, because ThreadSanitizer cannot see
+          # Qt's own queue. macOS turns this option on by default, which is
+          # why the first run there reported nothing. The host's hand-offs
+          # are marked in QueuedCallTarget and stay checked.
+          TSAN_OPTIONS=halt_on_error=0:ignore_noninstrumented_modules=1 \
+            build/js-thread-tsan/bin/qt_react_host_js_thread_host_test \
             -platform offscreen 2>&1 | tee build/js-thread-tsan/evidence/run.txt
           ! grep -q 'WARNING: ThreadSanitizer' build/js-thread-tsan/evidence/run.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
