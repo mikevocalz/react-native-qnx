@@ -88,7 +88,7 @@ and `-F`, and [ssh_config](https://man.openbsd.org/ssh_config.5) for
 
 `scripts/lib/wait-log.sh` holds `rnqnx_wait_log FILE ERE MIN_COUNT TIMEOUT_S WHAT`
 and `rnqnx_wait_node FILE NAME MIN_COUNT TIMEOUT_S`. They return as soon as the
-app has logged the line (`RNQNX_NODE name=<objectName>` for a named node) and
+app has logged the line (`RNQNX_NODE name=<objectName> visible=1` for a named node, printed by `native/window-chrome/NodeBeacon.h` once a frame shows it) and
 fail with status 124 after the timeout, naming what they waited for.
 `scripts/lib/qnx-wait.sh` runs the same functions in the target's `sh` over SSH.
 `pnpm pi:mouse-smoke` and `pnpm pi:install` use them in place of fixed sleeps.

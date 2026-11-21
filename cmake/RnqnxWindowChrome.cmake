@@ -25,7 +25,8 @@ function(rnqnx_add_window_chrome_sources target)
   target_sources(${target} PRIVATE
     "${root}/WindowChromeModel.cpp" "${root}/WindowChromeModel.h"
     "${root}/WindowChrome.cpp" "${root}/WindowChrome.h"
-    "${root}/WindowHost.cpp" "${root}/WindowHost.h")
+    "${root}/WindowHost.cpp" "${root}/WindowHost.h"
+    "${root}/NodeBeacon.cpp" "${root}/NodeBeacon.h")
   target_include_directories(${target} PUBLIC "${root}" PRIVATE "${generated}")
   # WindowHost: single-instance restore over a local socket, and on QNX the
   # Screen calls that keep a windowed app at its own size.
