@@ -93,7 +93,7 @@ async function readManifest(file) {
 /** Find node_modules/<name> the way Node's lookup walks parent directories,
  * without consulting package "exports" or running any resolver hooks.
  * @param {string} root @param {string} name */
-async function locatePackage(root, name) {
+export async function locatePackage(root, name) {
   let directory = root;
   for (;;) {
     const candidate = path.join(directory, 'node_modules', ...name.split('/'));

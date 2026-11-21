@@ -40,7 +40,7 @@ Implemented per the package README (host tests, not all device-run):
 - Blur on placeholders.
 - Animation from an `ImageRef`: only the first frame is used.
 - WebP without the `qwebp` plugin deployed.
-- `docs/expo-delivery/sdk58-support.json` lists `expo-image` as `unsupported` ("no qnx implementation"). That file scans published package contents and states that no status in it is a device run. It does not account for `@rn-qnx/expo-image-qnx`.
+- `docs/expo-delivery/sdk58-support.json` lists `expo-image` as `partial`, shown as `shim` in the [capability table](/docs/reference/expo-capabilities), because `@rn-qnx/expo-image-qnx` supplies the QNX module and view. That file scans published package contents and states that no status in it is a device run.
 
 ## Evidence
 

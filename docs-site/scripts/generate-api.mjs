@@ -930,6 +930,17 @@ const rules = [
     ],
   },
   {
+    re: /^native\/testing\//,
+    cls: 'internal',
+    why: 'Test-support library. It is built for native tests and not installed.',
+    ev: [
+      line(
+        'native/testing/CMakeLists.txt',
+        /target_include_directories\(rnqnx_native_testing PUBLIC include\)/.source
+      ),
+    ],
+  },
+  {
     re: /^vnext\/probes\//,
     cls: 'internal',
     why: 'Host probe sources. The only CMake use is a PRIVATE include of the playground host executable.',

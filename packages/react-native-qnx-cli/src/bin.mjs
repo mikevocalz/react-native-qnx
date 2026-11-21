@@ -10,6 +10,7 @@ import { addQnxMain } from './add-qnx.mjs';
 import { runMain } from './run.mjs';
 import { devMain, startMain } from './dev-server.mjs';
 import { runnerMain } from './runner.mjs';
+import { analyzeMain } from './analyze.mjs';
 import { marathonMain } from '../../qnx-devtools/src/marathon.mjs';
 
 // Preserve the existing root environment doctor unless this mode is explicit.
@@ -40,6 +41,7 @@ try {
     process.exitCode = await prepareNativeMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'desktop-entry')
     process.exitCode = await desktopEntryMain(args.slice(2));
+  else if (args[0] === 'analyze') process.exitCode = await analyzeMain(args.slice(1));
   else if (args[0] === 'runner') process.exitCode = await runnerMain(args.slice(1));
   else if (args[0] === 'marathon') process.exitCode = await marathonMain(args.slice(1));
   else if (args[0] === 'project') process.exitCode = await projectMain(args.slice(1));
@@ -64,6 +66,7 @@ try {
       '  pnpm qnx doctor --target-runtime-report <file> [--verbose]  Check supplied QNX observations'
     );
     console.log('  pnpm qnx marathon --help                Marathon development client');
+    console.log('  pnpm qnx analyze --help                 Does the stock runner load this app?');
     console.log('  pnpm qnx runner --help                  Download a prebuilt development runner');
   }
 } catch (error) {

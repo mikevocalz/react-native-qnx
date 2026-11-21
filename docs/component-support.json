@@ -109,6 +109,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "failed",
+        "summary": "Public entry throws \"VirtualizedList is not implemented in this experimental entry\" (issue #178); the deep import renders 200 rows.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/virtualized-list.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -120,6 +129,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "scoped",
+        "summary": "Renders three sections with headers through the public entry. Render only.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/section-list.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -131,6 +149,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "failed",
+        "summary": "Public entry throws \"VirtualizedSectionList is not implemented in this experimental entry\" (issue #178); the deep import renders two sections.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/virtualized-section-list.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -142,6 +169,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "failed",
+        "summary": "Public entry throws \"Button is not implemented in this experimental entry\"; the deep import renders an enabled and a disabled button.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/button.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -153,6 +189,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "scoped",
+        "summary": "Renders its child through the public entry. Press and dimming not exercised.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/touchable-opacity.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -164,6 +209,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "scoped",
+        "summary": "Renders its child through the public entry. Press and underlay not exercised.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/touchable-highlight.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -175,6 +229,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "scoped",
+        "summary": "Renders its child through the public entry. Press not exercised.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/touchable-without-feedback.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -186,6 +249,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "failed",
+        "summary": "Public entry throws \"ImageBackground is not implemented in this experimental entry\"; the deep import paints the image behind the child.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/image-background.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -197,6 +269,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "scoped",
+        "summary": "Renders children and a TextInput through the public entry. No avoidance tested.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/keyboard-avoiding-view.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -219,6 +300,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "scoped",
+        "summary": "Mounts in a ScrollView through the public entry and draws no indicator. Pull gesture not exercised.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/refresh-control.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -241,6 +331,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "failed",
+        "summary": "Public entry throws \"SafeAreaView is not implemented in this experimental entry\"; the deep import renders a View-like box with no visible inset.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/safe-area-view.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {
@@ -266,6 +365,15 @@
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
+      },
+      "vm": {
+        "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
+        "status": "scoped",
+        "summary": "Mounts through the public entry and draws nothing.",
+        "evidence": [
+          "docs/evidence/qnx-vm-2026-11-20/captures/status-bar.png",
+          "docs/evidence/qnx-vm-2026-11-20/README.md"
+        ]
       }
     },
     {

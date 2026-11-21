@@ -173,8 +173,10 @@ which is why both plugin paths point there.
 
 Software rendering is the fallback for a board without the patched plugin:
 point `QT_QPA_PLATFORM_PLUGIN_PATH` and `QT_PLUGIN_PATH` at the stock runtime
-and add `export QT_QUICK_BACKEND=software`. It is slower, and `--screenshot`
-returns no image with it.
+and add `export QT_QUICK_BACKEND=software`. It is slower, and with the stock
+plugin `--screenshot` returns no image with it. The plugin patch in
+[`qtbase-qnx-software-grab.patch`](../../scripts/qt-public/patches/qtbase-qnx-software-grab.patch)
+fixes that; it has run on a QEMU VM only, not on the Pi 400.
 
 ## Windowed or full screen
 

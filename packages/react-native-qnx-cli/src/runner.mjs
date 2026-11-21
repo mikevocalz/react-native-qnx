@@ -8,6 +8,7 @@ import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { createGunzip } from 'node:zlib';
+import { validateRuntimeInfo } from './runtime-compat.mjs';
 
 // Prebuilt development runner client. A runner is a native React Native QNX
 // host built for one target and one exact SDP + Qt + React Native combination.
@@ -52,6 +53,10 @@ const help = `React Native QNX prebuilt development runner
                [--react-native-qnx <v>] [--react-native <v>] [--hermes <v>]
                [--qt <v>] [--sdp <v>|none] [--target-libs <file>]
   runner list  --manifest <url>
+  runner pack  --stage <dir> --out <dir> --id <id> --target <target> --hermesc <path>
+               --hermes <v> --qt <v> --sdp <v>|none --builtins <json> [--nitro-abi <v>]
+               [--react-native-qnx <v>] [--react-native <v>] [--target-libs <file>]
+  runner check --runtime <rnqnx-runtime.json> --project <dir> [--bundle <file>]
 
 Targets: ${RUNNER_TARGETS.join(', ')}.
 The manifest URL comes from --manifest or RNQNX_RUNNER_MANIFEST. No runner
@@ -70,7 +75,7 @@ Version flags default to the versions this checkout pins. Host runners use
 `;
 
 /** Keys: reactNativeQnx, reactNative, hermes, qt, sdp (null for host runners). @typedef {Record<string, string | null>} RunnerVersions */
-/** @typedef {{id: string, target: string, kind: string, versions: RunnerVersions, url: string, sha256: string, size: number, format: string, targetLibraries?: string[]}} RunnerEntry */
+/** @typedef {{id: string, target: string, kind: string, versions: RunnerVersions, url: string, sha256: string, size: number, format: string, targetLibraries?: string[], runtime?: import('./runtime-compat.mjs').RuntimeInfo}} RunnerEntry */
 /** @typedef {{schema: string, publishedAt: string, runners: RunnerEntry[]}} RunnerManifest */
 
 /** @param {unknown} value */
@@ -149,6 +154,8 @@ export function validateRunnerManifest(input) {
       throw new Error(`${where}.targetLibraries must be distinct shared-library file names.`);
     /** @type {Record<string, any>} */
     const copy = { ...entry, versions: { ...entry.versions } };
+    if (entry.runtime !== undefined)
+      copy.runtime = validateRuntimeInfo(entry.runtime, `${where}.runtime`);
     if (libraries !== undefined) copy.targetLibraries = [...libraries];
     return /** @type {RunnerEntry} */ (copy);
   });
@@ -536,6 +543,10 @@ export async function checkoutRunnerVersions() {
 
 /** @param {string[]} argv @param {{fetchImpl?: typeof fetch}} [options] */
 export async function runnerMain(argv, options = {}) {
+  if (argv[0] === 'pack' || argv[0] === 'check') {
+    const { runnerToolsMain } = await import('./runner-tools.mjs');
+    return runnerToolsMain(argv);
+  }
   const { values, positionals } = parseArgs({
     args: argv,
     strict: true,
