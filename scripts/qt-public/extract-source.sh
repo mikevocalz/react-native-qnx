@@ -10,7 +10,12 @@ dest=$pub/src
 test ! -e "$dest/qt-everywhere-src-6.12.0"
 mkdir -p "$dest"
 top=qt-everywhere-src-6.12.0
-tar -xJf "$archive" -C "$dest" \
+# GNU tar lets `*` match `/` by default, so "$top/*.*" below also matched every
+# dotted file inside every other submodule (qtsvg, qtmultimedia, ...). Those
+# partial directories made the top-level configure try to configure qtsvg and
+# stop on a missing host tool. --no-wildcards-match-slash keeps the pattern to
+# top-level files.
+tar -xJf "$archive" -C "$dest" --no-wildcards-match-slash \
   --exclude="$top/qtbase/tests" --exclude="$top/qtbase/examples" \
   --exclude="$top/qtdeclarative/tests" --exclude="$top/qtdeclarative/examples" \
   --exclude="$top/qtshadertools/tests" --exclude="$top/qtimageformats/tests" \

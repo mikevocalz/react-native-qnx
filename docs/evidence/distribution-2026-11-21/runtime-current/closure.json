@@ -1,0 +1,1181 @@
+{
+  "checks": {
+    "manifest": {
+      "failures": [],
+      "pass": true
+    },
+    "needed": {
+      "failures": [],
+      "pass": true
+    },
+    "no-sdp": {
+      "failures": [],
+      "pass": true
+    },
+    "notices": {
+      "failures": [],
+      "pass": true
+    },
+    "qt-closed": {
+      "failures": [],
+      "pass": true
+    },
+    "rpath": {
+      "failures": [],
+      "pass": true
+    },
+    "sums": {
+      "failures": [],
+      "pass": true
+    }
+  },
+  "files": {
+    "SHA256SUMS": {
+      "sha256": "bc01c9d8a46c429a1000d30668fe377b3507b6a46973a3f94c3479802666fca8",
+      "size": 20283
+    },
+    "lib/libQt6Core.so.6.12.0": {
+      "needed": [
+        "libfsnotify.so.1",
+        "libm.so.3",
+        "libzstd.so.1",
+        "libeventfd.so.1",
+        "libslog2.so.1",
+        "libc++.so.2",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "7ebc11cbc77ae2b9f6f44713ba634c0c12b8911fece6bb826a5515d52f38ca29",
+      "size": 12766608,
+      "soname": "libQt6Core.so.6"
+    },
+    "lib/libQt6Gui.so.6.12.0": {
+      "needed": [
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "1aa23795d79dc0a15d557ae62d664122c11d8144774edafb60b6fb970b5e8085",
+      "size": 12054496,
+      "soname": "libQt6Gui.so.6"
+    },
+    "lib/libQt6Network.so.6.12.0": {
+      "needed": [
+        "libzstd.so.1",
+        "libQt6Core.so.6",
+        "libsocket.so.4",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "77891780dfaf79837f6f14ff5de1b9377fbbcf292a1de909c3d655c76e1154ee",
+      "size": 2884592,
+      "soname": "libQt6Network.so.6"
+    },
+    "lib/libQt6OpenGL.so.6.12.0": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "242af118f732c86bca4c3289c6f9ed2b059299f168bfd42acfd9bb9d62b6d025",
+      "size": 725624,
+      "soname": "libQt6OpenGL.so.6"
+    },
+    "lib/libQt6Qml.so.6.12.0": {
+      "needed": [
+        "libQt6Network.so.6",
+        "libQt6Core.so.6",
+        "libsocket.so.4",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "01103157814bf37297a07b6e433829bd238d7121397059b3b607b1c01657d3be",
+      "size": 8472352,
+      "soname": "libQt6Qml.so.6"
+    },
+    "lib/libQt6QmlMeta.so.6.12.0": {
+      "needed": [
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "4321aebaeb2eb34bf628b15a5ef77eccc3cf2ae1afbc5b04ac122238f3ffadca",
+      "size": 243880,
+      "soname": "libQt6QmlMeta.so.6"
+    },
+    "lib/libQt6QmlModels.so.6.12.0": {
+      "needed": [
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "07418baba8ca777d02314fd25257042475d8f181381ec5c26461fc945011eb66",
+      "size": 1759368,
+      "soname": "libQt6QmlModels.so.6"
+    },
+    "lib/libQt6QmlWorkerScript.so.6.12.0": {
+      "needed": [
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "de8e0d19a6b09c3708c9d15666bb7705d8c30d5b98a6febd01e5b35912a16dde",
+      "size": 117352,
+      "soname": "libQt6QmlWorkerScript.so.6"
+    },
+    "lib/libQt6Quick.so.6.12.0": {
+      "needed": [
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "b177eeac6bc49e4de8bd22bd95117104f94ce4f911e375076d1264fcc0c95f5d",
+      "size": 11194064,
+      "soname": "libQt6Quick.so.6"
+    },
+    "lib/libQt6QuickShapes.so.6.12.0": {
+      "needed": [
+        "libQt6Quick.so.6",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libQt6Core.so.6",
+        "libsocket.so.4",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "d4920f738a94dd48f0809a5d836243d823cefa74b330f768a29afe36374fe7ee",
+      "size": 558128,
+      "soname": "libQt6QuickShapes.so.6"
+    },
+    "lib/libQt6Svg.so.6.12.0": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "1a2289b609def3e05fc991eff4a88bb7c2e7f66672413b7ab39d983065f9494e",
+      "size": 828968,
+      "soname": "libQt6Svg.so.6"
+    },
+    "licenses/THIRD_PARTY_ATTRIBUTIONS.txt": {
+      "sha256": "74fc64262a545e5dfde6d6d5eee28f81b78b0c6b7588cae8bd0be827f781d060",
+      "size": 16060
+    },
+    "licenses/qtbase/AFL-2.1.txt": {
+      "sha256": "93bb4f7417aa775bab9026cc3d0af28aeb64451fc5a8ec651876785edd8eaf9b",
+      "size": 8948
+    },
+    "licenses/qtbase/Apache-2.0.txt": {
+      "sha256": "e3ba223bb1423f0aad8c3dfce0fe3148db48926d41e6fbc3afbbf5ff9e1c89cb",
+      "size": 10398
+    },
+    "licenses/qtbase/BSD-2-Clause.txt": {
+      "sha256": "8fda146749ca071ac9cdce2e24d25444676ea48d1f9dccc2b7c15c054b717db8",
+      "size": 1276
+    },
+    "licenses/qtbase/BSD-3-Clause.txt": {
+      "sha256": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "size": 1469
+    },
+    "licenses/qtbase/BSD-4-Clause.txt": {
+      "sha256": "83faa0d205c316ce3efeafee465b6a165914fb29595968c08dc6437021b7b6fd",
+      "size": 1672
+    },
+    "licenses/qtbase/BSL-1.0.txt": {
+      "sha256": "3abd6471b9a9a08d65ce771143f8e278bb4c1aeb10c1c2d476935a6b049653f5",
+      "size": 1340
+    },
+    "licenses/qtbase/Bitstream-Vera.txt": {
+      "sha256": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93",
+      "size": 8816
+    },
+    "licenses/qtbase/CC0-1.0.txt": {
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "size": 7048
+    },
+    "licenses/qtbase/FTL.txt": {
+      "sha256": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1",
+      "size": 6743
+    },
+    "licenses/qtbase/GFDL-1.3-no-invariants-only.txt": {
+      "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "size": 22955
+    },
+    "licenses/qtbase/GPL-2.0-only.txt": {
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "size": 18092
+    },
+    "licenses/qtbase/GPL-2.0-or-later.txt": {
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "size": 18092
+    },
+    "licenses/qtbase/GPL-3.0-only.txt": {
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "size": 35147
+    },
+    "licenses/qtbase/HPND.txt": {
+      "sha256": "67ac968431270291f5e9cd3ed76705e1169f57082ee102093b2543b28cef63cf",
+      "size": 1188
+    },
+    "licenses/qtbase/IJG.txt": {
+      "sha256": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61",
+      "size": 1815
+    },
+    "licenses/qtbase/IPL-1.0.txt": {
+      "sha256": "d5328e672fb1bff47ee18e890784541453380081cf3771bb7b3c06fc19c7d503",
+      "size": 11789
+    },
+    "licenses/qtbase/Imlib2.txt": {
+      "sha256": "8846f2baba1a7f4c36f7ca19a923a000d8a21afa37cf0fe006f6ce88a6058a89",
+      "size": 1986
+    },
+    "licenses/qtbase/LGPL-2.1-or-later.txt": {
+      "sha256": "1ccf09bf2f598308df4bed9cd8e9657dc5cd0973d2800318f2e241486e2edf3f",
+      "size": 25906
+    },
+    "licenses/qtbase/LGPL-3.0-only.txt": {
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "size": 7651
+    },
+    "licenses/qtbase/Libpng.txt": {
+      "sha256": "58fe669792f9b4e0740bf75ecfe90b5326128bb2ce7e27e1c342abd9db4d8ea6",
+      "size": 4120
+    },
+    "licenses/qtbase/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt": {
+      "sha256": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63",
+      "size": 1852
+    },
+    "licenses/qtbase/LicenseRef-ICC-License.txt": {
+      "sha256": "9e34ff47b3a44814e183342e7e198d127a6740e29d20e8381fba7688dafc79dd",
+      "size": 463
+    },
+    "licenses/qtbase/LicenseRef-Lcs-Telegraphics.txt": {
+      "sha256": "c10225ebbd5191bfdd761b0d7752c785f2453ab665d6c454473fb12d254668aa",
+      "size": 139
+    },
+    "licenses/qtbase/LicenseRef-Qt-Commercial.txt": {
+      "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "size": 462
+    },
+    "licenses/qtbase/LicenseRef-SHA1-Public-Domain.txt": {
+      "sha256": "65d86b8ec6b1cd8b8f6e64fd8710274ba00d6a3c520e00dfdcd1c3d2071f3305",
+      "size": 144
+    },
+    "licenses/qtbase/Linux-syscall-note.txt": {
+      "sha256": "3f9e477523febab58de8b716ccfbcf02e6ef1c8e7728953905e8558637abe2a9",
+      "size": 624
+    },
+    "licenses/qtbase/MIT-Khronos-old.txt": {
+      "sha256": "3c58021633974f9ed3c3d445a374240a5244fd039628f4d7f6f3e674bc8e6694",
+      "size": 1306
+    },
+    "licenses/qtbase/MIT-open-group.txt": {
+      "sha256": "c55d2ab72d8a4f9e9cd8fbd1379268e575e8cfa16874affa5899b75a6d754514",
+      "size": 897
+    },
+    "licenses/qtbase/MIT.txt": {
+      "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc",
+      "size": 1111
+    },
+    "licenses/qtbase/MPL-2.0.txt": {
+      "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "size": 16726
+    },
+    "licenses/qtbase/Qt-GPL-exception-1.0.txt": {
+      "sha256": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
+      "size": 965
+    },
+    "licenses/qtbase/SPL-1.0.txt": {
+      "sha256": "f58f2f30909982445f97f1a61667261920a7caeab21ef5bea1b740f5b144d141",
+      "size": 23547
+    },
+    "licenses/qtbase/Unicode-3.0.txt": {
+      "sha256": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634",
+      "size": 1995
+    },
+    "licenses/qtbase/X11.txt": {
+      "sha256": "e2936c6509784b4f0ec27bac74182393866fad9422b29a70e085ff14aba87193",
+      "size": 1338
+    },
+    "licenses/qtbase/Xerox.txt": {
+      "sha256": "b6bc52205d01e10cf43dbb7b8aec06dcaa3b21d1486e7c9c0bec329ee8244d8d",
+      "size": 965
+    },
+    "licenses/qtbase/Zlib.txt": {
+      "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+      "size": 1465
+    },
+    "licenses/qtbase/attributed/src/3rdparty/blake2/COPYING": {
+      "sha256": "4103f471877ed0bae500752c5fcd7ecca409d4a4a8dc2ad40437daba60f1a2bc",
+      "size": 17914
+    },
+    "licenses/qtbase/attributed/src/3rdparty/double-conversion/LICENSE": {
+      "sha256": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca",
+      "size": 1527
+    },
+    "licenses/qtbase/attributed/src/3rdparty/easing/LICENSE": {
+      "sha256": "92fac99458f1754b73edf50f9c9983e0efaa06ad96e2afd5e538c79f45b4b191",
+      "size": 1505
+    },
+    "licenses/qtbase/attributed/src/3rdparty/forkfd/LICENSE": {
+      "sha256": "d0d683ae18e78fbef90eb41168fb781920da2d12bf80704490f0882915c18ae0",
+      "size": 1148
+    },
+    "licenses/qtbase/attributed/src/3rdparty/freetype/BDF-LICENSE.txt": {
+      "sha256": "e4e792f29e66750f2e410fd7b50a567652c180f6ee15e1a4dfa0bb5cde524537",
+      "size": 2305
+    },
+    "licenses/qtbase/attributed/src/3rdparty/freetype/LICENSE.txt": {
+      "sha256": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+      "size": 26234
+    },
+    "licenses/qtbase/attributed/src/3rdparty/freetype/PCF-LICENSE.txt": {
+      "sha256": "6938597bfdeca0db191a8f9ede52eaf2482c2c71a0094c084747a1235f9958fe",
+      "size": 2218
+    },
+    "licenses/qtbase/attributed/src/3rdparty/freetype/ZLIB-LICENSE.txt": {
+      "sha256": "2b1f5d615382a151af3eb71462ad17d89e2efee8fa7664058d35d3d9237ebb19",
+      "size": 962
+    },
+    "licenses/qtbase/attributed/src/3rdparty/harfbuzz-ng/COPYING": {
+      "sha256": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+      "size": 1971
+    },
+    "licenses/qtbase/attributed/src/3rdparty/libjpeg/LICENSE": {
+      "sha256": "ba6bceebcba0fdd35488477c2cca8c4632ce82c74dbfbc87d886ce6fc4433579",
+      "size": 6077
+    },
+    "licenses/qtbase/attributed/src/3rdparty/libjpeg/ijg-license.txt": {
+      "sha256": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61",
+      "size": 1815
+    },
+    "licenses/qtbase/attributed/src/3rdparty/libpng/LICENSE": {
+      "sha256": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526",
+      "size": 5345
+    },
+    "licenses/qtbase/attributed/src/3rdparty/libpsl/PSL-LICENSE.txt": {
+      "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "size": 16726
+    },
+    "licenses/qtbase/attributed/src/3rdparty/libpsl/src/LICENSE.chromium": {
+      "sha256": "1d7f52747a9169751cdf2641a8299c0098e9ecdf9429296ffd55bdb14c9ed5b3",
+      "size": 1664
+    },
+    "licenses/qtbase/attributed/src/3rdparty/md4c/LICENSE.md": {
+      "sha256": "d30937367d5413e7eaa218b1640b8946ff76fd34d97152f6979fd96169d5d0fc",
+      "size": 1096
+    },
+    "licenses/qtbase/attributed/src/3rdparty/pcre2/LICENCE.md": {
+      "sha256": "197d8a73ffee0d6b09adba2f9c677b5f5aede24edf89258a68e48248d010d811",
+      "size": 4011
+    },
+    "licenses/qtbase/attributed/src/3rdparty/pcre2/LICENSE-SLJIT": {
+      "sha256": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
+      "size": 1444
+    },
+    "licenses/qtbase/attributed/src/3rdparty/rfc6234/LICENSE": {
+      "sha256": "7ccebd514aaabc86192f957d773cebf06577c12fe9f25ecd419c6cac5da7a14c",
+      "size": 1568
+    },
+    "licenses/qtbase/attributed/src/3rdparty/sha3/BRG_ENDIAN_LICENSE": {
+      "sha256": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c",
+      "size": 645
+    },
+    "licenses/qtbase/attributed/src/3rdparty/sha3/CC0_LICENSE": {
+      "sha256": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d",
+      "size": 7013
+    },
+    "licenses/qtbase/attributed/src/3rdparty/tinycbor/LICENSE": {
+      "sha256": "3c6ba0b5bfa7830505301ffb336a17b0748e0d61c4d34216e9dc98f10e40395e",
+      "size": 1074
+    },
+    "licenses/qtbase/attributed/src/3rdparty/zlib/LICENSE": {
+      "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+      "size": 1465
+    },
+    "licenses/qtbase/attributed/src/gui/opengl/LICENSE.KHRONOS.txt": {
+      "sha256": "2e484f3c26ff5008c704a3ca9dd809d43f24a004a1abb6c202660fbff0d19715",
+      "size": 1084
+    },
+    "licenses/qtbase/attributed/src/gui/painting/LICENSE.QIMAGETRANSFORM.txt": {
+      "sha256": "46b3cbfa2f2946b93291506351e9be1dd0a28d2a53260f5aa488abd36fbeca9d",
+      "size": 3004
+    },
+    "licenses/qtbase/attributed/src/gui/painting/LICENSE.XCONSORTIUM.txt": {
+      "sha256": "a216b01291eb38fc1af93cfccf1fc67b48d9923612e517c2a695e95b3f03c22c",
+      "size": 2294
+    },
+    "licenses/qtbase/attributed/src/gui/text/LICENSE.AGLFN.txt": {
+      "sha256": "40818155548ff41c67d3a40edf355e9658992b292c227f4c1147425cedc746c6",
+      "size": 1425
+    },
+    "licenses/qtbase/attributed/src/gui/util/LICENSE.XSVG.txt": {
+      "sha256": "3a946598a9f674d44df764279ca0b85b5d6faba08f3bc75d8e0fcf6cd729a9bd",
+      "size": 1185
+    },
+    "licenses/qtbase/blessing.txt": {
+      "sha256": "592db1199aab67aafe4515db9808b420db122083807c5329b2f061951e79acbe",
+      "size": 244
+    },
+    "licenses/qtbase/libpng-2.0.txt": {
+      "sha256": "7317e078e2d3b5d7ba5a6159e650945153262b44b76f6700f8e9edb261c5143e",
+      "size": 5345
+    },
+    "licenses/qtbase/third-party/D3D12MemoryAllocator/LICENSE.txt": {
+      "sha256": "5478a2f36b736e13dd3250b9c71a4ab521bc327fb9d112a92c647bf3e69ddb68",
+      "size": 1099
+    },
+    "licenses/qtbase/third-party/VulkanMemoryAllocator/LICENSE.txt": {
+      "sha256": "846d97c8b74ccaa92b9ad031140a04363b3b3985f318094552f297b8bda1c68e",
+      "size": 1099
+    },
+    "licenses/qtbase/third-party/android/LICENSE": {
+      "sha256": "4a51cf7f724f51bedb5fa4f9583a2762f1db8d05e43a577e2487c7aab2fdce18",
+      "size": 525
+    },
+    "licenses/qtbase/third-party/blake2/COPYING": {
+      "sha256": "4103f471877ed0bae500752c5fcd7ecca409d4a4a8dc2ad40437daba60f1a2bc",
+      "size": 17914
+    },
+    "licenses/qtbase/third-party/double-conversion/LICENSE": {
+      "sha256": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca",
+      "size": 1527
+    },
+    "licenses/qtbase/third-party/easing/LICENSE": {
+      "sha256": "92fac99458f1754b73edf50f9c9983e0efaa06ad96e2afd5e538c79f45b4b191",
+      "size": 1505
+    },
+    "licenses/qtbase/third-party/forkfd/LICENSE": {
+      "sha256": "d0d683ae18e78fbef90eb41168fb781920da2d12bf80704490f0882915c18ae0",
+      "size": 1148
+    },
+    "licenses/qtbase/third-party/freetype/BDF-LICENSE.txt": {
+      "sha256": "e4e792f29e66750f2e410fd7b50a567652c180f6ee15e1a4dfa0bb5cde524537",
+      "size": 2305
+    },
+    "licenses/qtbase/third-party/freetype/LICENSE.txt": {
+      "sha256": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+      "size": 26234
+    },
+    "licenses/qtbase/third-party/freetype/PCF-LICENSE.txt": {
+      "sha256": "6938597bfdeca0db191a8f9ede52eaf2482c2c71a0094c084747a1235f9958fe",
+      "size": 2218
+    },
+    "licenses/qtbase/third-party/freetype/ZLIB-LICENSE.txt": {
+      "sha256": "2b1f5d615382a151af3eb71462ad17d89e2efee8fa7664058d35d3d9237ebb19",
+      "size": 962
+    },
+    "licenses/qtbase/third-party/freetype/docs/FTL.TXT": {
+      "sha256": "5a5ee54c5001bbad1cdc1a57cc3dd4c42199b2da09d39c7ee41fab002d02967f",
+      "size": 6743
+    },
+    "licenses/qtbase/third-party/gradle/LICENSE": {
+      "sha256": "cf234c4188d773406f640bf89be680d9288f40ff96901c70d643fcea96ad46df",
+      "size": 23645
+    },
+    "licenses/qtbase/third-party/harfbuzz-ng/COPYING": {
+      "sha256": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+      "size": 1971
+    },
+    "licenses/qtbase/third-party/icc/LICENSE.txt": {
+      "sha256": "9e34ff47b3a44814e183342e7e198d127a6740e29d20e8381fba7688dafc79dd",
+      "size": 463
+    },
+    "licenses/qtbase/third-party/libjpeg/LICENSE": {
+      "sha256": "ba6bceebcba0fdd35488477c2cca8c4632ce82c74dbfbc87d886ce6fc4433579",
+      "size": 6077
+    },
+    "licenses/qtbase/third-party/libpng/LICENSE": {
+      "sha256": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526",
+      "size": 5345
+    },
+    "licenses/qtbase/third-party/libpsl/PSL-LICENSE.txt": {
+      "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "size": 16726
+    },
+    "licenses/qtbase/third-party/libpsl/src/LICENSE.chromium": {
+      "sha256": "1d7f52747a9169751cdf2641a8299c0098e9ecdf9429296ffd55bdb14c9ed5b3",
+      "size": 1664
+    },
+    "licenses/qtbase/third-party/md4c/LICENSE.md": {
+      "sha256": "d30937367d5413e7eaa218b1640b8946ff76fd34d97152f6979fd96169d5d0fc",
+      "size": 1096
+    },
+    "licenses/qtbase/third-party/pcre2/LICENCE.md": {
+      "sha256": "197d8a73ffee0d6b09adba2f9c677b5f5aede24edf89258a68e48248d010d811",
+      "size": 4011
+    },
+    "licenses/qtbase/third-party/pcre2/LICENSE-SLJIT": {
+      "sha256": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
+      "size": 1444
+    },
+    "licenses/qtbase/third-party/pixman/LICENSE": {
+      "sha256": "942c4f2a80394d3f53599b8382e9f27349b95c45d92b69b84f26d404f4dd74a5",
+      "size": 1092
+    },
+    "licenses/qtbase/third-party/rfc6234/LICENSE": {
+      "sha256": "7ccebd514aaabc86192f957d773cebf06577c12fe9f25ecd419c6cac5da7a14c",
+      "size": 1568
+    },
+    "licenses/qtbase/third-party/sha3/BRG_ENDIAN_LICENSE": {
+      "sha256": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c",
+      "size": 645
+    },
+    "licenses/qtbase/third-party/sha3/CC0_LICENSE": {
+      "sha256": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d",
+      "size": 7013
+    },
+    "licenses/qtbase/third-party/tinycbor/LICENSE": {
+      "sha256": "3c6ba0b5bfa7830505301ffb336a17b0748e0d61c4d34216e9dc98f10e40395e",
+      "size": 1074
+    },
+    "licenses/qtbase/third-party/wasm/DEJAVU-LICENSE": {
+      "sha256": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93",
+      "size": 8816
+    },
+    "licenses/qtbase/third-party/wayland/protocols/MIT_LICENSE.txt": {
+      "sha256": "a8341b9c90ef447a77f55d550e6691e370d3ac15d60edb584def356e348ab828",
+      "size": 1055
+    },
+    "licenses/qtbase/third-party/wayland/protocols/text-input/v2/HPND_LICENSE.txt": {
+      "sha256": "8172d52f3b7bba7d10af2f9134c63d0f699ba6b20a47e35f5ac45654c500bfd7",
+      "size": 1095
+    },
+    "licenses/qtbase/third-party/xcb/LICENSE": {
+      "sha256": "82775191bc05f85b40404d77bb69b1edeaeb4033f48387e9e5eab4dd67f5d6f1",
+      "size": 1246
+    },
+    "licenses/qtbase/third-party/zlib/LICENSE": {
+      "sha256": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+      "size": 1465
+    },
+    "licenses/qtdeclarative/Apache-2.0.txt": {
+      "sha256": "e3ba223bb1423f0aad8c3dfce0fe3148db48926d41e6fbc3afbbf5ff9e1c89cb",
+      "size": 10398
+    },
+    "licenses/qtdeclarative/BSD-2-Clause.txt": {
+      "sha256": "8fda146749ca071ac9cdce2e24d25444676ea48d1f9dccc2b7c15c054b717db8",
+      "size": 1276
+    },
+    "licenses/qtdeclarative/BSD-3-Clause.txt": {
+      "sha256": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "size": 1469
+    },
+    "licenses/qtdeclarative/CC-BY-3.0.txt": {
+      "sha256": "e6bc9e9c474700b708f568bac9e5a8a9bcb2b1dad53442f5ba449fcb848b8e76",
+      "size": 19467
+    },
+    "licenses/qtdeclarative/CC0-1.0.txt": {
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "size": 7048
+    },
+    "licenses/qtdeclarative/GFDL-1.3-no-invariants-only.txt": {
+      "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "size": 22955
+    },
+    "licenses/qtdeclarative/GPL-2.0-only.txt": {
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "size": 18092
+    },
+    "licenses/qtdeclarative/GPL-3.0-only.txt": {
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "size": 35147
+    },
+    "licenses/qtdeclarative/LGPL-3.0-only.txt": {
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "size": 7651
+    },
+    "licenses/qtdeclarative/LicenseRef-Qt-Commercial.txt": {
+      "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "size": 462
+    },
+    "licenses/qtdeclarative/MIT.txt": {
+      "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc",
+      "size": 1111
+    },
+    "licenses/qtdeclarative/OFL-1.1.txt": {
+      "sha256": "1d361a8f8e8ce6e68457dcd93fb56e162e6baa3bbb7e7573a290d44399f6b57e",
+      "size": 4599
+    },
+    "licenses/qtdeclarative/Qt-GPL-exception-1.0.txt": {
+      "sha256": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
+      "size": 965
+    },
+    "licenses/qtdeclarative/Unlicense.txt": {
+      "sha256": "ffc5ee3c1dca43a6aa11ec05d67358dadc66bcf47e0196823ea754c8dfdb1229",
+      "size": 1148
+    },
+    "licenses/qtdeclarative/attributed/src/3rdparty/masm/LICENSE": {
+      "sha256": "9ba0c20a2972274f27e975d79ed3582e322d6891338266a52e2d3a9417fc0a72",
+      "size": 1260
+    },
+    "licenses/qtdeclarative/third-party/masm/LICENSE": {
+      "sha256": "9ba0c20a2972274f27e975d79ed3582e322d6891338266a52e2d3a9417fc0a72",
+      "size": 1260
+    },
+    "licenses/qtdeclarative/third-party/yoga/LICENSE": {
+      "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+      "size": 1086
+    },
+    "licenses/qtimageformats/BSD-3-Clause.txt": {
+      "sha256": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "size": 1469
+    },
+    "licenses/qtimageformats/GFDL-1.3-no-invariants-only.txt": {
+      "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "size": 22955
+    },
+    "licenses/qtimageformats/GPL-2.0-only.txt": {
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "size": 18092
+    },
+    "licenses/qtimageformats/GPL-3.0-only.txt": {
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "size": 35147
+    },
+    "licenses/qtimageformats/LGPL-3.0-only.txt": {
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "size": 7651
+    },
+    "licenses/qtimageformats/LicenseRef-Qt-Commercial.txt": {
+      "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "size": 462
+    },
+    "licenses/qtimageformats/attributed/src/3rdparty/libtiff/COPYRIGHT": {
+      "sha256": "fbd6fed7938541d2c809c0826225fc85e551fdbfa8732b10f0c87e0847acafd7",
+      "size": 1146
+    },
+    "licenses/qtimageformats/attributed/src/3rdparty/libwebp/COPYING": {
+      "sha256": "5aec868f669e384a22372a4e8a1a6cd7d44c64cd451f960ca69cc170d1e13acf",
+      "size": 1496
+    },
+    "licenses/qtimageformats/libtiff.txt": {
+      "sha256": "fbd6fed7938541d2c809c0826225fc85e551fdbfa8732b10f0c87e0847acafd7",
+      "size": 1146
+    },
+    "licenses/qtimageformats/third-party/libwebp/COPYING": {
+      "sha256": "5aec868f669e384a22372a4e8a1a6cd7d44c64cd451f960ca69cc170d1e13acf",
+      "size": 1496
+    },
+    "licenses/qtshadertools/AML-glslang.txt": {
+      "sha256": "b5545d31e12c303e8ee9a0cc203d0a2a8d6e02729dd450d4cda5f8ff0e1193d0",
+      "size": 2373
+    },
+    "licenses/qtshadertools/Apache-2.0.txt": {
+      "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+      "size": 10280
+    },
+    "licenses/qtshadertools/BSD-3-Clause.txt": {
+      "sha256": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "size": 1469
+    },
+    "licenses/qtshadertools/Bison-exception-2.2.txt": {
+      "sha256": "193ff9d6e52b80b654fa9402ff351fd1f9f855381f31062a5b7400fd82409b29",
+      "size": 673
+    },
+    "licenses/qtshadertools/GFDL-1.3-no-invariants-only.txt": {
+      "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "size": 22955
+    },
+    "licenses/qtshadertools/GPL-2.0-only.txt": {
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "size": 18092
+    },
+    "licenses/qtshadertools/GPL-3.0-only.txt": {
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "size": 35147
+    },
+    "licenses/qtshadertools/GPL-3.0-or-later.txt": {
+      "sha256": "1a52218b744fa3a722df8d0477a2041571ec2cecdb9906cf1f626fc1a2cf0d6f",
+      "size": 32184
+    },
+    "licenses/qtshadertools/LGPL-3.0-only.txt": {
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "size": 7651
+    },
+    "licenses/qtshadertools/LicenseRef-MIT-Khronos-old.txt": {
+      "sha256": "fbeaca472f4f70e276dd1106ca5097435967a22ad6c1d8200aef7ad9f70aaf3f",
+      "size": 1305
+    },
+    "licenses/qtshadertools/LicenseRef-Qt-Commercial.txt": {
+      "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "size": 462
+    },
+    "licenses/qtshadertools/MIT.txt": {
+      "sha256": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc",
+      "size": 1111
+    },
+    "licenses/qtshadertools/Qt-GPL-exception-1.0.txt": {
+      "sha256": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
+      "size": 965
+    },
+    "licenses/qtshadertools/third-party/SPIRV-Cross/LICENSE": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "size": 11358
+    },
+    "licenses/qtshadertools/third-party/glslang/LICENSE.txt": {
+      "sha256": "adb783e734e906d1f46db5df29991dbde84bdb0ceab502ac2febb44fe3c2b5f4",
+      "size": 54705
+    },
+    "licenses/qtsvg/BSD-3-Clause.txt": {
+      "sha256": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "size": 1469
+    },
+    "licenses/qtsvg/GFDL-1.3-no-invariants-only.txt": {
+      "sha256": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "size": 22955
+    },
+    "licenses/qtsvg/GPL-2.0-only.txt": {
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "size": 18092
+    },
+    "licenses/qtsvg/GPL-3.0-only.txt": {
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "size": 35147
+    },
+    "licenses/qtsvg/HPND-sell-variant.txt": {
+      "sha256": "3a946598a9f674d44df764279ca0b85b5d6faba08f3bc75d8e0fcf6cd729a9bd",
+      "size": 1185
+    },
+    "licenses/qtsvg/LGPL-3.0-only.txt": {
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "size": 7651
+    },
+    "licenses/qtsvg/LicenseRef-Qt-Commercial.txt": {
+      "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "size": 462
+    },
+    "manifest.json": {
+      "sha256": "3bb6fa7bae5bc99b638b98faca4d6b69a17ceac5686c882a3bbc196d6ee923d4",
+      "size": 30330
+    },
+    "needed.json": {
+      "sha256": "b2102abefc5aa0d90be0b19959ed0293201f456865826e6faa2ef62c5b825437",
+      "size": 7247
+    },
+    "plugins/imageformats/libqgif.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "a4eecf903d9ac703c3dd95d032d7e36f2d75e542882fcabfd101f6d418570586",
+      "size": 41808,
+      "soname": null
+    },
+    "plugins/imageformats/libqicns.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "b85e5a7d2be5c6bcb10e3fedb3e90e500c50ff6c26f0a99fdbba51da7ba1f7ad",
+      "size": 52128,
+      "soname": null
+    },
+    "plugins/imageformats/libqjpeg.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "e1584efe00b16e6a6e1cdb20de4386cbf5aa11df83a57def27d8ca99c619c9d9",
+      "size": 510968,
+      "soname": null
+    },
+    "plugins/imageformats/libqsvg.so": {
+      "needed": [
+        "libQt6Svg.so.6",
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "a225d66382b7dfde5276e250fe530ee9ed4780c3233e7e2e40cb514366ee70e1",
+      "size": 34816,
+      "soname": null
+    },
+    "plugins/imageformats/libqtga.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "4511335474ebe3c2f0e0156d3593574a60dcb8e374183da5fb8e11832a0c64c2",
+      "size": 33632,
+      "soname": null
+    },
+    "plugins/imageformats/libqtiff.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "a3a35ff231a9f11af8a2d4fcee5140e1a08e6caef366b63771158d65fb24524c",
+      "size": 1008304,
+      "soname": null
+    },
+    "plugins/imageformats/libqwbmp.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "6b2afafc70cc9be28c8a00a3aa88df796eaca78d681b697fc5be2b6da2e6e569",
+      "size": 32520,
+      "soname": null
+    },
+    "plugins/imageformats/libqwebp.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "2d953e91de2a10c87058ad480adb30497857e127ca8d52d7d5b85bc078dc8a25",
+      "size": 474288,
+      "soname": null
+    },
+    "plugins/platforms/libqqnx.so": {
+      "needed": [
+        "libscreen.so.1",
+        "libEGL.so.1",
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "3a50e37b0484c3c580bf246d971955b8c92d6eefb74a03a3c0453edd260c9f0b",
+      "size": 403136,
+      "soname": null
+    },
+    "plugins/tls/libqopensslbackend.so": {
+      "needed": [
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "4cef86db8a0e8f91f0bebcc2dcac882b54693d02acde42acf0448bfff99f61a7",
+      "size": 451688,
+      "soname": null
+    },
+    "qml/QML/jsroot.qmltypes": {
+      "sha256": "14a12cc93e195cb129c3c3d79a0161023954f46f3e4255a258c7e87e99b46cb2",
+      "size": 166526
+    },
+    "qml/QML/plugins.qmltypes": {
+      "sha256": "c018b66cff7d6093281fce51332a179cda733dcc1b43958282a9dbf53ca5cb06",
+      "size": 163975
+    },
+    "qml/QML/qmldir": {
+      "sha256": "e7f96a2ecf537ff772872b3da26a77712c659c15328e77c5426e5d2f0d633114",
+      "size": 107
+    },
+    "qml/QtQml/Models/libmodelsplugin.so": {
+      "needed": [
+        "libQt6QmlModels.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "4aeff6415cb7a7abc433c0880b0d1703e13a293af62b842c38aa03eafa87ce63",
+      "size": 16736,
+      "soname": null
+    },
+    "qml/QtQml/Models/plugins.qmltypes": {
+      "sha256": "0a5b76dbcc1d431a973e4d7f29b804e237733c9b59c556072df763e9b53b2ac2",
+      "size": 83922
+    },
+    "qml/QtQml/Models/qmldir": {
+      "sha256": "4abed3b5d84d4252f6bb292998a566b09a21ae4f2a435e6807cf7047fe14c58a",
+      "size": 213
+    },
+    "qml/QtQml/WorkerScript/libworkerscriptplugin.so": {
+      "needed": [
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "3bfcb0e7e8b4d4cccaa4c94db6b9994ed8b4e4c00241da1e7b7d05d18ca1823a",
+      "size": 16888,
+      "soname": null
+    },
+    "qml/QtQml/WorkerScript/plugins.qmltypes": {
+      "sha256": "701cd44fd43b9bdae92685471d0e8f8cf6d7c743518aaa6fc3e544fb3989807d",
+      "size": 1510
+    },
+    "qml/QtQml/WorkerScript/qmldir": {
+      "sha256": "4ed1b6b0ad3980ae5c882f5c0a4eea8a84bcca35c300f0eec430b89cd30ff768",
+      "size": 243
+    },
+    "qml/QtQml/libqmlplugin.so": {
+      "needed": [
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "9160a7f2ba4d858cc0cfe508b785aac62dec94dfb513b4f5536d19715a08df95",
+      "size": 16584,
+      "soname": null
+    },
+    "qml/QtQml/plugins.qmltypes": {
+      "sha256": "2832f8f726dc5dbb14260f02b07d1d0173c89d7b4b1adc0edb2dfa43aea60520",
+      "size": 7869
+    },
+    "qml/QtQml/qmldir": {
+      "sha256": "ff1b83e0cfee28b7dfc809f2acf8d1281e31f037481e80570ad4d23badbc67e2",
+      "size": 242
+    },
+    "qml/QtQuick/Shapes/libqmlshapesplugin.so": {
+      "needed": [
+        "libQt6QuickShapes.so.6",
+        "libQt6Quick.so.6",
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "7c08cbb50f24f712696a565e86fe87a6350ad0c2f4c84de32c66c6e7fd07be6c",
+      "size": 20840,
+      "soname": null
+    },
+    "qml/QtQuick/Shapes/plugins.qmltypes": {
+      "sha256": "36f2d7df9dfd03450b554ad6d0b1e7ecf669b716d6383376c8256b9fab6829ed",
+      "size": 21936
+    },
+    "qml/QtQuick/Shapes/qmldir": {
+      "sha256": "fbebfff93729f32b000c9d467282655814eea445a92f0979989207870ce25ddd",
+      "size": 199
+    },
+    "qml/QtQuick/libqtquick2plugin.so": {
+      "needed": [
+        "libQt6Quick.so.6",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [],
+      "runpath": ["/data/qt612-public/lib"],
+      "sha256": "a3a350e8ae854c192c3cb3048aa676424fd024e1408d0f5db4f02757d5eb2b1f",
+      "size": 20800,
+      "soname": null
+    },
+    "qml/QtQuick/plugins.qmltypes": {
+      "sha256": "8c57e13edb49e3c6f86df80c8c78f877bec44823ed6dcc64752e272f3e11326e",
+      "size": 675917
+    },
+    "qml/QtQuick/qmldir": {
+      "sha256": "c2fa2b26d9f8094c6eeb6ff924b18088ddcd512e133524e55b13fa3e5e70350b",
+      "size": 206
+    }
+  },
+  "pass": true,
+  "root": "runtime-current",
+  "system_libraries_used": [
+    "libEGL.so.1",
+    "libGLESv2.so.1",
+    "libc++.so.2",
+    "libc.so.6",
+    "libeventfd.so.1",
+    "libfsnotify.so.1",
+    "libgcc_s.so.1",
+    "libm.so.3",
+    "libscreen.so.1",
+    "libslog2.so.1",
+    "libsocket.so.4",
+    "libzstd.so.1"
+  ]
+}

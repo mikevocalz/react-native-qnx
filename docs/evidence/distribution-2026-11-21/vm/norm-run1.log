@@ -1,0 +1,703 @@
+libs: load_object: attempt load of libQt6Quick.so.6
+libs: find_file:2522: name=libQt6Quick.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libQt6Quick.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6Quick.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6Quick.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6Quick.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6Quick.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6Quick.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6Quick.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6Quick.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6Quick.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6Quick.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6Quick.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6Quick.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6Quick.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6Quick.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6Quick.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6Quick.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6Quick.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6Quick.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6Quick.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6Quick.so.6 path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6Quick.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6Quick.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6Quick.so.6: success
+libs: libQt6Quick.so.6: found; real path:/data/dist-test/qt/lib/libQt6Quick.so.6
+libs: load_elf: Shared library base: 0x1f2f60e000
+libs: load_elf: libQt6Quick.so.6 relro segment is now lazy mapping; 1f2fdad000-1f2fdf6000
+libs: load_elf: loaded lib at addr 1f2f60e000(text) 1f2fdad0b0(data)
+libs: object libQt6Quick.so.6 loaded; real soname: libQt6Quick.so.6 loaded from: /data/dist-test/qt/lib/libQt6Quick.so.6
+libs: load_object: attempt load of libQt6OpenGL.so.6
+libs: find_file:2522: name=libQt6OpenGL.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libQt6OpenGL.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6OpenGL.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6OpenGL.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6OpenGL.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6OpenGL.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6OpenGL.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6OpenGL.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6OpenGL.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6OpenGL.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6OpenGL.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6OpenGL.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6OpenGL.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6OpenGL.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6OpenGL.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6OpenGL.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6OpenGL.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6OpenGL.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6OpenGL.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6OpenGL.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6OpenGL.so.6 path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6OpenGL.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6OpenGL.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6OpenGL.so.6: success
+libs: libQt6OpenGL.so.6: found; real path:/data/dist-test/qt/lib/libQt6OpenGL.so.6
+libs: load_elf: Shared library base: 0x1f2fe12000
+libs: load_elf: libQt6OpenGL.so.6 relro segment is now lazy mapping; 1f2fe93000-1f2fe96000
+libs: load_elf: loaded lib at addr 1f2fe12000(text) 1f2fe93268(data)
+libs: object libQt6OpenGL.so.6 loaded; real soname: libQt6OpenGL.so.6 loaded from: /data/dist-test/qt/lib/libQt6OpenGL.so.6
+libs: load_object: attempt load of libQt6Qml.so.6
+libs: find_file:2522: name=libQt6Qml.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libQt6Qml.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6Qml.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6Qml.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6Qml.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6Qml.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6Qml.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6Qml.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6Qml.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6Qml.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6Qml.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6Qml.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6Qml.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6Qml.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6Qml.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6Qml.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6Qml.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6Qml.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6Qml.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6Qml.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6Qml.so.6 path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6Qml.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6Qml.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6Qml.so.6: success
+libs: libQt6Qml.so.6: found; real path:/data/dist-test/qt/lib/libQt6Qml.so.6
+libs: load_elf: Shared library base: 0x1f2fe98000
+libs: load_elf: libQt6Qml.so.6 TLS segment loaded
+libs: load_elf: libQt6Qml.so.6 relro segment is now lazy mapping; 1f3049e000-1f304c4000
+libs: load_elf: loaded lib at addr 1f2fe98000(text) 1f3049ebb8(data)
+libs: object libQt6Qml.so.6 loaded; real soname: libQt6Qml.so.6 loaded from: /data/dist-test/qt/lib/libQt6Qml.so.6
+libs: load_object: attempt load of libQt6Network.so.6
+libs: find_file:2522: name=libQt6Network.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libQt6Network.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6Network.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6Network.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6Network.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6Network.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6Network.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6Network.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6Network.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6Network.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6Network.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6Network.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6Network.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6Network.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6Network.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6Network.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6Network.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6Network.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6Network.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6Network.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6Network.so.6 path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6Network.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6Network.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6Network.so.6: success
+libs: libQt6Network.so.6: found; real path:/data/dist-test/qt/lib/libQt6Network.so.6
+libs: load_elf: Shared library base: 0x1f304d0000
+libs: load_elf: libQt6Network.so.6 relro segment is now lazy mapping; 1f306d4000-1f306e1000
+libs: load_elf: loaded lib at addr 1f304d0000(text) 1f306d4d98(data)
+libs: object libQt6Network.so.6 loaded; real soname: libQt6Network.so.6 loaded from: /data/dist-test/qt/lib/libQt6Network.so.6
+libs: load_object: attempt load of libQt6Svg.so.6
+libs: find_file:2522: name=libQt6Svg.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libQt6Svg.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6Svg.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6Svg.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6Svg.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6Svg.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6Svg.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6Svg.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6Svg.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6Svg.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6Svg.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6Svg.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6Svg.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6Svg.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6Svg.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6Svg.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6Svg.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6Svg.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6Svg.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6Svg.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6Svg.so.6 path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6Svg.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6Svg.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6Svg.so.6: success
+libs: libQt6Svg.so.6: found; real path:/data/dist-test/qt/lib/libQt6Svg.so.6
+libs: load_elf: Shared library base: 0x1f306e7000
+libs: load_elf: libQt6Svg.so.6 relro segment is now lazy mapping; 1f30780000-1f30785000
+libs: load_elf: loaded lib at addr 1f306e7000(text) 1f30780698(data)
+libs: object libQt6Svg.so.6 loaded; real soname: libQt6Svg.so.6 loaded from: /data/dist-test/qt/lib/libQt6Svg.so.6
+libs: load_object: attempt load of libQt6Gui.so.6
+libs: find_file:2522: name=libQt6Gui.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libQt6Gui.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6Gui.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6Gui.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6Gui.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6Gui.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6Gui.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6Gui.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6Gui.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6Gui.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6Gui.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6Gui.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6Gui.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6Gui.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6Gui.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6Gui.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6Gui.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6Gui.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6Gui.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6Gui.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6Gui.so.6 path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6Gui.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6Gui.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6Gui.so.6: success
+libs: libQt6Gui.so.6: found; real path:/data/dist-test/qt/lib/libQt6Gui.so.6
+libs: load_elf: Shared library base: 0x1f30786000
+libs: load_elf: libQt6Gui.so.6 relro segment is now lazy mapping; 1f310d2000-1f310f8000
+libs: load_elf: loaded lib at addr 1f30786000(text) 1f310d2440(data)
+libs: object libQt6Gui.so.6 loaded; real soname: libQt6Gui.so.6 loaded from: /data/dist-test/qt/lib/libQt6Gui.so.6
+libs: load_object: attempt load of libQt6Core.so.6
+libs: find_file:2522: name=libQt6Core.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libQt6Core.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6Core.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6Core.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6Core.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6Core.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6Core.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6Core.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6Core.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6Core.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6Core.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6Core.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6Core.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6Core.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6Core.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6Core.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6Core.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6Core.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6Core.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6Core.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6Core.so.6 path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6Core.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6Core.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6Core.so.6: success
+libs: libQt6Core.so.6: found; real path:/data/dist-test/qt/lib/libQt6Core.so.6
+libs: load_elf: Shared library base: 0x1f31117000
+libs: load_elf: libQt6Core.so.6 TLS segment loaded
+libs: load_elf: libQt6Core.so.6 relro segment is now lazy mapping; 1f31b8f000-1f31ba4000
+libs: load_elf: loaded lib at addr 1f31117000(text) 1f31b8f360(data)
+libs: object libQt6Core.so.6 loaded; real soname: libQt6Core.so.6 loaded from: /data/dist-test/qt/lib/libQt6Core.so.6
+libs: load_object: attempt load of libGLESv2.so.1
+libs: find_file:2522: name=libGLESv2.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libGLESv2.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libGLESv2.so.1
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libGLESv2.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libGLESv2.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libGLESv2.so.1
+libs: ldd:sopen_elf_and_verify:2437:/data/vm/screen/lib/libGLESv2.so.1: file opened
+libs: searchpath:2481:/data/vm/screen/lib/libGLESv2.so.1: success
+libs: libGLESv2.so.1: found; real path:/data/vm/screen/lib/libGLESv2.so.1
+libs: load_elf: Shared library base: 0x1f31bb2000
+libs: load_elf: libGLESv2.so.1 relro segment is now lazy mapping; 1f31c08000-1f31c1f000
+libs: load_elf: loaded lib at addr 1f31bb2000(text) 1f31c08030(data)
+libs: object libGLESv2.so.1 loaded; real soname: libGLESv2.so.1 loaded from: /data/vm/screen/lib/libGLESv2.so.1
+libs: load_object: attempt load of libEGL.so.1
+libs: find_file:2522: name=libEGL.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libEGL.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libEGL.so.1
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libEGL.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libEGL.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libEGL.so.1
+libs: ldd:sopen_elf_and_verify:2437:/data/vm/screen/lib/libEGL.so.1: file opened
+libs: searchpath:2481:/data/vm/screen/lib/libEGL.so.1: success
+libs: libEGL.so.1: found; real path:/data/vm/screen/lib/libEGL.so.1
+libs: load_elf: Shared library base: 0x1f31c20000
+libs: load_elf: libEGL.so.1 relro segment is now lazy mapping; 1f31c45000-1f31c4a000
+libs: load_elf: loaded lib at addr 1f31c20000(text) 1f31c45b78(data)
+libs: object libEGL.so.1 loaded; real soname: libEGL.so.1 loaded from: /data/vm/screen/lib/libEGL.so.1
+libs: load_object: attempt load of libhermesvm.so
+libs: find_file:2522: name=libhermesvm.so libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libhermesvm.so path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libhermesvm.so
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libhermesvm.so: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libhermesvm.so: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libhermesvm.so
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libhermesvm.so: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libhermesvm.so: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libhermesvm.so
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libhermesvm.so: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libhermesvm.so: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libhermesvm.so
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libhermesvm.so: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libhermesvm.so: failed (-2)
+libs: searchpath:2475: trying /system/lib/libhermesvm.so
+libs: sopen_elf_and_verify:2367:/system/lib/libhermesvm.so: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libhermesvm.so: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libhermesvm.so
+libs: sopen_elf_and_verify:2367:/proc/boot/libhermesvm.so: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libhermesvm.so: failed (-2)
+libs: searchpath:2503: name=libhermesvm.so path=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libhermesvm.so
+libs: sopen_elf_and_verify:2367:/data/dist-test/qt/lib/libhermesvm.so: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/qt/lib/libhermesvm.so: failed (-2)
+libs: searchpath:2475: trying /data/dist-test/app/libhermesvm.so
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/app/libhermesvm.so: file opened
+libs: searchpath:2481:/data/dist-test/app/libhermesvm.so: success
+libs: libhermesvm.so: found; real path:/data/dist-test/app/libhermesvm.so
+libs: load_elf: Shared library base: 0x1f31c4d000
+libs: load_elf: libhermesvm.so TLS segment loaded
+libs: load_elf: libhermesvm.so relro segment is now lazy mapping; 1f32257000-1f32278000
+libs: load_elf: loaded lib at addr 1f31c4d000(text) 1f32257f80(data)
+libs: object libhermesvm.so loaded; real soname: libhermesvm.so loaded from: /data/dist-test/app/libhermesvm.so
+libs: load_object: attempt load of libscreen.so.1
+libs: find_file:2522: name=libscreen.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libscreen.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libscreen.so.1
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libscreen.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libscreen.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libscreen.so.1
+libs: ldd:sopen_elf_and_verify:2437:/data/vm/screen/lib/libscreen.so.1: file opened
+libs: searchpath:2481:/data/vm/screen/lib/libscreen.so.1: success
+libs: libscreen.so.1: found; real path:/data/vm/screen/lib/libscreen.so.1
+libs: load_elf: Shared library base: 0x1f3227f000
+libs: load_elf: libscreen.so.1 relro segment is now lazy mapping; 1f32295000-1f32296000
+libs: load_elf: loaded lib at addr 1f3227f000(text) 1f32295c58(data)
+libs: object libscreen.so.1 loaded; real soname: libscreen.so.1 loaded from: /data/vm/screen/lib/libscreen.so.1
+libs: load_object: attempt load of libsocket.so.4
+libs: find_file:2522: name=libsocket.so.4 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libsocket.so.4 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libsocket.so.4
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libsocket.so.4: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libsocket.so.4: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libsocket.so.4
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libsocket.so.4: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libsocket.so.4: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libsocket.so.4
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libsocket.so.4: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libsocket.so.4: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libsocket.so.4
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libsocket.so.4: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libsocket.so.4: failed (-2)
+libs: searchpath:2475: trying /system/lib/libsocket.so.4
+libs: sopen_elf_and_verify:2367:/system/lib/libsocket.so.4: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libsocket.so.4: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libsocket.so.4
+libs: ldd:sopen_elf_and_verify:2437:/proc/boot/libsocket.so.4: file opened
+libs: searchpath:2481:/proc/boot/libsocket.so.4: success
+libs: libsocket.so.4: found; real path:/proc/boot/libsocket.so.4
+libs: load_elf: Shared library base: 0x1f32297000
+libs: load_elf: libsocket.so.4 relro segment is now lazy mapping; 1f322da000-1f322dc000
+libs: load_elf: loaded lib at addr 1f32297000(text) 1f322da108(data)
+libs: object libsocket.so.4 loaded; real soname: libsocket.so.4 loaded from: /proc/boot/libsocket.so.4
+libs: load_object: attempt load of libc++.so.2
+libs: find_file:2522: name=libc++.so.2 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libc++.so.2 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libc++.so.2
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libc++.so.2: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libc++.so.2: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libc++.so.2
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libc++.so.2: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libc++.so.2: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libc++.so.2
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libc++.so.2: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libc++.so.2: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libc++.so.2
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libc++.so.2: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libc++.so.2: failed (-2)
+libs: searchpath:2475: trying /system/lib/libc++.so.2
+libs: ldd:sopen_elf_and_verify:2437:/system/lib/libc++.so.2: file opened
+libs: searchpath:2481:/system/lib/libc++.so.2: success
+libs: libc++.so.2: found; real path:/system/lib/libc++.so.2
+libs: load_elf: Shared library base: 0x1f322e3000
+libs: load_elf: libc++.so.2 TLS segment loaded
+libs: load_elf: libc++.so.2 relro segment is now lazy mapping; 1f32411000-1f3241a000
+libs: load_elf: loaded lib at addr 1f322e3000(text) 1f32411180(data)
+libs: object libc++.so.2 loaded; real soname: libc++.so.2 loaded from: /system/lib/libc++.so.2
+libs: load_object: attempt load of libm.so.3
+libs: find_file:2522: name=libm.so.3 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libm.so.3 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libm.so.3
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libm.so.3: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libm.so.3: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libm.so.3
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libm.so.3: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libm.so.3: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libm.so.3
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libm.so.3: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libm.so.3: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libm.so.3
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libm.so.3: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libm.so.3: failed (-2)
+libs: searchpath:2475: trying /system/lib/libm.so.3
+libs: sopen_elf_and_verify:2367:/system/lib/libm.so.3: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libm.so.3: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libm.so.3
+libs: ldd:sopen_elf_and_verify:2437:/proc/boot/libm.so.3: file opened
+libs: searchpath:2481:/proc/boot/libm.so.3: success
+libs: libm.so.3: found; real path:/proc/boot/libm.so.3
+libs: load_elf: Shared library base: 0x1f32421000
+libs: load_elf: libm.so.3 relro segment is now lazy mapping; 1f3245f000-1f32460000
+libs: load_elf: loaded lib at addr 1f32421000(text) 1f3245f828(data)
+libs: object libm.so.3 loaded; real soname: libm.so.3 loaded from: /proc/boot/libm.so.3
+libs: load_object: attempt load of libc.so.6
+libs: find_file:2522: name=libc.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libc.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libc.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libc.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libc.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libc.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libc.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libc.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libc.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libc.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libc.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libc.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libc.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libc.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libc.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libc.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libc.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libc.so.6
+libs: ldd:sopen_elf_and_verify:2437:/proc/boot/libc.so.6: file opened
+libs: searchpath:2481:/proc/boot/libc.so.6: success
+libs: libc.so.6: found; real path:/proc/boot/libc.so.6
+libs: load_elf: Shared library base: 0x1f32461000
+libs: load_elf: libc.so.6 relro segment is now lazy mapping; 1f32508000-1f3250c000
+libs: load_elf: loaded lib at addr 1f32461000(text) 1f32508650(data)
+libs: object libc.so.6 loaded; real soname: libc.so.6 loaded from: /proc/boot/libc.so.6
+libs: load_object: attempt load of libgcc_s.so.1
+libs: find_file:2522: name=libgcc_s.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib:/data/dist-test/app
+libs: searchpath:2503: name=libgcc_s.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libgcc_s.so.1
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libgcc_s.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libgcc_s.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libgcc_s.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libgcc_s.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libgcc_s.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libgcc_s.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libgcc_s.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libgcc_s.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libgcc_s.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libgcc_s.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libgcc_s.so.1: failed (-2)
+libs: searchpath:2475: trying /system/lib/libgcc_s.so.1
+libs: sopen_elf_and_verify:2367:/system/lib/libgcc_s.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libgcc_s.so.1: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libgcc_s.so.1
+libs: ldd:sopen_elf_and_verify:2437:/proc/boot/libgcc_s.so.1: file opened
+libs: searchpath:2481:/proc/boot/libgcc_s.so.1: success
+libs: libgcc_s.so.1: found; real path:/proc/boot/libgcc_s.so.1
+libs: load_elf: Shared library base: 0x1f32514000
+libs: load_elf: libgcc_s.so.1 relro segment is now lazy mapping; 1f32527000-1f32528000
+libs: load_elf: loaded lib at addr 1f32514000(text) 1f32527cb0(data)
+libs: object libgcc_s.so.1 loaded; real soname: libgcc_s.so.1 loaded from: /proc/boot/libgcc_s.so.1
+libs: load_object: attempt load of libQt6QmlMeta.so.6
+libs: find_file:2522: name=libQt6QmlMeta.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libQt6QmlMeta.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6QmlMeta.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6QmlMeta.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6QmlMeta.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6QmlMeta.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6QmlMeta.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6QmlMeta.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6QmlMeta.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6QmlMeta.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6QmlMeta.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6QmlMeta.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6QmlMeta.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6QmlMeta.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6QmlMeta.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6QmlMeta.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6QmlMeta.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6QmlMeta.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6QmlMeta.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6QmlMeta.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6QmlMeta.so.6 path=/data/dist-test/qt/lib
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6QmlMeta.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6QmlMeta.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6QmlMeta.so.6: success
+libs: libQt6QmlMeta.so.6: found; real path:/data/dist-test/qt/lib/libQt6QmlMeta.so.6
+libs: load_elf: Shared library base: 0x1f32529000
+libs: load_elf: libQt6QmlMeta.so.6 relro segment is now lazy mapping; 1f32551000-1f32553000
+libs: load_elf: loaded lib at addr 1f32529000(text) 1f325514f8(data)
+libs: object libQt6QmlMeta.so.6 loaded; real soname: libQt6QmlMeta.so.6 loaded from: /data/dist-test/qt/lib/libQt6QmlMeta.so.6
+libs: load_object: attempt load of libQt6QmlModels.so.6
+libs: find_file:2522: name=libQt6QmlModels.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libQt6QmlModels.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6QmlModels.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6QmlModels.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6QmlModels.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6QmlModels.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6QmlModels.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6QmlModels.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6QmlModels.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6QmlModels.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6QmlModels.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6QmlModels.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6QmlModels.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6QmlModels.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6QmlModels.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6QmlModels.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6QmlModels.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6QmlModels.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6QmlModels.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6QmlModels.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6QmlModels.so.6 path=/data/dist-test/qt/lib
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6QmlModels.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6QmlModels.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6QmlModels.so.6: success
+libs: libQt6QmlModels.so.6: found; real path:/data/dist-test/qt/lib/libQt6QmlModels.so.6
+libs: load_elf: Shared library base: 0x1f32554000
+libs: load_elf: libQt6QmlModels.so.6 relro segment is now lazy mapping; 1f32679000-1f32684000
+libs: load_elf: loaded lib at addr 1f32554000(text) 1f32679d20(data)
+libs: object libQt6QmlModels.so.6 loaded; real soname: libQt6QmlModels.so.6 loaded from: /data/dist-test/qt/lib/libQt6QmlModels.so.6
+libs: load_object: attempt load of libQt6QmlWorkerScript.so.6
+libs: find_file:2522: name=libQt6QmlWorkerScript.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libQt6QmlWorkerScript.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6QmlWorkerScript.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6QmlWorkerScript.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6QmlWorkerScript.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6QmlWorkerScript.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6QmlWorkerScript.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6QmlWorkerScript.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6QmlWorkerScript.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6QmlWorkerScript.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6QmlWorkerScript.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6QmlWorkerScript.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6QmlWorkerScript.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6QmlWorkerScript.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6QmlWorkerScript.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6QmlWorkerScript.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6QmlWorkerScript.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6QmlWorkerScript.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6QmlWorkerScript.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6QmlWorkerScript.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6QmlWorkerScript.so.6 path=/data/dist-test/qt/lib
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6QmlWorkerScript.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6QmlWorkerScript.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6QmlWorkerScript.so.6: success
+libs: libQt6QmlWorkerScript.so.6: found; real path:/data/dist-test/qt/lib/libQt6QmlWorkerScript.so.6
+libs: load_elf: Shared library base: 0x1f32689000
+libs: load_elf: libQt6QmlWorkerScript.so.6 relro segment is now lazy mapping; 1f3269b000-1f3269c000
+libs: load_elf: loaded lib at addr 1f32689000(text) 1f3269b0b8(data)
+libs: object libQt6QmlWorkerScript.so.6 loaded; real soname: libQt6QmlWorkerScript.so.6 loaded from: /data/dist-test/qt/lib/libQt6QmlWorkerScript.so.6
+libs: load_object: attempt load of libzstd.so.1
+libs: find_file:2522: name=libzstd.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libzstd.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libzstd.so.1
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/sys/libzstd.so.1: file opened
+libs: searchpath:2481:/data/dist-test/sys/libzstd.so.1: success
+libs: libzstd.so.1: found; real path:/data/dist-test/sys/libzstd.so.1
+libs: load_elf: Shared library base: 0x1f3269d000
+libs: load_elf: libzstd.so.1 relro segment is now lazy mapping; 1f3275a000-1f3275b000
+libs: load_elf: loaded lib at addr 1f3269d000(text) 1f3275a858(data)
+libs: object libzstd.so.1 loaded; real soname: libzstd.so.1 loaded from: /data/dist-test/sys/libzstd.so.1
+libs: load_object: attempt load of libfsnotify.so.1
+libs: find_file:2522: name=libfsnotify.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libfsnotify.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libfsnotify.so.1
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libfsnotify.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libfsnotify.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libfsnotify.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libfsnotify.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libfsnotify.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libfsnotify.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libfsnotify.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libfsnotify.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libfsnotify.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libfsnotify.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libfsnotify.so.1: failed (-2)
+libs: searchpath:2475: trying /system/lib/libfsnotify.so.1
+libs: sopen_elf_and_verify:2367:/system/lib/libfsnotify.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libfsnotify.so.1: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libfsnotify.so.1
+libs: ldd:sopen_elf_and_verify:2437:/proc/boot/libfsnotify.so.1: file opened
+libs: searchpath:2481:/proc/boot/libfsnotify.so.1: success
+libs: libfsnotify.so.1: found; real path:/proc/boot/libfsnotify.so.1
+libs: load_elf: Shared library base: 0x1f3275c000
+libs: load_elf: libfsnotify.so.1 relro segment is now lazy mapping; 1f32766000-1f32767000
+libs: load_elf: loaded lib at addr 1f3275c000(text) 1f32766c08(data)
+libs: object libfsnotify.so.1 loaded; real soname: libfsnotify.so.1 loaded from: /proc/boot/libfsnotify.so.1
+libs: load_object: attempt load of libeventfd.so.1
+libs: find_file:2522: name=libeventfd.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libeventfd.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libeventfd.so.1
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/sys/libeventfd.so.1: file opened
+libs: searchpath:2481:/data/dist-test/sys/libeventfd.so.1: success
+libs: libeventfd.so.1: found; real path:/data/dist-test/sys/libeventfd.so.1
+libs: load_elf: Shared library base: 0x1f3276a000
+libs: load_elf: libeventfd.so.1 relro segment is now lazy mapping; 1f3276e000-1f3276f000
+libs: load_elf: loaded lib at addr 1f3276a000(text) 1f3276ebe0(data)
+libs: object libeventfd.so.1 loaded; real soname: libeventfd.so.1 loaded from: /data/dist-test/sys/libeventfd.so.1
+libs: load_object: attempt load of libslog2.so.1
+libs: find_file:2522: name=libslog2.so.1 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libslog2.so.1 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libslog2.so.1
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libslog2.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libslog2.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libslog2.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libslog2.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libslog2.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libslog2.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libslog2.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libslog2.so.1: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libslog2.so.1
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libslog2.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libslog2.so.1: failed (-2)
+libs: searchpath:2475: trying /system/lib/libslog2.so.1
+libs: sopen_elf_and_verify:2367:/system/lib/libslog2.so.1: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libslog2.so.1: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libslog2.so.1
+libs: ldd:sopen_elf_and_verify:2437:/proc/boot/libslog2.so.1: file opened
+libs: searchpath:2481:/proc/boot/libslog2.so.1: success
+libs: libslog2.so.1: found; real path:/proc/boot/libslog2.so.1
+libs: load_elf: Shared library base: 0x1f32770000
+libs: load_elf: libslog2.so.1 relro segment is now lazy mapping; 1f32775000-1f32776000
+libs: load_elf: loaded lib at addr 1f32770000(text) 1f32775cf8(data)
+libs: object libslog2.so.1 loaded; real soname: libslog2.so.1 loaded from: /proc/boot/libslog2.so.1
+
+libs: init: libslog2.so.1 obj->refcount: 2
+libs: init: libeventfd.so.1 obj->refcount: 1
+libs: init: libfsnotify.so.1 obj->refcount: 1
+libs: init: libzstd.so.1 obj->refcount: 1
+libs: init: libQt6QmlWorkerScript.so.6 obj->refcount: 1
+libs: init: libQt6QmlModels.so.6 obj->refcount: 1
+libs: init: libQt6QmlMeta.so.6 obj->refcount: 1
+libs: init: libgcc_s.so.1 obj->refcount: 1
+libs: init: libc.so.6 obj->refcount: 1
+libs: init: ldqnx-64.so.2 obj->refcount: 0
+libs: init: libm.so.3 obj->refcount: 1
+libs: init: libc++.so.2 obj->refcount: 1
+libs: init: libsocket.so.4 obj->refcount: 1
+libs: init: libscreen.so.1 obj->refcount: 1
+libs: init: libhermesvm.so obj->refcount: 1
+libs: init: libEGL.so.1 obj->refcount: 1
+libs: init: libGLESv2.so.1 obj->refcount: 1
+libs: init: libQt6Core.so.6 obj->refcount: 1
+libs: init: libQt6Gui.so.6 obj->refcount: 1
+libs: init: libQt6Svg.so.6 obj->refcount: 1
+libs: init: libQt6Network.so.6 obj->refcount: 1
+libs: init: libQt6Qml.so.6 obj->refcount: 1
+libs: init: libQt6OpenGL.so.6 obj->refcount: 1
+libs: init: libQt6Quick.so.6 obj->refcount: 1
+libs: dlopen("/data/dist-test/qt/plugins/platforms/libqqnx.so",4609)
+Mode: LAZY LOCAL NODELETE 
+
+libs: Neither RTLD_GROUP nor RTLD_WORLD specified, assuming RTLD_GROUP | RTLD_WORLD
+libs: load_object: attempt load of /data/dist-test/qt/plugins/platforms/libqqnx.so
+libs: find_file:2522: name=/data/dist-test/qt/plugins/platforms/libqqnx.so libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=NULL
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/plugins/platforms/libqqnx.so: file opened
+libs: /data/dist-test/qt/plugins/platforms/libqqnx.so: found; real path:/data/dist-test/qt/plugins/platforms/libqqnx.so
+libs: load_elf: Shared library base: 0x1f32777000
+libs: load_elf: libqqnx.so relro segment is now lazy mapping; 1f327be000-1f327c1000
+libs: load_elf: loaded lib at addr 1f32777000(text) 1f327be558(data)
+libs: object /data/dist-test/qt/plugins/platforms/libqqnx.so loaded; real soname: libqqnx.so loaded from: /data/dist-test/qt/plugins/platforms/libqqnx.so
+libs: init: libqqnx.so obj->refcount: 2
+libs: dlopen("NULL",256)
+Mode: GLOBAL 
+
+QQnxIntegration: no EGL display (3008), continuing without OpenGL
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+libs: dlopen("/data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so",4609)
+Mode: LAZY LOCAL NODELETE 
+
+libs: Neither RTLD_GROUP nor RTLD_WORLD specified, assuming RTLD_GROUP | RTLD_WORLD
+libs: load_object: attempt load of /data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so
+libs: find_file:2522: name=/data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=NULL
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so: file opened
+libs: /data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so: found; real path:/data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so
+libs: load_elf: Shared library base: 0x1f327c2000
+libs: load_elf: libqmlshapesplugin.so relro segment is now lazy mapping; 1f327c4000-1f327c5000
+libs: load_elf: loaded lib at addr 1f327c2000(text) 1f327c4b40(data)
+libs: object /data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so loaded; real soname: libqmlshapesplugin.so loaded from: /data/dist-test/qt/qml/QtQuick/Shapes/libqmlshapesplugin.so
+libs: load_object: attempt load of libQt6QuickShapes.so.6
+libs: find_file:2522: name=libQt6QuickShapes.so.6 libpath=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot rpath=NULL runpath=/data/dist-test/qt/lib
+libs: searchpath:2503: name=libQt6QuickShapes.so.6 path=/data/dist-test/sys:/data/vm/screen/lib:/data/vm/screen/lib/dll:/data/vm/screen/gfx:/system/lib:/proc/boot
+libs: searchpath:2475: trying /data/dist-test/sys/libQt6QuickShapes.so.6
+libs: sopen_elf_and_verify:2367:/data/dist-test/sys/libQt6QuickShapes.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/dist-test/sys/libQt6QuickShapes.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/libQt6QuickShapes.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/libQt6QuickShapes.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/libQt6QuickShapes.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/lib/dll/libQt6QuickShapes.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/lib/dll/libQt6QuickShapes.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/lib/dll/libQt6QuickShapes.so.6: failed (-2)
+libs: searchpath:2475: trying /data/vm/screen/gfx/libQt6QuickShapes.so.6
+libs: sopen_elf_and_verify:2367:/data/vm/screen/gfx/libQt6QuickShapes.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/data/vm/screen/gfx/libQt6QuickShapes.so.6: failed (-2)
+libs: searchpath:2475: trying /system/lib/libQt6QuickShapes.so.6
+libs: sopen_elf_and_verify:2367:/system/lib/libQt6QuickShapes.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/system/lib/libQt6QuickShapes.so.6: failed (-2)
+libs: searchpath:2475: trying /proc/boot/libQt6QuickShapes.so.6
+libs: sopen_elf_and_verify:2367:/proc/boot/libQt6QuickShapes.so.6: open failed (No such file or directory)
+libs: searchpath:2485:/proc/boot/libQt6QuickShapes.so.6: failed (-2)
+libs: searchpath:2503: name=libQt6QuickShapes.so.6 path=/data/dist-test/qt/lib
+libs: searchpath:2475: trying /data/dist-test/qt/lib/libQt6QuickShapes.so.6
+libs: ldd:sopen_elf_and_verify:2437:/data/dist-test/qt/lib/libQt6QuickShapes.so.6: file opened
+libs: searchpath:2481:/data/dist-test/qt/lib/libQt6QuickShapes.so.6: success
+libs: libQt6QuickShapes.so.6: found; real path:/data/dist-test/qt/lib/libQt6QuickShapes.so.6
+libs: load_elf: Shared library base: 0x1f327c6000
+libs: load_elf: libQt6QuickShapes.so.6 relro segment is now lazy mapping; 1f3281f000-1f32823000
+libs: load_elf: loaded lib at addr 1f327c6000(text) 1f3281f4e8(data)
+libs: object libQt6QuickShapes.so.6 loaded; real soname: libQt6QuickShapes.so.6 loaded from: /data/dist-test/qt/lib/libQt6QuickShapes.so.6
+libs: init: libQt6QuickShapes.so.6 obj->refcount: 1
+libs: init: libqmlshapesplugin.so obj->refcount: 2
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=0 framesDelivered=0 uiJobs=0 jsPosts=0
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1121 21:38:41.796623     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 45ce00ca18).
+W1121 21:38:41.801401     5 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 45ce12db68).
+W1121 21:38:41.801927     5 UIManager.cpp:57] UIManager::~UIManager() was called (address: 45ce0259c8).
+libs: dlclose(0x45cbe78418, 0)
+libs: dlclose(0x45cbeb9ac8, 0)
+RNQNX_PLAYGROUND_SCREENSHOT /data/dist-test/out/norm-run1.png 1280x800
+libs: fini: libQt6Quick.so.6 obj->refcount: 3
+libs: fini: libQt6OpenGL.so.6 obj->refcount: 3
+libs: fini: libQt6Qml.so.6 obj->refcount: 3
+libs: fini: libQt6Network.so.6 obj->refcount: 3
+libs: fini: libQt6Svg.so.6 obj->refcount: 3
+libs: fini: libQt6Gui.so.6 obj->refcount: 3
+libs: fini: libQt6Core.so.6 obj->refcount: 3
+libs: fini: libGLESv2.so.1 obj->refcount: 3
+libs: fini: libEGL.so.1 obj->refcount: 3
+libs: fini: libhermesvm.so obj->refcount: 3
+libs: fini: libscreen.so.1 obj->refcount: 3
+libs: fini: libsocket.so.4 obj->refcount: 3
+libs: fini: libc++.so.2 obj->refcount: 3
+libs: fini: libm.so.3 obj->refcount: 3
+libs: fini: ldqnx-64.so.2 obj->refcount: 2
+libs: fini: libc.so.6 obj->refcount: 3
+libs: fini: libgcc_s.so.1 obj->refcount: 3
+libs: fini: libQt6QmlMeta.so.6 obj->refcount: 3
+libs: fini: libQt6QmlModels.so.6 obj->refcount: 3
+libs: fini: libQt6QmlWorkerScript.so.6 obj->refcount: 3
+libs: fini: libzstd.so.1 obj->refcount: 3
+libs: fini: libfsnotify.so.1 obj->refcount: 3
+libs: fini: libeventfd.so.1 obj->refcount: 3
+libs: fini: libslog2.so.1 obj->refcount: 4
+libs: fini: libqqnx.so obj->refcount: 1
+libs: fini: libqmlshapesplugin.so obj->refcount: 1
+libs: fini: libQt6QuickShapes.so.6 obj->refcount: 0

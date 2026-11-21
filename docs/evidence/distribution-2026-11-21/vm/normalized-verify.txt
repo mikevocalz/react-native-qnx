@@ -1,0 +1,10 @@
+# normalize-rpath.py --runpath /data/dist-test/qt/lib applied to the VM-deployed Qt tree, then verify-closure.py --runpath-prefix /data/dist-test/ (host), 2026-11-21T21:39:20Z
+# libeventfd.so.1 is a QNX system library the VM image lacks; it sat beside the tree for the VM run and is excluded here
+PASS sums (35 listed, 35 files)
+PASS needed (22 ELF files, system libraries used: 11)
+PASS qt-closed
+PASS rpath
+PASS no-sdp
+FAIL notices
+     licenses/ missing
+RESULT FAIL

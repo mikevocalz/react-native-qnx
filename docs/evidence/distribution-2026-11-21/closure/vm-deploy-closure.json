@@ -1,0 +1,560 @@
+{
+  "checks": {
+    "needed": {
+      "failures": [],
+      "pass": true
+    },
+    "no-sdp": {
+      "failures": ["lib/libeventfd.so.1"],
+      "pass": false
+    },
+    "notices": {
+      "failures": ["licenses/ missing"],
+      "pass": false
+    },
+    "qt-closed": {
+      "failures": [],
+      "pass": true
+    },
+    "rpath": {
+      "failures": [
+        "lib/libQt6Core.so.6.12.0 DT_RPATH '::::::::::::::::::::::'",
+        "lib/libQt6Gui.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6Network.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6OpenGL.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6Qml.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6QmlMeta.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6QmlModels.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6QmlWorkerScript.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6Quick.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6QuickShapes.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "lib/libQt6Svg.so.6.12.0 DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "plugins/imageformats/libqgif.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "plugins/imageformats/libqjpeg.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "plugins/imageformats/libqsvg.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/svg-qnx/lib:/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "plugins/platforms/libqqnx.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "plugins/tls/libqopensslbackend.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "qml/QtQml/Models/libmodelsplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "qml/QtQml/WorkerScript/libworkerscriptplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "qml/QtQml/libqmlplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "qml/QtQuick/Shapes/libqmlshapesplugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'",
+        "qml/QtQuick/libqtquick2plugin.so DT_RPATH '/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:'"
+      ],
+      "pass": false
+    },
+    "sums": {
+      "failures": [],
+      "pass": true
+    }
+  },
+  "files": {
+    "SHA256SUMS": {
+      "sha256": "4e23a37ed8ed07b155f5a19c8331f744b65d35342fd8cfbf2ce0bb6a5ab44c7f",
+      "size": 3407
+    },
+    "lib/libQt6Core.so.6.12.0": {
+      "needed": [
+        "libfsnotify.so.1",
+        "libm.so.3",
+        "libzstd.so.1",
+        "libeventfd.so.1",
+        "libslog2.so.1",
+        "libc++.so.2",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "runpath": [],
+      "sha256": "f54989a2b5f48a8f9f4a3e2c0678ade678e42b841767094f880819772c22e4c7",
+      "size": 11103512,
+      "soname": "libQt6Core.so.6"
+    },
+    "lib/libQt6Gui.so.6.12.0": {
+      "needed": [
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "ba8d2af12c817e5d3189bc852bcc92762468d92762959d43d75e6db2aa50ae42",
+      "size": 9951224,
+      "soname": "libQt6Gui.so.6"
+    },
+    "lib/libQt6Network.so.6.12.0": {
+      "needed": [
+        "libzstd.so.1",
+        "libQt6Core.so.6",
+        "libsocket.so.4",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "65d7591021bcf607398dce83d9f48abc6832b422836d63fc332485a45f0a0a41",
+      "size": 2180288,
+      "soname": "libQt6Network.so.6"
+    },
+    "lib/libQt6OpenGL.so.6.12.0": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "b7c42248383a9431c981df0e4caad6124572445744826273c7c5733490392853",
+      "size": 545848,
+      "soname": "libQt6OpenGL.so.6"
+    },
+    "lib/libQt6Qml.so.6.12.0": {
+      "needed": [
+        "libQt6Network.so.6",
+        "libQt6Core.so.6",
+        "libsocket.so.4",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "6e38b11c48ad6266db4eaccd05b2ac1b475a0c5372e14b5035af08a432ca9425",
+      "size": 6511528,
+      "soname": "libQt6Qml.so.6"
+    },
+    "lib/libQt6QmlMeta.so.6.12.0": {
+      "needed": [
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "ede7712015465b56cddfb73be90f11a673e53ab6a10c6b8f3551f6162ac42405",
+      "size": 176056,
+      "soname": "libQt6QmlMeta.so.6"
+    },
+    "lib/libQt6QmlModels.so.6.12.0": {
+      "needed": [
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "3093f9c90c59fae83f6e8da3994f103d59916701cdae041167df4e28b29e7ccd",
+      "size": 1261048,
+      "soname": "libQt6QmlModels.so.6"
+    },
+    "lib/libQt6QmlWorkerScript.so.6.12.0": {
+      "needed": [
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "a66026db5988baf6f8e93720e3218d3f2b2631d59fe5b3ec0ccdf47130466b1c",
+      "size": 80960,
+      "soname": "libQt6QmlWorkerScript.so.6"
+    },
+    "lib/libQt6Quick.so.6.12.0": {
+      "needed": [
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "8b7b371f09c9959a9ca620efcb6dd1f8d23bbc79ab8f78e6abf042f18dacb511",
+      "size": 8396136,
+      "soname": "libQt6Quick.so.6"
+    },
+    "lib/libQt6QuickShapes.so.6.12.0": {
+      "needed": [
+        "libQt6Quick.so.6",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libQt6Core.so.6",
+        "libsocket.so.4",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "cbe3eb6124be94434abc32c328f01eb1dc071d6b8adaae904346d2b722ad4c4f",
+      "size": 388952,
+      "soname": "libQt6QuickShapes.so.6"
+    },
+    "lib/libQt6Svg.so.6.12.0": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "f4ee72548230c173d0c552e1c66ba635f35349c6ff3cf572e1e91bda009ce7ae",
+      "size": 650104,
+      "soname": "libQt6Svg.so.6"
+    },
+    "lib/libeventfd.so.1": {
+      "needed": ["libc.so.6", "libgcc_s.so.1"],
+      "rpath": [],
+      "runpath": [],
+      "sha256": "b29f34b175e5cac24952c74cb3f0964f4cb0779206e634ea3511f59b5f798939",
+      "size": 22472,
+      "soname": "libeventfd.so.1"
+    },
+    "lib/libzstd.so.1": {
+      "needed": ["libc.so.6"],
+      "rpath": [],
+      "runpath": [],
+      "sha256": "78085e38905bcff764ed57fd0d9e6ebff73e6d8cbc7ad9e0c712e01c353d8310",
+      "size": 780280,
+      "soname": "libzstd.so.1"
+    },
+    "plugins/imageformats/libqgif.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "4673a8ceaa163ac13c7be0cb21bb27c0968f3a2b82f0c59d3c62d1e22d9f1535",
+      "size": 41808,
+      "soname": null
+    },
+    "plugins/imageformats/libqjpeg.so": {
+      "needed": [
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "bdb01267d943c731a0d2b2667d0c591dc5dd15c42a60c492ef07b4ac3597c8b0",
+      "size": 510968,
+      "soname": null
+    },
+    "plugins/imageformats/libqsvg.so": {
+      "needed": [
+        "libQt6Svg.so.6",
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": [
+        "/home/qnxbuild/qt-6.12.0-public/svg-qnx/lib",
+        "/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib",
+        ""
+      ],
+      "runpath": [],
+      "sha256": "5a92e21db4242259ade323ebb52df326c6249f9d67fa99611f75902802f2a418",
+      "size": 34816,
+      "soname": null
+    },
+    "plugins/platforms/libqqnx.so": {
+      "needed": [
+        "libscreen.so.1",
+        "libEGL.so.1",
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "0497b062115e4e86bd81dad80eec865ffb2bf2b773fda5015b0b5758b43c8bd1",
+      "size": 302360,
+      "soname": null
+    },
+    "plugins/tls/libqopensslbackend.so": {
+      "needed": [
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "398ddf0af99b521795042d88937d083b6ef4358d9e5378e83369fbe16b101f33",
+      "size": 451688,
+      "soname": null
+    },
+    "qml/QML/jsroot.qmltypes": {
+      "sha256": "14a12cc93e195cb129c3c3d79a0161023954f46f3e4255a258c7e87e99b46cb2",
+      "size": 166526
+    },
+    "qml/QML/plugins.qmltypes": {
+      "sha256": "c018b66cff7d6093281fce51332a179cda733dcc1b43958282a9dbf53ca5cb06",
+      "size": 163975
+    },
+    "qml/QML/qmldir": {
+      "sha256": "e7f96a2ecf537ff772872b3da26a77712c659c15328e77c5426e5d2f0d633114",
+      "size": 107
+    },
+    "qml/QtQml/Models/libmodelsplugin.so": {
+      "needed": [
+        "libQt6QmlModels.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "7564aac16e16df0175fa0b61667cc8d130a065243ed2237fe7411c371e64e57d",
+      "size": 16736,
+      "soname": null
+    },
+    "qml/QtQml/Models/plugins.qmltypes": {
+      "sha256": "0a5b76dbcc1d431a973e4d7f29b804e237733c9b59c556072df763e9b53b2ac2",
+      "size": 83922
+    },
+    "qml/QtQml/Models/qmldir": {
+      "sha256": "4abed3b5d84d4252f6bb292998a566b09a21ae4f2a435e6807cf7047fe14c58a",
+      "size": 213
+    },
+    "qml/QtQml/WorkerScript/libworkerscriptplugin.so": {
+      "needed": [
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "54bc51d64ebd48955166cf4661b3fcbac25a54d4a1aa187df54e0019aa124401",
+      "size": 16888,
+      "soname": null
+    },
+    "qml/QtQml/WorkerScript/plugins.qmltypes": {
+      "sha256": "701cd44fd43b9bdae92685471d0e8f8cf6d7c743518aaa6fc3e544fb3989807d",
+      "size": 1510
+    },
+    "qml/QtQml/WorkerScript/qmldir": {
+      "sha256": "4ed1b6b0ad3980ae5c882f5c0a4eea8a84bcca35c300f0eec430b89cd30ff768",
+      "size": 243
+    },
+    "qml/QtQml/libqmlplugin.so": {
+      "needed": [
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "07e06a0cccad6e52dd7c6b282d367ecf5aaa4bbcf7dec40bcd2b7661453c439c",
+      "size": 16584,
+      "soname": null
+    },
+    "qml/QtQml/plugins.qmltypes": {
+      "sha256": "2832f8f726dc5dbb14260f02b07d1d0173c89d7b4b1adc0edb2dfa43aea60520",
+      "size": 7869
+    },
+    "qml/QtQml/qmldir": {
+      "sha256": "ff1b83e0cfee28b7dfc809f2acf8d1281e31f037481e80570ad4d23badbc67e2",
+      "size": 242
+    },
+    "qml/QtQuick/Shapes/libqmlshapesplugin.so": {
+      "needed": [
+        "libQt6QuickShapes.so.6",
+        "libQt6Quick.so.6",
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libQt6Core.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "b7097efc28fe98457d3e78ef3fdcfd2ec1e5e092401665b86849a9853a438b05",
+      "size": 20840,
+      "soname": null
+    },
+    "qml/QtQuick/Shapes/plugins.qmltypes": {
+      "sha256": "36f2d7df9dfd03450b554ad6d0b1e7ecf669b716d6383376c8256b9fab6829ed",
+      "size": 21936
+    },
+    "qml/QtQuick/Shapes/qmldir": {
+      "sha256": "fbebfff93729f32b000c9d467282655814eea445a92f0979989207870ce25ddd",
+      "size": 199
+    },
+    "qml/QtQuick/libqtquick2plugin.so": {
+      "needed": [
+        "libQt6Quick.so.6",
+        "libQt6OpenGL.so.6",
+        "libQt6Gui.so.6",
+        "libGLESv2.so.1",
+        "libEGL.so.1",
+        "libQt6QmlMeta.so.6",
+        "libQt6QmlModels.so.6",
+        "libQt6QmlWorkerScript.so.6",
+        "libQt6Qml.so.6",
+        "libQt6Network.so.6",
+        "libsocket.so.4",
+        "libQt6Core.so.6",
+        "libc++.so.2",
+        "libm.so.3",
+        "libc.so.6",
+        "libgcc_s.so.1"
+      ],
+      "rpath": ["/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib", ""],
+      "runpath": [],
+      "sha256": "c33dc6e64f531495712c56bf2bc6de7176885a58d1ab011513d8ca0ce765ec8c",
+      "size": 20800,
+      "soname": null
+    },
+    "qml/QtQuick/plugins.qmltypes": {
+      "sha256": "8c57e13edb49e3c6f86df80c8c78f877bec44823ed6dcc64752e272f3e11326e",
+      "size": 675917
+    },
+    "qml/QtQuick/qmldir": {
+      "sha256": "c2fa2b26d9f8094c6eeb6ff924b18088ddcd512e133524e55b13fa3e5e70350b",
+      "size": 206
+    }
+  },
+  "pass": false,
+  "root": "vm-deploy/qt",
+  "system_libraries_used": [
+    "libEGL.so.1",
+    "libGLESv2.so.1",
+    "libc++.so.2",
+    "libc.so.6",
+    "libfsnotify.so.1",
+    "libgcc_s.so.1",
+    "libm.so.3",
+    "libscreen.so.1",
+    "libslog2.so.1",
+    "libsocket.so.4"
+  ]
+}

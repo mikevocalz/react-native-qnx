@@ -1,0 +1,9 @@
+# git apply --check on the fresh patched qtbase tree (dist-root2), 2026-11-21T21:41:59Z
+OK applies cleanly: qtbase-qnx-software-grab.patch
+OK applies cleanly: CVE-2026-105943-qtbase-6.12.diff
+# lines of qauthenticator.cpp touched by CVE-2026-105943 are inside the #if QT_CONFIG(sspi) block that opens at:
+1655:#if QT_CONFIG(sspi) // SSPI
+# next preprocessor line after it:
+1787: #elif QT_CONFIG(gssapi) // GSSAPI
+# qSspiContinue body starts at line:
+1718:static QByteArray qSspiContinue(QAuthenticatorPrivate *ctx, QAuthenticatorPrivate::Method method,

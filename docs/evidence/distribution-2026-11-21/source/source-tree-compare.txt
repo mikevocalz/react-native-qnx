@@ -1,0 +1,6 @@
+== qtbase: files old=9796 fresh=9796
+diff -rq exit 0
+== qtdeclarative: files old=8210 fresh=8210
+diff -rq exit 0
+== qtshadertools: files old=227 fresh=227
+diff -rq exit 0

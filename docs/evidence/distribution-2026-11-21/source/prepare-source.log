@@ -1,0 +1,9 @@
+qtimageformats
+qtshadertools
+settings.gradle
+applied CVE-2026-116337-qtbase-6.12-0001.diff
+applied CVE-2026-116337-qtbase-6.12-0002.diff
+applied CVE-2026-105924-qtbase-6.12.diff
+applied qtbase-qnx-offscreen-surface.patch
+applied qtbase-qnx-resize-swap.patch
+271M	/work/dist-root2/src/qt-everywhere-src-6.12.0

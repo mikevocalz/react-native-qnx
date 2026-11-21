@@ -1,0 +1,8 @@
+# download.qt.io/official_releases/qt/6.12/ listing fetched 2026-11-21 (index rows for qtbase, qtdeclarative, qtshadertools, qtimageformats, qtsvg only)
+# name, modified (UTC+2 as the page prints it), size
+CVE-2026-116337-qtbase-6.12-0002.diff	09-Nov-2026 08:19	5.1K
+CVE-2026-116337-qtbase-6.12-0001.diff	09-Nov-2026 08:19	3.2K
+CVE-2026-105943-qtbase-6.12.diff	13-Nov-2026 15:07	2.2K
+CVE-2026-105924-qtbase-6.12.diff	26-Oct-2026 11:25	4.9K
+# all other rows are for modules this build does not contain:
+qt3d, qt5compat, qtconnectivity, qthttpserver, qtqt5compat, qtwebsockets
