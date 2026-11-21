@@ -468,6 +468,27 @@ else()
               "-DWORK_DIR=${CMAKE_BINARY_DIR}/playground-start-failure"
               -DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE
               -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/cmake/PlaygroundScreenshot.cmake")
+          # Native runner preflight (hardening item A4): the stock runner's
+          # details lack a module the app adds, so the app is refused before
+          # any JavaScript runs; the custom runner's details list it, so the
+          # same app runs. Host only; it proves nothing about a device.
+          set(RNQNX_PREFLIGHT_FIXTURES "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/runner-preflight")
+          add_test(NAME rnqnx_playground_rejects_added_module
+            COMMAND "${CMAKE_COMMAND}"
+              "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"
+              "-DBUNDLE=${RNQNX_PLAYGROUND_BUNDLE}"
+              "-DWORK_DIR=${CMAKE_BINARY_DIR}/playground-preflight-stock"
+              "-DEXTRA_ARGS=--runner-details|${RNQNX_PREFLIGHT_FIXTURES}/runtime-stock.json|--app-requirements|${RNQNX_PREFLIGHT_FIXTURES}/app-added-module.json"
+              -DEXPECT_BOUNDARY=PREFLIGHT
+              "-DEXPECT_FAILURE=needs a native build"
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/cmake/PlaygroundScreenshot.cmake")
+          add_test(NAME rnqnx_playground_accepts_added_module_in_custom_runner
+            COMMAND "${CMAKE_COMMAND}"
+              "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"
+              "-DBUNDLE=${RNQNX_PLAYGROUND_BUNDLE}"
+              "-DWORK_DIR=${CMAKE_BINARY_DIR}/playground-preflight-custom"
+              "-DEXTRA_ARGS=--runner-details|${RNQNX_PREFLIGHT_FIXTURES}/runtime-custom.json|--app-requirements|${RNQNX_PREFLIGHT_FIXTURES}/app-added-module.json"
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/cmake/PlaygroundScreenshot.cmake")
           add_test(NAME rnqnx_playground_rejects_stop_failure
             COMMAND "${CMAKE_COMMAND}"
               "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"

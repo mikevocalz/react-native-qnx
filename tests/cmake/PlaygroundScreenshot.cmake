@@ -1,6 +1,8 @@
 if(NOT EXISTS "${PROBE}" OR NOT EXISTS "${BUNDLE}")
   message(FATAL_ERROR "Missing playground executable or bundle")
 endif()
+# EXTRA_ARGS is `|` separated: a `;` inside a -D value does not survive add_test.
+string(REPLACE "|" ";" EXTRA_ARGS "${EXTRA_ARGS}")
 file(MAKE_DIRECTORY "${WORK_DIR}")
 set(screenshot "${WORK_DIR}/frame.png")
 file(REMOVE "${screenshot}")
@@ -8,7 +10,7 @@ execute_process(
   COMMAND "${CMAKE_COMMAND}" -E env
     QT_QUICK_BACKEND=software ASAN_OPTIONS=detect_leaks=0
     "${PROBE}" -platform offscreen --bundle "${BUNDLE}"
-    --screenshot "${screenshot}"
+    --screenshot "${screenshot}" ${EXTRA_ARGS}
   TIMEOUT 20
   RESULT_VARIABLE result OUTPUT_VARIABLE output ERROR_VARIABLE errors)
 if("${output}\n${errors}" MATCHES

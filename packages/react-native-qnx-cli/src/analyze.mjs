@@ -1,8 +1,13 @@
-import { readFile, realpath } from 'node:fs/promises';
+import { readFile, realpath, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { discoverExpoModules, discoverNitroModules, locatePackage } from './nitro-modules.mjs';
-import { bundleProfile, compareRunnerToBundle, readRuntimeDescriptor } from './runtime-compat.mjs';
+import {
+  APP_SCHEMA,
+  bundleProfile,
+  compareRunnerToBundle,
+  readRuntimeDescriptor,
+} from './runtime-compat.mjs';
 
 // `rnqnx analyze`: what native code does this app bring, and can the stock
 // prebuilt runner load it? Reads JSON only (package.json files); no package
@@ -72,6 +77,33 @@ export async function appNative(root, platform) {
     expoModules: (await discoverExpoModules(root, platform)).map(toRef),
     fabricComponents: await discoverFabricComponents(root),
   };
+}
+
+/**
+ * What the native runner reads before it runs the bundle (rnqnx-app.json,
+ * docs/nitro/API_CONTRACTS.md "S6 native runner preflight"). Same discovery
+ * and the same exact versions as `analyze`, so the host verdict and the
+ * native screen cannot disagree about which modules the app needs.
+ * @param {string} root realpath of the project @param {string} platform
+ */
+export async function appRequirements(root, platform) {
+  const profile = await bundleProfile(root, undefined);
+  return {
+    schema: APP_SCHEMA,
+    reactNative: profile.reactNative,
+    nitroAbi: profile.nitroAbi,
+    requires: await appNative(root, platform),
+  };
+}
+
+/**
+ * Write rnqnx-app.json. Deploy puts it next to the executable.
+ * @param {string} root realpath of the project @param {string} platform @param {string} file
+ */
+export async function writeAppRequirements(root, platform, file) {
+  const requirements = await appRequirements(root, platform);
+  await writeFile(file, `${JSON.stringify(requirements, null, 2)}\n`);
+  return requirements;
 }
 
 /**

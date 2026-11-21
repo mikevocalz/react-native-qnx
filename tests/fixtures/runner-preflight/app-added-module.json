@@ -1,0 +1,13 @@
+{
+  "schema": "rnqnx-app/v1",
+  "reactNative": "0.88.1",
+  "nitroAbi": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+  "requires": {
+    "nitroModules": [
+      { "package": "fixture-added-nitro", "version": "2.0.0" },
+      { "package": "fixture-nitro", "version": "1.0.0" }
+    ],
+    "expoModules": [{ "package": "fixture-expo", "version": "1.0.0" }],
+    "fabricComponents": []
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "rnqnx-runtime/v1",
+  "runnerId": "custom-dev-fixture",
+  "target": "linux-x86_64-host",
+  "versions": {
+    "reactNativeQnx": "0.1.0",
+    "reactNative": "0.88.1",
+    "hermes": "hermes-v260318099.0.5",
+    "qt": "6.11.1",
+    "sdp": null
+  },
+  "hermesBytecodeVersion": 99,
+  "nitroAbi": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+  "builtins": {
+    "nitroModules": [
+      { "package": "fixture-added-nitro", "version": "2.0.0" },
+      { "package": "fixture-nitro", "version": "1.0.0" }
+    ],
+    "expoModules": [{ "package": "fixture-expo", "version": "1.0.0" }],
+    "fabricComponents": []
+  }
+}

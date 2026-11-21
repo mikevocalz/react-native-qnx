@@ -98,6 +98,7 @@ not run that way. `tsc --noEmit`, `prettier --check .` and
   `preflight.*` screen (hardening item A4). That is native C++ and needs the
   Margelo `api-design`, `build-nitro-modules` and `cpp` steps with review before
   code; this slice adds no native API, so none of them ran. See the PR.
+  Follow-up, 2026-11-21: [s6-preflight-2026-11-21](../s6-preflight-2026-11-21/README.md).
 - No QNX runner archive, so the `targetLibraries` path of `pack` ran only
   against a synthetic stage that must be refused (unit test).
 - No gate closes. `expo` and `developer-path` stay `pending`.
