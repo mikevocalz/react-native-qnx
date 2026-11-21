@@ -145,7 +145,7 @@ software Qt Quick, window chrome ON.
 
 | Check                                                                                          | Target   | Result                                                                                       |
 | ---------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `qt_react_host_js_thread_host_test`, 6 cases, ASan                                             | host     | 6/6 pass. In the blocked case: block 5001 ms, 234 heartbeats of 10 ms by 2500 ms, 484 in all |
+| `qt_react_host_js_thread_host_test`, 6 cases, ASan                                             | host     | 6/6 pass. In the blocked case: block 5003 ms, 234 heartbeats of 10 ms by 2500 ms, 484 in all |
 | Same case with the flag off (mutation: `Fixture(false)`)                                       | host     | fails at `!blockDone`, as it must                                                            |
 | `qt_react_host_host_test`, flag off                                                            | host     | 62/62 pass                                                                                   |
 | Same JS-thread test, whole graph built with `-fsanitize=thread`                                | host     | exit 0, 0 ThreadSanitizer reports                                                            |

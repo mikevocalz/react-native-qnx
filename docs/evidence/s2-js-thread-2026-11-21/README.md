@@ -33,7 +33,7 @@ TSAN_OPTIONS=halt_on_error=0 build/tsan/bin/qt_react_host_js_thread_host_test -p
 
 | Run                                                                       | Result                                                                                      | Log                       |
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------- |
-| JS-thread test, ASan                                                      | 6/6 pass; `blocked=5001ms beats@2500ms=234 total=484`                                       | `asan-run.txt`            |
+| JS-thread test, ASan                                                      | 6/6 pass; `blocked=5003ms beats@2500ms=234 total=484`                                       | `asan-run.txt`            |
 | JS-thread test, ThreadSanitizer                                           | exit 0, 0 reports                                                                           | `tsan-run.txt`            |
 | `qt_react_host_host_test`, flag off, ASan                                 | `All 62 QtReactHost host tests passed.`                                                     | not kept (run in session) |
 | Mutation: blocked case with `Fixture(false)`                              | `[FAIL] blockedJavaScriptLeavesTheGuiThreadResponsive: ... check failed: !blockDone.load()` | not kept (run in session) |
