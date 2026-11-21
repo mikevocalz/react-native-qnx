@@ -69,6 +69,7 @@
 #include <QMouseEvent>
 #include <QQmlEngine>
 #include <QQuickItem>
+#include <QQuickItemGrabResult>
 #include <QQuickWindow>
 #include <QStyleHints>
 #include <QThread>
@@ -350,6 +351,31 @@ void sendMouse(QQuickWindow& window, QEvent::Type type, QPointF point, Qt::Mouse
   QCoreApplication::sendEvent(&window, &event);
 }
 
+/// Renders the item tree to a file, which does not depend on the platform
+/// window's buffer, and reports whether the chrome and surface are in it.
+void grabItems(QQuickWindow& window, const char* name) {
+  const char* directory = std::getenv("RNQNX_JS_THREAD_SHOTS");
+  if (directory == nullptr || *directory == '\0') return;
+  const QSharedPointer<QQuickItemGrabResult> grabbed = window.contentItem()->grabToImage();
+  if (grabbed.isNull()) {
+    result(std::string("item grab ") + name + " failed (no result)");
+    return;
+  }
+  bool ready = false;
+  QObject::connect(grabbed.data(), &QQuickItemGrabResult::ready, [&] { ready = true; });
+  try {
+    waitUntil([&] { return ready; }, 3000, "item grab ready");
+  } catch (const TestFailure&) {
+    result(std::string("item grab ") + name + " did not finish in 3 s");
+    return;
+  }
+  const QString path = QDir(QString::fromUtf8(directory)).filePath(QString::fromUtf8(name) + QStringLiteral(".png"));
+  const QImage image = grabbed->image();
+  result(std::string("item grab ") + name + " " + std::to_string(image.width()) + "x" +
+         std::to_string(image.height()) + (image.save(path) ? " " : " (write failed) ") +
+         path.toStdString() + " exposed=" + (window.isExposed() ? "yes" : "no"));
+}
+
 void jsRunsOnItsOwnThread() {
   Fixture fixture;
   auto& host = fixture.host();
@@ -532,7 +558,11 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
     elapsedOk("pan finished inside the block");
     if (!(during > before + 10.0)) {
       std::ostringstream detail;
-      detail << "contentY " << before << " -> " << during;
+      detail << "contentY " << before << " -> " << during << ", contentHeight "
+             << scroll->property("contentHeight").toDouble() << ", height " << scroll->height()
+             << ", interactive " << scroll->property("interactive").toBool() << ", start "
+             << start.x() << "," << start.y() << ", z " << scroll->z() << " visible "
+             << scroll->isVisible();
       fail("pan tracked while JavaScript was blocked", __FILE__, __LINE__, detail.str());
     }
     EXPECT(panMs < kResponsiveMs);
@@ -588,6 +618,9 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
     elapsedOk("minimize finished inside the block");
     EXPECT(triggered == QStringList{QStringLiteral("minimize")});
     EXPECT(unavailable.isEmpty());
+    bool swapped = false;
+    const auto swapConnection =
+        QObject::connect(&fixture.window(), &QQuickWindow::frameSwapped, [&] { swapped = true; });
     if (releasesWindow) {
       EXPECT(!fixture.window().isVisible());
       fixture.window().show();
@@ -597,8 +630,24 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
     }
     QCoreApplication::processEvents(QEventLoop::AllEvents, 20);
     EXPECT(fixture.window().isVisible());
+    // A grab right after the native window comes back can be empty; let the
+    // first frame go out.
+    try {
+      waitUntil([&] { return swapped; }, 1500, "first frame after the restore");
+    } catch (const TestFailure&) {
+      result("no frameSwapped within 1500 ms of the restore");
+    }
+    QObject::disconnect(swapConnection);
     elapsedOk("window restored inside the block");
-    grab(fixture.window(), "flag-on-after-minimize-restore-mid-block");
+    grab(fixture.window(), "flag-on-after-restore-first-frame-mid-block");
+    {
+      QElapsedTimer settle;
+      settle.start();
+      while (settle.elapsed() < 400) QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+    }
+    elapsedOk("window settled inside the block");
+    grab(fixture.window(), "flag-on-after-restore-400ms-mid-block");
+    grabItems(fixture.window(), "flag-on-after-restore-item-tree-mid-block");
 
     action.restart();
     click("close");

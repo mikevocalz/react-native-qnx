@@ -34,6 +34,6 @@ if [ ! -e /dev/screen/command ]; then
 fi
 cd "$dir" || exit 1
 rc=0
-./qt_react_host_js_thread_qnx_test "$@" >"$out/run.log" 2>&1 || rc=$?
+./qt_react_host_js_thread_qnx_test ${1+"$@"} >"$out/run.log" 2>&1 || rc=$?
 echo "exit=$rc"
 cat "$out/run.log"
