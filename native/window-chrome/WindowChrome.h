@@ -16,8 +16,9 @@
 // desktop shows around it.
 //
 // Lives on the Qt GUI thread with the window and never calls into JavaScript.
-// QtReactHost currently runs JavaScript on that same thread, so a blocked JS
-// call also blocks these controls until the host gets its own JS thread.
+// By default QtReactHost runs JavaScript on that same thread, so a blocked JS
+// call also blocks these controls. With QtReactHost::Options::jsThread
+// (ADR-0021) JavaScript has its own thread and the controls keep working.
 // See ADR-0016.
 
 #include "WindowChromeModel.h"

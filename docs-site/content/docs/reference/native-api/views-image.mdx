@@ -2203,7 +2203,7 @@ Header: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h](https
 
 ### `rnqnx::views::ImageLoadedEvent`
 
-Kind: struct · Namespace: `rnqnx::views` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L13](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L13)
+Kind: struct · Namespace: `rnqnx::views` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L14](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L14)
 
 ```cpp
 struct ImageLoadedEvent
@@ -2218,7 +2218,7 @@ view, `Image.loadAsync` or `readFromCacheAsync`.
 
 ### `rnqnx::views::ImageLoadedEvent::url`
 
-Kind: field · Namespace: `rnqnx::views` · Class: `ImageLoadedEvent` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L14](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L14)
+Kind: field · Namespace: `rnqnx::views` · Class: `ImageLoadedEvent` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L15](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L15)
 
 ```cpp
 QString url
@@ -2228,7 +2228,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedEvent::width`
 
-Kind: field · Namespace: `rnqnx::views` · Class: `ImageLoadedEvent` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L15](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L15)
+Kind: field · Namespace: `rnqnx::views` · Class: `ImageLoadedEvent` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L16](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L16)
 
 ```cpp
 int width{0}
@@ -2238,7 +2238,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedEvent::height`
 
-Kind: field · Namespace: `rnqnx::views` · Class: `ImageLoadedEvent` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L16](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L16)
+Kind: field · Namespace: `rnqnx::views` · Class: `ImageLoadedEvent` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L17](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L17)
 
 ```cpp
 int height{0}
@@ -2248,7 +2248,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedNotifier`
 
-Kind: class · Namespace: `rnqnx::views` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L22](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L22)
+Kind: class · Namespace: `rnqnx::views` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L25](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L25)
 
 ```cpp
 class ImageLoadedNotifier final
@@ -2259,12 +2259,14 @@ Doc comment:
 ```text
 Fans an ImageLoadedEvent out to whoever listens: the host's installed binding
 forwards it to expo-image's `imageLoaded` module event (what expo-observe
-subscribes to). Single-threaded: subscribe and notify on the Qt/JS thread.
+subscribes to). Thread-safe: with the JS thread on (ADR-0021) subscribe runs
+there while notify runs on the GUI thread or a worker. Listeners run
+outside the lock.
 ```
 
 ### `rnqnx::views::ImageLoadedNotifier::Token`
 
-Kind: alias · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L24](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L24)
+Kind: alias · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L27](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L27)
 
 ```cpp
 using Token = std::uint64_t;
@@ -2274,7 +2276,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedNotifier::Listener`
 
-Kind: alias · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L25](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L25)
+Kind: alias · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L28](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L28)
 
 ```cpp
 using Listener = std::function<void(const ImageLoadedEvent&)>;
@@ -2284,7 +2286,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedNotifier::shared`
 
-Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L27](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L27)
+Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L30](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L30)
 
 ```cpp
 static ImageLoadedNotifier& shared()
@@ -2294,7 +2296,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedNotifier::subscribe`
 
-Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L29](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L29)
+Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L32](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L32)
 
 ```cpp
 Token subscribe(Listener listener)
@@ -2304,7 +2306,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedNotifier::unsubscribe`
 
-Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L30](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L30)
+Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L33](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L33)
 
 ```cpp
 void unsubscribe(Token token)
@@ -2314,7 +2316,7 @@ No doc comment in the header.
 
 ### `rnqnx::views::ImageLoadedNotifier::notify`
 
-Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L31](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L31)
+Kind: method · Namespace: `rnqnx::views` · Class: `ImageLoadedNotifier` · Source: [vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L34](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h#L34)
 
 ```cpp
 void notify(const ImageLoadedEvent& event)

@@ -502,6 +502,34 @@ else()
             ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0"
           )
 
+          # ADR-0021: JavaScript on its own thread, opt-in. Host evidence only.
+          # Own target, because the cases construct hosts with the flag on and
+          # a five-second blocked-JS case.
+          add_executable(qt_react_host_js_thread_host_test
+            tests/cpp/QtReactHostJsThreadHostTest.cpp
+          )
+          target_link_libraries(qt_react_host_js_thread_host_test PRIVATE rnqnx_react_host)
+          rnqnx_enable_strict_warnings(qt_react_host_js_thread_host_test)
+          set_target_properties(qt_react_host_js_thread_host_test PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+          )
+          if(RNQNX_ENABLE_HOST_SANITIZERS AND
+             CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
+            target_compile_options(qt_react_host_js_thread_host_test PRIVATE
+              -fsanitize=address
+              -fno-omit-frame-pointer
+            )
+            target_link_options(qt_react_host_js_thread_host_test PRIVATE
+              -fsanitize=address
+            )
+          endif()
+          add_test(NAME qt_react_host_js_thread_host_test
+            COMMAND $<TARGET_FILE:qt_react_host_js_thread_host_test> -platform offscreen)
+          set_tests_properties(qt_react_host_js_thread_host_test PROPERTIES
+            ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0;QT_QUICK_BACKEND=software"
+            TIMEOUT 120
+          )
+
           include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxExpoImageHostTests.cmake)
           rnqnx_add_expo_image_host_tests()
           include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxWorkletsHostTests.cmake)

@@ -75,19 +75,11 @@ void QtRuntimeTaskQueue::post(Task task) {
   if (!wakePending_) {
     // Admission protects the receiver against concurrent owner-thread close.
     // QueuedConnection never executes user work while this mutex is held.
-    if (!QMetaObject::invokeMethod(
-            context_.get(),
-            [weak]() {
-              if (const auto queue = weak.lock()) {
-                queue->drain();
-              }
-            },
-            Qt::QueuedConnection)) {
-      auto rejected = std::move(pending_.back());
-      pending_.pop_back();
-      lock.unlock();
-      throw std::runtime_error("Unable to post to the Qt JavaScript event loop");
-    }
+    context_->postCall([weak]() {
+      if (const auto queue = weak.lock()) {
+        queue->drain();
+      }
+    });
     wakePending_ = true;
   }
 #if RNQNX_ENABLE_FRAME_TRACE

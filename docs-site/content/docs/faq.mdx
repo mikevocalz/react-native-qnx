@@ -113,7 +113,7 @@ ADR-0005 makes Hermes the required engine, and ADR-0009 implements Fabric plus J
 
 ### Which thread runs JavaScript?
 
-The Qt thread that constructed the host. There is no separate JS thread, so a busy JS thread freezes repaint. A dedicated thread for Worklets is open work. See [threading](/docs/explanation/threading).
+The Qt thread that constructed the host. By default there is no separate JS thread, so a busy JS thread freezes repaint. An opt-in thread exists ([ADR-0021](/docs/explanation/adr/0021-javascript-thread-off-the-qt-gui-thread)). A dedicated thread for Worklets is open work. See [threading](/docs/explanation/threading).
 
 ### How do I write a native module?
 

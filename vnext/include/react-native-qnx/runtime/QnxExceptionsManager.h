@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace rnqnx::runtime {
@@ -92,10 +93,25 @@ class QnxSourceCode
 class QnxDeviceInfo
     : public facebook::react::NativeDeviceInfoCxxSpec<QnxDeviceInfo> {
  public:
+  /// Screen size and device pixel ratio read once on the GUI thread. A host
+  /// whose JavaScript runs on another thread passes them so no QScreen is read
+  /// there (ADR-0021).
+  struct ScreenMetrics {
+    double width{0};
+    double height{0};
+    double scale{1};
+  };
+  /// Reads the primary screen. GUI thread only.
+  static ScreenMetrics readPrimaryScreen();
+
   explicit QnxDeviceInfo(
-      std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+      std::shared_ptr<facebook::react::CallInvoker> jsInvoker,
+      std::optional<ScreenMetrics> screen = std::nullopt);
 
   facebook::jsi::Object getConstants(facebook::jsi::Runtime& runtime);
+
+ private:
+  std::optional<ScreenMetrics> screen_;
 };
 
 }  // namespace rnqnx::runtime

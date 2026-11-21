@@ -104,7 +104,7 @@ The constructor throws `std::invalid_argument` with `Qt Nitro dispatcher require
 
 The rule, from `docs/nitro/QT_DISPATCHER.md`:
 
-- JavaScript shares the constructing Qt thread. There is no separate JS thread.
+- By default JavaScript shares the constructing Qt thread. The opt-in JS thread (ADR-0021) has not run any Nitro module.
 - Native work must stay on the module's own workers. Completions return through `runAsync`.
 - `runSync` must be called from the owner thread. It never blocks a worker waiting for Qt.
 - Do not join workers that need synchronous JS calls from the JS owner.

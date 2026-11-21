@@ -64,7 +64,11 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <atomic>
 #include <cstdio>
+#include <mutex>
+#include <optional>
+#include <type_traits>
 #include <exception>
 #include <utility>
 
@@ -113,13 +117,12 @@ void QtEventBeat::request() const {
   // instead. React Native's OwnerBox does not help: it is checked inside
   // induce(), which is already too late for a dangling `this`
   // (EventBeat.cpp:62-66).
-  QMetaObject::invokeMethod(
-      context_.get(), [this]() { induce(); }, Qt::QueuedConnection);
+  context_->postCall([this]() { induce(); });
 }
 
 QtSchedulerDelegate::QtSchedulerDelegate(
-    fabric::ShadowViewMutationAdapter& adapter)
-    : adapter_(adapter) {}
+    fabric::ShadowViewMutationAdapter& adapter, std::thread::id ownerThread)
+    : adapter_(adapter), owner_(ownerThread) {}
 
 const std::vector<fabric::MutationFailure>& QtSchedulerDelegate::lastFailures()
     const {
@@ -247,6 +250,13 @@ void QtSchedulerDelegate::schedulerDidSetIsJSResponder(
     bool /*blockNativeResponder*/) {
   // blockNativeResponder is ignored: there is no native gesture recogniser to
   // block on this platform yet, so honouring it would change nothing.
+  // React calls this from the JS thread in JS-thread mode; the dispatcher
+  // belongs to the GUI thread.
+  if (!onOwnerOrPost([this, shadowView, isJSResponder]() {
+        schedulerDidSetIsJSResponder(shadowView, isJSResponder, false);
+      })) {
+    return;
+  }
   if (touchDispatcher_ != nullptr) {
     touchDispatcher_->setJsResponder(shadowView.tag, isJSResponder);
   }
@@ -465,14 +475,55 @@ class QnxFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults 
 };
 } // namespace
 
+namespace {
+/// How threads other than the JS thread reach the JS thread's queue without
+/// touching `Impl`. Foreign threads (workers holding a CallInvoker) can call the
+/// runtime executor while the host is being destroyed; they must find a closed
+/// gate, not a freed object. `close()` waits for any in-flight post.
+class JsGate {
+ public:
+  JsGate(QtJsThread* thread, std::thread::id jsId) : thread_(thread), jsId_(jsId) {}
+
+  bool onJsThread() const noexcept { return std::this_thread::get_id() == jsId_; }
+  bool open() const noexcept { return open_.load(); }
+
+  /// Queues `work` unless the gate is closed. Returns whether it was queued.
+  bool post(std::function<void()> work) {
+    std::lock_guard lock(mutex_);
+    if (!open_.load()) return false;
+    thread_->post(std::move(work));
+    return true;
+  }
+
+  void close() {
+    std::lock_guard lock(mutex_);
+    open_ = false;
+  }
+
+ private:
+  std::mutex mutex_;
+  QtJsThread* thread_;
+  const std::thread::id jsId_;
+  std::atomic<bool> open_{true};
+};
+}  // namespace
+
 class QtReactHost::Impl {
  public:
-  explicit Impl(fabric::ShadowViewMutationAdapter& adapter
+  /// `guiThread` is the thread that owns Qt items; `jsThread` is null when
+  /// JavaScript shares that thread. In JS-thread mode this constructor runs on
+  /// the JS thread, so the task queue, the event beat and every timer it
+  /// creates have that thread's affinity.
+  Impl(fabric::ShadowViewMutationAdapter& adapter, std::thread::id guiThread,
+       QtJsThread* jsThreadOwner
 #if RNQNX_ENABLE_FRAME_TRACE
-                , std::shared_ptr<RuntimeTrace> traceSession = nullptr
+       , std::shared_ptr<RuntimeTrace> traceSession = nullptr
 #endif
-                )
-      : delegate(adapter) {
+       )
+      : jsThread(jsThreadOwner), delegate(adapter, guiThread) {
+    if (jsThread != nullptr) {
+      gate = std::make_shared<JsGate>(jsThread, std::this_thread::get_id());
+    }
 #if RNQNX_ENABLE_FRAME_TRACE
     trace = std::move(traceSession);
 #endif
@@ -493,18 +544,28 @@ class QtReactHost::Impl {
             .withMicrotaskQueue(true)
             .build());
 
-    // JavaScript runs on this thread. The executor therefore calls straight
-    // through; a real JS thread replaces this without changing anything above.
+    // On the owning thread the executor calls straight through, which keeps
+    // evaluate() synchronous. From any other thread (a worker completing a
+    // native call, the GUI thread scheduling an AppRegistry start) it queues
+    // the callback to the JS thread. The executor runs a callback or hands it
+    // over; it never runs one on a thread that does not own the runtime.
     facebook::react::RuntimeExecutor runtimeExecutor =
-        [this](std::function<void(facebook::jsi::Runtime&)>&& callback) {
-          ++runtimeExecutionDepth;
-          try {
-            callback(*runtime);
-          } catch (...) {
-            --runtimeExecutionDepth;
-            throw;
+        [this, gate = gate](std::function<void(facebook::jsi::Runtime&)>&& callback) {
+          if (gate && !gate->onJsThread()) {
+            // The posted callback checks the gate again on the JS thread: a
+            // callback queued before close() but run after it must not touch
+            // an Impl that is being destroyed.
+            const bool queued = gate->post([this, gate, callback = std::move(callback)]() {
+              if (gate->open()) runCallback(callback);
+            });
+            if (!queued) {
+              // Closed: the host is tearing down. Dropping the callback is the
+              // only choice, as for a closed task queue.
+              qWarning() << "JavaScript callback dropped: the host is shutting down";
+            }
+            return;
           }
-          --runtimeExecutionDepth;
+          runCallback(callback);
         };
 
     // RN's default error handler calls JS ErrorUtils and may throw if a
@@ -674,7 +735,26 @@ class QtReactHost::Impl {
             }));
   }
 
+  void runCallback(const std::function<void(facebook::jsi::Runtime&)>& callback) {
+    ++runtimeExecutionDepth;
+    struct Leave {
+      int& depth;
+      ~Leave() { --depth; }
+    } leave{runtimeExecutionDepth};
+    callback(*runtime);
+  }
+
   ~Impl() {
+    shutdown();
+  }
+
+  /// Stops surfaces, runs teardown hooks and closes the task queue, while
+  /// Hermes is alive. Idempotent. In JS-thread mode the host calls it before
+  /// the destructor so the mounts it causes can be applied while this object
+  /// still exists.
+  void shutdown() {
+    if (shutDown) return;
+    shutDown = true;
     if (runtimeExecutionDepth != 0) {
       std::terminate();
     }
@@ -710,6 +790,12 @@ class QtReactHost::Impl {
   std::shared_ptr<RuntimeTrace> trace;
   std::unordered_map<SurfaceId, std::uint64_t> surfaceGenerations;
 #endif
+  QtJsThread* jsThread{nullptr};
+  /// Null unless JavaScript has its own thread.
+  std::shared_ptr<JsGate> gate;
+  /// Screen size read on the GUI thread, so JS never reads a QScreen.
+  std::optional<QnxDeviceInfo::ScreenMetrics> guiScreen;
+  bool shutDown{false};
   int runtimeExecutionDepth{0};
   std::size_t taskErrorSequence{0};
   std::unique_ptr<facebook::jsi::Runtime> runtime;
@@ -755,17 +841,130 @@ class QtReactHost::Impl {
 };
 
 QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter)
-    : impl_(std::make_unique<Impl>(adapter)) {}
+    : QtReactHost(adapter, Options{}) {}
+
+QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter, Options options)
+    : guiThread_(std::this_thread::get_id()) {
+  if (!options.jsThread) {
+    impl_ = std::make_unique<Impl>(adapter, guiThread_, nullptr);
+    return;
+  }
+  guiContext_ = std::make_unique<QueuedCallTarget>();
+  const auto screen = QnxDeviceInfo::readPrimaryScreen();
+  jsThread_ = std::make_unique<QtJsThread>();
+  jsThread_->call([&] {
+    impl_ = std::make_unique<Impl>(adapter, guiThread_, jsThread_.get());
+    setGuiOwnerPoster();
+    impl_->guiScreen = screen;
+  });
+}
 
 #if RNQNX_ENABLE_FRAME_TRACE
 QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
                          std::shared_ptr<RuntimeTrace> trace)
-    : impl_(std::make_unique<Impl>(adapter, std::move(trace))) {}
+    : QtReactHost(adapter, std::move(trace), Options{}) {}
+
+QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
+                         std::shared_ptr<RuntimeTrace> trace, Options options)
+    : guiThread_(std::this_thread::get_id()) {
+  if (!options.jsThread) {
+    impl_ = std::make_unique<Impl>(adapter, guiThread_, nullptr, std::move(trace));
+    return;
+  }
+  guiContext_ = std::make_unique<QueuedCallTarget>();
+  const auto screen = QnxDeviceInfo::readPrimaryScreen();
+  jsThread_ = std::make_unique<QtJsThread>();
+  jsThread_->call([&] {
+    impl_ = std::make_unique<Impl>(adapter, guiThread_, jsThread_.get(), std::move(trace));
+    setGuiOwnerPoster();
+    impl_->guiScreen = screen;
+  });
+}
 #endif
 
-QtReactHost::~QtReactHost() = default;
+QtReactHost::~QtReactHost() {
+  if (!jsThread_) {
+    return;  // impl_ goes away on this thread, the owner of the runtime.
+  }
+  // Same order as the single-thread destructor, split in two so the mounts that
+  // stopping surfaces produces are applied while the delegate still exists.
+  jsThread_->call([this] {
+    impl_->shutdown();
+    // Foreign threads that still hold the executor now find it closed.
+    impl_->gate->close();
+  });
+  flushMounts();
+  jsThread_->call([this] { impl_.reset(); });
+  jsThread_.reset();
+  guiContext_.reset();
+}
+
+void QtReactHost::setGuiOwnerPoster() {
+  QueuedCallTarget* gui = guiContext_.get();
+  impl_->delegate.setOwnerPoster([gui](std::function<void()> work) {
+    gui->postCall(std::move(work));
+  });
+}
+
+bool QtReactHost::jsThreadEnabled() const noexcept {
+  return jsThread_ != nullptr;
+}
+
+bool QtReactHost::onJsThread() const noexcept {
+  return jsThread_ ? jsThread_->isCurrent()
+                   : std::this_thread::get_id() == guiThread_;
+}
+
+void QtReactHost::runOnJsThread(const std::function<void()>& work) {
+  onJs([&] { work(); });
+}
+
+void QtReactHost::postToJsThread(std::function<void()> work) {
+  dispatchToJs(std::move(work));
+}
+
+template <class F>
+auto QtReactHost::onJs(F&& work) -> decltype(work()) {
+  using Result = decltype(work());
+  if (!jsThread_ || jsThread_->isCurrent()) {
+    return work();
+  }
+  if constexpr (std::is_void_v<Result>) {
+    jsThread_->call([&] { work(); });
+    flushMounts();
+  } else {
+    std::optional<Result> result;
+    jsThread_->call([&] { result.emplace(work()); });
+    flushMounts();
+    return std::move(*result);
+  }
+}
+
+void QtReactHost::dispatchToJs(std::function<void()> work) {
+  if (!jsThread_ || jsThread_->isCurrent()) {
+    work();
+    return;
+  }
+  jsThread_->post(std::move(work));
+}
+
+void QtReactHost::flushMounts() {
+  // Only the GUI thread may apply a mount. A call from another thread leaves
+  // them to the GUI event loop.
+  if (guiContext_ && std::this_thread::get_id() == guiThread_) {
+    QCoreApplication::sendPostedEvents(guiContext_.get(), 0);
+  }
+}
 
 facebook::jsi::Runtime& QtReactHost::runtime() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    // The runtime is not thread-safe. Handing a reference to the wrong thread
+    // would be a data race that shows up as heap corruption later.
+    std::fprintf(stderr,
+                 "RNQNX_FATAL QtReactHost::runtime() called off the JavaScript "
+                 "thread; use runOnJsThread\n");
+    std::terminate();
+  }
   return *impl_->runtime;
 }
 
@@ -782,6 +981,9 @@ QtSchedulerDelegate& QtReactHost::delegate() {
 }
 
 QString QtReactHost::lastError() const {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    return const_cast<QtReactHost*>(this)->onJs([this] { return impl_->lastError; });
+  }
   return impl_->lastError;
 }
 
@@ -793,6 +995,9 @@ const std::shared_ptr<const ContextContainer>& QtReactHost::contextContainer()
 bool QtReactHost::evaluate(
     const std::string& source,
     const std::string& sourceUrl) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    return onJs([&] { return evaluate(source, sourceUrl); });
+  }
 #if RNQNX_ENABLE_FRAME_TRACE
   TraceSpan trace(impl_->trace, TraceStage::Evaluate);
 #endif
@@ -870,10 +1075,19 @@ bool QtReactHost::hasComponent(const std::string& componentName) const {
 }
 
 const std::vector<JavaScriptError>& QtReactHost::javaScriptErrors() const {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    errorSnapshot_ = const_cast<QtReactHost*>(this)->onJs(
+        [this] { return impl_->javaScriptErrors; });
+    return errorSnapshot_;
+  }
   return impl_->javaScriptErrors;
 }
 
 void QtReactHost::registerTurboModule(std::string name, TurboModuleFactory factory) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { registerTurboModule(std::move(name), std::move(factory)); });
+    return;
+  }
   if (!factory) {
     throw std::invalid_argument("TurboModule factory must be callable");
   }
@@ -883,14 +1097,28 @@ void QtReactHost::registerTurboModule(std::string name, TurboModuleFactory facto
 }
 
 void QtReactHost::setOwnerPoster(QtSchedulerDelegate::OwnerPoster poster) {
+  if (jsThread_) {
+    // The host's own poster is what moves mounts to the GUI thread. Replacing
+    // it would send them somewhere else.
+    throw std::logic_error(
+        "QtReactHost JS-thread mode installs its own owner poster (ADR-0021)");
+  }
   impl_->delegate.setOwnerPoster(std::move(poster));
 }
 
 void QtReactHost::addTeardownHook(std::function<void()> hook) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { addTeardownHook(std::move(hook)); });
+    return;
+  }
   impl_->teardownHooks.push_back(std::move(hook));
 }
 
 void QtReactHost::setTurboModuleProvider(TurboModuleProvider provider) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { setTurboModuleProvider(std::move(provider)); });
+    return;
+  }
   impl_->turboModuleProvider = std::move(provider);
 }
 
@@ -899,6 +1127,13 @@ void QtReactHost::callFunctionOnModule(
     const std::string& methodName,
     folly::dynamic args,
     bool ifRegistered) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    // Posted, not awaited. The module table is read on the JS thread.
+    dispatchToJs([this, moduleName, methodName, args = std::move(args), ifRegistered]() mutable {
+      callFunctionOnModule(moduleName, methodName, std::move(args), ifRegistered);
+    });
+    return;
+  }
   auto* impl = impl_.get();
   impl_->runtimeScheduler->scheduleWork(
       [impl, moduleName, methodName, ifRegistered, args = std::move(args)](
@@ -941,6 +1176,10 @@ void QtReactHost::callFunctionOnModule(
 }
 
 void QtReactHost::installGlobalEvalWithSourceUrl() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { installGlobalEvalWithSourceUrl(); });
+    return;
+  }
   auto& runtime = *impl_->runtime;
   runtime.global().setProperty(
       runtime,
@@ -968,6 +1207,10 @@ void QtReactHost::installGlobalEvalWithSourceUrl() {
 }
 
 void QtReactHost::installTurboModuleBinding() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { installTurboModuleBinding(); });
+    return;
+  }
   // RN defines nativeModuleProxy as a read-only global for this runtime.
   // Keep the binding, module cache, and image observer across repeated requests.
   if (impl_->turboModuleBindingInstalled) return;
@@ -1032,7 +1275,7 @@ void QtReactHost::installTurboModuleBinding() {
         // and the throw escapes.
         if (name == QnxDeviceInfo::kModuleName) {
           // Dimensions reads this, and ScrollView reads Dimensions.
-          return std::make_shared<QnxDeviceInfo>(callInvoker);
+          return std::make_shared<QnxDeviceInfo>(callInvoker, impl->guiScreen);
         }
 
         if (name == QnxSourceCode::kModuleName) {
@@ -1106,6 +1349,12 @@ void QtReactHost::installTurboModuleBinding() {
 
 #if RNQNX_ENABLE_APP_STATE
         if (name == QnxAppStateModule::kModuleName) {
+          if (impl->jsThread != nullptr) {
+            // The module's constructor and its Qt signal wiring require the GUI
+            // thread. Not moved yet (ADR-0021), so refuse with the module name.
+            throw std::logic_error(
+                "AppState is not supported with QtReactHost JS-thread mode yet (ADR-0021)");
+          }
           if (!impl->appStateModule) {
             impl->appStateModule = std::make_shared<QnxAppStateModule>(callInvoker);
           }
@@ -1133,6 +1382,10 @@ void QtReactHost::installTurboModuleBinding() {
 }
 
 void QtReactHost::installPlatformConstants() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { installPlatformConstants(); });
+    return;
+  }
   auto& runtime = *impl_->runtime;
   auto constants = facebook::jsi::Object(runtime);
 
@@ -1176,6 +1429,10 @@ void QtReactHost::installPlatformConstants() {
 }
 
 void QtReactHost::installTimers() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { installTimers(); });
+    return;
+  }
   auto& runtime = *impl_->runtime;
   auto* impl = impl_.get();
 
@@ -1261,12 +1518,25 @@ void QtReactHost::installTimers() {
 }
 
 void QtReactHost::pumpEvents() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    // JS timers fire on the JS thread's own loop. Run one pass of it, which
+    // also waits for work queued before this call, then one on this thread.
+    jsThread_->call([] {
+      if (auto* application = QCoreApplication::instance()) {
+        application->processEvents();
+      }
+    });
+  }
   if (auto* application = QCoreApplication::instance()) {
     application->processEvents();
   }
 }
 
 void QtReactHost::installComponentProvider() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { installComponentProvider(); });
+    return;
+  }
   facebook::react::bindHasComponentProvider(
       *impl_->runtime, [this](const std::string& name) {
         return hasComponent(name);
@@ -1274,6 +1544,9 @@ void QtReactHost::installComponentProvider() {
 }
 
 bool QtReactHost::hasFabricUIManager() {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    return onJs([&] { return hasFabricUIManager(); });
+  }
   auto& runtime = *impl_->runtime;
   const auto value = runtime.global().getProperty(runtime, "nativeFabricUIManager");
   return !value.isUndefined() && !value.isNull();
@@ -1303,6 +1576,10 @@ void QtReactHost::startSurface(
     const std::string& moduleName,
     float width,
     float height) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { startSurface(surfaceId, moduleName, width, height); });
+    return;
+  }
 #if RNQNX_ENABLE_FRAME_TRACE
   const auto generation = impl_->trace ? impl_->trace->nextId() : 0;
   TraceSpan trace(impl_->trace, TraceStage::SurfaceStart, surfaceId, generation);
@@ -1323,6 +1600,10 @@ void QtReactHost::startEmptySurface(
     SurfaceId surfaceId,
     float width,
     float height) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { startEmptySurface(surfaceId, width, height); });
+    return;
+  }
   // See the header: stopping the surface calls RN$stopSurface even when no
   // React app was ever started. Defining it only if absent means a real bundle's
   // implementation always wins.
@@ -1350,6 +1631,12 @@ void QtReactHost::startEmptySurface(
 }
 
 void QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    // Driven by window resize: queue it. Waiting here would freeze the GUI for
+    // as long as JavaScript is busy.
+    dispatchToJs([this, surfaceId, width, height] { resizeSurface(surfaceId, width, height); });
+    return;
+  }
   const auto found = impl_->surfaces.find(surfaceId);
   if (found == impl_->surfaces.end() || width <= 0 || height <= 0) {
     return;
@@ -1360,6 +1647,26 @@ void QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) 
 
 void QtReactHost::setWindowSize(float width, float height, float scale) {
   if (width <= 0 || height <= 0) return;
+  // QScreen belongs to the GUI thread, so read it on the caller, then hand the
+  // numbers to the thread that owns the runtime. A resize handler must not
+  // wait for JavaScript, so this is posted.
+  double screenWidth = width;
+  double screenHeight = height;
+  if (const auto* screen = QGuiApplication::primaryScreen()) {
+    screenWidth = screen->geometry().width();
+    screenHeight = screen->geometry().height();
+  }
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    dispatchToJs([this, width, height, scale, screenWidth, screenHeight] {
+      applyWindowSize(width, height, scale, screenWidth, screenHeight);
+    });
+    return;
+  }
+  applyWindowSize(width, height, scale, screenWidth, screenHeight);
+}
+
+void QtReactHost::applyWindowSize(
+    float width, float height, float scale, double screenWidth, double screenHeight) {
   if (impl_->windowWidth == width && impl_->windowHeight == height && impl_->windowScale == scale) {
     return;
   }
@@ -1371,12 +1678,6 @@ void QtReactHost::setWindowSize(float width, float height, float scale) {
   const auto metrics = [scale](double w, double h) {
     return folly::dynamic::object("width", w)("height", h)("scale", scale)("fontScale", 1.0);
   };
-  double screenWidth = width;
-  double screenHeight = height;
-  if (const auto* screen = QGuiApplication::primaryScreen()) {
-    screenWidth = screen->geometry().width();
-    screenHeight = screen->geometry().height();
-  }
   callFunctionOnModule(
       "RCTDeviceEventEmitter", "emit",
       folly::dynamic::array(
@@ -1387,6 +1688,10 @@ void QtReactHost::setWindowSize(float width, float height, float scale) {
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    onJs([&] { stopSurface(surfaceId); });
+    return;
+  }
 #if RNQNX_ENABLE_FRAME_TRACE
   const auto generation = impl_->surfaceGenerations.find(surfaceId);
   TraceSpan trace(impl_->trace, TraceStage::SurfaceStop, surfaceId,
@@ -1410,6 +1715,9 @@ void QtReactHost::stopSurface(SurfaceId surfaceId) {
 bool QtReactHost::commit(
     SurfaceId surfaceId,
     const std::vector<std::shared_ptr<const ShadowNode>>& children) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    return onJs([&] { return commit(surfaceId, children); });
+  }
   bool committed = false;
 
   impl_->scheduler->getUIManager()->getShadowTreeRegistry().visit(

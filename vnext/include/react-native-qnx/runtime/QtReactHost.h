@@ -2,6 +2,7 @@
 
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QnxExceptionsManager.h"
+#include "react-native-qnx/runtime/QtJsThread.h"
 #include "react-native-qnx/runtime/QtRuntimeTaskQueue.h"
 
 #include <react/renderer/core/EventBeat.h>
@@ -46,7 +47,7 @@ class QtEventBeat final : public facebook::react::EventBeat {
  private:
   /// The receiver for queued beats. Owning it here is what bounds a posted
   /// `induce()` to this beat's lifetime; see request().
-  std::unique_ptr<QObject> context_{std::make_unique<QObject>()};
+  std::unique_ptr<QueuedCallTarget> context_{std::make_unique<QueuedCallTarget>()};
 };
 
 /// Applies mount transactions to Qt Quick items.
@@ -62,7 +63,13 @@ class QtEventBeat final : public facebook::react::EventBeat {
 /// SchedulerDelegate declares thirteen pure virtuals.
 class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
  public:
-  explicit QtSchedulerDelegate(fabric::ShadowViewMutationAdapter& adapter);
+  /// `ownerThread` is the thread that may touch Qt items: the GUI thread. It
+  /// defaults to the constructing thread, which is the GUI thread unless the
+  /// host runs JavaScript on its own thread (ADR-0021), where the delegate is
+  /// constructed on the JS thread and must be told which thread is the GUI one.
+  explicit QtSchedulerDelegate(
+      fabric::ShadowViewMutationAdapter& adapter,
+      std::thread::id ownerThread = std::this_thread::get_id());
 
   /// Borrowed, with the same lifetime rule as the adapter's: it must outlive
   /// every transaction, including the empty-tree commit that stopping a surface
@@ -133,7 +140,7 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
   /// the owner and the caller must return.
   bool onOwnerOrPost(std::function<void()> work);
 
-  const std::thread::id owner_{std::this_thread::get_id()};
+  const std::thread::id owner_;
   OwnerPoster ownerPoster_;
   MountReporter mountReporter_;
   fabric::QtTouchDispatcher* touchDispatcher_{nullptr};
@@ -159,18 +166,51 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory();
 ///
 /// This is the layer React Native has no generic implementation of: the package
 /// ships `react/runtime/platform/ios` and nothing else, so the host wiring is
-/// ours. JavaScript runs on the thread that constructs this object; there is no
-/// separate JS thread yet, which keeps the first bring-up honest about what has
-/// actually been proven.
+/// ours. By default JavaScript runs on the thread that constructs this object.
+/// With `Options::jsThread` it runs on a thread this object owns, and the
+/// constructing thread stays the GUI thread (ADR-0021).
+///
+/// In JS-thread mode the public calls fall into three groups.
+/// - Awaited: they run on the JS thread and the caller waits, then mounts they
+///   caused are applied before the call returns. Those are `evaluate`,
+///   `startSurface`, `stopSurface`, `commit`, the `install*` calls,
+///   `registerTurboModule`, `addTeardownHook`, `setTurboModuleProvider`,
+///   `lastError`, `javaScriptErrors` and `hasFabricUIManager`.
+///   They block the GUI thread for as long as JavaScript is busy, so start-up
+///   and teardown code may use them and input handlers must not.
+/// - Posted: `resizeSurface`, `setWindowSize` and `callFunctionOnModule` queue
+///   the work and return.
+/// - Thread-bound: `runtime()` returns a reference only the JS thread may use;
+///   it terminates the process when called from another thread. Use
+///   `runOnJsThread`. `scheduler()` and `delegate()` hand out references to
+///   objects the JS thread uses; call only their GUI-owned members from the
+///   GUI thread (`delegate().setTouchDispatcher`, `lastFailures`,
+///   `mountedTransactionCount`).
+/// - Rejected: `setOwnerPoster` throws, because the host installs the poster
+///   that moves mounts to the GUI thread.
+///
+/// A module that needs the GUI thread (AppState) refuses to load in this mode,
+/// and `registerTurboModule` factories and teardown hooks run on the JS thread
+/// and must not wait on the GUI thread: the destructor holds it.
 class QtReactHost {
  public:
+  struct Options {
+    /// Run Hermes, the RuntimeScheduler and JS timers on a thread the host
+    /// owns. Default off: ADR-0021 keeps it opt-in until a device receipt.
+    bool jsThread{false};
+  };
+
   QtReactHost(fabric::ShadowViewMutationAdapter& adapter);
+  QtReactHost(fabric::ShadowViewMutationAdapter& adapter, Options options);
 #if RNQNX_ENABLE_FRAME_TRACE
   /// Native diagnostics only. Caller retains the session through host teardown,
   /// then freezes/exports it outside runtime callbacks.
   QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
               std::shared_ptr<RuntimeTrace> trace);
+  QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
+              std::shared_ptr<RuntimeTrace> trace, Options options);
 #endif
+  /// Must run on the thread that constructed the host.
   ~QtReactHost();
 
   QtReactHost(const QtReactHost&) = delete;
@@ -178,6 +218,20 @@ class QtReactHost {
   QtReactHost(QtReactHost&&) = delete;
   QtReactHost& operator=(QtReactHost&&) = delete;
 
+  /// True when JavaScript runs on the host's own thread.
+  bool jsThreadEnabled() const noexcept;
+  /// True on the thread that owns the runtime: the JS thread in JS-thread
+  /// mode, otherwise the constructing thread.
+  bool onJsThread() const noexcept;
+  /// Runs `work` on the thread that owns the runtime and waits. Inline when
+  /// already there or when JavaScript shares the GUI thread. Mounts the work
+  /// caused are applied before this returns.
+  void runOnJsThread(const std::function<void()>& work);
+  /// Queues `work` on the JS thread and returns. Inline in the single-thread
+  /// mode, where there is nothing to queue to.
+  void postToJsThread(std::function<void()> work);
+
+  /// The Hermes runtime. In JS-thread mode only the JS thread may use it.
   facebook::jsi::Runtime& runtime();
   /// Shared native completion route; closes before the host's Hermes teardown.
   std::shared_ptr<QtRuntimeTaskQueue> taskQueue() const;
@@ -274,6 +328,8 @@ class QtReactHost {
   void installGlobalEvalWithSourceUrl();
 
   /// Errors JavaScript has reported through ExceptionsManager, oldest first.
+  /// In JS-thread mode this is a snapshot taken at the call; the reference
+  /// stays valid until the next call, and two threads must not call it at once.
   const std::vector<JavaScriptError>& javaScriptErrors() const;
 
   /// Installs `globalThis.__RNQNX_PLATFORM_CONSTANTS`, which the platform
@@ -351,7 +407,22 @@ class QtReactHost {
 
  private:
   class Impl;
+  template <class F>
+  auto onJs(F&& work) -> decltype(work());
+  void dispatchToJs(std::function<void()> work);
+  void flushMounts();
+  void setGuiOwnerPoster();
+  void applyWindowSize(float width, float height, float scale, double screenWidth,
+                       double screenHeight);
+
+  // Declaration order is destruction order in reverse: the GUI context must
+  // outlive the thread and the runtime, because mounts queued by the runtime
+  // are dropped with it.
+  std::thread::id guiThread_;
+  std::unique_ptr<QueuedCallTarget> guiContext_;
+  std::unique_ptr<QtJsThread> jsThread_;
   std::unique_ptr<Impl> impl_;
+  mutable std::vector<JavaScriptError> errorSnapshot_;
 };
 
 }  // namespace rnqnx::runtime
