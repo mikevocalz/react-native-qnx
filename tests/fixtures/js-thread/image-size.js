@@ -6,4 +6,7 @@ nativeModuleProxy.ImageLoader.getSize(globalThis.RNQNX_IMAGE_URI).then(
     globalThis.imageHeight = size[1];
     globalThis.imageResult = 'resolved';
   },
-  (error) => { globalThis.imageResult = 'rejected: ' + error; });
+  (error) => {
+    globalThis.imageResult = 'rejected: ' + error;
+  }
+);

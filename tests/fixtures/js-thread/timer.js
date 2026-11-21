@@ -1,1 +1,4 @@
-setTimeout(() => { recordThread(); globalThis.fired = 1; }, 10);
+setTimeout(() => {
+  recordThread();
+  globalThis.fired = 1;
+}, 10);
