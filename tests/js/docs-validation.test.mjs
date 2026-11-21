@@ -18,8 +18,15 @@ try {
     'CODE_OF_CONDUCT.md',
     'CONTRIBUTING.md',
     'TODO.md',
-    // Linked from the compatibility matrix.
+    // Linked from the compatibility matrix and the getting-started and v1 pages,
+    // which syncDocs checks for existing link targets and heading anchors.
     'packages/expo-image-qnx/README.md',
+    'packages/expo-qnx/README.md',
+    'packages/expo-router-qnx/README.md',
+    'packages/qnx-devtools/README.md',
+    'scripts/qt-public/README.md',
+    'scripts/qt-public/patches/qtbase-qnx-software-grab.patch',
+    'scripts/qualify-qnx-evidence.mjs',
   ]) {
     await mkdir(path.dirname(path.join(temporary, file)), { recursive: true });
     await cp(path.join(root, file), path.join(temporary, file), { recursive: true });
@@ -82,6 +89,16 @@ try {
   await writeFile(readmeFile, readme.replace('generated:dependencies:end', 'missing-marker'));
   await assert.rejects(syncDocs(temporary), /Missing or duplicate generated markers/);
   await writeFile(readmeFile, readme);
+  const guide = path.join(temporary, 'docs/getting-started/qnx-cli.md');
+  const guideText = await readFile(guide, 'utf8');
+  await writeFile(guide, `${guideText}\n[gone](../../README.md#no-such-heading)\n`);
+  await assert.rejects(
+    syncDocs(temporary),
+    /#no-such-heading, which is not a heading in README.md/
+  );
+  await writeFile(guide, `${guideText}\n[gone](missing-page.md)\n`);
+  await assert.rejects(syncDocs(temporary), /ENOENT/);
+  await writeFile(guide, guideText);
   console.log(
     'docs-validation.test.mjs passed (stale pins, installed drift, evidence requirements, duplicate components, markers and release blockers)'
   );

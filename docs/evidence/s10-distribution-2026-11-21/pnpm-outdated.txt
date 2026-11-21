@@ -1,0 +1,21 @@
+pnpm outdated -r, run 2026-11-21 on main 19fa1b25 (host, registry data)
+name | current | latest | where
+@legendapp/list | 3.7.2 | 3.7.3 | react-native-qnx-monorepo
+babel-preset-expo | 58.0.25 | 58.0.26 | react-native-qnx-monorepo
+expo | 58.0.24 | 58.0.26 | react-native-qnx-monorepo
+expo-router | 58.0.31 | 58.0.32 | @rn-qnx/component-gallery
+react@19.3.0 | 19.3.0 | 19.3.1 | @rn-qnx/rn-playground
+react@19.3.0 (dev) | 19.3.0 | 19.3.1 | react-native-qnx-monorepo
+react-dom | 19.3.0 | 19.3.1 | @rn-qnx/component-gallery
+react-native-svg | 15.16.0 | 15.16.1 | react-native-qnx-monorepo
+react-test-renderer | 19.3.0 | 19.3.1 | react-native-qnx-monorepo
+metro | 0.87.1 | 0.88.0 | react-native-qnx-monorepo
+pnpm | 12.18.0 | 12.21.0 | react-native-qnx-monorepo
+prettier | 3.9.10 | 3.10.1 | react-native-qnx-monorepo
+react-native-gesture-handler | 3.4.0 | 3.5.0 | react-native-qnx-monorepo
+react-native-reanimated | 4.7.1 | 4.8.0 | react-native-qnx-monorepo
+react-native-worklets | 0.13.1 | 0.14.0 | react-native-qnx-monorepo
+@babel/core | 7.29.7 | 8.1.2 | react-native-qnx-monorepo
+@babel/plugin-transform-modules-commonjs | 7.29.7 | 8.1.2 | react-native-qnx-monorepo
+@babel/plugin-transform-react-jsx | 7.29.7 | 8.0.1 | react-native-qnx-monorepo
+@babel/runtime | 7.29.7 | 8.1.2 | @rn-qnx/rn-playground, @rn-qnx/react-native-qnx
