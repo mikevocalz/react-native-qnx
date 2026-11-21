@@ -11,6 +11,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QThread>
 #include <QUrl>
 #include <QVariantMap>
 
@@ -130,17 +131,22 @@ void WindowChrome::applyTabOrder() {
 }
 
 bool WindowChrome::setControlsLayout(const QString& name) {
+  Q_ASSERT(thread() == QThread::currentThread());  // GUI thread only.
   ControlsLayout parsed;
   try {
     parsed = parseControlsLayout(name);
   } catch (const std::invalid_argument&) {
     return false;
   }
+  if (!window_) return false;
   if (parsed == config_.controls) return true;
   config_.controls = parsed;
-  relayout();
+  // Recompute first and announce the layout name before the geometry, so a
+  // slot that reads both sees the new name and the new geometry.
+  relayout(false);
   applyTabOrder();
   Q_EMIT controlsLayoutChanged();
+  Q_EMIT layoutChanged();
   return true;
 }
 
@@ -226,7 +232,7 @@ void WindowChrome::beginSystemMove() {
   if (window_ && capabilities_.systemMove) window_->startSystemMove();
 }
 
-void WindowChrome::relayout() {
+void WindowChrome::relayout(bool announce) {
   if (!window_) return;
   const QRectF whole(0, 0, window_->width(), window_->height());
   if (!contained_ || frameExpanded_) {
@@ -246,7 +252,7 @@ void WindowChrome::relayout() {
   layout_ = layoutChrome(config_, capabilities_, frame_.width());
   content_->setPosition(QPointF(frame_.x(), frame_.y() + layout_.contentInset));
   content_->setSize(QSizeF(frame_.width(), std::max<qreal>(0, frame_.height() - layout_.contentInset)));
-  Q_EMIT layoutChanged();
+  if (announce) Q_EMIT layoutChanged();
 }
 
 void WindowChrome::setResizeHint(Qt::Edges edges, QPointF pointer) {

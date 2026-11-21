@@ -123,7 +123,7 @@ class WindowChrome final : public QObject {
   void setIconSource(const QUrl& source);
   // Switches between the macos and windows control layouts without recreating
   // the controls, so keyboard focus stays on the focused control. Returns
-  // false and changes nothing for any other name. The same value is accepted
+  // false and changes nothing for any other name. GUI thread only. The same value is accepted
   // in config (extra.rnqnx.window.controls).
   bool setControlsLayout(const QString& name);
   QRectF frameRect() const { return frame_; }
@@ -157,7 +157,7 @@ class WindowChrome final : public QObject {
   bool eventFilter(QObject* watched, QEvent* event) override;
 
  private:
-  void relayout();
+  void relayout(bool announce = true);
   void applyTabOrder();
   bool handleFramePointer(QEvent* event);
   void setResizeHint(Qt::Edges edges, QPointF pointer);

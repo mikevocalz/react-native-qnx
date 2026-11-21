@@ -349,7 +349,12 @@ class WindowChromeQuickTest : public QObject {
     QVERIFY(harness.chrome->titleCentered());
     QVERIFY(minimize->x() < 400);
 
+    // A slot on the layout-name signal already sees the new geometry.
+    QString firstSeen;
+    QObject::connect(harness.chrome.get(), &WindowChrome::controlsLayoutChanged, harness.chrome.get(),
+                     [&] { firstSeen = harness.chrome->controlOrder().value(0); });
     QVERIFY(harness.chrome->setControlsLayout(QStringLiteral("windows")));
+    QCOMPARE(firstSeen, QStringLiteral("minimize"));
     QCOMPARE(switched.count(), 1);
     QCOMPARE(harness.chrome->controlsLayout(), QStringLiteral("windows"));
     QVERIFY(!harness.chrome->titleCentered());
@@ -440,8 +445,9 @@ class WindowChromeQuickTest : public QObject {
                      .value(QStringLiteral("x")).toDouble(), 1000.0 - 3 * kWindowsHitWidth);
   }
 
-  // WCAG 1.4.11: the focus ring is at least 3:1 against the fill it is drawn
-  // on, in both colour schemes and on the Windows close hover.
+  // WCAG 1.4.11: the focus ring is at least 3:1 against the active and inactive
+  // bar, in both colour schemes. The hover and pressed fills are hand-calculated
+  // in docs/v1/design/contrast.json and are not asserted here.
   void focusRingContrastMeetsNonTextMinimum() {
     const auto luminance = [](const QColor& c) {
       const auto lin = [](qreal v) { return v <= 0.03928 ? v / 12.92 : std::pow((v + 0.055) / 1.055, 2.4); };

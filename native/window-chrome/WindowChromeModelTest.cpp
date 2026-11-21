@@ -318,8 +318,6 @@ class WindowChromeModelTest : public QObject {
     }
   }
 
-  // A full-screen QNX app (no initialSize): maximize is the only control that
-  // cannot run, and the remaining two close up.
   // Gate window-chrome: the inset the React content keeps clear of.
   void titleBarInsetPerStyle() {
     WindowChromeConfig config;
@@ -354,6 +352,8 @@ class WindowChromeModelTest : public QObject {
              (std::vector<WindowAction>{WindowAction::Minimize, WindowAction::Maximize, WindowAction::Close}));
   }
 
+  // A full-screen QNX app (no initialSize): maximize is the only control that
+  // cannot run, and the remaining two close up.
   void hiddenControlsCloseUpOnQnx() {
     for (const auto controls : {ControlsLayout::MacOS, ControlsLayout::Windows}) {
       WindowChromeConfig config;
