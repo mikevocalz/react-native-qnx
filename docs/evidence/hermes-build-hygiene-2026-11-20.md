@@ -45,10 +45,10 @@ One configure (`cmake -S . -B build/h -G Ninja -DCMAKE_BUILD_TYPE=Debug
 rnqnx_hermes_probe` and `ctest -R rnqnx_hermes`. Both runs used the same build
 directory; the fix was the only difference.
 
-| State | Cache | Build (Hermes rebuilt) | `rnqnx_hermes_build_mode` | `rnqnx_hermes_probe` |
-| --- | --- | --- | --- | --- |
-| Fix absent (`main` Hermes.cmake) | `HERMES_SLOW_DEBUG:BOOL=ON` | 95 s | fails, `RNQNX_HERMES_BUILD_MODE SlowDebug`, 0.09 s | passes, 0.57 s |
-| Fix present | `HERMES_SLOW_DEBUG:BOOL=OFF` | 99 s | passes, `RNQNX_HERMES_BUILD_MODE Debug`, 0.04 s | passes, 0.27 s |
+| State                            | Cache                        | Build (Hermes rebuilt) | `rnqnx_hermes_build_mode`                          | `rnqnx_hermes_probe` |
+| -------------------------------- | ---------------------------- | ---------------------- | -------------------------------------------------- | -------------------- |
+| Fix absent (`main` Hermes.cmake) | `HERMES_SLOW_DEBUG:BOOL=ON`  | 95 s                   | fails, `RNQNX_HERMES_BUILD_MODE SlowDebug`, 0.09 s | passes, 0.57 s       |
+| Fix present                      | `HERMES_SLOW_DEBUG:BOOL=OFF` | 99 s                   | passes, `RNQNX_HERMES_BUILD_MODE Debug`, 0.04 s    | passes, 0.27 s       |
 
 Logs: `before-ctest.log`, `after-ctest.log`, `after-cmake-cache-excerpt.txt`.
 With the fix present `CMAKE_C_FLAGS` and `CMAKE_CXX_FLAGS` are empty in the
@@ -63,13 +63,13 @@ exact diff.
 A session before this one built the whole host graph and ran CTest on it. Those
 runs used the same change; the numbers below are not backed by a committed log.
 
-| Leg | Before (SlowDebug, -O0) | SlowDebug off, still -O0 | After (off, -O2) |
-| --- | --- | --- | --- |
-| 18 tests, no optional features | 57.1 s, reruns 52.6 s and 52.2 s | not run | 19.2 s, 13.1 s, 14.7 s |
-| 60 tests (SVG, RNSVG, native UI, Expo image, Qt motion, graphics, video, input, text input, accessibility, window chrome) | 490.5 s | 262.1 s | 115.4 s |
-| `qt_react_host_host_test` (60-test leg) | 48.5 s | 48.1 s | 12.0 s |
-| `rnqnx_qt_rnsvg_corpus_test_1` | 154.5 s | 23.2 s | 5.05 s |
-| `rnqnx_qt_rnsvg_corpus_test_2` | 148.6 s | 32.2 s | 3.39 s |
+| Leg                                                                                                                       | Before (SlowDebug, -O0)          | SlowDebug off, still -O0 | After (off, -O2)       |
+| ------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------ | ---------------------- |
+| 18 tests, no optional features                                                                                            | 57.1 s, reruns 52.6 s and 52.2 s | not run                  | 19.2 s, 13.1 s, 14.7 s |
+| 60 tests (SVG, RNSVG, native UI, Expo image, Qt motion, graphics, video, input, text input, accessibility, window chrome) | 490.5 s                          | 262.1 s                  | 115.4 s                |
+| `qt_react_host_host_test` (60-test leg)                                                                                   | 48.5 s                           | 48.1 s                   | 12.0 s                 |
+| `rnqnx_qt_rnsvg_corpus_test_1`                                                                                            | 154.5 s                          | 23.2 s                   | 5.05 s                 |
+| `rnqnx_qt_rnsvg_corpus_test_2`                                                                                            | 148.6 s                          | 32.2 s                   | 3.39 s                 |
 
 The 60-test leg could not enable Worklets, Reanimated or Gesture Handler on
 macOS: `generated/worklets/AsyncQueueImpl.qnx.cpp` calls `pthread_setname_np`
@@ -86,13 +86,13 @@ No time limit changed. The 300 s corpus-shard limit, the 60 s limits and the
 
 ## Optimisation levels found
 
-| Build | Source of the reading | Level |
-| --- | --- | --- |
-| Host Debug graph, Hermes, after the change (re-measured) | `ninja -t compdb` | `-O2` on 490 of 490 Hermes compile lines in the two probe targets |
-| Host Debug graph, repo `vnext` sources and most of folly, glog, fmt (re-measured) | `ninja -t compdb` | no `-O` flag, so `-O0` (45 of 45 repo lines, 350 of 371 other lines) |
-| QNX Hermes, `qnx805-build:/home/qnxbuild/hermes-qnx-full` (2026-11-13) | `compile_commands.json` | `MinSizeRel`, 446 of 446 lines at `-Os`, no `HERMES_SLOW_DEBUG` define |
-| QNX Qt 6.12.0 public, `qt-6.12.0-public/qnx-build` (2026-11-12) | `compile_commands.json` | 2341 lines `-O2`, 647 `-O3`, none without `-O` |
-| QNX repo sources, `pr149b/qnx-build` (2026-11-19) | `build.ninja` `FLAGS` | `Release`, 701 of 701 lines `-O2` |
+| Build                                                                             | Source of the reading   | Level                                                                  |
+| --------------------------------------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------- |
+| Host Debug graph, Hermes, after the change (re-measured)                          | `ninja -t compdb`       | `-O2` on 490 of 490 Hermes compile lines in the two probe targets      |
+| Host Debug graph, repo `vnext` sources and most of folly, glog, fmt (re-measured) | `ninja -t compdb`       | no `-O` flag, so `-O0` (45 of 45 repo lines, 350 of 371 other lines)   |
+| QNX Hermes, `qnx805-build:/home/qnxbuild/hermes-qnx-full` (2026-11-13)            | `compile_commands.json` | `MinSizeRel`, 446 of 446 lines at `-Os`, no `HERMES_SLOW_DEBUG` define |
+| QNX Qt 6.12.0 public, `qt-6.12.0-public/qnx-build` (2026-11-12)                   | `compile_commands.json` | 2341 lines `-O2`, 647 `-O3`, none without `-O`                         |
+| QNX repo sources, `pr149b/qnx-build` (2026-11-19)                                 | `build.ninja` `FLAGS`   | `Release`, 701 of 701 lines `-O2`                                      |
 
 The QNX rows (read in the earlier session, raw output lost) come from existing trees in the `qnx805-build` container, not
 from a fresh QNX build. QNX Hermes is `-Os` and comes from
