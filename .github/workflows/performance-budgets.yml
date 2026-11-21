@@ -1,0 +1,117 @@
+name: Performance budgets (host lane)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/releases/performance-budgets.json'
+      - 'scripts/validate-budgets.mjs'
+      - 'tests/js/performance-budgets.test.mjs'
+      - 'tests/native/timing-probe/**'
+      - 'vnext/probes/playground/**'
+      - 'vnext/src/**'
+      - 'vnext/include/**'
+      - 'apps/performance-lab/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/performance-budgets.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: performance-budgets-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host-budgets:
+    name: Host lane: startup, frame swaps and RSS (Qt 6.11, Release, offscreen software)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+      QT_LOGGING_RULES: qt.multimedia.symbolsresolver=false
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 26.13.1
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.18.0
+      - run: pnpm install --frozen-lockfile
+      - name: Budgets file is consistent
+        run: node scripts/validate-budgets.mjs --check-file
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Install exact host Qt
+        uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06 # v4.5.0
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          modules: qtmultimedia
+          cache: true
+      - name: Timing probe under ASan and UBSan
+        run: |
+          cmake -S tests/native/timing-probe -B build/timing-probe -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++
+          cmake --build build/timing-probe --parallel 2
+          ctest --test-dir build/timing-probe --output-on-failure
+      - name: Build the playground host (Release, base runtime, probe ON)
+        run: |
+          cmake -S . -B build/host-budgets -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON \
+            -DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON -DRNQNX_BUILD_HERMES=ON \
+            -DRNQNX_FETCH_REACT_NATIVE_DEPS=ON -DRNQNX_ENABLE_TIMING_PROBE=ON \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_CXX_SCAN_FOR_MODULES=OFF
+          cmake --build build/host-budgets --target rnqnx_playground_host --parallel 2
+      - name: Bundle the workloads
+        run: |
+          mkdir -p build/host-budgets/evidence
+          for entry in hello-world.js index.js; do
+            (
+              cd apps/performance-lab
+              timeout 120s ../../node_modules/.bin/metro build "$entry" --config metro.config.js --platform qnx --dev false --max-workers 2 --out "$PWD/../../build/host-budgets/evidence/$entry.bundle.js"
+            )
+          done
+      - name: Run each workload and record timing
+        run: |
+          set -euo pipefail
+          evidence="$PWD/build/host-budgets/evidence"
+          runs="$(node -p "require('./docs/releases/performance-budgets.json').method.baselineMinRuns")"
+          run_one() { # workload bundle index args...
+            local workload="$1" bundle="$2" index="$3"; shift 3
+            timeout 60s build/host-budgets/bin/rnqnx_playground_host \
+              --bundle "$evidence/$bundle" --timing-json "$evidence/$workload-$index.json" "$@" \
+              > "$evidence/$workload-$index.log" 2>&1
+            grep -F 'RNQNX_TIMING_EXPORTED' "$evidence/$workload-$index.log"
+          }
+          for i in $(seq 1 "$runs"); do
+            run_one hello-world hello-world.js.bundle.js "$i" --timing-settle-ms 500
+            run_one list-1000 index.js.bundle.js "$i" --timing-settle-ms 500 \
+              --timing-wheel-notches 40 --timing-wheel-gap-ms 100
+          done
+          sha256sum "$evidence"/*.bundle.js > "$evidence/bundles.sha256"
+          node -p "'host: ' + require('os').cpus().length + ' cpus, ' + require('os').cpus()[0].model" | tee "$evidence/host.txt"
+      - name: Host lane budget check
+        run: node scripts/validate-budgets.mjs --check-run build/host-budgets/evidence
+      - name: Preserve the raw timing results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: performance-budgets-${{ github.event.pull_request.head.sha || github.sha }}
+          path: build/host-budgets/evidence/
+          if-no-files-found: warn

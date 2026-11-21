@@ -1,0 +1,88 @@
+#pragma once
+
+// Host-only startup and frame-swap recorder for the performance budgets.
+// Contract: docs/nitro/API_CONTRACTS.md, "S4 frame and startup timing probe".
+// No JavaScript API. A swap instant is the steady_clock reading taken when
+// QQuickWindow::frameSwapped is delivered, not a display presentation time.
+
+#include <QObject>
+#include <QString>
+
+#include <atomic>
+#include <chrono>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <optional>
+#include <vector>
+
+class QQuickWindow;
+
+namespace rnqnx::probe {
+
+struct TimingConfig {
+  int settleMs = 500;
+  int wheelNotches = 0;
+  int wheelGapMs = 200;
+  // Internal. Not on the command line; tests lower it to exercise overflow.
+  int frameCapacity = 4096;
+
+  // Parses the three command line values. An empty string keeps the default.
+  // On failure returns nullopt and sets `error`.
+  static std::optional<TimingConfig> fromStrings(
+      const QString& settleMs, const QString& wheelNotches, const QString& wheelGapMs,
+      QString* error);
+};
+
+class TimingProbe final : public QObject {
+ public:
+  // `origin` is the steady_clock reading main() takes as its first statement.
+  // Connects to `window` with Qt::DirectConnection before the window is shown.
+  TimingProbe(QQuickWindow& window, TimingConfig config,
+              std::chrono::steady_clock::time_point origin);
+  ~TimingProbe() override;
+  TimingProbe(const TimingProbe&) = delete;
+  TimingProbe& operator=(const TimingProbe&) = delete;
+
+  void markBundleEvaluated() noexcept;  // GUI thread, once
+  void markSurfaceStarted() noexcept;   // GUI thread, once, after startSurface returns
+
+  // Waits for the first swap after markSurfaceStarted, settles, posts the wheel
+  // script, snapshots, then calls `done` once on the GUI thread. `done(false)`
+  // means no swap arrived within 30 s of markSurfaceStarted.
+  void start(std::function<void(bool)> done);
+
+  // Valid after `done(true)`. Returns an error string, empty on success. The
+  // destination must not exist; a failed write leaves nothing there.
+  QString writeJson(const QString& path) const;
+
+  struct State;
+
+ private:
+  void onFrameControl();
+  void postNotch();
+  void finish(bool ok);
+
+  QQuickWindow& window_;
+  TimingConfig config_;
+  std::shared_ptr<State> state_;
+  QMetaObject::Connection direct_;
+  QMetaObject::Connection control_;
+  std::function<void(bool)> done_;
+  enum class Phase { Idle, WaitingFirstFrame, Settling, Wheel, Done };
+  Phase phase_ = Phase::Idle;
+  int notchesSent_ = 0;
+  std::int64_t wheelFirstNs_ = -1;
+  std::int64_t wheelLastNs_ = -1;
+
+  // Snapshot taken once at finish.
+  std::vector<std::int64_t> frameNs_;
+  std::uint64_t totalFrames_ = 0;
+  std::int64_t firstFrameNs_ = -1;
+  std::int64_t bundleEvaluatedNs_ = -1;
+  std::int64_t surfaceStartedNs_ = -1;
+  std::optional<std::uint64_t> rssKiB_;
+  std::optional<std::uint64_t> peakRssKiB_;
+};
+
+}  // namespace rnqnx::probe

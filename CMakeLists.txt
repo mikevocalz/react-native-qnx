@@ -81,6 +81,11 @@ option(RNQNX_BUILD_MARATHON_HOST
   "Build the experimental Linux/Wayland MarathonOS React Native host" OFF)
 option(RNQNX_MARATHON_HOST_NITRO
   "Link and install the Marathon Nitro v1 adapter with the Qt dispatcher in the Marathon host" OFF)
+option(RNQNX_ENABLE_TIMING_PROBE
+  "Add --timing-json startup/frame-swap/RSS recording to the host playground (host only)" OFF)
+if(RNQNX_ENABLE_TIMING_PROBE AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin)$")
+  message(FATAL_ERROR "RNQNX_ENABLE_TIMING_PROBE requires a Linux or Darwin host; QNX has no reader yet")
+endif()
 option(RNQNX_BUILD_FORGE_QNX
   "Build the opt-in native Forge Rust engine owner for QNX" OFF)
 
@@ -419,6 +424,11 @@ else()
           rnqnx_link_runtime_extensions(rnqnx_playground_host)
           rnqnx_enable_strict_warnings(rnqnx_playground_host)
           add_dependencies(rnqnx_playground_host rnqnx_playground_bundle)
+          if(RNQNX_ENABLE_TIMING_PROBE)
+            target_sources(rnqnx_playground_host PRIVATE vnext/probes/playground/TimingProbe.cpp)
+            target_include_directories(rnqnx_playground_host PRIVATE vnext/probes/playground)
+            target_compile_definitions(rnqnx_playground_host PRIVATE RNQNX_ENABLE_TIMING_PROBE=1)
+          endif()
           target_compile_definitions(rnqnx_playground_host PRIVATE
             RNQNX_PLAYGROUND_BUNDLE_PATH="${RNQNX_PLAYGROUND_BUNDLE}")
           set_target_properties(rnqnx_playground_host PROPERTIES

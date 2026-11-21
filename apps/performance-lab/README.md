@@ -86,6 +86,49 @@ remaining measurements. The separately reviewed
 [evidence reporter](https://github.com/mikevocalz/react-native-qnx/pull/76)
 can validate submitted captures; it does not collect them or promote a gate.
 
+## Record timing on the host
+
+Configure the host renderer with `-DRNQNX_ENABLE_TIMING_PROBE=ON` (default OFF;
+Linux and macOS only). The playground host then accepts `--timing-json`, which
+records startup to first frame, frame-swap instants and RSS, writes a new JSON
+file and exits. The contract is in
+[API_CONTRACTS.md](../../docs/nitro/API_CONTRACTS.md).
+
+```bash
+./build/host-budgets/bin/rnqnx_playground_host --bundle build/performance-lab/hello-world.bundle.js \
+  --timing-json build/performance-lab/hello-world-1.json
+./build/host-budgets/bin/rnqnx_playground_host --bundle build/performance-lab/list-1000.bundle.js \
+  --timing-json build/performance-lab/list-1000-1.json \
+  --timing-wheel-notches 40 --timing-wheel-gap-ms 100
+node scripts/validate-budgets.mjs --check-run build/performance-lab
+```
+
+The budgets are in [performance-budgets.json](../../docs/releases/performance-budgets.json)
+and the `performance-budgets` workflow runs this on a hosted runner. The result
+is a host number. The probe has no QNX reader, so the QNX VM, Pi 400 and release
+board fields stay `unmeasured` until S9.
+
+## Time one remote image load in stages
+
+`image-probe.js` loads one image through `Image.prefetch` (fetch, decode and the
+completion reaching JavaScript), `Image.getSize` on the cached image (one round
+trip with no fetch and no decode) and an `<Image onLoad>` on a fresh URL. A
+heartbeat timer records how late the JavaScript task queue drains during each
+stage. It logs `IMAGE_PROBE` lines with a monotonic clock and `Date.now()`
+together. The server logs when each request began and how long it took to send.
+
+```bash
+node scripts/image-probe-server.mjs --file apps/performance-lab/assets/probe-640x427.jpg &
+(cd apps/performance-lab && ../../node_modules/.bin/metro build image-probe.js --config metro.config.js \
+  --platform qnx --dev false --max-workers 2 --out ../../build/performance-lab/image-probe.bundle.js)
+./build/host-budgets/bin/rnqnx_playground_host --bundle build/performance-lab/image-probe.bundle.js \
+  --timing-json build/performance-lab/image-probe-run.json --timing-settle-ms 15000
+```
+
+On a board, set `url` in `image-probe.config.json` to a server the board can
+reach, rebuild the bundle and run it with the board's own launcher. The receipt
+for what the host run showed is `docs/evidence/s4-budgets-2026-11-20/`.
+
 ## Check the fixture
 
 ```bash

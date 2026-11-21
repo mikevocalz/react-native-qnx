@@ -66,6 +66,14 @@
 #include "QtNitroDispatcher.hpp"
 #endif
 
+#ifndef RNQNX_ENABLE_TIMING_PROBE
+#define RNQNX_ENABLE_TIMING_PROBE 0
+#endif
+#if RNQNX_ENABLE_TIMING_PROBE
+#include "TimingProbe.h"
+#include <chrono>
+#endif
+
 #include <QByteArray>
 #include <QColor>
 #include <QCommandLineOption>
@@ -328,6 +336,9 @@ constexpr int kWindowHeight = 480;
 }  // namespace
 
 int main(int argc, char** argv) {
+#if RNQNX_ENABLE_TIMING_PROBE
+  const auto timingOrigin = std::chrono::steady_clock::now();
+#endif
 #ifdef RNQNX_MARATHON_HOST
   // Before anything starts Hermes: it caches the main thread's stack bounds on
   // first use, and musl reports only the part of the stack mapped so far.
@@ -391,6 +402,22 @@ int main(int argc, char** argv) {
   parser.addOption(traceOption);
 #endif
   parser.addOption(fullscreenOption);
+#if RNQNX_ENABLE_TIMING_PROBE
+  const QCommandLineOption timingOption(QStringLiteral("timing-json"),
+      QStringLiteral("Record startup, frame swaps and RSS, write a new JSON file and exit."),
+      QStringLiteral("path"));
+  const QCommandLineOption timingSettleOption(QStringLiteral("timing-settle-ms"),
+      QStringLiteral("Run this long after the first frame before the wheel script (default 500)."),
+      QStringLiteral("ms"));
+  const QCommandLineOption timingNotchesOption(QStringLiteral("timing-wheel-notches"),
+      QStringLiteral("Wheel notches to post after settling (default 0)."), QStringLiteral("n"));
+  const QCommandLineOption timingGapOption(QStringLiteral("timing-wheel-gap-ms"),
+      QStringLiteral("Gap between wheel notches (default 200)."), QStringLiteral("ms"));
+  parser.addOption(timingOption);
+  parser.addOption(timingSettleOption);
+  parser.addOption(timingNotchesOption);
+  parser.addOption(timingGapOption);
+#endif
 #if RNQNX_ENABLE_WINDOW_CHROME
   // One instance per app (build variants share it). Default: a second launch
   // restores the running window and exits.
@@ -444,6 +471,40 @@ int main(int argc, char** argv) {
   parser.addOption(devEntryOption);
 #endif
   parser.process(app);
+
+#if RNQNX_ENABLE_TIMING_PROBE
+  std::optional<rnqnx::probe::TimingConfig> timingConfig;
+  {
+    const auto timingError = [](const QString& reason) {
+      std::fprintf(stderr, "RNQNX_TIMING_CONFIG_ERROR %s\n", reason.toUtf8().constData());
+      return 2;
+    };
+    const bool timingRequested = parser.isSet(timingOption);
+    if (!timingRequested && (parser.isSet(timingSettleOption) || parser.isSet(timingNotchesOption) ||
+                             parser.isSet(timingGapOption))) {
+      return timingError(QStringLiteral("a timing option needs --timing-json"));
+    }
+    if (timingRequested) {
+      if (!parser.isSet(bundleOption)) return timingError(QStringLiteral("--timing-json needs --bundle"));
+      if (parser.isSet(screenshotOption)) {
+        return timingError(QStringLiteral("--timing-json cannot be combined with --screenshot"));
+      }
+#if RNQNX_ENABLE_DEV_SUPPORT
+      if (parser.isSet(devServerOption)) {
+        return timingError(QStringLiteral("--timing-json cannot be combined with --dev-server"));
+      }
+#endif
+      QString reason;
+      timingConfig = rnqnx::probe::TimingConfig::fromStrings(
+          parser.value(timingSettleOption), parser.value(timingNotchesOption),
+          parser.value(timingGapOption), &reason);
+      if (!timingConfig) return timingError(reason);
+      if (QFileInfo::exists(parser.value(timingOption))) {
+        return timingError(QStringLiteral("output exists: ") + parser.value(timingOption));
+      }
+    }
+  }
+#endif
 
   rnqnx::runtime::ApplicationIdentity identity;
   try {
@@ -620,6 +681,12 @@ int main(int argc, char** argv) {
 #endif
 
   QQuickWindow window;
+#if RNQNX_ENABLE_TIMING_PROBE
+  std::unique_ptr<rnqnx::probe::TimingProbe> timing;
+  if (timingConfig) {
+    timing = std::make_unique<rnqnx::probe::TimingProbe>(window, *timingConfig, timingOrigin);
+  }
+#endif
 #ifdef RNQNX_MARATHON_HOST
   window.setTitle(QStringLiteral("React Native MarathonOS playground"));
 #else
@@ -980,6 +1047,9 @@ int main(int argc, char** argv) {
 #endif
 
   const bool evaluated = host.evaluate(bundle.toStdString(), bundlePath.toStdString());
+#if RNQNX_ENABLE_TIMING_PROBE
+  if (timing) timing->markBundleEvaluated();
+#endif
   const auto bundleFailure = applicationFailure();
   if (!evaluated || !bundleFailure.isEmpty()) {
     std::fprintf(
@@ -1014,6 +1084,9 @@ int main(int argc, char** argv) {
       static_cast<float>(surfaceSize.height()));
   host.setWindowSize(static_cast<float>(surfaceSize.width()), static_cast<float>(surfaceSize.height()),
                      static_cast<float>(window.devicePixelRatio()));
+#if RNQNX_ENABLE_TIMING_PROBE
+  if (timing) timing->markSurfaceStarted();
+#endif
   if (const auto failure = applicationFailure(); !failure.isEmpty()) {
     std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED %s\n", failure.toUtf8().constData());
 #if RNQNX_ENABLE_DEV_SUPPORT
@@ -1155,6 +1228,48 @@ int main(int argc, char** argv) {
         frame.height());
     return 0;
   }
+
+#if RNQNX_ENABLE_TIMING_PROBE
+  if (timing) {
+    // The same 16 ms microtask drain as a normal run; its quantisation is part
+    // of what this run measures.
+    QTimer timingDrain;
+    QObject::connect(&timingDrain, &QTimer::timeout, [&host]() { host.runtime().drainMicrotasks(); });
+    timingDrain.start(16);
+    bool timingOk = false;
+    timing->start([&timingOk](bool ok) {
+      timingOk = ok;
+      QMetaObject::invokeMethod(QCoreApplication::instance(), &QCoreApplication::quit,
+                                Qt::QueuedConnection);
+    });
+    QGuiApplication::exec();
+    timingDrain.stop();
+    if (!timingOk) {
+      std::fprintf(stderr, "RNQNX_TIMING_NO_FRAME no frame swapped after the surface started\n");
+      return 1;
+    }
+    if (const auto failure = applicationFailure(); !failure.isEmpty()) {
+      std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED %s\n", failure.toUtf8().constData());
+      return 1;
+    }
+    host.stopSurface(kSurfaceId);
+    for (int i = 0; i < 20; ++i) {
+      host.runtime().drainMicrotasks();
+      host.pumpEvents();
+    }
+    if (const auto failure = applicationFailure(); !failure.isEmpty()) {
+      std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED %s\n", failure.toUtf8().constData());
+      return 1;
+    }
+    const QString exportError = timing->writeJson(parser.value(timingOption));
+    if (!exportError.isEmpty()) {
+      std::fprintf(stderr, "RNQNX_TIMING_EXPORT_FAILED %s\n", exportError.toUtf8().constData());
+      return 1;
+    }
+    std::printf("RNQNX_TIMING_EXPORTED %s\n", parser.value(timingOption).toUtf8().constData());
+    return 0;
+  }
+#endif
 
   // React schedules through microtasks and the RuntimeScheduler; with a running
   // event loop the host still has to drain the microtask queue, so this pumps

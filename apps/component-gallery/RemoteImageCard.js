@@ -48,12 +48,23 @@ function Choice({ label, selected, onPress }) {
   );
 }
 
+// Both clocks, so a wall clock step shows up as a gap between them. The mount
+// id and load count tell a second onLoad on one mount from a new mount.
+const monotonicNow =
+  typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? () => performance.now()
+    : null;
+let mountCounter = 0;
+
 export default function RemoteImageCard() {
   const [uri, setUri] = React.useState(SOURCES[0].uri);
   const [draft, setDraft] = React.useState(SOURCES[0].uri);
   const [attempt, setAttempt] = React.useState(0);
   const [state, setState] = React.useState({ phase: 'loading' });
   const startedAt = React.useRef(Date.now());
+  const startedMono = React.useRef(monotonicNow ? monotonicNow() : null);
+  const mountId = React.useRef(++mountCounter);
+  const loadCount = React.useRef(0);
 
   const load = React.useCallback((next) => {
     setUri(next);
@@ -83,12 +94,30 @@ export default function RemoteImageCard() {
 
   React.useEffect(() => {
     startedAt.current = Date.now();
+    startedMono.current = monotonicNow ? monotonicNow() : null;
+    loadCount.current = 0;
     setState({ phase: 'loading' });
   }, [uri, attempt]);
 
   const onLoad = () => {
     const ms = Date.now() - startedAt.current;
-    console.log('[RemoteImageCard] loaded ' + uri + ' in ' + ms + ' ms');
+    loadCount.current += 1;
+    const monoMs =
+      startedMono.current == null ? null : Math.round(monotonicNow() - startedMono.current);
+    console.log(
+      '[RemoteImageCard] loaded ' +
+        uri +
+        ' in ' +
+        ms +
+        ' ms' +
+        ' (monotonic ' +
+        (monoMs == null ? 'unavailable' : monoMs + ' ms') +
+        ', mount ' +
+        mountId.current +
+        ', onLoad #' +
+        loadCount.current +
+        ')'
+    );
     setState({ phase: 'loaded', ms });
     const requested = uri;
     Image.getSize(requested)
