@@ -1,0 +1,80 @@
+--- a/src/plugins/platforms/qnx/qqnxintegration.cpp
++++ b/src/plugins/platforms/qnx/qqnxintegration.cpp
+@@ -803,14 +803,32 @@
+ {
+     qCDebug(lcQpaQnx) << Q_FUNC_INFO;
+ 
++    // The software scene graph (QT_QUICK_BACKEND=software) draws into the
++    // raster backing store and never creates an OpenGL context. A board
++    // without an EGL driver then has no use for the display, so continue
++    // without it instead of aborting.
++    const QByteArray quickBackend = qgetenv("QT_QUICK_BACKEND");
++    const bool softwareOnly = quickBackend == "software" || quickBackend == "softwarecontext";
++
+     // Initialize connection to EGL
+     m_eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+-    if (Q_UNLIKELY(m_eglDisplay == EGL_NO_DISPLAY))
++    if (Q_UNLIKELY(m_eglDisplay == EGL_NO_DISPLAY)) {
++        if (softwareOnly) {
++            qWarning("QQnxIntegration: no EGL display (%x), continuing without OpenGL", eglGetError());
++            return;
++        }
+         qFatal("QQnxiIntegration: failed to obtain EGL display: %x", eglGetError());
++    }
+ 
+     EGLBoolean eglResult = eglInitialize(m_eglDisplay, 0, 0);
+-    if (Q_UNLIKELY(eglResult != EGL_TRUE))
++    if (Q_UNLIKELY(eglResult != EGL_TRUE)) {
++        if (softwareOnly) {
++            qWarning("QQnxIntegration: EGL initialize failed (%d), continuing without OpenGL", eglGetError());
++            m_eglDisplay = EGL_NO_DISPLAY;
++            return;
++        }
+         qFatal("QQnxIntegration: failed to initialize EGL display, err=%d", eglGetError());
++    }
+ }
+ 
+ void QQnxIntegration::destroyEglDisplay()
+@@ -818,7 +836,8 @@
+     qCDebug(lcQpaQnx) << Q_FUNC_INFO;
+ 
+     // Close connection to EGL
+-    eglTerminate(m_eglDisplay);
++    if (m_eglDisplay != EGL_NO_DISPLAY)
++        eglTerminate(m_eglDisplay);
+ }
+ #endif
+ 
+--- a/src/plugins/platforms/qnx/qqnxrasterbackingstore.cpp
++++ b/src/plugins/platforms/qnx/qqnxrasterbackingstore.cpp
+@@ -39,6 +39,20 @@
+     return 0;
+ }
+ 
++// The software scene graph renders into paintDevice() and then asks for the
++// result through toImage() when QQuickWindow::grabWindow() is called. Without
++// this override the base class returns a null image and every grab fails.
++QImage QQnxRasterBackingStore::toImage() const
++{
++    QQnxRasterWindow *window = platformWindow();
++    if (window && window->hasBuffers()) {
++        if (const QImage *image = window->renderBuffer().image())
++            return image->copy();
++    }
++
++    return QImage();
++}
++
+ void QQnxRasterBackingStore::flush(QWindow *window, const QRegion &region, const QPoint &offset)
+ {
+     Q_UNUSED(offset);
+--- a/src/plugins/platforms/qnx/qqnxrasterbackingstore.h
++++ b/src/plugins/platforms/qnx/qqnxrasterbackingstore.h
+@@ -20,6 +20,7 @@
+     ~QQnxRasterBackingStore();
+ 
+     QPaintDevice *paintDevice() override;
++    QImage toImage() const override;
+     void flush(QWindow *window, const QRegion &region, const QPoint &offset) override;
+     void resize(const QSize &size, const QRegion &staticContents) override;
+     bool scroll(const QRegion &area, int dx, int dy) override;
