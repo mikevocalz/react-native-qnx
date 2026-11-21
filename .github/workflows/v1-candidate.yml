@@ -15,8 +15,6 @@ name: v1 candidate
 # Device results are not CI checks. Runner labels: docs/ci/qnx-vm-lane.md.
 
 on:
-  push:
-    branches: [s5-vm-lane] # TEMPORARY: removed before merge
   workflow_dispatch:
     inputs:
       run_hosted:
@@ -37,61 +35,61 @@ concurrency:
 
 jobs:
   sdk58-validation:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/sdk58-validation.yml
   host-renderer:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/host-renderer.yml
   image-loader:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/image-loader.yml
   nitro-v1-host:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/nitro-v1-host.yml
   nitro-qnx-source-check:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/nitro-qnx-source-check.yml
   expo-modules-qnx-source-check:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/expo-modules-qnx-source-check.yml
   expo-qnx-autolinking:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/expo-qnx-autolinking.yml
   hermes-qnx-source-check:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/hermes-qnx-source-check.yml
   react-qnx-source-check:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/react-qnx-source-check.yml
   pi-tooling-quality:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/pi-tooling-quality.yml
   runtime-appstate:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/runtime-appstate.yml
   qnx-create-app:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/qnx-create-app.yml
   qnx-native-consumer-build:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/qnx-native-consumer-build.yml
   phase6-doctor:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/phase6-doctor.yml
   phase7-release-dossier:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/phase7-release-dossier.yml
   phase-public-host:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/phase-public-host.yml
   app-identity:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/app-identity.yml
   phase4-lifecycle:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/phase4-lifecycle.yml
   performance-budgets:
-    if: ${{ github.event_name == 'push' || inputs.run_hosted }}
+    if: ${{ inputs.run_hosted }}
     uses: ./.github/workflows/performance-budgets.yml
   qnx-cross:
     uses: ./.github/workflows/qnx-cross-build.yml

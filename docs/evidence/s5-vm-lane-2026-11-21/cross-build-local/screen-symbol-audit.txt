@@ -1,0 +1,27 @@
+OK: screen_create_context
+OK: screen_create_window_type
+OK: screen_set_window_property_iv
+OK: screen_get_window_property_iv
+OK: screen_get_window_property_pv
+OK: screen_create_window_buffers
+OK: screen_post_window
+OK: screen_fill
+OK: screen_destroy_window
+OK: screen_destroy_context
+OK: SCREEN_APPLICATION_CONTEXT
+OK: SCREEN_APPLICATION_WINDOW
+OK: SCREEN_PROPERTY_USAGE
+OK: SCREEN_PROPERTY_FORMAT
+OK: SCREEN_PROPERTY_BUFFER_SIZE
+OK: SCREEN_PROPERTY_SIZE
+OK: SCREEN_PROPERTY_RENDER_BUFFER_COUNT
+OK: SCREEN_PROPERTY_RENDER_BUFFERS
+OK: SCREEN_USAGE_NATIVE
+OK: SCREEN_FORMAT_RGBA8888
+OK: SCREEN_BLIT_COLOR
+OK: SCREEN_BLIT_DESTINATION_X
+OK: SCREEN_BLIT_DESTINATION_Y
+OK: SCREEN_BLIT_DESTINATION_WIDTH
+OK: SCREEN_BLIT_DESTINATION_HEIGHT
+OK: SCREEN_BLIT_END
+All used Screen symbols are present in /work/qnx800/target/qnx/usr/include/screen/screen.h.

@@ -35,3 +35,6 @@ docs-site/content/docs/reference/native-api/
 # Written by scripts/expo-capability-table.mjs; formatting would break its --check.
 docs/expo-delivery/sdk58-capability-table.md
 docs-site/content/docs/reference/expo-capabilities.mdx
+
+# Written by scripts/validate-qnx-vm.sh; reformatting would break the SHA256SUMS beside it.
+docs/evidence/s5-vm-lane-2026-11-21/**/result.json
