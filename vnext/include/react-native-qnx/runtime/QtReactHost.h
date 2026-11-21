@@ -175,14 +175,23 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory();
 ///   caused are applied before the call returns. Those are `evaluate`,
 ///   `startSurface`, `stopSurface`, `commit`, the `install*` calls,
 ///   `registerTurboModule`, `addTeardownHook`, `setTurboModuleProvider`,
-///   `setOwnerPoster`, `lastError`, `javaScriptErrors` and `hasFabricUIManager`.
+///   `lastError`, `javaScriptErrors` and `hasFabricUIManager`.
 ///   They block the GUI thread for as long as JavaScript is busy, so start-up
 ///   and teardown code may use them and input handlers must not.
 /// - Posted: `resizeSurface`, `setWindowSize` and `callFunctionOnModule` queue
 ///   the work and return.
 /// - Thread-bound: `runtime()` returns a reference only the JS thread may use;
 ///   it terminates the process when called from another thread. Use
-///   `runOnJsThread`.
+///   `runOnJsThread`. `scheduler()` and `delegate()` hand out references to
+///   objects the JS thread uses; call only their GUI-owned members from the
+///   GUI thread (`delegate().setTouchDispatcher`, `lastFailures`,
+///   `mountedTransactionCount`).
+/// - Rejected: `setOwnerPoster` throws, because the host installs the poster
+///   that moves mounts to the GUI thread.
+///
+/// A module that needs the GUI thread (AppState) refuses to load in this mode,
+/// and `registerTurboModule` factories and teardown hooks run on the JS thread
+/// and must not wait on the GUI thread: the destructor holds it.
 class QtReactHost {
  public:
   struct Options {
@@ -320,7 +329,7 @@ class QtReactHost {
 
   /// Errors JavaScript has reported through ExceptionsManager, oldest first.
   /// In JS-thread mode this is a snapshot taken at the call; the reference
-  /// stays valid until the next call.
+  /// stays valid until the next call, and two threads must not call it at once.
   const std::vector<JavaScriptError>& javaScriptErrors() const;
 
   /// Installs `globalThis.__RNQNX_PLATFORM_CONSTANTS`, which the platform

@@ -125,7 +125,7 @@ This page covers the threads, the seams between them and the evidence. Sources: 
   <text x="380" y="412" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">The Qt render thread, when present, draws the scene graph and runs no worklet or React code.</text>
 </svg>
 
-The Qt GUI thread runs React, Hermes, module calls and Qt item changes. The host has no separate JS thread, so the UI-worklet thread (`rnqnx-ui-worklet`) is a third thread added beside the render thread, and not a replacement for the JS thread. On the Pi 400, the app logged `[gui]` for the JS thread role and `ui-worklet` for the worklet role in every run.
+The Qt GUI thread runs React, Hermes, module calls and Qt item changes. By default the host has no separate JS thread (an opt-in one exists, ADR-0021, and does not run worklets yet), so the UI-worklet thread (`rnqnx-ui-worklet`) is a third thread added beside the render thread, and not a replacement for the JS thread. On the Pi 400, the app logged `[gui]` for the JS thread role and `ui-worklet` for the worklet role in every run.
 
 ## The seams
 

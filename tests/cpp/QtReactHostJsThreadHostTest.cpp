@@ -14,12 +14,15 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#include "react-native-qnx/runtime/QtRuntimeTaskQueue.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
 #if RNQNX_ENABLE_WINDOW_CHROME
 #include "WindowChrome.h"
 #include "WindowChromeModel.h"
 #endif
+
+#include <jsi/jsi.h>
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
@@ -138,6 +141,31 @@ class Fixture {
   QtReactHost host_;
 };
 
+QQuickItem* findItemNamed(QQuickItem* root, const QString& name) {
+  if (root == nullptr) return nullptr;
+  if (root->objectName() == name) return root;
+  for (QQuickItem* child : root->childItems()) {
+    if (auto* found = findItemNamed(child, name)) return found;
+  }
+  return nullptr;
+}
+
+/// Installs a module that records the window size JavaScript is told about.
+bool installDimensionsRecorder(QtReactHost& host) {
+  return host.evaluate(R"JS(
+    globalThis.dimsEvents = 0;
+    RN$registerCallableModule('RCTDeviceEventEmitter', () => ({
+      emit(name, payload) {
+        if (name === 'didUpdateDimensions') {
+          globalThis.dimsEvents += 1;
+          globalThis.dimsWidth = payload.window.width;
+          globalThis.dimsHeight = payload.window.height;
+        }
+      },
+    }));
+  )JS", "dims-recorder.js");
+}
+
 /// Reads a global number on the JS thread, the only thread allowed to.
 double readNumber(QtReactHost& host, const char* name) {
   double value = -1;
@@ -169,8 +197,11 @@ constexpr const char* kScrollTree = R"JS(
   const content = fabric.createNode(602, 'View', surfaceId,
     { width: 200, height: 600, collapsable: false }, {});
   fabric.appendChild(scroll, content);
+  const filler = fabric.createNode(603, 'View', surfaceId,
+    { width: '100%', height: '100%', collapsable: false }, {});
   const set = fabric.createChildSet();
   fabric.appendChildToSet(set, scroll);
+  fabric.appendChildToSet(set, filler);
   fabric.completeRoot(surfaceId, set);
 )JS";
 
@@ -214,8 +245,25 @@ void timersAndCompletionsRunOnTheJsThread() {
   Fixture fixture;
   auto& host = fixture.host();
   host.installTimers();
-  EXPECT(host.evaluate("setTimeout(() => { globalThis.fired = 1; }, 10);", "timer.js"));
+  // The callback reports the thread it runs on, through a native function, so
+  // the check does not depend on which thread pumps events.
+  std::atomic<int> timerThread{0};  // 1 = JS thread, 2 = elsewhere
+  host.runOnJsThread([&] {
+    auto& runtime = host.runtime();
+    runtime.global().setProperty(
+        runtime, "recordThread",
+        facebook::jsi::Function::createFromHostFunction(
+            runtime, facebook::jsi::PropNameID::forAscii(runtime, "recordThread"), 0,
+            [&](facebook::jsi::Runtime&, const facebook::jsi::Value&,
+                const facebook::jsi::Value*, size_t) -> facebook::jsi::Value {
+              timerThread = host.onJsThread() ? 1 : 2;
+              return facebook::jsi::Value::undefined();
+            }));
+  });
+  EXPECT(host.evaluate("setTimeout(() => { recordThread(); globalThis.fired = 1; }, 10);",
+                       "timer.js"));
   waitUntil([&] { return readNumber(host, "fired") == 1.0; }, 2000, "timer fired");
+  EXPECT(timerThread.load() == 1);
 
   // A worker completes through the task queue; the task must run on the JS thread.
   std::atomic<bool> ran{false};
@@ -236,6 +284,7 @@ void resizeAndWindowSizeDoNotWaitForJavaScript() {
   Fixture fixture;
   fixture.start();
   auto& host = fixture.host();
+  EXPECT(installDimensionsRecorder(host));
   std::atomic<bool> done{false};
   host.postToJsThread([&] {
     host.evaluate("const t = Date.now(); while (Date.now() - t < 1500) {}", "spin-short.js");
@@ -250,16 +299,24 @@ void resizeAndWindowSizeDoNotWaitForJavaScript() {
   EXPECT(timer.elapsed() < kResponsiveMs);
   EXPECT(!done.load());
   waitUntil([&] { return done.load(); }, 5000, "short spin ended");
+  // The posted calls ran once JavaScript was free: it was told the new size.
+  waitUntil([&] { return readNumber(host, "dimsWidth") == 800.0; }, 2000,
+            "JavaScript saw the window size");
+  EXPECT(readNumber(host, "dimsHeight") == 600.0);
 }
 
 void blockedJavaScriptLeavesTheGuiThreadResponsive() {
   Fixture fixture;
   fixture.start();
   auto& host = fixture.host();
+  EXPECT(installDimensionsRecorder(host));
   EXPECT(host.evaluate(kScrollTree, "scroll-tree.js"));
   QQuickItem* scroll = fixture.layer().itemForTag(601);
   EXPECT(scroll != nullptr);
   EXPECT(scroll->property("contentHeight").toDouble() > scroll->height());
+  QQuickItem* filler = fixture.layer().itemForTag(603);
+  EXPECT(filler != nullptr);
+  EXPECT(filler->width() == 640.0);
 
   std::atomic<bool> blockDone{false};
   std::atomic<int> queuedRan{0};
@@ -325,9 +382,23 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
                      [&](const QString& action) { triggered << action; });
     QObject::connect(&chrome, &rnqnx::window::WindowChrome::actionUnavailable,
                      [&](const QString& action, const QString&) { unavailable << action; });
+    // A real press and release on the control item, as a pointer would send.
+    const auto click = [&](const char* control) {
+      QQuickItem* item = findItemNamed(
+          chrome.chromeItem(), QStringLiteral("rnqnxWindowControl_") + QLatin1String(control));
+      EXPECT(item != nullptr);
+      const QPointF centre = item->mapToScene(QPointF(item->width() / 2, item->height() / 2));
+      QMouseEvent press(QEvent::MouseButtonPress, centre, centre, Qt::LeftButton, Qt::LeftButton,
+                        Qt::NoModifier);
+      QCoreApplication::sendEvent(&fixture.window(), &press);
+      QMouseEvent release(QEvent::MouseButtonRelease, centre, centre, Qt::LeftButton,
+                          Qt::NoButton, Qt::NoModifier);
+      QCoreApplication::sendEvent(&fixture.window(), &release);
+      QCoreApplication::processEvents(QEventLoop::AllEvents, 20);
+    };
     QElapsedTimer action;
     action.start();
-    chrome.trigger(QStringLiteral("minimize"));
+    click("minimize");
     EXPECT(action.elapsed() < kResponsiveMs);
     elapsedOk("minimize finished inside the block");
     EXPECT(triggered == QStringList{QStringLiteral("minimize")});
@@ -338,7 +409,7 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
     EXPECT(fixture.window().isVisible());
 
     action.restart();
-    chrome.trigger(QStringLiteral("close"));
+    click("close");
     EXPECT(action.elapsed() < kResponsiveMs);
     elapsedOk("close finished inside the block");
     EXPECT((triggered == QStringList{QStringLiteral("minimize"), QStringLiteral("close")}));
@@ -356,39 +427,80 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
     elapsedOk("resize calls returned inside the block");
   }
 
-  // The loop ran the whole time: at 10 ms, 150 ms of block alone allows 10.
+  // Keep the loop turning to the middle of the block. A 10 ms heartbeat that
+  // skipped most of it would mean the GUI thread was stalled.
+  waitUntil([&] { return blocked.elapsed() >= kBlockMs / 2; }, kBlockMs, "reached mid-block");
+  EXPECT(!blockDone.load());
   const qint64 sampled = blocked.elapsed();
+  const int beatsAtSample = beats;
+  EXPECT(beatsAtSample >= sampled / 40);
   waitUntil([&] { return blockDone.load(); }, kBlockMs + 3000, "the block ended");
   EXPECT(blocked.elapsed() >= kBlockMs - 100);
-  EXPECT(beats >= sampled / 40);
   waitUntil([&] { return queuedRan.load() != 0; }, 2000, "queued work ran after the block");
   EXPECT(queuedRan.load() == 1);
-  std::cout << "blocked=" << blocked.elapsed() << "ms beats=" << beats << std::endl;
+  // The posted calls were not lost: JavaScript saw the size and the surface
+  // was laid out at it, now that JavaScript is free.
+  waitUntil([&] { return readNumber(host, "dimsWidth") == 700.0; }, 2000,
+            "JavaScript saw the window size");
+  EXPECT(readNumber(host, "dimsHeight") == 500.0);
+  waitUntil([&] { return filler->width() == 700.0 && filler->height() == 500.0; }, 2000,
+            "the surface was laid out at the new size");
+  std::cout << "blocked=" << blocked.elapsed() << "ms beats@" << sampled << "ms=" << beatsAtSample
+            << " total=" << beats << std::endl;
 }
 
 void teardownWithQueuedWorkIsClean() {
   for (int round = 0; round < 3; ++round) {
-    Fixture fixture;
-    fixture.start();
-    auto& host = fixture.host();
-    host.installTimers();
-    EXPECT(host.evaluate(kScrollTree, "scroll-tree.js"));
-    EXPECT(host.evaluate("setInterval(() => {}, 1);", "interval.js"));
-    const auto queue = host.taskQueue();
+    std::shared_ptr<rnqnx::runtime::QtRuntimeTaskQueue> queue;
     std::atomic<bool> stop{false};
-    std::thread producer([&] {
-      while (!stop.load()) {
-        try {
-          queue->post([] {});
-        } catch (const std::exception&) {
-          return;  // closed during teardown; the contract is a throw, not a crash
+    std::atomic<bool> sawClosed{false};
+    std::thread producer;
+    {
+      Fixture fixture;
+      fixture.start();
+      auto& host = fixture.host();
+      host.installTimers();
+      EXPECT(host.evaluate(kScrollTree, "scroll-tree.js"));
+      EXPECT(host.evaluate("setInterval(() => {}, 1);", "interval.js"));
+      queue = host.taskQueue();
+      producer = std::thread([&] {
+        while (!stop.load()) {
+          try {
+            queue->post([] {});
+          } catch (const std::exception&) {
+            sawClosed = true;  // the contract after close is a throw, not a crash
+            return;
+          }
+          std::this_thread::sleep_for(std::chrono::microseconds(100));
         }
-        std::this_thread::sleep_for(std::chrono::microseconds(200));
-      }
-    });
-    QThread::msleep(30);
-    stop = true;
+      });
+      QThread::msleep(30);
+      // Work queued right before destruction: a commit whose mount would reach
+      // the GUI thread after the runtime stopped, if shutdown did not order it.
+      host.postToJsThread([&host] {
+        host.evaluate(R"JS(
+          const fabric = globalThis.nativeFabricUIManager;
+          const node = fabric.createNode(701, 'View', 11,
+            { width: 10, height: 10, collapsable: false }, {});
+          const set = fabric.createChildSet();
+          fabric.appendChildToSet(set, node);
+          fabric.completeRoot(11, set);
+        )JS", "last-commit.js");
+      });
+      // The fixture, and with it the host, is destroyed here while the
+      // producer is still posting.
+    }
     producer.join();
+    stop = true;
+    EXPECT(sawClosed.load());
+    // A late post to the closed queue throws; it never reaches the freed runtime.
+    bool threw = false;
+    try {
+      queue->post([] {});
+    } catch (const std::runtime_error&) {
+      threw = true;
+    }
+    EXPECT(threw);
   }
 }
 

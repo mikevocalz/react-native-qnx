@@ -1,5 +1,6 @@
 #include "react-native-qnx/runtime/QtJsThread.h"
 
+#include <QDebug>
 #include <QMetaObject>
 #include <QThread>
 
@@ -74,7 +75,19 @@ void QtJsThread::post(std::function<void()> work) {
     throw std::runtime_error("The JavaScript thread is not running");
   }
   QMetaObject::invokeMethod(
-      worker_.get(), [work = std::move(work)]() { work(); }, Qt::QueuedConnection);
+      worker_.get(),
+      [work = std::move(work)]() {
+        // An exception leaving a Qt event-loop functor ends the process. Posted
+        // work has no caller to receive it, so report it and carry on.
+        try {
+          work();
+        } catch (const std::exception& error) {
+          qWarning() << "Uncaught exception in work posted to the JS thread:" << error.what();
+        } catch (...) {
+          qWarning() << "Uncaught non-standard exception in work posted to the JS thread";
+        }
+      },
+      Qt::QueuedConnection);
 }
 
 void QtJsThread::call(const std::function<void()>& work) {

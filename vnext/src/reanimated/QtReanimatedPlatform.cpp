@@ -1,7 +1,7 @@
-#include <stdexcept>
 #include "react-native-qnx/reanimated/QtReanimatedPlatform.h"
 
 #include "QnxReanimatedModule.h"
+#include <stdexcept>
 
 namespace rnqnx::reanimated {
 

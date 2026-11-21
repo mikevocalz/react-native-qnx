@@ -152,24 +152,30 @@ facebook::jsi::Object displayMetrics(
 
 }  // namespace
 
+QnxDeviceInfo::ScreenMetrics QnxDeviceInfo::readPrimaryScreen() {
+  ScreenMetrics metrics;
+  if (const auto* screen = QGuiApplication::primaryScreen()) {
+    metrics.width = screen->geometry().width();
+    metrics.height = screen->geometry().height();
+    metrics.scale = screen->devicePixelRatio();
+  }
+  return metrics;
+}
+
 QnxDeviceInfo::QnxDeviceInfo(
-    std::shared_ptr<facebook::react::CallInvoker> jsInvoker)
-    : NativeDeviceInfoCxxSpec(std::move(jsInvoker)) {}
+    std::shared_ptr<facebook::react::CallInvoker> jsInvoker,
+    std::optional<ScreenMetrics> screen)
+    : NativeDeviceInfoCxxSpec(std::move(jsInvoker)), screen_(screen) {}
 
 facebook::jsi::Object QnxDeviceInfo::getConstants(
     facebook::jsi::Runtime& runtime) {
   // Real values from the running system. With no screen at all — which should
   // not happen under a Qt application — the metrics stay zero rather than
   // inventing a device size.
-  double width = 0;
-  double height = 0;
-  double scale = 1;
-
-  if (const auto* screen = QGuiApplication::primaryScreen()) {
-    width = screen->geometry().width();
-    height = screen->geometry().height();
-    scale = screen->devicePixelRatio();
-  }
+  const ScreenMetrics metrics = screen_ ? *screen_ : readPrimaryScreen();
+  const double width = metrics.width;
+  const double height = metrics.height;
+  const double scale = metrics.scale;
 
   // Dimensions.js:126 reads `getConstants().Dimensions`, so the metrics are
   // nested under that key rather than sitting at the top level.

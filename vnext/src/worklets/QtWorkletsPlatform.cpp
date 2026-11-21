@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "react-native-qnx/worklets/QtWorkletsPlatform.h"
 
 #include "QnxWorkletsModule.h"
@@ -18,6 +17,7 @@
 #include <cstdio>
 #include <memory>
 #include <thread>
+#include <stdexcept>
 
 namespace rnqnx::worklets {
 

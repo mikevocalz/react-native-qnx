@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "react-native-qnx/gesture/QtGesturePlatform.h"
 
 #include "QnxGestureHandlerModule.h"
@@ -21,6 +20,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unordered_map>
+#include <stdexcept>
 
 namespace rnqnx::gesture {
 

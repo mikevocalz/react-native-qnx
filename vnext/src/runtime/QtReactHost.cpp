@@ -64,7 +64,9 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <atomic>
 #include <cstdio>
+#include <mutex>
 #include <optional>
 #include <type_traits>
 #include <exception>
@@ -474,6 +476,39 @@ class QnxFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults 
 };
 } // namespace
 
+namespace {
+/// How threads other than the JS thread reach the JS thread's queue without
+/// touching `Impl`. Foreign threads (workers holding a CallInvoker) can call the
+/// runtime executor while the host is being destroyed; they must find a closed
+/// gate, not a freed object. `close()` waits for any in-flight post.
+class JsGate {
+ public:
+  JsGate(QtJsThread* thread, std::thread::id jsId) : thread_(thread), jsId_(jsId) {}
+
+  bool onJsThread() const noexcept { return std::this_thread::get_id() == jsId_; }
+  bool open() const noexcept { return open_.load(); }
+
+  /// Queues `work` unless the gate is closed. Returns whether it was queued.
+  bool post(std::function<void()> work) {
+    std::lock_guard lock(mutex_);
+    if (!open_.load()) return false;
+    thread_->post(std::move(work));
+    return true;
+  }
+
+  void close() {
+    std::lock_guard lock(mutex_);
+    open_ = false;
+  }
+
+ private:
+  std::mutex mutex_;
+  QtJsThread* thread_;
+  const std::thread::id jsId_;
+  std::atomic<bool> open_{true};
+};
+}  // namespace
+
 class QtReactHost::Impl {
  public:
   /// `guiThread` is the thread that owns Qt items; `jsThread` is null when
@@ -487,6 +522,9 @@ class QtReactHost::Impl {
 #endif
        )
       : jsThread(jsThreadOwner), delegate(adapter, guiThread) {
+    if (jsThread != nullptr) {
+      gate = std::make_shared<JsGate>(jsThread, std::this_thread::get_id());
+    }
 #if RNQNX_ENABLE_FRAME_TRACE
     trace = std::move(traceSession);
 #endif
@@ -513,16 +551,18 @@ class QtReactHost::Impl {
     // the callback to the JS thread. The executor runs a callback or hands it
     // over; it never runs one on a thread that does not own the runtime.
     facebook::react::RuntimeExecutor runtimeExecutor =
-        [this](std::function<void(facebook::jsi::Runtime&)>&& callback) {
-          if (jsThread != nullptr && !jsThread->isCurrent()) {
-            try {
-              jsThread->post([this, callback = std::move(callback)]() {
-                runCallback(callback);
-              });
-            } catch (const std::exception& error) {
-              // The thread is gone; the host is tearing down. Dropping the
-              // callback is the only choice, as for a closed task queue.
-              qWarning() << "JavaScript callback dropped:" << error.what();
+        [this, gate = gate](std::function<void(facebook::jsi::Runtime&)>&& callback) {
+          if (gate && !gate->onJsThread()) {
+            // The posted callback checks the gate again on the JS thread: a
+            // callback queued before close() but run after it must not touch
+            // an Impl that is being destroyed.
+            const bool queued = gate->post([this, gate, callback = std::move(callback)]() {
+              if (gate->open()) runCallback(callback);
+            });
+            if (!queued) {
+              // Closed: the host is tearing down. Dropping the callback is the
+              // only choice, as for a closed task queue.
+              qWarning() << "JavaScript callback dropped: the host is shutting down";
             }
             return;
           }
@@ -698,13 +738,11 @@ class QtReactHost::Impl {
 
   void runCallback(const std::function<void(facebook::jsi::Runtime&)>& callback) {
     ++runtimeExecutionDepth;
-    try {
-      callback(*runtime);
-    } catch (...) {
-      --runtimeExecutionDepth;
-      throw;
-    }
-    --runtimeExecutionDepth;
+    struct Leave {
+      int& depth;
+      ~Leave() { --depth; }
+    } leave{runtimeExecutionDepth};
+    callback(*runtime);
   }
 
   ~Impl() {
@@ -754,6 +792,10 @@ class QtReactHost::Impl {
   std::unordered_map<SurfaceId, std::uint64_t> surfaceGenerations;
 #endif
   QtJsThread* jsThread{nullptr};
+  /// Null unless JavaScript has its own thread.
+  std::shared_ptr<JsGate> gate;
+  /// Screen size read on the GUI thread, so JS never reads a QScreen.
+  std::optional<QnxDeviceInfo::ScreenMetrics> guiScreen;
   bool shutDown{false};
   int runtimeExecutionDepth{0};
   std::size_t taskErrorSequence{0};
@@ -809,10 +851,12 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter, Options opt
     return;
   }
   guiContext_ = std::make_unique<QObject>();
+  const auto screen = QnxDeviceInfo::readPrimaryScreen();
   jsThread_ = std::make_unique<QtJsThread>();
   jsThread_->call([&] {
     impl_ = std::make_unique<Impl>(adapter, guiThread_, jsThread_.get());
     setGuiOwnerPoster();
+    impl_->guiScreen = screen;
   });
 }
 
@@ -829,10 +873,12 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
     return;
   }
   guiContext_ = std::make_unique<QObject>();
+  const auto screen = QnxDeviceInfo::readPrimaryScreen();
   jsThread_ = std::make_unique<QtJsThread>();
   jsThread_->call([&] {
     impl_ = std::make_unique<Impl>(adapter, guiThread_, jsThread_.get(), std::move(trace));
     setGuiOwnerPoster();
+    impl_->guiScreen = screen;
   });
 }
 #endif
@@ -843,7 +889,11 @@ QtReactHost::~QtReactHost() {
   }
   // Same order as the single-thread destructor, split in two so the mounts that
   // stopping surfaces produces are applied while the delegate still exists.
-  jsThread_->call([this] { impl_->shutdown(); });
+  jsThread_->call([this] {
+    impl_->shutdown();
+    // Foreign threads that still hold the executor now find it closed.
+    impl_->gate->close();
+  });
   flushMounts();
   jsThread_->call([this] { impl_.reset(); });
   jsThread_.reset();
@@ -1048,9 +1098,11 @@ void QtReactHost::registerTurboModule(std::string name, TurboModuleFactory facto
 }
 
 void QtReactHost::setOwnerPoster(QtSchedulerDelegate::OwnerPoster poster) {
-  if (jsThread_ && !jsThread_->isCurrent()) {
-    onJs([&] { setOwnerPoster(std::move(poster)); });
-    return;
+  if (jsThread_) {
+    // The host's own poster is what moves mounts to the GUI thread. Replacing
+    // it would send them somewhere else.
+    throw std::logic_error(
+        "QtReactHost JS-thread mode installs its own owner poster (ADR-0021)");
   }
   impl_->delegate.setOwnerPoster(std::move(poster));
 }
@@ -1076,6 +1128,13 @@ void QtReactHost::callFunctionOnModule(
     const std::string& methodName,
     folly::dynamic args,
     bool ifRegistered) {
+  if (jsThread_ && !jsThread_->isCurrent()) {
+    // Posted, not awaited. The module table is read on the JS thread.
+    dispatchToJs([this, moduleName, methodName, args = std::move(args), ifRegistered]() mutable {
+      callFunctionOnModule(moduleName, methodName, std::move(args), ifRegistered);
+    });
+    return;
+  }
   auto* impl = impl_.get();
   impl_->runtimeScheduler->scheduleWork(
       [impl, moduleName, methodName, ifRegistered, args = std::move(args)](
@@ -1217,7 +1276,7 @@ void QtReactHost::installTurboModuleBinding() {
         // and the throw escapes.
         if (name == QnxDeviceInfo::kModuleName) {
           // Dimensions reads this, and ScrollView reads Dimensions.
-          return std::make_shared<QnxDeviceInfo>(callInvoker);
+          return std::make_shared<QnxDeviceInfo>(callInvoker, impl->guiScreen);
         }
 
         if (name == QnxSourceCode::kModuleName) {
@@ -1291,6 +1350,12 @@ void QtReactHost::installTurboModuleBinding() {
 
 #if RNQNX_ENABLE_APP_STATE
         if (name == QnxAppStateModule::kModuleName) {
+          if (impl->jsThread != nullptr) {
+            // The module's constructor and its Qt signal wiring require the GUI
+            // thread. Not moved yet (ADR-0021), so refuse with the module name.
+            throw std::logic_error(
+                "AppState is not supported with QtReactHost JS-thread mode yet (ADR-0021)");
+          }
           if (!impl->appStateModule) {
             impl->appStateModule = std::make_shared<QnxAppStateModule>(callInvoker);
           }

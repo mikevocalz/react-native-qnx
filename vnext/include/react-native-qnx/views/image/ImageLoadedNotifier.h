@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <mutex>
 
 namespace rnqnx::views {
 
@@ -18,7 +19,9 @@ struct ImageLoadedEvent {
 
 /// Fans an ImageLoadedEvent out to whoever listens: the host's installed binding
 /// forwards it to expo-image's `imageLoaded` module event (what expo-observe
-/// subscribes to). Single-threaded: subscribe and notify on the Qt/JS thread.
+/// subscribes to). Thread-safe: with the JS thread on (ADR-0021) subscribe runs
+/// there while notify runs on the GUI thread or a worker. Listeners run
+/// outside the lock.
 class ImageLoadedNotifier final {
  public:
   using Token = std::uint64_t;
@@ -31,6 +34,7 @@ class ImageLoadedNotifier final {
   void notify(const ImageLoadedEvent& event);
 
  private:
+  std::mutex mutex_;
   std::map<Token, Listener> listeners_;
   Token next_{1};
 };
