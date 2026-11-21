@@ -53,7 +53,7 @@ async function run(scenario) {
   );
   const versioned = /** @type {const} */ ([
     ['node', scenario.node === undefined ? 'v26.13.0' : scenario.node],
-    ['pnpm', scenario.pnpm === undefined ? '12.18.0' : scenario.pnpm],
+    ['pnpm', scenario.pnpm === undefined ? '12.21.0' : scenario.pnpm],
     ['cmake', scenario.cmake === undefined ? 'cmake version 4.1.2' : scenario.cmake],
     ['ninja', scenario.ninja === undefined ? '1.13.1' : scenario.ninja],
     ['python3', scenario.python === undefined ? 'Python 3.13.1' : scenario.python],
@@ -74,7 +74,7 @@ async function run(scenario) {
   await writeFile(path.join(project, 'docs/getting-started/compatibility-matrix.md'), '');
   const manifest =
     scenario.manifest === undefined
-      ? '{\n  "name": "react-native-qnx-monorepo",\n  "packageManager": "pnpm@12.18.0"\n}\n'
+      ? '{\n  "name": "react-native-qnx-monorepo",\n  "packageManager": "pnpm@12.21.0"\n}\n'
       : scenario.manifest;
   if (manifest !== null) await writeFile(path.join(project, 'package.json'), manifest);
   /** @type {Record<string, string>} */
@@ -233,7 +233,7 @@ try {
   // The pnpm pin comes from packageManager; an integrity suffix is ignored.
   r = await run({
     manifest:
-      '{"name": "react-native-qnx-monorepo", "packageManager": "pnpm@12.18.0+sha512.abc123"}\n',
+      '{"name": "react-native-qnx-monorepo", "packageManager": "pnpm@12.21.0+sha512.abc123"}\n',
   });
   assert.equal(r.status, 0, r.out);
   assert.match(r.out, /OK: pnpm 12\.18\.0 matches the repository pin/);

@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: 26.13.1
           package-manager-cache: false
-      - run: npm install --global pnpm@12.18.0
+      - run: npm install --global pnpm@12.21.0
       - run: pnpm install --frozen-lockfile
       - name: Budgets file is consistent
         run: node scripts/validate-budgets.mjs --check-file

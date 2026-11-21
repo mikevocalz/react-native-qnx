@@ -12,7 +12,7 @@ Source links point at `main` in [mikevocalz/react-native-qnx](https://github.com
 | Requirement  | Version                                 | Source                                                                                                                                                                                                                                              |
 | ------------ | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Node         | at least 26.0.0                         | `engines.node` in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json)                                                                                                                                             |
-| pnpm         | 12.18.0 exactly                         | `packageManager` in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json); `engines.pnpm` is `>=12.18.0`                                                                                                            |
+| pnpm         | 12.21.0 exactly                         | `packageManager` in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json); `engines.pnpm` is `>=12.21.0`                                                                                                            |
 | CMake        | at least 3.31.9                         | `cmake_minimum_required` in [CMakeLists.txt](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakeLists.txt) and `cmakeMinimumRequired` in [CMakePresets.json](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakePresets.json) |
 | Ninja        | at least 1.11                           | Development host row in [the compatibility matrix](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/compatibility-matrix.md)                                                                                           |
 | Python       | at least 3.11                           | Same row of the compatibility matrix                                                                                                                                                                                                                |
@@ -22,7 +22,7 @@ Source links point at `main` in [mikevocalz/react-native-qnx](https://github.com
 
 The JavaScript-only path in the [quick start](/docs/tutorials/quick-start) needs Node, pnpm and Git. It does not need CMake, Ninja, Python or Qt. Those matter when you build the host playground or the native binaries.
 
-The quick start records its runs on macOS arm64 with Node 26.13.0 and pnpm 12.18.0.
+The quick start records its runs on macOS arm64 with Node 26.13.0 and pnpm 12.21.0.
 
 ### CMake presets
 
@@ -86,7 +86,7 @@ These were run read-only while writing this page, on a macOS arm64 machine, in a
 | `cmake --version`   | `cmake version 4.4.5`                                                                                                                                                             |
 | `ninja --version`   | `1.13.2`                                                                                                                                                                          |
 | `python3 --version` | `Python 3.13.3`                                                                                                                                                                   |
-| `pnpm --version`    | Failed: `Failed to switch pnpm to v12.18.0 ... ENOEXEC`. The global pnpm tried to switch to the pinned version and could not. The quick start describes this failure and its fix. |
+| `pnpm --version`    | Failed: `Failed to switch pnpm to v12.21.0 ... ENOEXEC`. The global pnpm tried to switch to the pinned version and could not. The quick start describes this failure and its fix. |
 
 Not run: `pnpm validate:dependencies`, any CMake configure, any Qt or SDP check, and anything on a Pi.
 

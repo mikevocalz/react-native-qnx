@@ -27,7 +27,7 @@ That screenshot is from the run 2 receipt. It is what step 7 should leave you wi
 | -------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | Build host     | x86-64 Ubuntu 22.04            | Also supported by the SDP: Ubuntu 24.04, RHEL 9, Windows 11. No macOS and no ARM host.                                       |
 | QNX SDP        | 8.0.5                          | Licensed, installed by you. The repository never ships it.                                                                   |
-| Node, pnpm     | 26 or newer, 12.18.0           | On the build host.                                                                                                           |
+| Node, pnpm     | 26 or newer, 12.21.0           | On the build host.                                                                                                           |
 | CMake, Ninja   | 3.31.9 or newer, 1.11 or newer | `pnpm qnx doctor` checks both.                                                                                               |
 | Qt for QNX     | 6.12.0                         | Public-source build from [`scripts/qt-public/`](https://github.com/mikevocalz/react-native-qnx/tree/main/scripts/qt-public). |
 | Hermes for QNX | `hermes-v260318099.0.5`        | Built by `pnpm hermes:qnx:prepare` and `pnpm hermes:qnx:configure`.                                                          |

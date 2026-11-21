@@ -34,7 +34,7 @@ graph. The same table appears in the README and the
 | typescript             | `7.0.2`                                 |
 | codegenTypescript      | `6.0.2`                                 |
 | node                   | `>=26.0.0`                              |
-| packageManager         | `pnpm@12.18.0`                          |
+| packageManager         | `pnpm@12.21.0`                          |
 | expoModulesCore        | `58.1.0`                                |
 | expoMetro              | `58.0.0`                                |
 | expoMetroConfig        | `58.0.23`                               |

@@ -20,10 +20,10 @@ The project is experimental and pre-v1. All 11 release gates in `docs/releases/v
 
 ## Setup
 
-Needs Node 26 or newer and pnpm 12.18.0 exactly (`packageManager` in `package.json`). From a checkout:
+Needs Node 26 or newer and pnpm 12.21.0 exactly (`packageManager` in `package.json`). From a checkout:
 
 ```bash
-npm install -g pnpm@12.18.0
+npm install -g pnpm@12.21.0
 pnpm install --frozen-lockfile
 pnpm validate:dependencies
 pnpm qnx --help

@@ -34,11 +34,11 @@ This path runs on a Mac or Linux machine and needs no QNX SDP and no board. It b
 renderer, so the first CMake configure downloads and compiles Hermes, folly and Boost, which takes a
 while. It proves your JavaScript bundles and renders. It does not prove anything about QNX.
 
-You need Node 26 or newer, pnpm 12.18.0, CMake, Ninja and Qt 6.11.1 or newer
+You need Node 26 or newer, pnpm 12.21.0, CMake, Ninja and Qt 6.11.1 or newer
 ([toolchain notes](docs/toolchain.md)).
 
 ```bash
-npm install -g pnpm@12.18.0   # or: npm install --prefix ~/pnpm12 pnpm@12.18.0, then see the note below
+npm install -g pnpm@12.21.0   # or: npm install --prefix ~/pnpm12 pnpm@12.21.0, then see the note below
 git clone https://github.com/mikevocalz/react-native-qnx.git
 cd react-native-qnx
 pnpm install --frozen-lockfile
@@ -115,7 +115,7 @@ Reanimated, Gesture Handler, Qt SVG and RNSVG on.
 
 ## Requirements
 
-- Host for JavaScript work: macOS or Linux, Node 26 or newer, pnpm 12.18.0.
+- Host for JavaScript work: macOS or Linux, Node 26 or newer, pnpm 12.21.0.
 - Host renderer: Qt 6.11.1 or newer, CMake and Ninja. The quick start commands were run on macOS with Qt 6.12.0, CMake 4.4.5 and Ninja 1.13.2 ([receipt](docs/evidence/quickstart-host-2026-11-19.md)).
 - QNX cross-builds: an x86-64 Linux host (Ubuntu 22.04 is the canonical one) with a licensed QNX SDP
   8.0.5, because SDP 8.0 ships Linux and Windows host tools only. `pnpm qnx doctor` reports gaps.
@@ -186,7 +186,7 @@ Read the [architecture decisions](docs/adr/index.md) and the
 | typescript             | `7.0.2`                                 |
 | codegenTypescript      | `6.0.2`                                 |
 | node                   | `>=26.0.0`                              |
-| packageManager         | `pnpm@12.18.0`                          |
+| packageManager         | `pnpm@12.21.0`                          |
 | expoModulesCore        | `58.1.0`                                |
 | expoMetro              | `58.0.0`                                |
 | expoMetroConfig        | `58.0.23`                               |
