@@ -412,10 +412,20 @@ identity fields). `rnqnx runner pack` writes both from the same values.
 - The archive hash is stable for one stage, one Node version and one zlib
   build: entries are sorted and owner and time fields are zero, but file modes
   (masked to 0755) and zlib output come from the machine that packs.
-- Not done: the native runner does not read this file and show an on-screen
-  preflight message yet (`preflight.*` in the design strings; hardening item
-  A4). The check runs on the development host, in the launch step of
-  `rnqnx project run --runtime`, before the bundle is copied.
+- The check runs twice. On the development host, in the launch step of
+  `rnqnx project run --runtime`, before the bundle is copied. That command
+  also writes `build/<platform>/rnqnx-app.json` (the modules, React Native
+  version and Nitro ABI the app needs). The native runner reads that file and
+  this one from its own directory and refuses the app before any JavaScript
+  runs when a module is missing or at another version, or React Native, Nitro
+  or Hermes bytecode differ. Contract and states:
+  [S6 native runner preflight](nitro/API_CONTRACTS.md#s6-native-runner-preflight-internal-no-javascript-api).
+- Not done: the dedicated preflight screen (copy-command button, close button;
+  gate item G4), a source signature so a same-version native edit is detected
+  (A2), a custom development build that writes its own `rnqnx-runtime.json`
+  (A1; until then a build without that file is not checked), and the
+  copy of `rnqnx-app.json` to the board (`project run` stops at `deploy`).
+  No run on a device or the VM has exercised the native check yet.
 
 Commands:
 

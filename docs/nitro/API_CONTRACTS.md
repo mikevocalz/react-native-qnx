@@ -294,6 +294,85 @@ rnqnx_playground_host --bundle hello-world.bundle.js --timing-json /tmp/hello.js
 | QNX Screen (VM, Pi 400, release board)     | None in this slice. CMake rejects `RNQNX_ENABLE_TIMING_PROBE=ON` when `CMAKE_SYSTEM_NAME` is `QNX`. The device and VM budget fields stay `unmeasured` until a QNX reader and clock mapping are written, reviewed and run on a QNX target (S9). |
 | Marathon                                   | Not in scope (frozen).                                                                                                                                                                                                                         |
 
+## S6 native runner preflight (internal, no JavaScript API)
+
+Added 2026-11-21 for hardening item A4 (gate `expo`). This section is the
+`api-design` output (Margelo skill, step 1), the `build-nitro-modules` decision
+(step 2) and the `cpp` review note (step 3) for the preflight.
+
+### Decision: no HybridObject, no `.nitro.ts` spec
+
+The check runs before a JavaScript runtime exists, so JavaScript cannot start,
+read or stop it. There is no `.nitro.ts`, no entry in
+`scripts/nitro-platform-codegen.mjs` and no Nitrogen-looking output. The
+surface is two JSON files, one C++ function and two playground options.
+
+### The two files
+
+| File                 | Written by                                                                                     | Read by                            | Schema                                                                                                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rnqnx-runtime.json` | `rnqnx runner pack`, at the top of the runner archive (ADR-0018)                               | The runner, next to its executable | `rnqnx-runtime/v1`, defined in `docs/packaging.md#runner-runtime-descriptor`.                                                                                                               |
+| `rnqnx-app.json`     | `rnqnx project run --runtime`, in `build/<platform>/`; deploy copies it next to the executable | The runner, same directory         | `rnqnx-app/v1`: `reactNative` (string or null), `nitroAbi` (string or null), `requires.{nitroModules,expoModules,fabricComponents}`, each an array of `{package, version}` without repeats. |
+
+`rnqnx-app.json` comes from the same discovery as `rnqnx analyze`
+(`appNative` in `analyze.mjs`), so the host verdict and the native screen name
+the same modules. `null` means the app does not use that thing and nothing is
+compared for it.
+
+### Typed call site
+
+```cpp
+const auto result = rnqnx::runtime::checkRuntimePreflight(
+    runnerJson, appJson, rnqnx::runtime::hermesBytecodeVersion(bundle));
+if (std::holds_alternative<rnqnx::runtime::PreflightIncompatible>(result)) {
+  show(preflightTitle(result), preflightMessage(result));  // no JavaScript runs
+}
+```
+
+### Error set (the `PreflightResult` variant)
+
+| State                   | When                                                                                                                                            | Startup                                         |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `PreflightNotChecked`   | No `rnqnx-app.json`. Includes every app built with its own native build today.                                                                  | Continues. Never counted as a pass.             |
+| `PreflightCompatible`   | Both files valid and every compared field agrees.                                                                                               | Continues.                                      |
+| `PreflightIncompatible` | One row per module that is missing or at another version, and per differing React Native, Nitro ABI or Hermes bytecode version.                 | Stops before the JavaScript runtime is created. |
+| `PreflightInvalid`      | `rnqnx-app.json` present and the runner file is absent, over 1 MiB, not JSON, the wrong schema, or has a malformed field or a repeated package. | Stops before the JavaScript runtime is created. |
+
+A module is covered only by the same package at the same version: another
+version is different native code. This slice compares versions. It does not
+compare a native-source signature, so a same-version native edit is not
+detected (hardening item A2), and the row text `Changed native code` stands for
+a version difference only.
+
+### Startup behavior
+
+- Playground host and consumer app (`main.cpp`): the check runs once per
+  start or reload, after the bundle bytes are in hand and before `QtReactHost`
+  is constructed. Stderr gets `RNQNX_PLAYGROUND_PREFLIGHT_FAILED <title>` and
+  the message; the process exits 1. With `RNQNX_ENABLE_DEV_SUPPORT` and no
+  `--screenshot`, the dev error overlay (`QnxDevSupport::showError`) shows the
+  same title and message and the window stays open for a reload.
+- Options: `--runner-details <path>` and `--app-requirements <path>`; both
+  default to the executable's directory.
+- The dedicated screen (copy-command button, close button, per-screen design
+  outputs) belongs to gate item G4 and is not part of this slice. The text uses
+  `preflight.title`, `preflight.body`, `preflight.invalidTitle`,
+  `preflight.invalidBody`, `preflight.buildHeading` and `preflight.more` from
+  `docs/v1/design/strings.md`.
+
+### `cpp` review note
+
+| Concern               | Answer                                                                                                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ownership             | Values only. The functions take `const&` inputs and return a `std::variant`; no pointers are kept. The two files are read by `main.cpp` into `QByteArray`s. |
+| Threads               | No thread, executor, mutex or callback. It runs on the main thread inside the existing start sequence.                                                      |
+| Races and sleeps      | None. The check has no timing and does not retry.                                                                                                           |
+| After Hermes teardown | Nothing here outlives a call, and it runs before the host exists, so no callback can arrive after teardown.                                                 |
+| State modeling        | One `std::variant` of four concrete types; rows exist only on `PreflightIncompatible`, the reason only on `PreflightInvalid`.                               |
+| File size             | `RuntimePreflight.cpp` is about 230 lines, one cohesive responsibility.                                                                                     |
+
+Independent review: see the S6 preflight receipt.
+
 ## Native tree query for tests: `rnqnx::testing::waitForNode` (S3)
 
 Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an _app-facing_ native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR.

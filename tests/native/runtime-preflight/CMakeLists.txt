@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.31.9)
+project(rnqnx-runtime-preflight LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_AUTOMOC OFF)
+include(CTest)
+option(RNQNX_ENABLE_HOST_SANITIZERS "Enable host ASan and UBSan" ON)
+if(NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
+  message(FATAL_ERROR "The runtime preflight test builds for Linux, Darwin or QNX only")
+endif()
+find_package(Qt6 REQUIRED COMPONENTS Core)
+set(root "${CMAKE_CURRENT_LIST_DIR}/../../..")
+add_executable(rnqnx_runtime_preflight_test
+  RuntimePreflightTest.cpp
+  "${root}/vnext/src/runtime/RuntimePreflight.cpp")
+target_include_directories(rnqnx_runtime_preflight_test PRIVATE "${root}/vnext/include")
+target_compile_definitions(rnqnx_runtime_preflight_test PRIVATE
+  RNQNX_PREFLIGHT_FIXTURES="${root}/tests/fixtures/runner-preflight")
+target_link_libraries(rnqnx_runtime_preflight_test PRIVATE Qt6::Core)
+target_compile_options(rnqnx_runtime_preflight_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX" AND RNQNX_ENABLE_HOST_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_options(rnqnx_runtime_preflight_test PRIVATE
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer)
+  target_link_options(rnqnx_runtime_preflight_test PRIVATE -fsanitize=address,undefined)
+endif()
+add_test(NAME rnqnx_runtime_preflight_test COMMAND rnqnx_runtime_preflight_test)
+set_tests_properties(rnqnx_runtime_preflight_test PROPERTIES TIMEOUT 60)

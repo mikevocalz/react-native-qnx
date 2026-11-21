@@ -26,6 +26,7 @@
 #endif
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
 #include "react-native-qnx/runtime/ApplicationIcon.h"
+#include "react-native-qnx/runtime/RuntimePreflight.h"
 #ifdef RNQNX_CONSUMER_APP_HEADER
 #include RNQNX_CONSUMER_APP_HEADER
 #endif
@@ -102,6 +103,7 @@
 #include <optional>
 #include <sstream>
 #include <stdexcept>
+#include <variant>
 
 namespace {
 
@@ -450,6 +452,17 @@ int main(int argc, char** argv) {
 #endif
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
+  // Both files default to the executable's directory, where the runner archive
+  // and `rnqnx project run` put them. The options exist for tests.
+  const QCommandLineOption runnerDetailsOption(QStringLiteral("runner-details"),
+      QStringLiteral("This runner's rnqnx-runtime.json (default: next to the executable)."),
+      QStringLiteral("path"));
+  const QCommandLineOption appRequirementsOption(QStringLiteral("app-requirements"),
+      QStringLiteral("The app's rnqnx-app.json; with it the runner is checked before the bundle runs "
+                     "(default: next to the executable, when present)."),
+      QStringLiteral("path"));
+  parser.addOption(runnerDetailsOption);
+  parser.addOption(appRequirementsOption);
 #ifdef RNQNX_MARATHON_NITRO
   const QCommandLineOption nitroProofOption(QStringLiteral("nitro-proof"),
       QStringLiteral("Run JavaScript that reads the MarathonPlatformInfo Nitro hybrid and exit "
@@ -651,6 +664,26 @@ int main(int argc, char** argv) {
     }
     bundle = bundleFile.readAll();
   }
+
+  // Missing files are nullopt; a file that exists but cannot be read is empty,
+  // which the preflight reports as invalid rather than skipping the check.
+  const auto readOptionalFile = [](const QString& path) -> std::optional<QByteArray> {
+    QFile file(path);
+    if (!file.exists()) return std::nullopt;
+    if (!file.open(QIODevice::ReadOnly)) return QByteArray();
+    return file.readAll();
+  };
+  // Read at each start, so a reload after `project run` rewrote them sees the new files.
+  const auto readRunnerDetails = [&]() {
+    return readOptionalFile(parser.isSet(runnerDetailsOption)
+        ? parser.value(runnerDetailsOption)
+        : QCoreApplication::applicationDirPath() + QStringLiteral("/rnqnx-runtime.json"));
+  };
+  const auto readAppRequirements = [&]() {
+    return readOptionalFile(parser.isSet(appRequirementsOption)
+        ? parser.value(appRequirementsOption)
+        : QCoreApplication::applicationDirPath() + QStringLiteral("/rnqnx-app.json"));
+  };
 
 #if RNQNX_ENABLE_WINDOW_CHROME
   // The playground keeps its original chromeless window unless asked; a
@@ -956,6 +989,24 @@ int main(int argc, char** argv) {
   }
 #endif
   result = [&]() {
+  // Before a JavaScript runtime exists: an app that needs native code this
+  // runner does not have must not reach evaluation (hardening item A4).
+  const auto preflight = rnqnx::runtime::checkRuntimePreflight(
+      readRunnerDetails(), readAppRequirements(), rnqnx::runtime::hermesBytecodeVersion(bundle));
+  if (!std::holds_alternative<rnqnx::runtime::PreflightNotChecked>(preflight) &&
+      !std::holds_alternative<rnqnx::runtime::PreflightCompatible>(preflight)) {
+    const auto title = rnqnx::runtime::preflightTitle(preflight);
+    const auto message = rnqnx::runtime::preflightMessage(preflight);
+    std::fprintf(stderr, "RNQNX_PLAYGROUND_PREFLIGHT_FAILED %s\n%s\n",
+                 title.toUtf8().constData(), message.toUtf8().constData());
+#if RNQNX_ENABLE_DEV_SUPPORT
+    if (dev && !parser.isSet(screenshotOption)) {
+      dev->showError(title, message);
+      return quitByLaunch ? 0 : runApplicationLoop();
+    }
+#endif
+    return 1;
+  }
 #if RNQNX_ENABLE_FRAME_TRACE
   rnqnx::runtime::QtReactHost host(adapter, trace);
 #else

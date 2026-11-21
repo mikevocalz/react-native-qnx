@@ -1,0 +1,2 @@
+QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le
+/data/s6pf/rnqnx_runtime_preflight_test: ELF shared object, 64-bit LSB arm64, dynamic (/usr/lib/ldqnx-64.so.2), BuildID=413a1ba6c28c8da9e7902b1dafd4376e, not stripped

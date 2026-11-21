@@ -7,6 +7,7 @@ import { buildNativeMain } from './build-native.mjs';
 import { launchCommand } from './dev-server.mjs';
 import { loadExpoConfig } from './expo-config.mjs';
 import { nativeConfiguration, prepareNativeMain } from './prepare-native.mjs';
+import { writeAppRequirements } from './analyze.mjs';
 import { launchCheck } from './runner-tools.mjs';
 
 // `node --run qnx` in an app calls this. It walks the steps from config to
@@ -24,6 +25,9 @@ const help = `React Native QNX - build, deploy and launch an Expo app on QNX
 --runtime names the prebuilt runner you launch on. Before anything is built or
 copied, the runner and the bundle are compared on React Native version, Hermes
 bytecode version and Nitro ABI; a mismatch prints both sides and exits 1.
+It also writes build/<platform>/rnqnx-app.json, the modules the app needs; the
+native runner checks it against its own rnqnx-runtime.json before running the
+bundle.
 With --runtime the native-build step is skipped: the runner is already built.
 Without it the app's own native build is used and no comparison is needed.
 
@@ -173,6 +177,15 @@ export async function runProject(options) {
   });
 
   if (options.runtime) {
+    // The prebuilt runner reads this next to its executable and refuses the
+    // app, before running it, when it lacks a module the app needs.
+    const requirementsFile = path.join(root, `build/${platform}/rnqnx-app.json`);
+    await writeAppRequirements(root, platform, requirementsFile);
+    steps.push({
+      step: 'runner-requirements',
+      status: 'done',
+      detail: `${path.relative(root, requirementsFile)}; deploy copies it next to the runner executable`,
+    });
     steps.push({
       step: 'native-build',
       status: 'not run',

@@ -1,0 +1,7 @@
+cc: targets available in /work/qnx800/host/linux/x86_64/etc/qcc:
+	12.2.0,gcc_ntox86_64	(default)
+	12.2.0,gcc_ntoaarch64le
+Toolchain:  gcc	Version:  12.2.0	
+CMAKE_BUILD_TYPE:STRING=Release
+CMAKE_CXX_COMPILER:STRING=/work/qnx800/host/linux/x86_64/usr/bin/q++
+Qt6_DIR:UNINITIALIZED=/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib/cmake/Qt6

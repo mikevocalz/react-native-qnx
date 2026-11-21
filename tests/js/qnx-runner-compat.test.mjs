@@ -5,6 +5,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { gunzipSync } from 'node:zlib';
 import {
   analyzeProject,
@@ -427,6 +428,64 @@ try {
   equal(status['native-build'], 'not run', 'a prebuilt runner skips the native build');
   equal(status.deploy, 'needs device', 'project run still stops before the board');
   equal(status.launch, 'not run', 'nothing was launched');
+
+  // --- rnqnx-app.json: what the native runner checks before it runs the bundle.
+  // The native test reads the same fixture files, so the writer and the reader
+  // cannot drift apart without one of the two tests failing.
+  const fixtures = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    '../fixtures/runner-preflight'
+  );
+  const added = await makeApp(path.join(temporary, 'added-module'), {
+    extra: async (root) => [
+      await nativePackage('fixture-nitro', 'nitro')(root),
+      await nativePackage('fixture-added-nitro', 'nitro', '2.0.0')(root),
+      await nativePackage('fixture-expo', 'expo')(root),
+    ],
+  });
+  await mkdir(path.join(added, 'build/qnx'), { recursive: true });
+  await writeFile(path.join(added, 'build/qnx/app.bundle.hbc'), await readFile(hbc));
+  const addedRun = await runProject({ project: added, runtime: descriptorFile });
+  equal(
+    Object.fromEntries(addedRun.steps.map((s) => [s.step, s.status]))['runner-requirements'],
+    'done',
+    'project run --runtime writes the app requirements'
+  );
+  const written = JSON.parse(await readFile(path.join(added, 'build/qnx/rnqnx-app.json'), 'utf8'));
+  assert.deepEqual(
+    written,
+    JSON.parse(await readFile(path.join(fixtures, 'app-added-module.json'), 'utf8'))
+  );
+  checks++;
+  const stockFixture = await readRuntimeDescriptor(path.join(fixtures, 'runtime-stock.json'));
+  const customFixture = await readRuntimeDescriptor(path.join(fixtures, 'runtime-custom.json'));
+  const stockVerdict = stockRunnerVerdict(written.requires, stockFixture.builtins);
+  equal(stockVerdict.sufficient, false, 'the stock fixture runner lacks the added module');
+  equal(
+    stockVerdict.uncovered.map((u) => u.package).join(),
+    'fixture-added-nitro',
+    'host verdict names the same module the native runner rejects'
+  );
+  equal(
+    stockRunnerVerdict(written.requires, customFixture.builtins).sufficient,
+    true,
+    'the custom fixture runner covers it'
+  );
+  // An app with no native modules and no Nitro still gets a file; nulls are not compared.
+  const appWithoutNitro = await makeApp(path.join(temporary, 'no-nitro-app'), { nitro: null });
+  await mkdir(path.join(appWithoutNitro, 'build/qnx'), { recursive: true });
+  await writeFile(path.join(appWithoutNitro, 'build/qnx/app.bundle.hbc'), await readFile(hbc));
+  await runProject({ project: appWithoutNitro, runtime: descriptorFile });
+  assert.deepEqual(
+    JSON.parse(await readFile(path.join(appWithoutNitro, 'build/qnx/rnqnx-app.json'), 'utf8')),
+    {
+      schema: 'rnqnx-app/v1',
+      reactNative: '0.88.1',
+      nitroAbi: null,
+      requires: { nitroModules: [], expoModules: [], fabricComponents: [] },
+    }
+  );
+  checks++;
 
   // --- analyze
   const none = await makeApp(path.join(temporary, 'plain'));

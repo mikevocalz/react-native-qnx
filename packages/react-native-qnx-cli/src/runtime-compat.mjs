@@ -10,6 +10,8 @@ import { locatePackage } from './nitro-modules.mjs';
 
 export const RUNTIME_SCHEMA = 'rnqnx-runtime/v1';
 export const RUNTIME_FILE = 'rnqnx-runtime.json';
+export const APP_SCHEMA = 'rnqnx-app/v1';
+export const APP_FILE = 'rnqnx-app.json';
 
 /** Hermes bytecode file header: a 64-bit magic, then a 32-bit version, both
  * little-endian (hermes lib/BCGen/HBC/BytecodeVersion.h, BytecodeFileFormat.h).
