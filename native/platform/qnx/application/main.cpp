@@ -46,6 +46,13 @@ int main(int argc, char* argv[]) {
         surface.fill(0x00, 0x00, 0x00); // black
       }
       surface.present();
+      if (frame == 0) {
+        // scripts/install-pi.sh waits for this line before it takes the
+        // screenshot. stdout is a file there, so flush or the line stays
+        // in the buffer until exit.
+        std::printf("rnqnx_playground: first frame presented\n");
+        std::fflush(stdout);
+      }
       ++frame;
       std::this_thread::sleep_for(std::chrono::milliseconds(33));
     }

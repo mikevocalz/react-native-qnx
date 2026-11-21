@@ -109,3 +109,102 @@ this synchronous proof. The later opt-in [Qt dispatcher](QT_DISPATCHER.md)
 also has physical callback/Promise/checkpoint/teardown evidence. General QNX
 codegen and third-party Nitro modules remain unverified. The normal upstream RN
 TurboModule startup plumbing remains; Nitro serves this app-native proof.
+
+## Native tree query for tests: `rnqnx::testing::waitForNode` (S3)
+
+Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an _app-facing_ native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR.
+
+Review: `ecc:cpp-reviewer` (a lane other than the author) reviewed the first draft before any C++ existed and returned "approve with changes". This text carries those changes: the application event filter is replaced by `QAbstractEventDispatcher::aboutToBlock()` (the filter saw its own timer events and spun, and only reaches main-thread objects), designated initializers are gone (the repo builds C++17 with `-Wpedantic -Werror`), the result gained a status enum, and matching, visibility and reentrancy are defined.
+
+Skill sources, all at `margelo/react-native-skills@1e9e17be6f41c838db472d6a4b943fc26355a3be` (the head on 2026-11-20): `api-design` and `cpp` read in full and byte-identical to the local install; `build-nitro-modules` read from the pinned SHA (the local install carries an extra Nitro V1 paragraph that the pin lacks).
+
+### Contract
+
+```cpp
+namespace rnqnx::testing {
+
+struct NodeQuery {
+  QString objectName;          // exact match, non-empty
+  bool requireVisible = false; // QQuickItem::isVisible() / QWindow::isVisible()
+};
+
+enum class NodeWaitStatus { Found, TimedOut, NotVisible, RootDestroyed, AppQuit };
+
+struct NodeWaitResult {
+  NodeWaitStatus status = NodeWaitStatus::TimedOut;
+  bool found() const { return status == NodeWaitStatus::Found; }
+  QPointer<QObject> node;               // set when found; may be null again by the time the caller reads it
+  std::chrono::milliseconds elapsed{0}; // steady clock
+  QString error;                        // empty when found; names the node, the budget and the root type
+};
+
+// One synchronous scan. `root` must live in the calling thread. nullptr when absent.
+QObject* findNode(QObject* root, const NodeQuery& query);
+
+// Scans now, then pumps the calling thread's event loop until the node exists or
+// `timeout` passes. `root` must live in the calling thread.
+NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
+                           std::chrono::milliseconds timeout);
+}
+```
+
+Matching: the first object in pre-order that satisfies every field of the query. At each object, `QObject::children()` come before `QQuickItem::childItems()`. Each object is visited once. The root can match. `requireVisible` reads `QQuickItem::isVisible()` or `QWindow::isVisible()` by dynamic type, so the scan runs no user code. A name match on any other type is not a match, so a later sibling can still satisfy the query. When nothing matches and such a type was seen, the call throws `std::logic_error` naming the class. That throw happens after the event loop ends, never inside a dispatcher slot. A `QQuickWindow` is walked through its `contentItem` as well. A visible node does not imply a nonzero size, opacity or an exposed window. The scan does not reach the content of a closed `Popup` and does not follow `QWindow` children except through `QObject::children()`.
+
+### Call sites
+
+```cpp
+using namespace std::chrono_literals;
+namespace t = rnqnx::testing;
+
+// 1. A node that appears after a deferred QML Loader finishes.
+t::NodeQuery bar;
+bar.objectName = QStringLiteral("rnqnxTitleBar");
+bar.requireVisible = true;
+const t::NodeWaitResult r = t::waitForNode(&window, bar, 5s);
+QVERIFY2(r.found(), qPrintable(r.error));
+
+// 2. Failure: the node never appears. The status is TimedOut and the error names
+//    the node, the budget and the root type, for example
+//    "timed out after 200 ms waiting for node 'noSuchNode' under QQuickWindow 'main'".
+t::NodeQuery missing;
+missing.objectName = QStringLiteral("noSuchNode");
+const t::NodeWaitResult gone = t::waitForNode(&window, missing, 200ms);
+QCOMPARE(gone.status, t::NodeWaitStatus::TimedOut);
+
+// 3. A negative assertion with the synchronous scan, after a node was removed.
+QVERIFY(t::findNode(&window, bar) == nullptr);
+```
+
+### Error set
+
+| Condition                                                                                                                                                          | Result                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `root` null, `objectName` empty, `timeout` not positive                                                                                                            | `std::invalid_argument` (a programming error, not a test failure)  |
+| `root` lives in another thread, a nested `waitForNode` (detected with a `thread_local` flag), no `QCoreApplication`, `requireVisible` on a type with no visibility | `std::logic_error` naming the call                                 |
+| Timeout                                                                                                                                                            | status `TimedOut`, error as above                                  |
+| Node found but not visible at the deadline                                                                                                                         | status `NotVisible`, error says the node exists and is not visible |
+| `root` destroyed while waiting                                                                                                                                     | status `RootDestroyed`                                             |
+| `QCoreApplication::quit()` while waiting                                                                                                                           | status `AppQuit`                                                   |
+
+Callers branch on `status`. The `error` string is for people.
+
+### Waiting rules
+
+- The wait is event-driven and runs a nested `QEventLoop` on the root's thread. The first scan is synchronous, before the loop starts. After that it rescans each time the thread's event dispatcher reports `aboutToBlock()`, and once more at the deadline. One single-shot timer enforces the deadline, measured on a steady clock. There is no sleep, no polling interval, no retry and no application-level event filter.
+- The wait makes no progress of its own. It does not show, expose, polish or render anything, and it cannot see a change that is not made by a handler running on the root's thread. A test that needs a window exposed exposes it first. A node created by an asynchronous incubator on a window that never renders can stay absent until the deadline.
+- Other nested loops (`QTest::qWait`, a dialog `exec`, a QML handler) may run while the wait is active. Only a nested `waitForNode` is refused.
+- The loop, the timer and the dispatcher connection live on the stack of one call. Destruction removes the connection and the timer before the loop, on every exit path including an exception, so nothing runs after the function returns. The root is held as a `QPointer` and re-checked on every scan.
+- No mutex exists. Nothing is shared between threads. The scan runs inside a dispatcher signal and only reads `objectName()`, the child lists and visibility.
+
+### Build and linkage
+
+The library is `rnqnx_native_testing` in `native/testing`: static, built only under `RNQNX_BUILD_NATIVE_TESTING_TESTS`, never installed or exported. It links Qt6::Core, Gui and Qml publicly and Qt6::Quick privately, uses C++17 and `QT_NO_KEYWORDS` like the window chrome lane, and builds with `-Wall -Wextra -Wpedantic -Werror` on Clang and GCC. A CTest check fails if a target other than a test links it.
+
+### What each platform promises
+
+| Platform                      | Promise                                                                                                                                                     |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host (macOS, Linux, Qt 6.11+) | Built and run by the `native-testing` CTest lane under `QT_QPA_PLATFORM=offscreen`.                                                                         |
+| QNX VM, Pi 400, release board | Not built. The library is not linked into any QNX target in this slice. Device smoke paths wait on app-emitted log lines through `scripts/lib/wait-log.sh`. |
+
+The accessibility tree (`QAccessible`) is not queried. The `objectName` tree covers every node the smoke paths need, and the offscreen platform does not install an accessibility bridge, so an accessibility query would not run in the host lane.
