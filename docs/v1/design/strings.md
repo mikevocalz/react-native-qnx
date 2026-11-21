@@ -37,6 +37,25 @@ required. Dynamic identifiers must never be silently shortened in diagnostics.
 | `dev.details`            | Error details                                                                                                | 32                        | Accessible label for bounded, selectable diagnostic content.                    |
 | `dev.closeDetails`       | Close details                                                                                                | 32                        | Dismisses details only; cannot bypass incompatible-runner preflight.            |
 
+## Launch check (terminal)
+
+`rnqnx project run --runtime <file>` and `rnqnx runner check` compare the runner
+with the app's bundle before anything is built or copied. These strings print
+on the development host, so there is no character budget; the line width target
+is 100. Both sides of every mismatch appear on one row. The exact text is built
+by `formatMismatch` in `packages/react-native-qnx-cli/src/runtime-compat.mjs`.
+
+| Key                         | Text                                                                                   | Behavior                                                                        |
+| --------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `launch.mismatchTitle`      | This runner cannot load this app (runner `<id>`).                                      | First line. `<id>` is the runner id from its `rnqnx-runtime.json`.              |
+| `launch.mismatchRow`        | `<label>  runner <runner value>  app <app value>`                                      | One row per field. Labels: React Native, Hermes bytecode, Nitro ABI.            |
+| `launch.mismatchNext`       | Use a runner built for this app, or build your own: rnqnx project build-native --help. | Last line. Names both ways out; no retry is implied.                            |
+| `launch.unreadable`         | Cannot read the runner details at `<path>` (`<reason>`).                               | The `rnqnx-runtime.json` file is missing or unreadable.                         |
+| `launch.notChecked`         | not checked: `<field>: <reason>`                                                       | Printed after a pass. A field the app does not use is never shown as a pass.    |
+| `analyze.stockSufficient`   | Stock runner: sufficient                                                               | Followed by the reason line.                                                    |
+| `analyze.stockNot`          | Stock runner: not sufficient                                                           | The reason names each unlinked module and, for a version change, both versions. |
+| `analyze.stockUndetermined` | Stock runner: undetermined                                                             | Native modules exist and no runner description was given.                       |
+
 For connection instructions, the selected wording names Expo because B requires
 Expo to own the dev session. Until B lands, existing documentation must continue
 to identify the direct Metro command truthfully. This strings table specifies

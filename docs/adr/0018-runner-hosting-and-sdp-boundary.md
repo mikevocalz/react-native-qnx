@@ -107,6 +107,20 @@ fetched.
 - `targetLibraries` is a new required field for QNX entries in the v1 schema.
   No v1 manifest has been published, so no published file breaks.
 
+## Update, 2026-11-20: compatibility data
+
+A runner is only useful to an app whose React Native version, Hermes bytecode
+version and Nitro ABI it matches, and `fetch` selected on version strings
+alone. The manifest entry now carries an optional `runtime` object
+(`hermesBytecodeVersion`, `nitroAbi`, `builtins`) and the archive carries the
+same data in `rnqnx-runtime.json`. `rnqnx runner pack` writes both and measures
+the bytecode version with the runner's own `hermesc`. The decisions above
+(hosting, redirects, attestation, no SDP files) are unchanged. `pack` runs the
+same SDP file-name deny-list as `fetch` and `scripts/verify-runner-archive.mjs`
+(`QNX_SDP_FILE_PATTERNS` plus the entry's `targetLibraries`). The list matches
+file names, so it catches the libraries it names and nothing else. See
+[packaging](../packaging.md#runner-runtime-descriptor).
+
 ## Alternatives considered
 
 - **A separate CDN or object store.** Rejected: GitHub Releases is free for

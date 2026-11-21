@@ -261,11 +261,14 @@ library closure were inspected from the built artifacts, rather than assumed.
 An Expo app reaches a QNX board or a desktop host in one of three ways. All
 three use the same `native-app.json` from `rnqnx project prepare-native`.
 
-| Mode                        | What runs                                                                   | Needs the SDP | Status on this branch                                                      |
-| --------------------------- | --------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| Prebuilt development runner | A published native host for one exact SDP + Qt + React Native set           | No (host)     | `rnqnx runner fetch` downloads and verifies it; no runner is published yet |
-| Custom development build    | A native host built from this checkout with the app's native modules linked | Yes (QNX)     | Not a separate command yet; `rnqnx project build-native` is the build path |
-| Standalone package          | The app executable plus its staged bundle (`.hbc` on QNX)                   | Yes (QNX)     | `rnqnx project build-native`; device launch not run                        |
+| Mode                        | What runs                                                                   | Needs the SDP | Status on this branch                                                                                                                                                  |
+| --------------------------- | --------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Prebuilt development runner | A published native host for one exact SDP + Qt + React Native set           | No (host)     | `rnqnx runner pack` builds the archive and manifest; `runner fetch` downloads and verifies it; `project run --runtime` checks it against the app; nothing is published |
+| Custom development build    | A native host built from this checkout with the app's native modules linked | Yes (QNX)     | Not a separate command yet; `rnqnx project build-native` is the build path                                                                                             |
+| Standalone package          | The app executable plus its staged bundle (`.hbc` on QNX)                   | Yes (QNX)     | `rnqnx project build-native`; device launch not run                                                                                                                    |
+
+The three modes, what each needs, and how to choose between them are in
+[Runner tiers](getting-started/runner-tiers.md).
 
 ### Runner manifest format
 
@@ -336,6 +339,71 @@ their final URLs.
 
 `tests/js/qnx-runner-manifest.test.mjs` covers the format and client against a
 local fixture server with synthetic archives.
+
+### Runner runtime descriptor
+
+A runner is compared with an app on three values: the React Native version, the
+Hermes bytecode version and the Nitro ABI. The runner states them in
+`rnqnx-runtime.json`, a file at the top of its archive, and in the manifest
+entry's `runtime` object (which carries the same three fields without the
+identity fields). `rnqnx runner pack` writes both from the same values.
+
+```json
+{
+  "schema": "rnqnx-runtime/v1",
+  "runnerId": "macos-arm64-dev-0.1.0",
+  "target": "macos-arm64",
+  "versions": {
+    "reactNativeQnx": "0.1.0",
+    "reactNative": "0.88.1",
+    "hermes": "hermes-v260318099.0.5",
+    "qt": "6.12.0",
+    "sdp": null
+  },
+  "hermesBytecodeVersion": 99,
+  "nitroAbi": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+  "builtins": {
+    "nitroModules": [{ "package": "name", "version": "1.0.0" }],
+    "expoModules": [],
+    "fabricComponents": []
+  }
+}
+```
+
+- Only `hermesBytecodeVersion` is measured. `reactNative`, `nitroAbi`, the other
+  versions and `builtins` are asserted by whoever runs `pack`; nothing ties them
+  to the files in the stage. The maintainer who packs a runner is responsible
+  for them, and the release notes name the commit and lockfile it was built from.
+- `hermesBytecodeVersion` is measured: `pack` compiles an empty file with the
+  runner's own `hermesc` and reads the 32-bit version after the 8-byte magic
+  of the `.hbc` header. The app's value comes from the header of its bundle
+  the same way. A JavaScript source bundle has no bytecode version; the check
+  reports it as not checked.
+- `nitroAbi` is the exact Nitro runtime version string. Nitro 1.x is an alpha
+  with no ABI promise (AGENTS.md), so the version is the ABI identity. The
+  app's value is the installed `nitro-core`, else `react-native-nitro-modules`;
+  an app with neither is reported as not checked.
+- `builtins` lists the Nitro modules, Expo modules and Fabric component
+  packages the runner links, each with its exact version. `rnqnx analyze`
+  uses it.
+- The archive's `rnqnx-runtime.json` is added by `pack`; a stage that already
+  holds one is refused. `pack` never overwrites an existing archive or manifest.
+- The archive hash is stable for one stage, one Node version and one zlib
+  build: entries are sorted and owner and time fields are zero, but file modes
+  (masked to 0755) and zlib output come from the machine that packs.
+- Not done: the native runner does not read this file and show an on-screen
+  preflight message yet (`preflight.*` in the design strings; hardening item
+  A4). The check runs on the development host, in the launch step of
+  `rnqnx project run --runtime`, before the bundle is copied.
+
+Commands:
+
+```bash
+rnqnx analyze --project . --runtime <rnqnx-runtime.json>
+rnqnx runner check --runtime <rnqnx-runtime.json> --project . --bundle build/qnx/app.bundle.hbc
+rnqnx runner pack --stage <dir> --out <dir> --id <id> --target <target> --hermesc <path> \
+  --hermes <v> --qt <v> --sdp <v>|none --builtins <json>
+```
 
 ### Runner publication (ADR-0018)
 
