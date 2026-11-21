@@ -27,6 +27,29 @@ const api = Object.freeze({
   get SectionList() {
     return require('react-native/Libraries/Lists/SectionList').default;
   },
+  // FlatList and SectionList are built on these two. Upstream
+  // Libraries/Lists/VirtualizedList.js and VirtualizedSectionList.js re-export
+  // VirtualizedList and VirtualizedSectionList from @react-native/virtualized-lists.
+  get VirtualizedList() {
+    return require('react-native/Libraries/Lists/VirtualizedList').default;
+  },
+  get VirtualizedSectionList() {
+    return require('react-native/Libraries/Lists/VirtualizedSectionList').default;
+  },
+  // Upstream Button renders TouchableOpacity on every platform but Android.
+  get Button() {
+    return require('react-native/Libraries/Components/Button').default;
+  },
+  // Upstream ImageBackground composes View and Image, which resolve to the QNX
+  // Image override through the QNX resolver.
+  get ImageBackground() {
+    return require('react-native/Libraries/Image/ImageBackground').default;
+  },
+  // Upstream SafeAreaView selects the native component on iOS only and is View
+  // everywhere else, so it is View on QNX.
+  get SafeAreaView() {
+    return require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
+  },
   get TextInput() {
     return require('react-native/Libraries/Components/TextInput/TextInput').default;
   },
