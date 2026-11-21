@@ -1,0 +1,11 @@
+diff --git a/packages/react-native-qnx-cli/src/prepare-native.mjs b/packages/react-native-qnx-cli/src/prepare-native.mjs
+index 2bec5519..2ce3a795 100644
+--- a/packages/react-native-qnx-cli/src/prepare-native.mjs
++++ b/packages/react-native-qnx-cli/src/prepare-native.mjs
+@@ -284,4 +284,6 @@ export async function prepareNativeMain(argv) {
+         configuration = existing;
+         action = 'unchanged';
++        await new Promise((r) => setTimeout(r, 15));
++        await (await import('node:fs/promises')).writeFile(output, JSON.stringify(existing, null, 2) + '\n');
+       } else {
+         await stageIcons(root, base.platform, staging, configuration.icon);

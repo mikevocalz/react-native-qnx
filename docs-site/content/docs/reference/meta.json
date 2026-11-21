@@ -11,6 +11,7 @@
     "components",
     "---Modules---",
     "module-matrix",
+    "expo-capabilities",
     "modules",
     "nitro-api",
     "native-api",
