@@ -14,7 +14,9 @@
 #include <QWheelEvent>
 
 #include <algorithm>
+#include <cerrno>
 #include <cmath>
+#include <cstring>
 
 #if defined(__APPLE__)
 #include <mach/mach.h>
@@ -167,7 +169,7 @@ TimingProbe::TimingProbe(QQuickWindow& window, TimingConfig config,
       [state = state_]() {
         if (state->stopped.load(std::memory_order_acquire)) return;
         const std::int64_t ns = state->nowNs();
-        const std::uint64_t n = state->total.load(std::memory_order_relaxed);
+        const std::uint64_t n = state->total.load(std::memory_order_acquire);
         if (n < state->records.size()) state->records[n] = ns;
         if (state->firstFrameNs.load(std::memory_order_relaxed) < 0 &&
             state->surfaceStarted.load(std::memory_order_acquire)) {
@@ -294,7 +296,10 @@ QString TimingProbe::writeJson(const QString& path) const {
   // link() fails with EEXIST instead of replacing, which keeps the no-overwrite rule.
   if (::link(QFile::encodeName(temporary.fileName()).constData(),
              QFile::encodeName(target.absoluteFilePath()).constData()) != 0) {
-    return QStringLiteral("%1 exists or cannot be created").arg(path);
+    const int code = errno;
+    if (code == EEXIST) return QStringLiteral("%1 already exists").arg(path);
+    // No fallback to rename(): it would overwrite.
+    return QStringLiteral("cannot create %1: %2").arg(path, QString::fromLocal8Bit(std::strerror(code)));
   }
   return {};
 }

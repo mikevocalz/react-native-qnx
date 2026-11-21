@@ -49,7 +49,7 @@ class TimingProbe final : public QObject {
 
   // Waits for the first swap after markSurfaceStarted, settles, posts the wheel
   // script, snapshots, then calls `done` once on the GUI thread. `done(false)`
-  // means no swap arrived within 30 s of markSurfaceStarted.
+  // means no swap arrived within 30 s of start().
   void start(std::function<void(bool)> done);
 
   // Valid after `done(true)`. Returns an error string, empty on success. The

@@ -156,7 +156,7 @@ any system other than Linux or Darwin):
 | `--timing-wheel-gap-ms <n>`  | Gap between notches. Default 200, range 1 to 5000.                                                                                                          |
 
 `--timing-json` requires `--bundle` and is rejected together with `--screenshot`
-and with `--dev-server` (the dev path wraps the run in a reload loop, which has
+with `--replace`, `--restore-only` and `--stop-running`, and with `--dev-server` (the dev path wraps the run in a reload loop, which has
 no single origin). Any value outside its range, a non-integer value, or a
 timing option without `--timing-json` exits 2 with
 `RNQNX_TIMING_CONFIG_ERROR <reason>` on stderr and runs no workload.
@@ -250,13 +250,14 @@ Error set (every failure exits nonzero and writes no JSON file):
 | output path appears before export, or write fails                                | 1    | `RNQNX_TIMING_EXPORT_FAILED`                       |
 
 The run tears down like the screenshot path: after `done`, `stopSurface`, drain
-20 times, recheck `applicationFailure()`, then export. The export writes a
+20 times, recheck `applicationFailure()`, then export. The output directory must exist and be writable, checked at parse time. The export writes a
 temporary file in the destination directory and links it into place without
-overwriting, so a failed write leaves nothing at the destination. SIGINT and
+overwriting, so a failed write leaves nothing at the destination. The file has mode 0600. SIGINT and
 SIGTERM end the process without a JSON file.
 
-Disposal and cancellation: `TimingProbe` is stack-owned by the run in `main`
-and destroyed before the host. The 30 s watchdog is a single-shot `QTimer`
+Disposal and cancellation: `TimingProbe` is stack-owned by `main`. It is
+destroyed after the host and before the window, which is safe because it never
+calls into the host and no event loop runs in between. The 30 s watchdog is a single-shot `QTimer`
 owned by the probe. There is no cancel call.
 
 JSON (`schema` 1) fields: `schema`, `scope`, `clock`, `platform`

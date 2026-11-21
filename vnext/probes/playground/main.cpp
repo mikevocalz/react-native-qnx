@@ -499,8 +499,20 @@ int main(int argc, char** argv) {
           parser.value(timingSettleOption), parser.value(timingNotchesOption),
           parser.value(timingGapOption), &reason);
       if (!timingConfig) return timingError(reason);
-      if (QFileInfo::exists(parser.value(timingOption))) {
-        return timingError(QStringLiteral("output exists: ") + parser.value(timingOption));
+#if RNQNX_ENABLE_WINDOW_CHROME
+      if (parser.isSet(replaceOption) || parser.isSet(restoreOnlyOption) ||
+          parser.isSet(stopRunningOption)) {
+        return timingError(QStringLiteral("--timing-json cannot be combined with --replace, "
+                                          "--restore-only or --stop-running"));
+      }
+#endif
+      const QFileInfo output(parser.value(timingOption));
+      if (parser.value(timingOption).isEmpty() || output.exists()) {
+        return timingError(QStringLiteral("output is empty or exists: ") + parser.value(timingOption));
+      }
+      if (!output.absoluteDir().exists() || !QFileInfo(output.absolutePath()).isWritable()) {
+        return timingError(QStringLiteral("output directory is missing or not writable: ") +
+                           output.absolutePath());
       }
     }
   }
@@ -1233,8 +1245,16 @@ int main(int argc, char** argv) {
   if (timing) {
     // The same 16 ms microtask drain as a normal run; its quantisation is part
     // of what this run measures.
+    QString timingFailure;
     QTimer timingDrain;
-    QObject::connect(&timingDrain, &QTimer::timeout, [&host]() { host.runtime().drainMicrotasks(); });
+    QObject::connect(&timingDrain, &QTimer::timeout, [&]() {
+      host.runtime().drainMicrotasks();
+      if (timingFailure.isEmpty()) timingFailure = applicationFailure();
+      if (!timingFailure.isEmpty()) {
+        QMetaObject::invokeMethod(QCoreApplication::instance(), &QCoreApplication::quit,
+                                  Qt::QueuedConnection);
+      }
+    });
     timingDrain.start(16);
     bool timingOk = false;
     timing->start([&timingOk](bool ok) {
@@ -1244,12 +1264,17 @@ int main(int argc, char** argv) {
     });
     QGuiApplication::exec();
     timingDrain.stop();
-    if (!timingOk) {
-      std::fprintf(stderr, "RNQNX_TIMING_NO_FRAME no frame swapped after the surface started\n");
+    if (timingFailure.isEmpty()) timingFailure = applicationFailure();
+    if (!timingFailure.isEmpty()) {
+      std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED %s\n", timingFailure.toUtf8().constData());
       return 1;
     }
-    if (const auto failure = applicationFailure(); !failure.isEmpty()) {
-      std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED %s\n", failure.toUtf8().constData());
+    if (!timingOk) {
+      if (!window.isVisible()) {
+        std::fprintf(stderr, "RNQNX_TIMING_ABORTED the window closed before the run finished\n");
+      } else {
+        std::fprintf(stderr, "RNQNX_TIMING_NO_FRAME no frame swapped after the surface started\n");
+      }
       return 1;
     }
     host.stopSurface(kSurfaceId);

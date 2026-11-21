@@ -31,7 +31,7 @@
     "experimentalTarget": "Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts (the Nitro receipts ran alpha 105; the pin is alpha 136 and was not rerun on device)",
     "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013. Public-source Qt 6.12.0 Pi 400 receipts exist from 2026-11-12 (docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md, docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md); no gate is closed by them.",
     "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline (2026-11-07); hosted checks have run since, see docs/releases/required-checks.md",
-    "performance": "unmeasured on QNX",
+    "performance": "unmeasured on QNX; host budgets and a host regression lane are committed in docs/releases/performance-budgets.json (host numbers only, device fields unmeasured until S9)",
     "pr105": {
       "reviewedAt": "2026-11-10",
       "implementationCommit": "c09a5b19800c2d7d79268c3466b618aa20430ba2",

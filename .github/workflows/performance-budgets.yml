@@ -87,6 +87,30 @@ jobs:
               timeout 120s ../../node_modules/.bin/metro build "$entry" --config metro.config.js --platform qnx --dev false --max-workers 2 --out "$PWD/../../build/host-budgets/evidence/$entry.bundle.js"
             )
           done
+      - name: The probe rejects bad invocations and never overwrites
+        run: |
+          set -euo pipefail
+          evidence="$PWD/build/host-budgets/evidence"
+          host=build/host-budgets/bin/rnqnx_playground_host
+          bundle="$evidence/hello-world.js.bundle.js"
+          expect_config_error() { # description, then the arguments
+            local what="$1"; shift
+            set +e; "$host" "$@" > "$evidence/reject.log" 2>&1; local code=$?; set -e
+            test "$code" -eq 2 || { echo "$what: exit $code, wanted 2"; cat "$evidence/reject.log"; exit 1; }
+            grep -F 'RNQNX_TIMING_CONFIG_ERROR' "$evidence/reject.log" || { echo "$what: no config error line"; exit 1; }
+          }
+          expect_config_error 'option without --timing-json' --bundle "$bundle" --timing-wheel-notches 3
+          expect_config_error 'notches out of range' --bundle "$bundle" --timing-json "$evidence/x.json" --timing-wheel-notches 1001
+          expect_config_error 'gap of zero' --bundle "$bundle" --timing-json "$evidence/x.json" --timing-wheel-gap-ms 0
+          expect_config_error 'missing bundle' --timing-json "$evidence/x.json"
+          expect_config_error 'with --screenshot' --bundle "$bundle" --timing-json "$evidence/x.json" --screenshot "$evidence/x.png"
+          expect_config_error 'missing directory' --bundle "$bundle" --timing-json "$evidence/missing-dir/x.json"
+          test ! -e "$evidence/x.json"
+          "$host" --bundle "$bundle" --timing-json "$evidence/once.json" > "$evidence/once.log" 2>&1
+          cp "$evidence/once.json" "$evidence/once.before"
+          expect_config_error 'existing output' --bundle "$bundle" --timing-json "$evidence/once.json"
+          cmp "$evidence/once.json" "$evidence/once.before"
+          rm -f "$evidence/once.json" "$evidence/once.before" "$evidence/once.log" "$evidence/reject.log"
       - name: Run each workload and record timing
         run: |
           set -euo pipefail
