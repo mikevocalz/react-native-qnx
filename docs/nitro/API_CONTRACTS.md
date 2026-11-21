@@ -110,9 +110,11 @@ also has physical callback/Promise/checkpoint/teardown evidence. General QNX
 codegen and third-party Nitro modules remain unverified. The normal upstream RN
 TurboModule startup plumbing remains; Nitro serves this app-native proof.
 
-## Native tree query for tests: `rnqnx::testing::waitForNode` (S3, proposed)
+## Native tree query for tests: `rnqnx::testing::waitForNode` (S3)
 
-Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an *app-facing* native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR. No C++ exists until a lane other than the author has reviewed this section.
+Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an *app-facing* native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR.
+
+Review: `ecc:cpp-reviewer` (a lane other than the author) reviewed the first draft before any C++ existed and returned "approve with changes". This text carries those changes: the application event filter is replaced by `QAbstractEventDispatcher::aboutToBlock()` (the filter saw its own timer events and spun, and only reaches main-thread objects), designated initializers are gone (the repo builds C++17 with `-Wpedantic -Werror`), the result gained a status enum, and matching, visibility and reentrancy are defined.
 
 Skill sources, all at `margelo/react-native-skills@1e9e17be6f41c838db472d6a4b943fc26355a3be` (the head on 2026-11-20): `api-design` and `cpp` read in full and byte-identical to the local install; `build-nitro-modules` read from the pinned SHA (the local install carries an extra Nitro V1 paragraph that the pin lacks).
 
@@ -123,40 +125,54 @@ namespace rnqnx::testing {
 
 struct NodeQuery {
   QString objectName;          // exact match, non-empty
-  bool requireVisible = false; // the node's `visible` property must read true
+  bool requireVisible = false; // QQuickItem::isVisible() / QWindow::isVisible()
 };
+
+enum class NodeWaitStatus { Found, TimedOut, NotVisible, RootDestroyed, AppQuit };
 
 struct NodeWaitResult {
-  bool found = false;
-  QPointer<QObject> node;               // set when found; null if the node died since
-  std::chrono::milliseconds elapsed{0};
-  QString error;                        // empty when found
+  NodeWaitStatus status = NodeWaitStatus::TimedOut;
+  bool found() const { return status == NodeWaitStatus::Found; }
+  QPointer<QObject> node;               // set when found; may be null again by the time the caller reads it
+  std::chrono::milliseconds elapsed{0}; // steady clock
+  QString error;                        // empty when found; names the node, the budget and the root type
 };
 
-// Synchronous scan. Same thread as `root`. Returns nullptr when absent.
+// One synchronous scan. `root` must live in the calling thread. nullptr when absent.
 QObject* findNode(QObject* root, const NodeQuery& query);
 
-// Pumps the calling thread's event loop until the node exists or `timeout` passes.
+// Scans now, then pumps the calling thread's event loop until the node exists or
+// `timeout` passes. `root` must live in the calling thread.
 NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
                            std::chrono::milliseconds timeout);
 }
 ```
 
-Roots and traversal: any `QObject`. The scan follows `QObject::children()`, `QQuickItem::childItems()` and the content item of a `QQuickWindow`, and visits each object once. The root itself can match.
+Matching: the first object in pre-order that satisfies every field of the query. At each object, `QObject::children()` come before `QQuickItem::childItems()`. Each object is visited once. The root can match. `requireVisible` reads `QQuickItem::isVisible()` or `QWindow::isVisible()` by dynamic type, so the scan runs no user code. For any other type it throws `std::logic_error`. A visible node does not imply a nonzero size, opacity or an exposed window. The scan does not reach the content of a closed `Popup` and does not follow `QWindow` children except through `QObject::children()`.
 
 ### Call sites
 
 ```cpp
+using namespace std::chrono_literals;
+namespace t = rnqnx::testing;
+
 // 1. A node that appears after a deferred QML Loader finishes.
-auto r = waitForNode(&window, {.objectName = "rnqnxTitleBar", .requireVisible = true}, 5s);
-QVERIFY2(r.found, qPrintable(r.error));
+t::NodeQuery bar;
+bar.objectName = QStringLiteral("rnqnxTitleBar");
+bar.requireVisible = true;
+const t::NodeWaitResult r = t::waitForNode(&window, bar, 5s);
+QVERIFY2(r.found(), qPrintable(r.error));
 
-// 2. Failure: the node never appears. The error names the node and the budget.
-auto missing = waitForNode(&window, {.objectName = "noSuchNode"}, 200ms);
-// missing.found == false
-// missing.error == "timed out after 200 ms waiting for node 'noSuchNode' under QQuickWindow 'main' (scanned 14 objects)"
+// 2. Failure: the node never appears. The status is TimedOut and the error names
+//    the node, the budget and the root type, for example
+//    "timed out after 200 ms waiting for node 'noSuchNode' under QQuickWindow 'main'".
+t::NodeQuery missing;
+missing.objectName = QStringLiteral("noSuchNode");
+const t::NodeWaitResult gone = t::waitForNode(&window, missing, 200ms);
+QCOMPARE(gone.status, t::NodeWaitStatus::TimedOut);
 
-// 3. Cleanup: nothing to dispose. A wait holds no state after it returns.
+// 3. A negative assertion with the synchronous scan, after a node was removed.
+QVERIFY(t::findNode(&window, bar) == nullptr);
 ```
 
 ### Error set
@@ -164,18 +180,25 @@ auto missing = waitForNode(&window, {.objectName = "noSuchNode"}, 200ms);
 | Condition | Result |
 | --- | --- |
 | `root` null, `objectName` empty, `timeout` not positive | `std::invalid_argument` (a programming error, not a test failure) |
-| Called off the thread that owns `root`, or from inside another `waitForNode` | `std::logic_error` |
-| No `QCoreApplication` instance | `std::logic_error` |
-| Timeout | `found == false`, `error` as above |
-| `root` destroyed while waiting | `found == false`, `error` says "root destroyed while waiting for node '<name>'" |
-| Node found but `requireVisible` is not met at the deadline | `found == false`, `error` says the node exists and is not visible |
+| `root` lives in another thread, a nested `waitForNode` (detected with a `thread_local` flag), no `QCoreApplication`, `requireVisible` on a type with no visibility | `std::logic_error` naming the call |
+| Timeout | status `TimedOut`, error as above |
+| Node found but not visible at the deadline | status `NotVisible`, error says the node exists and is not visible |
+| `root` destroyed while waiting | status `RootDestroyed` |
+| `QCoreApplication::quit()` while waiting | status `AppQuit` |
+
+Callers branch on `status`. The `error` string is for people.
 
 ### Waiting rules
 
-- The wait is event-driven. An application-level event filter coalesces every delivered event into one zero-delay re-scan, and a single-shot timer enforces the deadline. There is no sleep, no fixed polling interval and no retry. A node that only appears because of a posted or queued event is seen on the next event turn.
-- The filter and the timers live on the stack of one `waitForNode` call (RAII). They are removed on every exit path, so no callback runs after the function returns.
-- No lock is taken and no user code runs while the scan walks the tree. The scan reads `objectName()` and the `visible` property only.
-- Cancellation: there is none beyond the deadline and root destruction. Tests that need a longer budget pass a longer `timeout`.
+- The wait is event-driven and runs a nested `QEventLoop` on the root's thread. The first scan is synchronous, before the loop starts. After that it rescans each time the thread's event dispatcher reports `aboutToBlock()`, and once more at the deadline. One single-shot timer enforces the deadline, measured on a steady clock. There is no sleep, no polling interval, no retry and no application-level event filter.
+- The wait makes no progress of its own. It does not show, expose, polish or render anything, and it cannot see a change that is not made by a handler running on the root's thread. A test that needs a window exposed exposes it first. A node created by an asynchronous incubator on a window that never renders can stay absent until the deadline.
+- Other nested loops (`QTest::qWait`, a dialog `exec`, a QML handler) may run while the wait is active. Only a nested `waitForNode` is refused.
+- The loop, the timer and the dispatcher connection live on the stack of one call. Destruction removes the connection and the timer before the loop, on every exit path including an exception, so nothing runs after the function returns. The root is held as a `QPointer` and re-checked on every scan.
+- No mutex exists. Nothing is shared between threads. The scan runs inside a dispatcher signal and only reads `objectName()`, the child lists and visibility.
+
+### Build and linkage
+
+The library is `rnqnx_native_testing` in `native/testing`: static, built only under `RNQNX_BUILD_NATIVE_TESTING_TESTS`, never installed or exported. It links Qt6::Core, Gui and Qml publicly and Qt6::Quick privately, uses C++17 and `QT_NO_KEYWORDS` like the window chrome lane, and builds with `-Wall -Wextra -Wpedantic -Werror` on Clang and GCC. A CTest check fails if a target other than a test links it.
 
 ### What each platform promises
 

@@ -51,6 +51,12 @@ source_qnx_environment
 # shellcheck source=scripts/lib/qnx-target.sh
 source "${SCRIPT_DIR}/lib/qnx-target.sh"
 rnqnx_target_init
+WAIT_LIB="${SCRIPT_DIR}/lib/wait-log.sh"
+FRAME_WAIT_S="${RNQNX_PI_FRAME_WAIT_S:-30}"
+if [[ ! "${FRAME_WAIT_S}" =~ ^[0-9]+$ ]] || ((10#${FRAME_WAIT_S} < 1 || 10#${FRAME_WAIT_S} > 300)); then
+  echo "ERROR: RNQNX_PI_FRAME_WAIT_S must be an integer from 1 through 300." >&2
+  exit 1
+fi
 
 CONFIG="${RNQNX_PI_CONFIG:-Release}"
 APP="rnqnx_playground"
@@ -115,10 +121,14 @@ echo
 echo "[4/4] Running on QNX Screen and collecting evidence"
 set +e
 RUN_OUTPUT="$(
-  rnqnx_ssh "sh -s -- '${QNX_TARGET_DIR}' '${APP}' '${RUNS}'" <<'RNQNX_REMOTE'
+  {
+    # The remote sh gets the wait function first, then the run script.
+    cat "${WAIT_LIB}"
+    cat <<'RNQNX_REMOTE'
 target_dir="$1"
 app="$2"
 runs="$3"
+frame_wait="$4"
 cd "$target_dir" || exit 30
 screenshot_file="${app}.bmp"
 rm -f "${app}".run-*.log "$screenshot_file"
@@ -131,7 +141,12 @@ while [ "$run" -le "$runs" ]; do
   pid=$!
 
   if [ "$run" -eq 1 ]; then
-    sleep 2
+    # Wait for the first-frame line the probe prints, not for a fixed time.
+    if ! rnqnx_wait_log "$log_file" '^rnqnx_playground: first frame presented$' 1 "$frame_wait" "${app} first frame presented (run 1)"; then
+      kill "$pid" 2>/dev/null
+      wait "$pid" 2>/dev/null
+      exit 31
+    fi
     if command -v screenshot >/dev/null 2>&1; then
       screenshot -file="$screenshot_file" >/dev/null 2>&1 || true
     fi
@@ -147,6 +162,7 @@ while [ "$run" -le "$runs" ]; do
   run=$((run + 1))
 done
 RNQNX_REMOTE
+  } | rnqnx_ssh "sh -s -- '${QNX_TARGET_DIR}' '${APP}' '${RUNS}' '${FRAME_WAIT_S}'"
 )"
 RUN_RC=$?
 set -e
