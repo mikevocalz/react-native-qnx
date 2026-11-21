@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "react-native-qnx/gesture/QtGesturePlatform.h"
 
 #include "QnxGestureHandlerModule.h"
@@ -215,6 +216,13 @@ std::shared_ptr<QtGesturePlatform> QtGesturePlatform::install(
     runtime::QtReactHost& host, fabric::ShadowViewMutationAdapter& adapter,
     fabric::QtQuickMountingLayer& layer, QQuickWindow& window,
     const std::shared_ptr<worklets::QtWorkletsPlatform>& worklets) {
+  if (host.jsThreadEnabled()) {
+    // ADR-0021: this platform reads the runtime from the GUI thread during
+    // install and runs worklets against it. Not moved to the JS thread yet, so
+    // refuse instead of racing.
+    throw std::runtime_error(
+        "Gesture Handler is not supported with QtReactHost JS-thread mode yet (ADR-0021)");
+  }
   auto platform = std::make_shared<Platform>(host, adapter, layer, window, worklets);
   platform->init();
   // Mounted as plain containers; the detector forwards its children.

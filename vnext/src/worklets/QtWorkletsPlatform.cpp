@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "react-native-qnx/worklets/QtWorkletsPlatform.h"
 
 #include "QnxWorkletsModule.h"
@@ -193,6 +194,13 @@ class Platform final : public QtWorkletsPlatform,
 
 std::shared_ptr<QtWorkletsPlatform> QtWorkletsPlatform::install(
     runtime::QtReactHost& host, QQuickWindow* window) {
+  if (host.jsThreadEnabled()) {
+    // ADR-0021: this platform reads the runtime from the GUI thread during
+    // install and runs worklets against it. Not moved to the JS thread yet, so
+    // refuse instead of racing.
+    throw std::runtime_error(
+        "Worklets is not supported with QtReactHost JS-thread mode yet (ADR-0021)");
+  }
   auto platform = std::make_shared<Platform>(host, window);
   platform->init();
   host.registerTurboModule(
