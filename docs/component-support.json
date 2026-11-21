@@ -112,11 +112,11 @@
       },
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
-        "status": "failed",
-        "summary": "Public entry throws \"VirtualizedList is not implemented in this experimental entry\" (issue #178); the deep import renders 200 rows. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
+        "status": "scoped",
+        "summary": "Renders 200 base rows through the public entry (`import { VirtualizedList } from \"react-native\"`); five rows visible. Render only; no scroll or input. QNX VM (software render, TCG), not the Pi. Re-captured 2026-11-21 after the public entry exports it; the 2026-11-20 capture failed on the entry.",
         "evidence": [
-          "docs/evidence/qnx-vm-2026-11-20/captures/virtualized-list.png",
-          "docs/evidence/qnx-vm-2026-11-20/README.md"
+          "docs/evidence/qnx-vm-2026-11-21/captures/virtualized-list.png",
+          "docs/evidence/qnx-vm-2026-11-21/README.md"
         ]
       }
     },
@@ -152,11 +152,11 @@
       },
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
-        "status": "failed",
-        "summary": "Public entry throws \"VirtualizedSectionList is not implemented in this experimental entry\" (issue #178); the deep import renders two sections. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
+        "status": "scoped",
+        "summary": "Renders the Alpha and Beta sections with headers through the public entry; the first rows are visible. Render only; no scroll or input. QNX VM (software render, TCG), not the Pi. Re-captured 2026-11-21 after the public entry exports it; the 2026-11-20 capture failed on the entry.",
         "evidence": [
-          "docs/evidence/qnx-vm-2026-11-20/captures/virtualized-section-list.png",
-          "docs/evidence/qnx-vm-2026-11-20/README.md"
+          "docs/evidence/qnx-vm-2026-11-21/captures/virtualized-section-list.png",
+          "docs/evidence/qnx-vm-2026-11-21/README.md"
         ]
       }
     },
@@ -172,11 +172,11 @@
       },
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
-        "status": "failed",
-        "summary": "Public entry throws \"Button is not implemented in this experimental entry\"; the deep import renders an enabled and a disabled button. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
+        "status": "scoped",
+        "summary": "Renders an enabled and a disabled button through the public entry; press count 0. Render only; no press exercised. QNX VM (software render, TCG), not the Pi. Re-captured 2026-11-21 after the public entry exports it; the 2026-11-20 capture failed on the entry.",
         "evidence": [
-          "docs/evidence/qnx-vm-2026-11-20/captures/button.png",
-          "docs/evidence/qnx-vm-2026-11-20/README.md"
+          "docs/evidence/qnx-vm-2026-11-21/captures/button.png",
+          "docs/evidence/qnx-vm-2026-11-21/README.md"
         ]
       }
     },
@@ -252,11 +252,11 @@
       },
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
-        "status": "failed",
-        "summary": "Public entry throws \"ImageBackground is not implemented in this experimental entry\"; the deep import paints the image behind the child. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
+        "status": "scoped",
+        "summary": "Paints the bundled image behind the child through the public entry, resizeMode cover. Render only. QNX VM (software render, TCG), not the Pi. Re-captured 2026-11-21 after the public entry exports it; the 2026-11-20 capture failed on the entry.",
         "evidence": [
-          "docs/evidence/qnx-vm-2026-11-20/captures/image-background.png",
-          "docs/evidence/qnx-vm-2026-11-20/README.md"
+          "docs/evidence/qnx-vm-2026-11-21/captures/image-background.png",
+          "docs/evidence/qnx-vm-2026-11-21/README.md"
         ]
       }
     },
@@ -334,11 +334,11 @@
       },
       "vm": {
         "board": "QEMU virt aarch64, QNX 8.0.5, software Screen, Qt software scene graph",
-        "status": "failed",
-        "summary": "Public entry throws \"SafeAreaView is not implemented in this experimental entry\"; the deep import renders a View-like box with no visible inset. The entry now exports it (host test: tests/js/qnx-public-entry-render.test.mjs). This capture predates that fix; VM re-capture: not run, drive offline.",
+        "status": "scoped",
+        "summary": "Renders a child box through the public entry with no inset applied. Render only; system safe-area integration is absent. QNX VM (software render, TCG), not the Pi. Re-captured 2026-11-21 after the public entry exports it; the 2026-11-20 capture failed on the entry.",
         "evidence": [
-          "docs/evidence/qnx-vm-2026-11-20/captures/safe-area-view.png",
-          "docs/evidence/qnx-vm-2026-11-20/README.md"
+          "docs/evidence/qnx-vm-2026-11-21/captures/safe-area-view.png",
+          "docs/evidence/qnx-vm-2026-11-21/README.md"
         ]
       }
     },
