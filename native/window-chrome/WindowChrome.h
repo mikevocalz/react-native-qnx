@@ -43,14 +43,20 @@ namespace rnqnx::window {
 
 class WindowChrome final : public QObject {
   Q_OBJECT
-  Q_PROPERTY(QString controlsLayout READ controlsLayout CONSTANT)
+  // "macos" or "windows". Changes at runtime through setControlsLayout.
+  Q_PROPERTY(QString controlsLayout READ controlsLayout NOTIFY controlsLayoutChanged)
   // The set of controls is fixed for the window's life; only their geometry
   // changes. Keeping the model constant keeps the Repeater's delegates (and
-  // keyboard focus) across resizes.
+  // keyboard focus) across resizes and layout switches.
   Q_PROPERTY(QVariantList controls READ controls CONSTANT)
+  // Shown controls in physical left-to-right order for the current layout.
+  // The QML reorders its delegates to match so Tab follows what the eye sees.
+  Q_PROPERTY(QStringList controlOrder READ controlOrder NOTIFY layoutChanged)
+  // What the React content keeps clear of: {top, right, bottom, left, overlay}.
+  Q_PROPERTY(QVariantMap titleBarInset READ titleBarInset NOTIFY layoutChanged)
   Q_PROPERTY(QVariantMap controlGeometry READ controlGeometry NOTIFY layoutChanged)
   Q_PROPERTY(QRectF titleRect READ titleRect NOTIFY layoutChanged)
-  Q_PROPERTY(bool titleCentered READ titleCentered CONSTANT)
+  Q_PROPERTY(bool titleCentered READ titleCentered NOTIFY layoutChanged)
   Q_PROPERTY(bool barVisible READ barVisible CONSTANT)
   Q_PROPERTY(qreal barHeight READ barHeight CONSTANT)
   Q_PROPERTY(qreal windowWidth READ windowWidth NOTIFY layoutChanged)
@@ -100,6 +106,8 @@ class WindowChrome final : public QObject {
   QString controlsLayout() const { return nameOf(config_.controls); }
   QVariantList controls() const { return controls_; }
   QVariantMap controlGeometry() const;
+  QStringList controlOrder() const;
+  QVariantMap titleBarInset() const;
   QRectF titleRect() const { return layout_.titleRect; }
   bool titleCentered() const { return layout_.titleAlignment == Qt::AlignHCenter; }
   bool barVisible() const { return layout_.barVisible; }
@@ -113,6 +121,11 @@ class WindowChrome final : public QObject {
   QUrl iconSource() const { return iconSource_; }
   bool maximizeAvailable() const;
   void setIconSource(const QUrl& source);
+  // Switches between the macos and windows control layouts without recreating
+  // the controls, so keyboard focus stays on the focused control. Returns
+  // false and changes nothing for any other name. The same value is accepted
+  // in config (extra.rnqnx.window.controls).
+  bool setControlsLayout(const QString& name);
   QRectF frameRect() const { return frame_; }
   bool contained() const { return contained_; }
   bool movesWindow() const { return movesWindow_; }
@@ -130,6 +143,7 @@ class WindowChrome final : public QObject {
 
  Q_SIGNALS:
   void layoutChanged();
+  void controlsLayoutChanged();
   void titleChanged();
   void stateChanged();
   // Emitted before the action runs. Tests and receipts log it.
@@ -144,6 +158,7 @@ class WindowChrome final : public QObject {
 
  private:
   void relayout();
+  void applyTabOrder();
   bool handleFramePointer(QEvent* event);
   void setResizeHint(Qt::Edges edges, QPointF pointer);
 

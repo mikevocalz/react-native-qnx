@@ -94,6 +94,56 @@ QVariantMap WindowChrome::controlGeometry() const {
   return result;
 }
 
+QStringList WindowChrome::controlOrder() const {
+  QStringList order;
+  for (const auto& slot : layout_.controls) order.append(nameOf(slot.action));
+  return order;
+}
+
+QVariantMap WindowChrome::titleBarInset() const {
+  const TitleBarInset& inset = layout_.inset;
+  return QVariantMap{{QStringLiteral("top"), inset.top},
+                     {QStringLiteral("right"), inset.right},
+                     {QStringLiteral("bottom"), inset.bottom},
+                     {QStringLiteral("left"), inset.left},
+                     {QStringLiteral("overlay"),
+                      QVariantMap{{QStringLiteral("x"), inset.overlay.x()},
+                                  {QStringLiteral("y"), inset.overlay.y()},
+                                  {QStringLiteral("width"), inset.overlay.width()},
+                                  {QStringLiteral("height"), inset.overlay.height()}}}};
+}
+
+// Qt Quick walks the Tab chain in sibling order. Restacking the existing
+// control items to the new physical order keeps the same items, and so the
+// focused one, while Tab follows the order the controls appear in.
+void WindowChrome::applyTabOrder() {
+  if (!chrome_) return;
+  QQuickItem* previous = nullptr;
+  for (const QString& action : controlOrder()) {
+    QQuickItem* item = nullptr;
+    for (QQuickItem* child : chrome_->childItems())
+      if (child->objectName() == QStringLiteral("rnqnxWindowControl_") + action) item = child;
+    if (item == nullptr) continue;
+    if (previous != nullptr) item->stackAfter(previous);
+    previous = item;
+  }
+}
+
+bool WindowChrome::setControlsLayout(const QString& name) {
+  ControlsLayout parsed;
+  try {
+    parsed = parseControlsLayout(name);
+  } catch (const std::invalid_argument&) {
+    return false;
+  }
+  if (parsed == config_.controls) return true;
+  config_.controls = parsed;
+  relayout();
+  applyTabOrder();
+  Q_EMIT controlsLayoutChanged();
+  return true;
+}
+
 qreal WindowChrome::windowWidth() const { return frame_.width(); }
 
 QString WindowChrome::title() const { return window_ ? window_->title() : QString(); }
