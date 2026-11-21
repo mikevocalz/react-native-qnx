@@ -195,8 +195,8 @@ importers:
         specifier: 7.29.7
         version: 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
       '@legendapp/list':
-        specifier: 3.7.2
-        version: 3.7.2(react-dom@19.3.0(react@19.3.0))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+        specifier: 3.7.3
+        version: 3.7.3(react-dom@19.3.0(react@19.3.0))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
       '@legendapp/motion':
         specifier: 2.5.3
         version: 2.5.3(nativewind@4.2.7(b3ca89a7f5fc3709a3d4f3c6d1c4a002))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
@@ -228,8 +228,8 @@ importers:
         specifier: 1.0.0-alpha.nightly.136.gdb81de61bd32
         version: 1.0.0-alpha.nightly.136.gdb81de61bd32
       prettier:
-        specifier: 3.9.10
-        version: 3.9.10
+        specifier: 3.10.1
+        version: 3.10.1
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -1083,8 +1083,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@legendapp/list@3.7.2':
-    resolution: {integrity: sha512-StFy5qjOHHuxHKjenwLq500S/z+zuF43hj8iqXhX9EMtzeOagPfsnMRWphvBG4CYBvMTX6VzgLjN5BzzwY1jDA==}
+  '@legendapp/list@3.7.3':
+    resolution: {integrity: sha512-trGu1i4xo1+r6gG6GI3qrrZAfYHbB25uVj32/KnxhaQ7/eW4AqzhM5cW21Oye4dpg+180Ts1aejRuI8z6Xc4eg==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -2872,8 +2872,8 @@ packages:
     resolution: {integrity: sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==}
     engines: {node: ^10 || ^12 || >=14}
 
-  prettier@3.9.10:
-    resolution: {integrity: sha512-skGHTH1Yb9QvaTC4hWnRTzEYtCpApF0UMBPz+t/0ZPzP8ihefo/btKd+QA7pUE0fEwA1SbS/NmhyEcstdXOIdA==}
+  prettier@3.10.1:
+    resolution: {integrity: sha512-70vp3ZUYoPlFbF9uiTdXHUUCGEIp7d4+6p+8DYbkm2jP7x/3i/paXVF6dopSI3zd/CEitrZN1rc4i85xWmmXlg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -4395,7 +4395,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@legendapp/list@3.7.2(react-dom@19.3.0(react@19.3.0))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)':
+  '@legendapp/list@3.7.3(react-dom@19.3.0(react@19.3.0))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)':
     dependencies:
       react: 19.3.0
       use-sync-external-store: 1.7.0(react@19.3.0)
@@ -6145,7 +6145,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
-  prettier@3.9.10: {}
+  prettier@3.10.1: {}
 
   pretty-format@29.7.0:
     dependencies:
