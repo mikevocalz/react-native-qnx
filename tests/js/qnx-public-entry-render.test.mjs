@@ -71,6 +71,10 @@ const nativeLeaves = {
   'Components/Touchable/TouchableOpacity': { default: host('TouchableOpacity') },
   'Components/Touchable/TouchableNativeFeedback': { default: host('TouchableNativeFeedback') },
   // SafeAreaView evaluates this iOS-only require eagerly inside Platform.select.
+  // Loading the real file needs the Fabric view config registry from
+  // react-native/react-private-interface, which only the QNX host provides, so
+  // it is a host element here. Its load on QNX is covered by the VM capture of
+  // the deep import, not by this test.
   'Components/SafeAreaView/RCTSafeAreaViewNativeComponent': {
     default: host('RCTSafeAreaView'),
   },
@@ -275,6 +279,11 @@ for (const [name, modulePath] of Object.entries(cases)) {
 
 // 6. SafeAreaView is the plain View off iOS; props and children pass through.
 {
+  assert.equal(
+    api.SafeAreaView,
+    nativeLeaves['Components/View/View'].default,
+    'SafeAreaView is View off iOS'
+  );
   const renderer = render(
     h(api.SafeAreaView, { testID: 'safe', style: { flex: 1 } }, h('Text', null, 'inside'))
   );
