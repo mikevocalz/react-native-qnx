@@ -109,3 +109,79 @@ this synchronous proof. The later opt-in [Qt dispatcher](QT_DISPATCHER.md)
 also has physical callback/Promise/checkpoint/teardown evidence. General QNX
 codegen and third-party Nitro modules remain unverified. The normal upstream RN
 TurboModule startup plumbing remains; Nitro serves this app-native proof.
+
+## Native tree query for tests: `rnqnx::testing::waitForNode` (S3, proposed)
+
+Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an *app-facing* native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR. No C++ exists until a lane other than the author has reviewed this section.
+
+Skill sources, all at `margelo/react-native-skills@1e9e17be6f41c838db472d6a4b943fc26355a3be` (the head on 2026-11-20): `api-design` and `cpp` read in full and byte-identical to the local install; `build-nitro-modules` read from the pinned SHA (the local install carries an extra Nitro V1 paragraph that the pin lacks).
+
+### Contract
+
+```cpp
+namespace rnqnx::testing {
+
+struct NodeQuery {
+  QString objectName;          // exact match, non-empty
+  bool requireVisible = false; // the node's `visible` property must read true
+};
+
+struct NodeWaitResult {
+  bool found = false;
+  QPointer<QObject> node;               // set when found; null if the node died since
+  std::chrono::milliseconds elapsed{0};
+  QString error;                        // empty when found
+};
+
+// Synchronous scan. Same thread as `root`. Returns nullptr when absent.
+QObject* findNode(QObject* root, const NodeQuery& query);
+
+// Pumps the calling thread's event loop until the node exists or `timeout` passes.
+NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
+                           std::chrono::milliseconds timeout);
+}
+```
+
+Roots and traversal: any `QObject`. The scan follows `QObject::children()`, `QQuickItem::childItems()` and the content item of a `QQuickWindow`, and visits each object once. The root itself can match.
+
+### Call sites
+
+```cpp
+// 1. A node that appears after a deferred QML Loader finishes.
+auto r = waitForNode(&window, {.objectName = "rnqnxTitleBar", .requireVisible = true}, 5s);
+QVERIFY2(r.found, qPrintable(r.error));
+
+// 2. Failure: the node never appears. The error names the node and the budget.
+auto missing = waitForNode(&window, {.objectName = "noSuchNode"}, 200ms);
+// missing.found == false
+// missing.error == "timed out after 200 ms waiting for node 'noSuchNode' under QQuickWindow 'main' (scanned 14 objects)"
+
+// 3. Cleanup: nothing to dispose. A wait holds no state after it returns.
+```
+
+### Error set
+
+| Condition | Result |
+| --- | --- |
+| `root` null, `objectName` empty, `timeout` not positive | `std::invalid_argument` (a programming error, not a test failure) |
+| Called off the thread that owns `root`, or from inside another `waitForNode` | `std::logic_error` |
+| No `QCoreApplication` instance | `std::logic_error` |
+| Timeout | `found == false`, `error` as above |
+| `root` destroyed while waiting | `found == false`, `error` says "root destroyed while waiting for node '<name>'" |
+| Node found but `requireVisible` is not met at the deadline | `found == false`, `error` says the node exists and is not visible |
+
+### Waiting rules
+
+- The wait is event-driven. An application-level event filter coalesces every delivered event into one zero-delay re-scan, and a single-shot timer enforces the deadline. There is no sleep, no fixed polling interval and no retry. A node that only appears because of a posted or queued event is seen on the next event turn.
+- The filter and the timers live on the stack of one `waitForNode` call (RAII). They are removed on every exit path, so no callback runs after the function returns.
+- No lock is taken and no user code runs while the scan walks the tree. The scan reads `objectName()` and the `visible` property only.
+- Cancellation: there is none beyond the deadline and root destruction. Tests that need a longer budget pass a longer `timeout`.
+
+### What each platform promises
+
+| Platform | Promise |
+| --- | --- |
+| Host (macOS, Linux, Qt 6.11+) | Built and run by the `native-testing` CTest lane under `QT_QPA_PLATFORM=offscreen`. |
+| QNX VM, Pi 400, release board | Not built. The library is not linked into any QNX target in this slice. Device smoke paths wait on app-emitted log lines through `scripts/lib/wait-log.sh`. |
+
+The accessibility tree (`QAccessible`) is not queried. The `objectName` tree covers every node the smoke paths need, and the offscreen platform does not install an accessibility bridge, so an accessibility query would not run in the host lane.
