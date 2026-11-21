@@ -73,6 +73,7 @@ struct Scene {
     CHECK(item != nullptr);
     item->setParentItem(window.contentItem());
   }
+  ~Scene() { delete item; }
 };
 
 // Runs one probe to completion and returns whether it reported success.

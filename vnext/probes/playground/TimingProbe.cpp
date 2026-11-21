@@ -93,10 +93,10 @@ Memory readMemory() {
   Memory memory;
   QFile status(QStringLiteral("/proc/self/status"));
   if (!status.open(QIODevice::ReadOnly)) return memory;
-  const auto field = [&status](const char* key) -> std::optional<std::uint64_t> {
-    status.seek(0);
-    while (!status.atEnd()) {
-      const QByteArray line = status.readLine();
+  // procfs reports size 0, so atEnd() and seek() are not reliable: read it whole.
+  const QList<QByteArray> lines = status.readAll().split('\n');
+  const auto field = [&lines](const char* key) -> std::optional<std::uint64_t> {
+    for (const QByteArray& line : lines) {
       if (!line.startsWith(key)) continue;
       const QList<QByteArray> parts = line.simplified().split(' ');
       bool ok = false;
