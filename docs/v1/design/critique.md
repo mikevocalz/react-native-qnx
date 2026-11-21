@@ -44,7 +44,7 @@ named release image before accepting the design implementation.
 
 | Finding                                                              | Disposition                                                                                                                               |
 | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| macOS chrome: dark focus too faint, background title text unreadable | Fixed. New focus and inactive-title tokens, measured in [contrast.json](contrast.json).                                                   |
+| macOS chrome: dark focus too faint, background title text unreadable | Fixed on host. New focus and inactive-title tokens, measured in [contrast.json](contrast.json).                                           |
 | Windows chrome: constant layout property blocks the runtime switch   | Fixed on host. `WindowChrome::setControlsLayout` switches layout, keeps the control items and focus, and Tab follows the on-screen order. |
 | Windows chrome: close guards absent                                  | Open. Needs the windows API (contract still to be reviewed).                                                                              |
 | Blocked JS also blocks chrome                                        | Open. Needs the JS thread split (S2).                                                                                                     |
