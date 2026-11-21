@@ -24,10 +24,10 @@ graph. The same table appears in the README and the
 | ---------------------- | --------------------------------------- |
 | reactNative            | `0.88.1`                                |
 | react                  | `19.3.0`                                |
-| expo                   | `58.0.24`                               |
+| expo                   | `58.0.26`                               |
 | metro                  | `0.87.1`                                |
 | reactNativeMetroConfig | `0.88.1`                                |
-| babelPresetExpo        | `58.0.25`                               |
+| babelPresetExpo        | `58.0.26`                               |
 | nitroCore              | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
 | nitroModules           | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
 | nitrogen               | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
@@ -37,7 +37,7 @@ graph. The same table appears in the README and the
 | packageManager         | `pnpm@12.18.0`                          |
 | expoModulesCore        | `58.1.0`                                |
 | expoMetro              | `58.0.0`                                |
-| expoMetroConfig        | `58.0.22`                               |
+| expoMetroConfig        | `58.0.23`                               |
 | hermesCompiler         | `260318099.0.5`                         |
 | hermesSource           | `hermes-v260318099.0.5`                 |
 

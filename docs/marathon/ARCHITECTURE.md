@@ -54,7 +54,7 @@ JS / React Native / Expo (shared application source)
 4. Marathon's special app metadata, Wayland app_id, permissions and lifecycle must be coordinated with upstream. A desktop .desktop or Flatpak launching on Wayland is milestone 1, not equivalent to a store-ready .marathon app.
 5. Safe areas, physical/soft keyboard, keyboard insets, back, status/gesture bars, touch, lifecycle, background suspension and notification permissions each require device evidence.
 6. Nitro 1.0 is alpha-nightly: the repository pins `1.0.0-alpha.nightly.136.gdb81de61bd32`, and npm `latest` is `0.37.2` (checked 2026-11-19). Expo Modules **API 2.0 beta** is exposed within Expo SDK 58; this is not an npm `expo-modules-core@2.x` request. Model C++/JSI interoperability separately from Swift/Kotlin-specific macros.
-7. Dependencies follow the matched Expo 58 / RN 0.88 stable line (`expo` 58.0.24, `react-native` 0.88.1 in the lockfile), not an unconstrained latest-of-everything grab. Lockfile, headers, Hermes source, Metro, Expo internals, CMake and autolinking must move together.
+7. Dependencies follow the matched Expo 58 / RN 0.88 stable line (`expo` 58.0.26, `react-native` 0.88.1 in the lockfile), not an unconstrained latest-of-everything grab. Lockfile, headers, Hermes source, Metro, Expo internals, CMake and autolinking must move together.
 
 ## Milestones / exit gates
 
