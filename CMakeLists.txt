@@ -281,6 +281,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactProbe.cmake)
     rnqnx_add_react_render_probe(rnqnx_react_qnx_probe)
+
+    # ADR-0021 on QNX: the JS-thread test, cross-built so the QEMU VM can run it.
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxJsThreadQnxTest.cmake)
+    rnqnx_add_js_thread_qnx_test()
   endif()
 
 else()
@@ -509,6 +513,9 @@ else()
             tests/cpp/QtReactHostJsThreadHostTest.cpp
           )
           target_link_libraries(qt_react_host_js_thread_host_test PRIVATE rnqnx_react_host)
+          target_compile_definitions(qt_react_host_js_thread_host_test PRIVATE
+            RNQNX_JS_THREAD_SCRIPT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/js-thread"
+            RNQNX_JS_THREAD_SCRIPT_EXT=".js")
           rnqnx_enable_strict_warnings(qt_react_host_js_thread_host_test)
           set_target_properties(qt_react_host_js_thread_host_test PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

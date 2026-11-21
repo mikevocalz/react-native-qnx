@@ -3,10 +3,12 @@
 ## Status
 
 Proposed, 2026-11-21. Behind `QtReactHost::Options::jsThread`, default off.
-Host evidence only (see Results). No QNX VM, Pi 400 or release-board run
-exists, so the `window-chrome` and `device-parity` gates stay `pending`.
-Time box: one working session. Owner decision 3 applies if the device run
-cannot be made.
+Evidence is from the host and from the QNX VM (QEMU, TCG emulation, software
+render; not the Pi 400, not the release board). The VM run is in
+[docs/evidence/s2-vm-2026-11-21](../evidence/s2-vm-2026-11-21/README.md). No Pi
+400 or release-board run exists, so the `window-chrome` and `device-parity`
+gates stay `pending`. Time box: one working session. Owner decision 3 applies
+if the device run cannot be made.
 
 ## Context
 
@@ -101,7 +103,8 @@ whose queue reaches the JS thread through the `runtimeExecutor`. No change.
 `QtNitroDispatcher` wraps `QtRuntimeTaskQueue`. Because the queue's owner is the
 JS thread in this mode, `isOnDispatcher` is true on the JS thread, `runSync`
 requires it, and `runAsync` from a worker lands there. No dispatcher code
-changed, and no Nitro test ran in this mode (see Not verified).
+changed. The Nitro installer and the dispatcher ran in this mode on the QNX VM
+(see Results); the Nitro hybrid objects themselves did not.
 
 ### Shutdown order
 
@@ -124,8 +127,11 @@ Mounts queued from step 1 capture the delegate, so they must run before step 3.
 it. In JS-thread mode they throw `std::runtime_error` naming this ADR. The
 AppState module needs the GUI thread for its constructor and signals, so a
 lookup of it in this mode throws. All four stay on the single-thread path until
-each is moved and tested. The Nitro runtime installers, `QnxDevSupport` and the
-WebSocket, FileReader and image modules were not run in this mode.
+each is moved and tested. On the QNX VM all four refused with their
+ADR-0021 message (see Results). `QnxDevSupport` was not run in this mode. The
+Nitro runtime installer, the WebSocket and FileReader modules and
+`ImageLoader.getSize` ran in this mode on the QNX VM; the Expo image view and
+the image modules beyond `getSize` did not.
 
 Two shared pieces needed a change because both threads now touch them.
 `ImageLoadedNotifier` is process-wide and was unlocked; it now takes a mutex and
@@ -143,15 +149,22 @@ Every row names its target. All host runs: macOS arm64, Apple clang, Qt 6.12.0
 (Homebrew), Hermes built from the pinned source in Debug, offscreen platform,
 software Qt Quick, window chrome ON.
 
-| Check                                                                                          | Target   | Result                                                                                       |
-| ---------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| `qt_react_host_js_thread_host_test`, 6 cases, ASan                                             | host     | 6/6 pass. In the blocked case: block 5003 ms, 234 heartbeats of 10 ms by 2500 ms, 484 in all |
-| Same case with the flag off (mutation: `Fixture(false)`)                                       | host     | fails at `!blockDone`, as it must                                                            |
-| `qt_react_host_host_test`, flag off                                                            | host     | 62/62 pass                                                                                   |
-| Same JS-thread test, whole graph built with `-fsanitize=thread`                                | host     | exit 0, 0 ThreadSanitizer reports                                                            |
-| Negative control: the acquire in `QueuedCallTarget::event` removed                             | host     | 42 reports, so the run can see the hand-off                                                  |
-| Linux, Qt 6.11.1 (CI): both renderer legs run the test; the ThreadSanitizer workflow is manual | Linux CI | see PR #201                                                                                  |
-| QNX VM, Pi 400, release board                                                                  | not run  | The Pi and the T9 drive were not available for a device run                                  |
+| Check                                                                                             | Target                                    | Result                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `qt_react_host_js_thread_host_test`, 6 cases, ASan                                                | host                                      | 6/6 pass. In the blocked case: block 5003 ms, 234 heartbeats of 10 ms by 2500 ms, 484 in all                                                            |
+| Same case with the flag off (mutation: `Fixture(false)`)                                          | host                                      | fails at `!blockDone`, as it must                                                                                                                       |
+| `qt_react_host_host_test`, flag off                                                               | host                                      | 62/62 pass                                                                                                                                              |
+| Same JS-thread test, whole graph built with `-fsanitize=thread`                                   | host                                      | exit 0, 0 ThreadSanitizer reports                                                                                                                       |
+| Negative control: the acquire in `QueuedCallTarget::event` removed                                | host                                      | 42 reports, so the run can see the hand-off                                                                                                             |
+| Linux, Qt 6.11.1 (CI): both renderer legs run the test                                            | Linux CI                                  | see PR #201                                                                                                                                             |
+| ThreadSanitizer workflow on main, first Linux run (run 44919044567)                               | Linux CI                                  | red: 21 reports, all a Qt allocation freed on Qt's QML loader thread; see the ThreadSanitizer note                                                      |
+| Same workflow with `ignore_noninstrumented_modules=1`, branch commit `6d42c522` (run 44921312130) | Linux CI                                  | green: 9 cases pass, 0 ThreadSanitizer reports                                                                                                          |
+| QNX VM, 3 runs of the 11-case cross-build, JS blocked 5 s, flag on                                | QNX VM (TCG, software render, not the Pi) | 3/3 pass. Pan moved the Flickable (contentY 0 to 48), minimize 11 to 12 ms, close 5 to 6 ms, resize calls 0 ms, 196 to 198 heartbeats of 10 ms by 2.5 s |
+| Same block with the flag off (control)                                                            | QNX VM (TCG, software render, not the Pi) | 0 heartbeats during the block, pan unmoved at block end, a queued close click acted 5003 to 5004 ms in, after the block                                 |
+| Touch events during the block, flag on                                                            | QNX VM and host                           | 10 dispatched natively; JavaScript saw 2 starts, 2 ends and 2 moves after the block (Fabric coalesces queued moves per view)                            |
+| Worklets, Reanimated, Gesture Handler, AppState in this mode                                      | QNX VM                                    | each refused with its ADR-0021 message                                                                                                                  |
+| Nitro installer and dispatcher, WebSocket loopback, FileReader, `ImageLoader.getSize`             | QNX VM                                    | pass in this mode; the WebSocket events reached JavaScript on the JS thread                                                                             |
+| Pi 400, release board                                                                             | not run                                   | The Pi and the T9 drive were not available for a device run                                                                                             |
 
 Scope of the ThreadSanitizer result: Qt, the C++ runtime and system libraries
 are not instrumented. Qt's own queue cannot be seen, so every hand-off the host
@@ -161,18 +174,32 @@ change the same run reported 93 races, all of them the callable crossing Qt's
 queue. Anything that reaches the JS thread by another route would be reported
 or, if it only touches uninstrumented code, missed.
 
+ThreadSanitizer note, 2026-11-21. The first Linux run of the workflow (on main
+`5b691720`, run 44919044567) failed with 21 reports. Each pairs an allocation
+on the GUI thread with its free on Qt's `QQmlThread`, with every frame in Qt
+(`libQt6Core`, `libQt6Qml`) except the test body: Qt hands the memory over
+through its own queue, which an uninstrumented Qt hides. The macOS run in the
+first receipt had none because macOS defaults `ignore_noninstrumented_modules`
+to on; Linux defaults it to off. The workflow now sets it, so allocation and
+synchronization calls made from Qt are not tracked and the host's own code and
+its `QueuedCallTarget` hand-offs still are. The macOS negative control (42
+reports with the acquire removed) ran under that same default. A Linux negative
+control was not run.
+
 ## Consequences
 
 - With the flag on, a script that spins for five seconds no longer freezes the
   window controls or native pan. This is the property the `window-chrome` gate
-  line needs, shown on the host only.
+  line needs, shown on the host and on the QNX VM (synthetic pointer events,
+  software render, TCG), not on a Pi 400 or the release board.
 - Start-up code that calls awaited methods from an input handler would still
   block. The header lists which calls those are.
 - Libraries that want the runtime from the GUI thread must move to
   `runOnJsThread` before they can run in this mode. Three refuse to install.
 - A second thread adds a hop to every mount: JS to GUI through a queued call.
   One extra event-loop turn per transaction. The frame-time cost has not been
-  measured, on any target.
+  measured, on any target. The VM timings are TCG emulation and are not
+  performance evidence.
 
 ## Alternatives considered
 
@@ -202,5 +229,11 @@ or, if it only touches uninstrumented code, missed.
 - Device run still owed: 20 cold boots (S9), a blocked-JS run on the Pi 400,
   and the frame-time cost of the extra hop against the S4 budgets. Nothing in
   this ADR loosens a budget or a gate.
-- Open: moving Worklets, Reanimated, Gesture Handler, Nitro installers and the
-  dev client to `runOnJsThread`, then removing the three install guards.
+- The playground and consumer `main.cpp` construct `QtReactHost` without the
+  option and read `host.runtime()` on the GUI thread, so no app binary runs in
+  this mode yet. The VM run used the cross-built test, not the showcase app.
+  Real Screen pointer input was not used: the VM has no input device, so the
+  press, drag and release are `QMouseEvent`s sent to the window.
+- Open: moving Worklets, Reanimated, Gesture Handler and the dev client to
+  `runOnJsThread`, then removing the three install guards and the AppState
+  guard. The Nitro installer needs no change.

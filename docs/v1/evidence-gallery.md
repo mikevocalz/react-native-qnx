@@ -19,7 +19,9 @@ Three later Pi 400 receipts, dated 2026-11-19, are not in the tables:
 cover Worklets, Reanimated, Gesture Handler pan, tap and double-tap, SVG,
 `expo-image` animated GIF and WebP, modal and drawer Escape, and key repeat, on a
 1024x768 display. They do not cover pinch, rotation, multi-pointer input,
-1920x1080, Video, Audio or a gesture that runs while JavaScript is blocked.
+1920x1080, Video, Audio or a gesture that runs while JavaScript is blocked. (The
+[QNX VM receipt](../evidence/s2-vm-2026-11-21/README.md) ran a native pan during a
+blocked JS thread with the opt-in flag; it is not a Pi 400 receipt and not Gesture Handler.)
 They are not attached to any v1 gate.
 
 | Target                       | What that target means here                                                                                                                          |

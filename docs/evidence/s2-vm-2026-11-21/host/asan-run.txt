@@ -1,0 +1,55 @@
+[INFO] platform=offscreen blockMs=5000 responsiveMs=500
+qt.qpa.fonts: Populating font family aliases took 169 ms. Replace uses of missing font family "Sans Serif" with one that exists to avoid this cost. 
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1121 10:58:51.894601 4211310464 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x615000064098).
+W1121 10:58:51.894793 1894985728 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x61100017c2d8).
+W1121 10:58:51.894824 1894985728 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x61700009b218).
+W1121 10:58:51.897267 1884827648 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x615000050f98).
+W1121 10:58:51.897387 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x6110001d67d8).
+W1121 10:58:51.897408 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x6170000a0998).
+[PASS] jsRunsOnItsOwnThread
+W1121 10:58:51.923290 1884827648 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x615000090918).
+W1121 10:58:51.923435 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x611000220798).
+W1121 10:58:51.923458 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x6170000c0518).
+[PASS] mountsAreAppliedOnTheGuiThread
+W1121 10:58:51.955355 1884827648 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x6150000d0f18).
+W1121 10:58:51.955500 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x611000256758).
+W1121 10:58:51.955525 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x6170000c5c98).
+[PASS] timersAndCompletionsRunOnTheJsThread
+W1121 10:58:53.478433 1884827648 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x6150000eec98).
+W1121 10:58:53.478607 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x61100028c858).
+W1121 10:58:53.478632 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x6170000c9118).
+[PASS] resizeAndWindowSizeDoNotWaitForJavaScript
+[RESULT] flag=on blockMs=5000 blocked=5003ms heartbeats@2500ms=233 total=484 panMs=1 contentY=-0->48 minimizeMs=0 closeMs=0 resizeMs=0 touchDispatchedNatively=10 touchSeenByJs=6 (starts 2, moves 2 coalesced from 6, ends 2) responsiveBoundMs=500
+blocked=5003ms beats@2500ms=233 total=484
+W1121 10:58:58.509063 1884827648 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x615000111018).
+W1121 10:58:58.509212 1867952128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x6110002b8bd8).
+W1121 10:58:58.509243 1867952128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x6170000cd398).
+[PASS] blockedJavaScriptLeavesTheGuiThreadResponsive
+[RESULT] flag=off blockMs=5000 blocked=4999ms heartbeatsDuringBlock=0 firstHeartbeatAt=5000ms lastHeartbeatAt=5000ms contentYAtBlockEnd=-0 closeActionAt=5000ms (queued click ran only after the block)
+W1121 10:59:03.537194 4211310464 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x61500010c518).
+W1121 10:59:03.537355 1876963328 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x6110002f7018).
+W1121 10:59:03.537386 1876963328 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x6170000f1518).
+[PASS] blockedJavaScriptFreezesTheGuiThreadWithTheFlagOff
+W1121 10:59:03.593797 1884254208 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x61500016ce18).
+W1121 10:59:03.593936 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x611000338f18).
+W1121 10:59:03.593958 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x6170000e7798).
+W1121 10:59:03.657918 1884254208 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x615000190f98).
+W1121 10:59:03.658046 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x611000375058).
+W1121 10:59:03.658084 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x617000100698).
+W1121 10:59:03.718227 1884254208 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x6150001c1198).
+W1121 10:59:03.718348 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x6110003a0758).
+W1121 10:59:03.718375 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x61700010ce18).
+[PASS] teardownWithQueuedWorkIsClean
+[RESULT] no refusing library is compiled into this build
+W1121 10:59:03.738385 1884254208 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x6150001e5318).
+W1121 10:59:03.738457 1885401088 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x6110003e0858).
+W1121 10:59:03.738475 1885401088 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x617000112c98).
+[PASS] unmovedLibrariesRefuseWithAClearError
+[RESULT] FileReader readAsText -> rejected: FileReaderModule is not implemented on this platform
+[RESULT] ImageLoader getSize(37x23 png) -> 37x23, settled on the JS thread
+W1121 10:59:03.787762 1884254208 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x615000201018).
+W1121 10:59:03.787885 1885974528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x611000402818).
+W1121 10:59:03.787904 1885974528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x617000116498).
+[PASS] turboModulesResolveAndCompleteOnTheJsThread
+All 9 JS-thread tests passed.

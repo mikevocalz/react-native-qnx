@@ -4,6 +4,9 @@ Scope: runtime layout switch, title-bar inset model and contrast fixes in
 `native/window-chrome`. Everything here ran on the **host** (macOS, Qt 6.12.0,
 offscreen QPA, software Quick backend). No QNX VM, Pi 400 or release board run
 was made, so the `window-chrome` and `app-identity` gates stay `pending`.
+A later QNX VM run ([s2-vm-2026-11-21](../s2-vm-2026-11-21/README.md)) exercised the
+minimize and close controls while JavaScript was blocked. It did not cover the layout
+switch, the inset or the contrast items here.
 
 Base `19fa1b2`. Build: `cmake -S native/window-chrome -DRNQNX_BUILD_WINDOW_CHROME_TESTS=ON`
 with Ninja, Debug; a second build with `-DRNQNX_WINDOW_CHROME_SANITIZERS=ON`.

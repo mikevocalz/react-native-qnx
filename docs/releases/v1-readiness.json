@@ -290,7 +290,10 @@
       "title": "Window chrome and windows API",
       "status": "pending",
       "acceptance": "A native QML title bar outside the Fabric root (icon, title, minimize, close; maximize if the target supports it) with macos and windows control layouts selectable in config and at runtime, titleBarStyle default/hidden/none, and a title bar inset exposed to JavaScript and SafeAreaView. Drag-move and edge resize use QWindow::startSystemMove and startSystemResize only where the QPA plugin is verified to support them, with a receipt per target naming each as supported or unsupported. A test or receipt shows the inset values reaching JavaScript. An ADR in docs/adr defines minimize on QNX Screen. A Nitro v1 HybridClass windows API covers title, size, position, minimize, close, close guards, focus and visibility events, and states multi-window scope. Controls are keyboard operable with visible focus and finger-sized hit targets. Device receipts show both layouts, minimize and restore with the AppState transition logged, a close guard that cancels and one that proceeds, and chrome still operable while the JS thread is deliberately blocked.",
-      "evidence": ["docs/evidence/s8-app-identity-window-chrome-2026-11-21/README.md"]
+      "evidence": [
+        "docs/evidence/s8-app-identity-window-chrome-2026-11-21/README.md",
+        "docs/evidence/s2-vm-2026-11-21/README.md"
+      ]
     },
     {
       "id": "expo",

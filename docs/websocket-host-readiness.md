@@ -71,6 +71,14 @@ test/module translation units when `RNQNX_ENABLE_HOST_SANITIZERS=ON`; Qt and Her
 are not themselves sanitizer-instrumented. Leak detection is disabled for
 process-lifetime Qt/Hermes singletons, as in the other host tests.
 
+## JS-thread mode on the QNX VM
+
+With `QtReactHost::Options::jsThread` (ADR-0021) the module was built on the JS
+thread and its transport ran on the GUI thread. On the QNX VM (TCG, software
+render) a loopback echo server saw connect, send, echo and close, every event
+reaching JavaScript on the JS thread, 3 of 3 runs
+([receipt](evidence/s2-vm-2026-11-21/README.md)). This is not Pi 400 evidence.
+
 ## QNX acceptance boundary
 
 Enabling this feature in a QNX CMake build intentionally fails configuration.

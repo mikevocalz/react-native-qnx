@@ -155,8 +155,11 @@ this record does not promote the existing media experiment to general support.
 All G rows map to `window-chrome`, `app-identity` or `expo`; implementation PR
 URLs are pending. [PR #164](https://github.com/mikevocalz/react-native-qnx/pull/164) supplies the design documents, with UI behavior and device receipts still pending. Each screen needs the ordered Mobbin/design/research/copy/
 accessibility/critique/handoff workflow from the request. Chrome must remain
-operable while JS is blocked; the current shared GUI/JS thread prevents that
-acceptance claim.
+operable while JS is blocked. By default the shared GUI/JS thread prevents that.
+With `QtReactHost::Options::jsThread` (ADR-0021, default off) minimize and close
+acted during a 5 s block on the host and on the QNX VM (TCG, software render,
+synthetic pointer events; [receipt](../evidence/s2-vm-2026-11-21/README.md)). No
+Pi 400 or release-board run exists; the gate stays pending.
 
 | Item | Current path / finding                                       | Dependencies and unmet acceptance evidence                                                                                                                   |
 | ---- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
