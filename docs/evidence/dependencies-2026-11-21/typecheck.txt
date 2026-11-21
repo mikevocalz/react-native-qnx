@@ -1,0 +1,3 @@
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' run typecheck
+$ tsc --noEmit && tsc --noEmit -p tests/types/adaptive.tsconfig.json

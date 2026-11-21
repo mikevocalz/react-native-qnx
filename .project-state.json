@@ -262,7 +262,7 @@
     { "id": "app-identity", "status": "pending" },
     { "id": "window-chrome", "status": "pending" },
     { "id": "expo", "status": "pending" },
-    { "id": "dependencies", "status": "pending" }
+    { "id": "dependencies", "status": "passed" }
   ],
   "historicalState": "docs/handoff/HISTORY_THROUGH_2026_11_07.md"
 }

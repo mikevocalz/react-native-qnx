@@ -22,8 +22,8 @@
 
 react-native-qnx is an out-of-tree React Native platform for QNX. JavaScript runs on Hermes, Fabric
 and Yoga lay out the views, and a Qt Quick mounting layer draws them through QNX Screen. It is
-v1 preparation software: one Raspberry Pi 400 on a custom BCM2711 QNX 8.0.5 image runs it, and all
-eleven release gates in [`v1-readiness.json`](docs/releases/v1-readiness.json) are still pending.
+v1 preparation software: one Raspberry Pi 400 on a custom BCM2711 QNX 8.0.5 image runs it, and ten of
+the eleven release gates in [`v1-readiness.json`](docs/releases/v1-readiness.json) are still pending. The `dependencies` gate passed on 2026-11-21 (host and hosted evidence only).
 
 It is not published to npm, it does not run Expo Go, and no stock Raspberry Pi 4 or Pi 5 result is
 recorded here.
@@ -151,8 +151,8 @@ Read the [architecture decisions](docs/adr/index.md) and the
 
 ## Known gaps
 
-- No release gate has passed. The 11 gates in `v1-readiness.json` are all pending with empty
-  evidence.
+- Ten of the 11 gates in `v1-readiness.json` are pending. Only `dependencies` has passed, on host
+  and hosted evidence; it says nothing about the device.
 - Every device result comes from one Pi 400. Stock Pi 4 and Pi 5 are unproven.
 - 1920x1080 is unproven on current builds. The Pi ran at 1024x768 because its monitor EDID is
   unreadable. An earlier 2026-11-07 Hello World capture is 1920x1080.

@@ -1,0 +1,4 @@
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' run validate:expo-capability-table
+$ node scripts/expo-capability-table.mjs --check
+Expo SDK 58 capability table matches sdk58-support.json.

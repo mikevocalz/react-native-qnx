@@ -1,0 +1,4 @@
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' run validate:docs
+$ node scripts/validate-docs.mjs
+Documentation validated: 24 components, 11 release gates.
