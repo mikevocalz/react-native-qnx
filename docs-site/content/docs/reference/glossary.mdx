@@ -39,7 +39,7 @@ Each definition is taken from the repository's own usage. The source path is the
 
 **Host.** In the support columns, the development machine running Qt Quick. In Nitro and CMake text, "host" also means the C++ object that owns the Qt event loop and the JavaScript runtime (`QtReactHost`). Source: `docs/component-support.md`, `vnext/src/runtime/QtReactHost.cpp`.
 
-**Owner thread.** The Qt thread that created the host. JavaScript shares it; there is no separate JS thread. Native code must post work back to it. Source: `docs/nitro/QT_DISPATCHER.md`, `vnext/src/runtime/QtRuntimeTaskQueue.cpp`.
+**Owner thread.** The Qt thread that created the host. By default JavaScript shares it; `QtReactHost::Options::jsThread` (ADR-0021) moves JavaScript to its own thread. Native code must post work back to it. Source: `docs/nitro/QT_DISPATCHER.md`, `vnext/src/runtime/QtRuntimeTaskQueue.cpp`.
 
 **Worklets, Reanimated, Gesture Handler.** Libraries integrated opt-in. Worklets runs a UI runtime on a dedicated thread of the Qt host. Source: `docs/worklets-qnx.md`, `docs/reanimated-gesture-handler-qnx.md`.
 

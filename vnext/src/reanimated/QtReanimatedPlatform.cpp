@@ -1,12 +1,20 @@
 #include "react-native-qnx/reanimated/QtReanimatedPlatform.h"
 
 #include "QnxReanimatedModule.h"
+#include <stdexcept>
 
 namespace rnqnx::reanimated {
 
 void installReanimated(
     runtime::QtReactHost& host,
     const std::shared_ptr<worklets::QtWorkletsPlatform>& worklets) {
+  if (host.jsThreadEnabled()) {
+    // ADR-0021: this platform reads the runtime from the GUI thread during
+    // install and runs worklets against it. Not moved to the JS thread yet, so
+    // refuse instead of racing.
+    throw std::runtime_error(
+        "Reanimated is not supported with QtReactHost JS-thread mode yet (ADR-0021)");
+  }
   auto module = std::make_shared<std::shared_ptr<QnxReanimatedModule>>();
   host.registerTurboModule(
       QnxReanimatedModule::kModuleName,

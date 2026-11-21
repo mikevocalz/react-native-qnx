@@ -25,6 +25,7 @@ This directory records significant architectural decisions for `react-native-qnx
 | [0018](0018-runner-hosting-and-sdp-boundary.md)               | Runner hosting, signing and the QNX SDP boundary                | Accepted; no runner published                      | 2026-11-12 |
 | [0019](0019-nitro-package-metadata.md)                        | QNX native build metadata for Nitro packages                    | Accepted; host tests only                          | 2026-11-12 |
 | [0020](0020-worklets-reanimated-gesture-handler-bootstrap.md) | Native bootstrap for Worklets, Reanimated and Gesture Handler   | Accepted; Pi 400 runs 2026-11-13 and 2026-11-19    | 2026-11-13 |
+| [0021](0021-javascript-thread-off-the-qt-gui-thread.md)       | JavaScript on its own thread, off the Qt GUI thread             | Proposed; opt-in, host tests only                  | 2026-11-21 |
 
 ADR-0015 was filed as a second ADR-0013 and renumbered on 2026-11-11. Links to
 `0013-marathon-linux-wayland-native-target.md` now point to

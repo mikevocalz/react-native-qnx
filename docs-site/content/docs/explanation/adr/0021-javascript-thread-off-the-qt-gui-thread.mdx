@@ -1,0 +1,28 @@
+---
+title: 'ADR-0021: JavaScript on its own thread, off the Qt GUI thread'
+description: How QtReactHost can run Hermes on a thread it owns, how mounts and calls cross between the two threads, and what was and was not run.
+---
+
+Record: [`docs/adr/0021-javascript-thread-off-the-qt-gui-thread.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0021-javascript-thread-off-the-qt-gui-thread.md), dated 2026-11-21.
+
+## Status
+
+Proposed. The mode sits behind `QtReactHost::Options::jsThread` and is off by default. Evidence exists for the host only. No QNX VM, Pi 400 or release-board run exists, so the `window-chrome` and `device-parity` gates stay pending.
+
+## Context
+
+By default Hermes, the scheduler, the Fabric mount and every Qt Quick item share the GUI thread. A script that stays busy freezes the title bar controls and native pan gestures along with it ([ADR-0016](/docs/explanation/adr/0016-window-chrome-on-qnx-screen)).
+
+## Decision
+
+With the flag on, `QtJsThread` runs a `QThread` named `rnqnx-js` with an 8 MiB stack. `QtReactHost::Impl` lives there: Hermes, the `RuntimeScheduler`, JS timers, the task queue and TurboModule instances. The GUI thread keeps every Qt Quick item, the mount adapter, the touch dispatcher and the title bar.
+
+- Mount transactions arrive on the JS thread and are posted to the GUI thread with a queued call, using the owner-poster hook the Worklets thread already used.
+- Calls that start, stop or configure the host block the caller and then apply the mounts they caused. Calls a GUI handler makes (`resizeSurface`, `setWindowSize`, `callFunctionOnModule`) are posted and never wait.
+- `runtime()` terminates the process when called off the JS thread. `runOnJsThread` is the way in.
+- Shutdown stops surfaces and closes the task queue on the JS thread, applies the queued mounts on the GUI thread, then destroys the runtime and joins the thread.
+- Worklets, Reanimated and Gesture Handler throw at install in this mode until each is moved.
+
+## Consequences
+
+A five-second JavaScript block no longer freezes the title bar controls or a pan, shown on the host. The device run, the Nitro and dev-client paths, and the frame-time cost of the extra hop are open.

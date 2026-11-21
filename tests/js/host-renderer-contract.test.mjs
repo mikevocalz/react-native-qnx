@@ -18,6 +18,7 @@ if (process.platform === 'linux') {
     'rnqnx_hermes_probe',
     'rnqnx_hermes_build_mode',
     'qt_react_host_host_test',
+    'qt_react_host_js_thread_host_test',
     'rnqnx_rn_headers_probe',
     'shadow_view_mutation_adapter_host_test',
     'shadow_tree_mounting_host_test',
