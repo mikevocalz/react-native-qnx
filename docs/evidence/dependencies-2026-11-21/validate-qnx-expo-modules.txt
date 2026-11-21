@@ -1,0 +1,4 @@
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' run validate:qnx-expo-modules
+$ node scripts/validate-qnx-expo-modules.mjs
+validate:qnx-expo-modules passed for expo-modules-core 58.1.0

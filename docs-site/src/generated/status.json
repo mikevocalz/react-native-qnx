@@ -1,7 +1,7 @@
 {
   "generatedFrom": {
     "componentSupport": "7d847ed",
-    "readiness": "4bdc62f"
+    "readiness": "56821d0"
   },
   "counts": {
     "Device-verified (Pi 400, scoped)": 12,
@@ -9,7 +9,7 @@
     "Untested": 3
   },
   "total": 24,
-  "gatesPending": 11,
+  "gatesPending": 10,
   "gatesTotal": 11,
   "pulls": {
     "total": 147,

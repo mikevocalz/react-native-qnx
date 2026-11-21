@@ -17,7 +17,7 @@ independent reviewer.
 
 ## Gates
 
-All eleven are `pending` as of 2026-11-11. "Device" means the gate cannot pass
+`dependencies` passed on 2026-11-21 and the other ten are `pending`. "Device" means the gate cannot pass
 without a run on the named board; host work can still land first.
 
 | #   | Gate id          | Title                              | Owner role                                                 | Needs a device | Next step                                                                                                                       |

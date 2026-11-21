@@ -1,0 +1,21 @@
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' list braces --recursive --depth Infinity --json
+Verified patched source and security regressions for 1 installed braces package(s).
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' audit --audit-level moderate --json
+{
+  "advisories": {},
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 498,
+    "devDependencies": 110,
+    "optionalDependencies": 69,
+    "totalDependencies": 646
+  }
+}

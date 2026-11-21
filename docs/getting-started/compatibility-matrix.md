@@ -60,6 +60,58 @@ on `metro` `^0.87.1`, and `@react-native/metro-config` 0.88.1 on
 excludes the next minor, so 0.88.0 is outside the range React Native 0.88.1
 supports. The bump waits for a React Native release that accepts Metro 0.88.
 
+### Held: react-native 0.89
+
+`react-native` stays at `0.88.1`, the v1 line. npm `latest` is `0.88.1`;
+`0.89.0-rc.2` is on the `next` tag and is a release candidate (checked
+2026-11-21). AGENTS.md forbids silent use of release candidates.
+
+### Held: hermes-compiler
+
+`hermes-compiler` stays at `260318099.0.5`. `react-native` 0.88.1 pins that
+exact version in its `dependencies`. The `latest-v1` tag is
+`260318099.0.8` (checked 2026-11-21); it belongs to the next React Native
+release and the QNX Hermes transforms are audited against `.0.5` only.
+
+### Held: typescript 7.1
+
+`typescript` stays at `7.0.2`, the npm `latest` tag. `7.1.0-beta` is a
+prerelease.
+
+### Held: react-native-reanimated 4.8.0 and react-native-worklets 0.14.0
+
+The pair stays at `4.7.1` and `0.13.1`. `react-native-reanimated` 4.8.0
+declares the peer `react-native-worklets` `0.14.x`, so the two cannot move
+separately. Expo SDK 58 lists reanimated `4.7.1` and worklets `0.13.0` in
+`bundledNativeModules.json`. The Pi 400 run 2 receipts ran reanimated 4.7.1
+with worklets 0.13.1 and a compiled Worklets build, and this repository
+compiles Worklets native code for the device.
+
+### Held: react-native-gesture-handler 3.5.0
+
+`react-native-gesture-handler` stays at `3.4.0`. The Pi 400 gesture receipts
+(run 1 and run 2) ran 3.4.0; 3.5.0 has no receipt.
+
+### Held: react-native-svg 15.16.1
+
+`react-native-svg` stays at `15.16.0`, the version Expo SDK 58 lists in
+`bundledNativeModules.json`. The Pi 400 SVG receipts ran 15.16.0.
+
+### Held: expo-router 58.0.32
+
+`expo-router` stays at `58.0.31`. The Pi 400 router and tab receipts ran
+58.0.31 ([route receipt](../validation/pr159-drawer-route-2026-11-13.md),
+[prop audit](../evidence/router-prop-audit-2026-11-13.md)), and the resolver in
+`packages/expo-router-qnx` replaces named modules inside that package. Expo
+58.0.26 lists `~58.0.32`, so the generated SDK 58 table shows 58.0.32 as the
+Expo range while the repository pins 58.0.31.
+
+### Held: Babel 8
+
+`@babel/core`, `@babel/runtime` and the two Babel plugins stay at `7.29.7`.
+`@react-native/babel-preset` 0.88.1 depends on `@babel/core` `^7.25.2`, and
+Babel 8 is outside that range.
+
 These versions do not imply upstream QNX support. The platform supplies the
 QNX integration and keeps the exact Nitro v1 alpha pin. The constrained
 platform-info generator is not general Nitrogen QNX support. See
