@@ -42,6 +42,10 @@ WindowChromeConfig parseWindowChromeConfig(const QJsonObject& window);
 ControlsLayout parseControlsLayout(const QString& value);
 TitleBarStyle parseTitleBarStyle(const QString& value);
 QString nameOf(ControlsLayout value);
+// Physical left-to-right order of the controls for a layout, whatever the
+// platform hides: macos close, minimize, maximize; windows minimize, maximize,
+// close. Keyboard Tab order follows it.
+std::vector<WindowAction> controlOrder(ControlsLayout layout);
 QString nameOf(TitleBarStyle value);
 QString nameOf(WindowAction value);
 UnavailableControls parseUnavailableControls(const QString& value);
@@ -120,10 +124,32 @@ struct HiddenControl {
   QString reason;
 };
 
+// What the React content must keep clear of. The bar of the `default` style is
+// outside the Fabric root, so it reports no inset. In the `hidden` style the
+// content starts at the window's top edge and the controls float over it: the
+// inset is the full-width strip they sit in, and `overlay` is the exact
+// rectangle the controls cover (frame coordinates, device-independent pixels),
+// for an app that wants to lay out beside them instead of below them. `none`
+// draws nothing and reports nothing. Reaches JavaScript through the windows
+// API (docs/nitro/API_CONTRACTS.md); the JS delivery is not implemented yet.
+struct TitleBarInset {
+  qreal top{0};
+  qreal right{0};
+  qreal bottom{0};
+  qreal left{0};
+  QRectF overlay;
+
+  bool operator==(const TitleBarInset& other) const {
+    return top == other.top && right == other.right && bottom == other.bottom &&
+           left == other.left && overlay == other.overlay;
+  }
+};
+
 struct ChromeLayout {
   bool barVisible{false};      // Background and title drawn.
   qreal barHeight{0};          // Height of the bar or of the floating controls row.
   qreal contentInset{0};       // Where the Fabric root starts.
+  TitleBarInset inset;         // What the Fabric root's content keeps clear of.
   QRectF titleRect;            // Empty when no title is drawn.
   Qt::Alignment titleAlignment{Qt::AlignHCenter};
   std::vector<ControlSlot> controls;

@@ -188,13 +188,36 @@ one, and a focus ring shows only for keyboard focus. Each control is an
 accessible button named `Close window`, `Minimize window`, `Maximize window`
 or `Restore window`.
 
+## Runtime layout and title-bar inset
+
+The host can switch between the `macos` and `windows` layouts while the window
+is open (`WindowChrome::setControlsLayout`). The controls are the same items
+before and after, so the focused control keeps focus, and Tab follows the order
+the controls appear in. An unknown layout name returns false and changes
+nothing. The JavaScript call for this belongs to the windows API, which is not
+implemented yet.
+
+The chrome reports the inset the React content keeps clear of
+(`titleBarInset`: `top`, `right`, `bottom`, `left` and the `overlay` rectangle
+the controls cover, in device-independent pixels):
+
+| `titleBarStyle` | Inset                                                                            |
+| --------------- | -------------------------------------------------------------------------------- |
+| `default`       | All zero. The bar is outside the React surface.                                  |
+| `hidden`        | `top` is 44 and `overlay` is the controls' rectangle, at the left or right edge. |
+| `none`          | All zero.                                                                        |
+
+Host tests cover the values (`titleBarInsetPerStyle`,
+`titleBarInsetFollowsStyleAndLayout`). Nothing delivers them to JavaScript yet.
+
 ## Known gaps
 
-- The title-bar inset is not reported to JavaScript or `SafeAreaView`.
-  With the `default` style the React surface already starts below the bar, so
-  the native drawer (`RNQnxDrawer`) needs nothing; with `hidden`, set its
-  `topInset` to the bar height so the edge-swipe strip does not run under the
-  floating controls.
+- The title-bar inset is not reported to JavaScript or `SafeAreaView`. The
+  native side computes it (above); the `safe-area-context` shim still returns
+  zero insets. With the `default` style the React surface already starts below
+  the bar, so the native drawer (`RNQnxDrawer`) needs nothing; with `hidden`,
+  set its `topInset` to the bar height so the edge-swipe strip does not run
+  under the floating controls.
 - JavaScript runs on the Qt GUI thread, so a long JS call freezes the title
   bar along with the rest of the window.
 - With `hidden`, a press on a floating control also reaches the React view
