@@ -1,0 +1,6 @@
+ninja -t compdb, targets rnqnx_hermes_build_mode + rnqnx_hermes_probe, host Debug, after the change
+  490  hermes sources  O2
+   21  other (folly, glog, fmt, boost)  O2
+  350  other (folly, glog, fmt, boost)  no -O flag
+   45  repo sources (vnext)  no -O flag
+compile lines defining HERMES_SLOW_DEBUG: 0

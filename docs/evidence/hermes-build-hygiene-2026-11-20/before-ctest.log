@@ -1,0 +1,17 @@
+Test project <clone>/build/h
+    Start 4: rnqnx_hermes_probe
+1/2 Test #4: rnqnx_hermes_probe ...............   Passed    0.57 sec
+    Start 5: rnqnx_hermes_build_mode
+2/2 Test #5: rnqnx_hermes_build_mode ..........***Failed  Error regular expression found in output. Regex=[RNQNX_HERMES_BUILD_MODE_FAIL]  0.09 sec
+RNQNX_HERMES_BUILD_MODE_FAIL the Hermes VM was built with HERMES_SLOW_DEBUG
+RNQNX_HERMES_BUILD_MODE SlowDebug
+
+
+50% tests passed, 1 tests failed out of 2
+
+Total Test time (real) =   0.69 sec
+
+The following tests FAILED:
+	  5 - rnqnx_hermes_build_mode (Failed)
+Errors while running CTest
+ctest -R "rnqnx_hermes" --output-on-failure  0.11s user 0.05s system 21% cpu 0.735 total
