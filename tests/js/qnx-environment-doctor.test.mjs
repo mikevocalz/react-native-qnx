@@ -189,12 +189,12 @@ try {
   r = await run({ pnpm: null });
   assert.match(
     r.out,
-    /ERROR: pnpm is not installed or not on PATH\.\n {4}Fix: install pnpm 12\.18\.0/
+    /ERROR: pnpm is not installed or not on PATH\.\n {4}Fix: install pnpm 12\.21\.0/
   );
   r = await run({ pnpm: '10.32.1' });
   assert.equal(r.status, 1);
-  assert.match(r.out, /ERROR: pnpm reported '10\.32\.1', but this repository pins 12\.18\.0\./);
-  assert.match(r.out, /npm install -g pnpm@12\.18\.0/);
+  assert.match(r.out, /ERROR: pnpm reported '10\.32\.1', but this repository pins 12\.21\.0\./);
+  assert.match(r.out, /npm install -g pnpm@12\.21\.0/);
   checks += 1;
 
   // CMake, Ninja and Python minimums name the bootstrap script for the host.
@@ -236,9 +236,9 @@ try {
       '{"name": "react-native-qnx-monorepo", "packageManager": "pnpm@12.21.0+sha512.abc123"}\n',
   });
   assert.equal(r.status, 0, r.out);
-  assert.match(r.out, /OK: pnpm 12\.18\.0 matches the repository pin/);
+  assert.match(r.out, /OK: pnpm 12\.21\.0 matches the repository pin/);
   r = await run({ manifest: '{"name": "x", "packageManager": "pnpm@12.20.1"}\n' });
-  assert.match(r.out, /ERROR: pnpm reported '12\.18\.0', but this repository pins 12\.20\.1\./);
+  assert.match(r.out, /ERROR: pnpm reported '12\.21\.0', but this repository pins 12\.20\.1\./);
   checks += 1;
 
   // A missing package.json is reported, not a silent abort before the summary.
