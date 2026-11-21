@@ -50,7 +50,11 @@ runtime from the GUI thread uses `runOnJsThread`.
 
 The `runtimeExecutor` given to the `RuntimeScheduler` runs the callback inline
 when already on the JS thread, so `evaluate` keeps its synchronous contract.
-From any other thread it posts the callback to the JS thread. The UIManager's
+From any other thread it posts the callback through a gate that holds a mutex
+and an open flag. `~QtReactHost` closes the gate on the JS thread after
+`shutdown()`, so a worker that still holds a `CallInvoker` finds a closed gate
+and drops the callback, and a callback queued earlier checks the flag again on
+the JS thread before it touches `Impl`. The UIManager's
 executor goes through `scheduleWork`, so AppRegistry start and stop cross the
 same way.
 
@@ -59,14 +63,21 @@ same way.
 - Awaited, for start-up and teardown: `evaluate`, `startSurface`,
   `startEmptySurface`, `stopSurface`, `commit`, the `install*` calls,
   `registerTurboModule`, `addTeardownHook`, `setTurboModuleProvider`,
-  `setOwnerPoster`, `hasFabricUIManager`, `lastError`, `javaScriptErrors`,
-  `pumpEvents`. The caller blocks until the JS thread finishes, then the
-  mounts the call caused are applied before it returns (`flushMounts`).
-  These block the GUI thread for as long as JavaScript stays busy, so an input
-  handler must not call them.
+  `hasFabricUIManager`, `lastError`, `javaScriptErrors`, `pumpEvents`. The
+  caller blocks until the JS thread finishes, then applies the mounts that
+  call had already queued (`flushMounts`). Mounts that arrive later, from a
+  timer, a microtask or the event beat, go through the GUI event loop as they
+  do for any other queued call. These calls block the GUI thread for as long
+  as JavaScript stays busy, so an input handler must not call them.
+  `javaScriptErrors` returns a snapshot that the next call replaces; two
+  threads must not call it at once. Teardown hooks and TurboModule factories
+  run on the JS thread and must not wait on the GUI thread, which the
+  destructor holds.
 - Posted, for GUI handlers: `resizeSurface`, `setWindowSize` (the `QScreen`
   read happens on the caller), `callFunctionOnModule`.
 - Thread-bound: `runtime()`.
+- Rejected: `setOwnerPoster` throws in this mode, since the host's own poster is
+  what moves mounts to the GUI thread.
 
 ### How mount transactions reach the GUI thread
 
@@ -110,10 +121,21 @@ Mounts queued from step 1 capture the delegate, so they must run before step 3.
 
 `QtWorkletsPlatform::install`, `QtGesturePlatform::install` and
 `installReanimated` read the runtime from the GUI thread and run worklets against
-it. In JS-thread mode they throw `std::runtime_error` naming this ADR. They stay
-on the single-thread path until each is moved and tested. The Nitro runtime
-installers, `QnxAppStateModule`, `QnxDevSupport` and the WebSocket and image
-modules were not run in this mode either.
+it. In JS-thread mode they throw `std::runtime_error` naming this ADR. The
+AppState module needs the GUI thread for its constructor and signals, so a
+lookup of it in this mode throws. All four stay on the single-thread path until
+each is moved and tested. The Nitro runtime installers, `QnxDevSupport` and the
+WebSocket, FileReader and image modules were not run in this mode.
+
+Two shared pieces needed a change because both threads now touch them.
+`ImageLoadedNotifier` is process-wide and was unlocked; it now takes a mutex and
+calls listeners outside it. `QnxDeviceInfo` read `QScreen` on the lookup thread;
+the host reads the screen on the GUI thread at construction and hands it over.
+
+Known and left: resize and window-size posts are not coalesced, so a long drag
+during a long block queues one call per event and replays them when JavaScript
+is free. `QtJsThread::post` and `call` check `isRunning()` and then enqueue; a
+`call` racing `quit()` could wait forever, which only the destructor can cause.
 
 ## Results
 
