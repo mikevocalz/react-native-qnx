@@ -1,0 +1,2 @@
+Expo SDK 58 capability table matches sdk58-support.json.
+exit=0

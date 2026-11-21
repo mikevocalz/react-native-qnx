@@ -9,7 +9,7 @@ Branch `s7/expo-gate`, based on main `b88f2a7b`. Lane D (tooling). All results b
 | Second prebuild changes nothing, asserted | `tests/js/expo-prebuild-idempotent.test.mjs`                                                                                                                                         |
 | Capability table generator                | `scripts/expo-capability-table.mjs`, output `docs/expo-delivery/sdk58-capability-table.md`                                                                                           |
 | Docs-site wiring                          | `docs-site/scripts/generate-data.mjs` (writes `content/docs/reference/expo-capabilities.mdx`), `docs-site/content/docs/reference/meta.json`, `.github/workflows/docs-site.yml` paths |
-| CI `--check`                              | `pnpm validate:expo-capability-table` in `.github/workflows/sdk58-validation.yml`; `pnpm data:check` in `docs-site.yml` covers the site page                                         |
+| CI `--check`                              | `pnpm validate:expo-capability-table` in `.github/workflows/sdk58-validation.yml`; `npm run data:check` in `docs-site.yml` covers the site page                                      |
 | Test for the generator                    | `tests/js/expo-capability-table.test.mjs`                                                                                                                                            |
 | Stale doc sentences fixed                 | `docs-site/content/docs/reference/modules/expo-image.mdx`, `expo-router.mdx` said the support list marks them `unsupported`; the list marks both `partial`                           |
 
@@ -23,7 +23,8 @@ Red-green proof, both logs committed here:
 
 - Green, unmodified source: `prebuild-test-green.txt`, 14 checks pass, exit 0.
 - Red, `prepare-native.mjs` made non-idempotent (the `unchanged` branch rewrites the descriptor, `mutation-1.diff`): `prebuild-test-red.txt`, `AssertionError: created-qnx: second run changed a file`, exit 1.
-- A second mutation (the `unchanged` branch re-stages the icons) failed the same assertion. Its output is not committed. Both mutations were reverted and `git diff` on `prepare-native.mjs` is empty.
+- The first review pass noted that the 15 ms delay in that mutation was doing the work on filesystems with coarse timestamps. The test now pins every generated file to an mtime in 2001 before the second run, and snapshots directories and modes too. Re-proved without any delay: `mutation-2-no-delay.diff`, `prebuild-test-red-no-delay.txt` (fails, exit 1), `prebuild-test-green.txt` (14 checks, exit 0). `prebuild-test-red.txt` is from the earlier version of the test.
+- A mutation that re-stages the icons in the `unchanged` branch failed the same assertion, in an interactive run whose output is not committed. All mutations were reverted; `git diff` on `prepare-native.mjs` is empty.
 
 Existing coverage that this adds to: `expo-config-resolution.test.mjs` already compared a tree hash across two runs for fixtures, without mtimes and without the created or added projects.
 
@@ -31,7 +32,7 @@ Limits: the identity tool is the JS stand-in from `tests/js/helpers/identity-too
 
 ## Create and add-to-existing from a clean host (host)
 
-Run from a fresh clone of `746f52d`, `pnpm install --frozen-lockfile` (1m41s):
+The first three rows ran in a fresh clone of `746f52d` after `pnpm install --frozen-lockfile` (1m41s). The idempotence test did not exist there; its row ran on this branch (base `b88f2a7b`):
 
 | Command                                           | Result                      |
 | ------------------------------------------------- | --------------------------- |
@@ -57,7 +58,7 @@ The real `pnpm install` inside a created app plus both bundles and `prepare-nati
 
 `host tooling` and `not bundled` are not among the four words in the brief. Forcing those ten packages into one of the four would be wrong, so they have their own rows. `works` has one member (`react-native`) because the support list is a published-contents scan and no Expo package declares `qnx` yet; the `shim` rows (`expo-constants`, `expo-image`, `expo-modules-core`, `expo-router`) are the ports this repository supplies. The table says in its header that no row is a device run.
 
-`--check` fails when the file differs (red demonstrated: the stale file exited 1 after the generator's wording changed, then passed after `--write`). `tests/js/expo-capability-table.test.mjs` also asserts a label exists for every status, one row per package, counts add up, five known rows, pipe escaping and the CLI exit codes.
+`--check` fails when the file differs (red: a hand-edited table exits 1, `capability-check-red.txt`; green after restoring it, `capability-check-green.txt`). `tests/js/expo-capability-table.test.mjs` also asserts a label exists for every status, one row per package, counts add up, five known rows, pipe escaping and the CLI exit codes.
 
 ## Expo Router
 

@@ -7,6 +7,7 @@ import {
   mkdtemp,
   readFile,
   readdir,
+  utimes,
   rm,
   symlink,
   writeFile,
@@ -48,7 +49,8 @@ async function captured(run) {
   return out;
 }
 
-/** Every file outside node_modules: relative path, bytes, inode and mtime.
+/** Every file and directory outside node_modules: relative path, mode, and for
+ * files bytes, inode and mtime.
  * @param {string} root @returns {Promise<Record<string, string>>} */
 async function snapshot(root) {
   /** @type {Record<string, string>} */
@@ -58,6 +60,7 @@ async function snapshot(root) {
       if (entry.name === 'node_modules') continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
+        files[path.relative(root, full) + '/'] = `mode=${(await lstat(full)).mode}`;
         await walk(full);
         continue;
       }
@@ -65,7 +68,8 @@ async function snapshot(root) {
       const digest = createHash('sha256')
         .update(entry.isSymbolicLink() ? '' : await readFile(full))
         .digest('hex');
-      files[path.relative(root, full)] = `${digest} ino=${stat.ino} mtime=${stat.mtimeMs}`;
+      files[path.relative(root, full)] =
+        `${digest} mode=${stat.mode} ino=${stat.ino} mtime=${stat.mtimeMs}`;
     }
   };
   await walk(root);
@@ -94,6 +98,18 @@ async function assertSecondRunChangesNothing(label, project, platforms) {
     assert.equal(first.action, 'created', `${label} ${platform} first run creates`);
     checks++;
   }
+  // Pin every generated file to an old mtime. A second run that rewrites a file
+  // with identical bytes then shows up as a new mtime however coarse the
+  // filesystem's timestamp resolution is.
+  const old = new Date('2001-01-01T00:00:00Z');
+  const pin = async (/** @type {string} */ dir) => {
+    for (const entry of await readdir(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) await pin(full);
+      else await utimes(full, old, old);
+    }
+  };
+  await pin(path.join(project, 'build'));
   const afterFirst = await snapshot(project);
   const generated = Object.keys(afterFirst).filter((file) => file.startsWith('build/'));
   assert.ok(

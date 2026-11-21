@@ -47,7 +47,7 @@ export const CAPABILITY = Object.freeze({
   unsupported: {
     label: 'unsupported',
     meaning:
-      'Native code for iOS or Android only, and no QNX implementation in the package or in this repository.',
+      'Native code for iOS or Android only, and no QNX port is recorded for it in the support list (the ports are the `partial` rows).',
   },
   'host-tooling': {
     label: 'host tooling',

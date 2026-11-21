@@ -1,0 +1,2 @@
+Expo SDK 58 capability table is stale. Regenerate: node scripts/expo-capability-table.mjs --write
+exit=1
