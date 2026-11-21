@@ -22,6 +22,7 @@ on:
       - 'scripts/validate-runtime-qnx.sh'
       - 'CMakeLists.txt'
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

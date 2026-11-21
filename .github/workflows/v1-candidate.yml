@@ -1,0 +1,160 @@
+name: v1 candidate
+
+# One dispatch that runs every required check from docs/releases/required-checks.md
+# on the exact commit of the selected ref, then reports one aggregate status.
+# It replaces the shell loop that dispatched each workflow by hand.
+#
+# Lanes
+#   hosted        19 GitHub-hosted workflows (ubuntu-24.04), called as reusable workflows.
+#   qnx-cross     qnx-cross-build.yml, self-hosted, licensed QNX SDP.
+#   qnx-vm        qnx-vm-validation.yml, self-hosted, "QNX VM (QEMU, TCG, software render)".
+# The two self-hosted lanes run only when the repository variable
+# RNQNX_SELF_HOSTED is 'true'. Without a runner they are skipped and the
+# aggregate says so; with require_qnx_lanes (the default) a skipped lane fails
+# the aggregate, because the ci gate needs the QNX cross-build.
+# Device results are not CI checks. Runner labels: docs/ci/qnx-vm-lane.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_hosted:
+        description: 'Run the 19 hosted workflows'
+        type: boolean
+        default: true
+      require_qnx_lanes:
+        description: 'Fail the aggregate when a self-hosted QNX lane did not run'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v1-candidate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sdk58-validation:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/sdk58-validation.yml
+  host-renderer:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/host-renderer.yml
+  image-loader:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/image-loader.yml
+  nitro-v1-host:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/nitro-v1-host.yml
+  nitro-qnx-source-check:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/nitro-qnx-source-check.yml
+  expo-modules-qnx-source-check:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/expo-modules-qnx-source-check.yml
+  expo-qnx-autolinking:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/expo-qnx-autolinking.yml
+  hermes-qnx-source-check:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/hermes-qnx-source-check.yml
+  react-qnx-source-check:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/react-qnx-source-check.yml
+  pi-tooling-quality:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/pi-tooling-quality.yml
+  runtime-appstate:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/runtime-appstate.yml
+  qnx-create-app:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/qnx-create-app.yml
+  qnx-native-consumer-build:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/qnx-native-consumer-build.yml
+  phase6-doctor:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/phase6-doctor.yml
+  phase7-release-dossier:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/phase7-release-dossier.yml
+  phase-public-host:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/phase-public-host.yml
+  app-identity:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/app-identity.yml
+  phase4-lifecycle:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/phase4-lifecycle.yml
+  performance-budgets:
+    if: ${{ inputs.run_hosted }}
+    uses: ./.github/workflows/performance-budgets.yml
+  qnx-cross:
+    uses: ./.github/workflows/qnx-cross-build.yml
+  qnx-vm:
+    uses: ./.github/workflows/qnx-vm-validation.yml
+
+  aggregate:
+    name: v1 candidate aggregate
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    needs:
+      - sdk58-validation
+      - host-renderer
+      - image-loader
+      - nitro-v1-host
+      - nitro-qnx-source-check
+      - expo-modules-qnx-source-check
+      - expo-qnx-autolinking
+      - hermes-qnx-source-check
+      - react-qnx-source-check
+      - pi-tooling-quality
+      - runtime-appstate
+      - qnx-create-app
+      - qnx-native-consumer-build
+      - phase6-doctor
+      - phase7-release-dossier
+      - phase-public-host
+      - app-identity
+      - phase4-lifecycle
+      - performance-budgets
+      - qnx-cross
+      - qnx-vm
+    steps:
+      - name: Report one status
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          RUN_HOSTED: ${{ inputs.run_hosted }}
+          REQUIRE_QNX: ${{ inputs.require_qnx_lanes }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key)\t\(.value.result)"' | sort > results.tsv
+          bad=$(awk -F'\t' '$2=="failure" || $2=="cancelled"' results.tsv | wc -l)
+          hosted_skipped=$(awk -F'\t' '$1!="qnx-cross" && $1!="qnx-vm" && $2=="skipped"' results.tsv | wc -l)
+          qnx_skipped=$(awk -F'\t' '($1=="qnx-cross" || $1=="qnx-vm") && $2=="skipped"' results.tsv | wc -l)
+          {
+            echo "### v1 candidate, commit \`$COMMIT\`"
+            echo
+            echo '| Lane | Result |'
+            echo '| --- | --- |'
+            awk -F'\t' '{print "| " $1 " | " $2 " |"}' results.tsv
+            echo
+            echo 'QNX lanes label their results "QNX VM (QEMU, TCG, software render)" or "QNX cross-build". Device results are not CI checks.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          status=0
+          if [ "$bad" -ne 0 ]; then echo "::error::$bad lane(s) failed or were cancelled"; status=1; fi
+          if [ "$RUN_HOSTED" = true ] && [ "$hosted_skipped" -ne 0 ]; then
+            echo "::error::$hosted_skipped hosted lane(s) were skipped"; status=1
+          fi
+          if [ "$qnx_skipped" -ne 0 ]; then
+            if [ "$REQUIRE_QNX" = true ]; then
+              echo "::error::$qnx_skipped self-hosted QNX lane(s) did not run (set RNQNX_SELF_HOSTED=true and register a runner, see docs/ci/qnx-vm-lane.md)"; status=1
+            else
+              echo "::warning::$qnx_skipped self-hosted QNX lane(s) did not run; this status does not cover QNX"
+            fi
+          fi
+          exit "$status"

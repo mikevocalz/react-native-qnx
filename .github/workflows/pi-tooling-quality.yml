@@ -16,6 +16,7 @@ on:
       - 'package.json'
       - '.github/workflows/pi-tooling-quality.yml'
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -48,6 +49,7 @@ jobs:
             scripts/run-qnx.sh \
             scripts/log-qnx.sh \
             scripts/qnx-sdk-container.sh \
+            scripts/validate-qnx-vm.sh \
             tools/qnx-winmgr/swap-winmgr.sh
 
       - name: ShellCheck
@@ -64,4 +66,5 @@ jobs:
             scripts/run-qnx.sh \
             scripts/log-qnx.sh \
             scripts/qnx-sdk-container.sh \
+            scripts/validate-qnx-vm.sh \
             tools/qnx-winmgr/swap-winmgr.sh

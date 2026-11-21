@@ -12,6 +12,7 @@ on:
       - feat/qnx-phases-1-7-integration
       - feat/qnx-consumer-native-app-identity
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

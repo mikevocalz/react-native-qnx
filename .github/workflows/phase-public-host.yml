@@ -10,6 +10,7 @@ on:
       - 'apps/rn-playground/metro.public*'
       - '.github/workflows/phase-public-host.yml'
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

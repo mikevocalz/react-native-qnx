@@ -1,0 +1,64 @@
+name: QNX VM validation (self-hosted)
+
+# Runs scripts/validate-qnx-vm.sh against the QNX VM on a self-hosted runner.
+# Every result is "QNX VM (QEMU, TCG, software render)". It is not Pi 400 or
+# release-board evidence, and TCG timings are not performance evidence.
+# The job runs only when the repository variable RNQNX_SELF_HOSTED is 'true';
+# otherwise it is skipped. Not a required check.
+# Runner labels and setup: docs/ci/qnx-vm-lane.md.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+# One VM, one ssh port: never run two validations at once.
+concurrency:
+  group: qnx-vm-runner
+  cancel-in-progress: false
+
+jobs:
+  vm:
+    name: QNX VM (QEMU, TCG, software render)
+    if: ${{ vars.RNQNX_SELF_HOSTED == 'true' }}
+    runs-on: [self-hosted, macOS, ARM64, rnqnx-qnx-vm]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Validate on the VM
+        env:
+          OUT: ${{ runner.temp }}/qnx-vm-validation
+        run: |
+          set -euo pipefail
+          scripts/validate-qnx-vm.sh --out "$OUT"
+
+      - name: Summary
+        if: ${{ always() }}
+        env:
+          OUT: ${{ runner.temp }}/qnx-vm-validation
+        run: |
+          {
+            echo '### QNX VM (QEMU, TCG, software render)'
+            echo 'Not Pi 400 or release-board evidence. TCG timings are not performance evidence.'
+            echo
+            if [ -f "$OUT/result.json" ]; then
+              echo '```json'
+              cat "$OUT/result.json"
+              echo '```'
+            else
+              echo 'No result.json was written.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: qnx-vm-validation-${{ github.sha }}
+          path: ${{ runner.temp }}/qnx-vm-validation
+          if-no-files-found: warn
