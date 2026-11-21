@@ -92,36 +92,19 @@ bash fix-and-rebuild.sh
 bash rebuild-disk.sh
 ```
 
-## Validating the react-native-qnx Milestone 0 binaries on the VM
+## Validating on the VM
 
-Once the VM is booted and reachable on `root@127.0.0.1:2222`, the repo script
-`scripts/validate-qnx-vm.sh` automates the whole loop:
+`scripts/validate-qnx-vm.sh` no longer runs the Milestone 0 loop described in
+earlier revisions of this page (it hardcoded `/c/Users/Owner/qnx800` and the
+Windows x86_64 VM). It now validates the aarch64 QEMU VM, non-interactively:
 
 ```bash
-# From Git Bash in the react-native-qnx repo root.
-./scripts/validate-qnx-vm.sh
+scripts/validate-qnx-vm.sh --out build/qnx-vm-validation/manual
 ```
 
-It builds `rnqnx_g0_cxx20_probe` and `rnqnx_playground` for the
-`qnx-x86_64-debug` preset, deploys them over SSH, runs them, and records the
-results under `artifacts/g0-vm/`:
-
-```text
-cxx20-output.txt
-cxx20-round-trip-seconds.txt
-playground-output.txt
-playground-round-trip-seconds.txt
-qcc-V.txt
-qxx-V.txt
-```
-
-Expected outputs:
-
-```text
-RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34 jthread=unsupported
-rnqnx_playground: Screen surface initialized (1280x720)
-rnqnx_playground: exiting cleanly after 600 frames
-```
+See [QNX cross-build and VM validation lanes](../ci/qnx-vm-lane.md). To deploy
+and run one x86_64 binary on the old Windows VM, use
+`scripts/vm-qnx.sh deploy-run x86_64 <app> Debug`.
 
 ## Booting the VM
 

@@ -35,7 +35,7 @@ Pi 400 results never count for the stock Pi 4 QSTI board. Hosted CI, QNX cross-b
 
 - **Passes when:** every required check succeeds on the exact release candidate commit, on runners the owner authorizes. Local runs are labeled separately.
 - **Evidence kinds:** hosted workflow runs on the candidate head, QNX cross-build runs, labeled by category.
-- **Why pending:** `docs/releases/required-checks.md` lists 18 required hosted workflows (the dispatch loop in that file names them) and a required QNX cross-build check that is "required, and missing": no workflow compiles for QNX, and the gate needs a self-hosted runner holding the licensed SDP. Hosted results do not stand in for it. See [CI checks](/docs/reference/ci-checks).
+- **Why pending:** `docs/releases/required-checks.md` lists the required hosted workflows (the `v1-candidate` workflow calls them) and a required QNX cross-build check. `qnx-cross-build.yml` exists but has not run, because no self-hosted runner holding the licensed SDP is registered. Hosted results do not stand in for it. See [CI checks](/docs/reference/ci-checks).
 
 ### cold-boot: Repeatable graphics cold boot
 
@@ -93,15 +93,15 @@ Pi 400 results never count for the stock Pi 4 QSTI board. Hosted CI, QNX cross-b
 
 ## Summary of pending reasons
 
-| Gate                                                    | Blocking item                                                     |
-| ------------------------------------------------------- | ----------------------------------------------------------------- |
-| `distribution`                                          | No release artifact built and recorded from public-source Qt      |
-| `ci`                                                    | No QNX cross-build workflow; no candidate-head run set            |
-| `cold-boot`                                             | No 20-boot series                                                 |
-| `device-parity`                                         | No stock Pi 4 QSTI receipts                                       |
-| `performance`                                           | Nothing measured on QNX                                           |
-| `developer-path`                                        | No recorded clean-host run; no published npm package              |
-| `documentation`                                         | Draft, not published at a versioned location                      |
-| `app-identity`, `window-chrome`, `expo`, `dependencies` | Empty evidence arrays; acceptance text not yet backed by receipts |
+| Gate                                                    | Blocking item                                                                           |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `distribution`                                          | No release artifact built and recorded from public-source Qt                            |
+| `ci`                                                    | QNX cross-build workflow has not run (no self-hosted runner); no candidate-head run set |
+| `cold-boot`                                             | No 20-boot series                                                                       |
+| `device-parity`                                         | No stock Pi 4 QSTI receipts                                                             |
+| `performance`                                           | Nothing measured on QNX                                                                 |
+| `developer-path`                                        | No recorded clean-host run; no published npm package                                    |
+| `documentation`                                         | Draft, not published at a versioned location                                            |
+| `app-identity`, `window-chrome`, `expo`, `dependencies` | Empty evidence arrays; acceptance text not yet backed by receipts                       |
 
 For the underlying device evidence by component, see the [component matrix](/docs/reference/component-matrix), [status](/docs/reference/status) and [verification log](/docs/reference/verification-log).

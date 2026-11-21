@@ -199,7 +199,7 @@ finish() {
   finished="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   commit="$(git -C "${PROJECT_ROOT}" rev-parse HEAD 2>/dev/null || echo unknown)"
   dirty=false
-  [ -z "$(git -C "${PROJECT_ROOT}" status --porcelain 2>/dev/null)" ] || dirty=true
+  [ -z "$(git -C "${PROJECT_ROOT}" status --porcelain --untracked-files=no 2>/dev/null)" ] || dirty=true
   cat >"${OUT_DIR}/result.json" <<EOF
 {
   "schema": "${SCHEMA}",
