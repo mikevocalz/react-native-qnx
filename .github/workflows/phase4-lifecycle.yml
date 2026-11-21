@@ -5,6 +5,7 @@ on:
       - 'native/lifecycle/**'
       - '.github/workflows/phase4-lifecycle.yml'
   workflow_dispatch:
+  workflow_call:
 permissions:
   contents: read
 concurrency:

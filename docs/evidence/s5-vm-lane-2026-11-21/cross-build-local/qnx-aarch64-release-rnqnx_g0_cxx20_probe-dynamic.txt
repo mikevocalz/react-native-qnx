@@ -1,0 +1,50 @@
+
+/tmp/s5src/build/qnx-aarch64-release/bin/rnqnx_g0_cxx20_probe:     file format elf64-littleaarch64
+
+Program Header:
+    PHDR off    0x0000000000000040 vaddr 0x0000000000000040 paddr 0x0000000000000040 align 2**3
+         filesz 0x0000000000000230 memsz 0x0000000000000230 flags r--
+  INTERP off    0x0000000000000270 vaddr 0x0000000000000270 paddr 0x0000000000000270 align 2**0
+         filesz 0x0000000000000017 memsz 0x0000000000000017 flags r--
+    LOAD off    0x0000000000000000 vaddr 0x0000000000000000 paddr 0x0000000000000000 align 2**12
+         filesz 0x00000000000011df memsz 0x00000000000011df flags r-x
+    LOAD off    0x0000000000001d60 vaddr 0x0000000000002d60 paddr 0x0000000000002d60 align 2**12
+         filesz 0x00000000000002b0 memsz 0x00000000000002b8 flags rw-
+ DYNAMIC off    0x0000000000001d68 vaddr 0x0000000000002d68 paddr 0x0000000000002d68 align 2**3
+         filesz 0x00000000000001b0 memsz 0x00000000000001b0 flags rw-
+    NOTE off    0x0000000000000288 vaddr 0x0000000000000288 paddr 0x0000000000000288 align 2**2
+         filesz 0x0000000000000020 memsz 0x0000000000000020 flags r--
+    NOTE off    0x00000000000002a8 vaddr 0x00000000000002a8 paddr 0x00000000000002a8 align 2**0
+         filesz 0x000000000000001c memsz 0x000000000000001c flags r--
+EH_FRAME off    0x0000000000001090 vaddr 0x0000000000001090 paddr 0x0000000000001090 align 2**2
+         filesz 0x000000000000002c memsz 0x000000000000002c flags r--
+   STACK off    0x0000000000000000 vaddr 0x0000000000000000 paddr 0x0000000000000000 align 2**4
+         filesz 0x0000000000000000 memsz 0x0000000000000000 flags rw-
+   RELRO off    0x0000000000001d60 vaddr 0x0000000000002d60 paddr 0x0000000000002d60 align 2**0
+         filesz 0x00000000000002a0 memsz 0x00000000000002a0 flags r--
+
+Dynamic Section:
+  NEEDED               libc++.so.2
+  NEEDED               libm.so.3
+  NEEDED               libc.so.6
+  NEEDED               libgcc_s.so.1
+  FINI_ARRAY           0x0000000000002d60
+  FINI_ARRAYSZ         0x0000000000000008
+  GNU_HASH             0x00000000000002c8
+  STRTAB               0x0000000000000620
+  SYMTAB               0x0000000000000308
+  STRSZ                0x00000000000001ec
+  SYMENT               0x0000000000000018
+  DEBUG                0x0000000000000000
+  PLTGOT               0x0000000000002f18
+  PLTRELSZ             0x0000000000000210
+  PLTREL               0x0000000000000007
+  JMPREL               0x00000000000008a0
+  RELA                 0x0000000000000810
+  RELASZ               0x0000000000000090
+  RELAENT              0x0000000000000018
+  BIND_NOW             0x0000000000000000
+  FLAGS_1              0x0000000008000001
+  RELACOUNT            0x0000000000000002
+private flags = 0x0:
+

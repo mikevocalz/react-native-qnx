@@ -1,0 +1,76 @@
+QNX_HOST=/work/qnx800/host/linux/x86_64
+QNX_TARGET=/work/qnx800/target/qnx
+MAKEFLAGS=-I/work/qnx800/target/qnx/usr/include
+QNX AArch64 cross-build validation
+Expected SDP label: 8.0.5
+Target ABI manifest: _NTO_VERSION=800
+Evidence: /tmp/s5-cross-evidence
+
+OK: screen_create_context
+OK: screen_create_window_type
+OK: screen_set_window_property_iv
+OK: screen_get_window_property_iv
+OK: screen_get_window_property_pv
+OK: screen_create_window_buffers
+OK: screen_post_window
+OK: screen_fill
+OK: screen_destroy_window
+OK: screen_destroy_context
+OK: SCREEN_APPLICATION_CONTEXT
+OK: SCREEN_APPLICATION_WINDOW
+OK: SCREEN_PROPERTY_USAGE
+OK: SCREEN_PROPERTY_FORMAT
+OK: SCREEN_PROPERTY_BUFFER_SIZE
+OK: SCREEN_PROPERTY_SIZE
+OK: SCREEN_PROPERTY_RENDER_BUFFER_COUNT
+OK: SCREEN_PROPERTY_RENDER_BUFFERS
+OK: SCREEN_USAGE_NATIVE
+OK: SCREEN_FORMAT_RGBA8888
+OK: SCREEN_BLIT_COLOR
+OK: SCREEN_BLIT_DESTINATION_X
+OK: SCREEN_BLIT_DESTINATION_Y
+OK: SCREEN_BLIT_DESTINATION_WIDTH
+OK: SCREEN_BLIT_DESTINATION_HEIGHT
+OK: SCREEN_BLIT_END
+All used Screen symbols are present in /work/qnx800/target/qnx/usr/include/screen/screen.h.
+
+==> qnx-aarch64-release
+Configuring react-native-qnx for QNX aarch64 Release...
+Build directory: /tmp/s5src/build/qnx-aarch64-release
+Preset CMake variables:
+
+  BUILD_TESTING="OFF"
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="/tmp/s5src/vnext/cmake/qnx-aarch64le.toolchain.cmake"
+
+-- The C compiler identification is QCC 12.2.0
+-- The CXX compiler identification is QCC 12.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /work/qnx800/host/linux/x86_64/usr/bin/qcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /work/qnx800/host/linux/x86_64/usr/bin/q++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring react-native-qnx for QNX
+-- Configuring done (2.9s)
+-- Generating done (0.1s)
+-- Build files have been written to: /tmp/s5src/build/qnx-aarch64-release
+
+Configure complete: /tmp/s5src/build/qnx-aarch64-release
+Build with: ./scripts/build-qnx.sh aarch64 Release
+[1/6] Building CXX object CMakeFiles/qnx_platform.dir/native/platform/qnx/screen/QnxScreenSurface.cpp.o
+[2/6] Linking CXX static library libqnx_platform.a
+[3/6] Building CXX object CMakeFiles/rnqnx_playground.dir/native/platform/qnx/application/main.cpp.o
+[4/6] Linking CXX executable bin/rnqnx_playground
+[5/6] Building CXX object CMakeFiles/rnqnx_g0_cxx20_probe.dir/vnext/probes/cxx20/main.cpp.o
+[6/6] Linking CXX executable bin/rnqnx_g0_cxx20_probe
+
+QNX AArch64 cross-build validation passed.
+Evidence: /tmp/s5-cross-evidence

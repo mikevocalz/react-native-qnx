@@ -1,0 +1,60 @@
+name: QNX cross-build (self-hosted)
+
+# Cross-builds the QNX aarch64 targets with the licensed QNX SDP (ADR-0007).
+# The SDP never touches a hosted runner. The job runs only when the repository
+# variable RNQNX_SELF_HOSTED is 'true'; otherwise it is skipped, so it never
+# queues for a runner that does not exist. Not a required check.
+# Runner labels and setup: docs/ci/qnx-vm-lane.md.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qnx-sdp-runner
+  cancel-in-progress: false
+
+jobs:
+  cross-build:
+    name: QNX aarch64 cross-build (SDP 8.0.5, self-hosted)
+    if: ${{ vars.RNQNX_SELF_HOSTED == 'true' }}
+    runs-on: [self-hosted, Linux, X64, rnqnx-qnx-sdp]
+    timeout-minutes: 120
+    env:
+      RNQNX_QNX_CONFIGS: Debug Release
+      RNQNX_QNX_SDP_LABEL: '8.0.5'
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Cross-build and check the ELF output
+        env:
+          # Path of qnxsdp-env.sh on the runner. Set the repository variable
+          # RNQNX_QNX_SDP_ENV to override the default.
+          SDP_ENV: ${{ vars.RNQNX_QNX_SDP_ENV || '/work/qnx800/qnxsdp-env.sh' }}
+          RNQNX_QNX_EVIDENCE_DIR: ${{ runner.temp }}/qnx-cross
+        run: |
+          set -euo pipefail
+          # shellcheck disable=SC1090
+          source "$SDP_ENV"
+          bash scripts/validate-qnx-805-cross.sh
+
+      - name: Hash the evidence
+        if: ${{ always() }}
+        working-directory: ${{ runner.temp }}/qnx-cross
+        run: |
+          set -euo pipefail
+          find . -type f | LC_ALL=C sort | xargs sha256sum > ../SHA256SUMS.tmp
+          mv ../SHA256SUMS.tmp SHA256SUMS
+
+      - name: Upload evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: qnx-cross-build-${{ github.sha }}
+          path: ${{ runner.temp }}/qnx-cross
+          if-no-files-found: error

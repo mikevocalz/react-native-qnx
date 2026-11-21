@@ -1,0 +1,9 @@
+QQnxIntegration: no EGL display (3008), continuing without OpenGL
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=0 framesDelivered=0 uiJobs=0 jsPosts=0
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1121 17:48:59.559973     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 3486c0c278).
+W1121 17:48:59.561805     5 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 3486d2d3c8).
+W1121 17:48:59.562192     5 UIManager.cpp:57] UIManager::~UIManager() was called (address: 3486c25228).
+RNQNX_PLAYGROUND_SCREENSHOT /data/vm/validate/20261121T174831Z-28549/shots/safe-area-view.png 1280x800

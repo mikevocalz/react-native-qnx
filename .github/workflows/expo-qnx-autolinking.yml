@@ -20,6 +20,7 @@ on:
       - '.github/workflows/expo-qnx-autolinking.yml'
       - 'package.json'
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

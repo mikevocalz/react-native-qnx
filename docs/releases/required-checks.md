@@ -7,8 +7,9 @@ on its own:
 
 - **Hosted**: GitHub-hosted `ubuntu-24.04` runners. Linux host builds,
   source contracts and bundles. None of them compile for QNX.
-- **QNX cross-build**: a QNX SDP toolchain build for the target. No workflow
-  does this yet.
+- **QNX cross-build**: a QNX SDP toolchain build for the target, on a
+  self-hosted runner. `qnx-cross-build.yml` does this; it has not run on GitHub
+  because no runner is registered.
 - **Device**: supervised runs on named QNX hardware. They are recorded as
   evidence receipts under the other v1 gates, not as CI checks.
 
@@ -18,18 +19,12 @@ passing hosted check does not show anything about QNX cross-builds or devices.
 ## Run the hosted checks on a candidate
 
 Most required workflows filter on paths, so a pull request that touches only
-some files does not start them. Run every required workflow on the candidate
-ref by dispatch:
+some files does not start them. Dispatch the candidate workflow, which calls
+every hosted workflow below on the ref, both QNX lanes, and one aggregate job
+(see [QNX cross-build and VM validation lanes](../ci/qnx-vm-lane.md)):
 
 ```sh
-for w in sdk58-validation host-renderer image-loader nitro-v1-host \
-  nitro-qnx-source-check expo-modules-qnx-source-check expo-qnx-autolinking \
-  hermes-qnx-source-check react-qnx-source-check pi-tooling-quality \
-  runtime-appstate qnx-create-app qnx-native-consumer-build phase6-doctor \
-  phase7-release-dossier phase-public-host app-identity phase4-lifecycle \
-  performance-budgets; do
-  gh workflow run "$w.yml" --ref <candidate-branch>
-done
+gh workflow run v1-candidate.yml --ref <candidate-branch>
 ```
 
 Every run must belong to the candidate's head commit. A run on an earlier
@@ -77,14 +72,23 @@ Rerun all four on the candidate as usual.
 
 ## QNX cross-build checks
 
-Required, and missing. No workflow compiles for QNX. (`websocket-host.yml`
-used to confirm that the build refused WebSockets on QNX; since the QNX
-cross-build of Qt WebSockets in the [dev workflow](../getting-started/dev-workflow.md)
-it checks that the development client cannot be configured without the
-WebSocket backend.) The gate cannot pass until a workflow builds
-the runtime and a fixture app with the QNX SDP toolchain for the release
-board, on a self-hosted runner the owner authorizes to hold the licensed SDP.
-Hosted results do not stand in for it.
+Required. `qnx-cross-build.yml` runs `scripts/validate-qnx-805-cross.sh`
+(aarch64 Debug and Release builds of the G0 probe, `qnx_platform` and
+`rnqnx_playground`, plus an ELF check) on a self-hosted runner that holds the
+licensed SDP, labels `self-hosted, Linux, X64, rnqnx-qnx-sdp`. It runs only when
+the repository variable `RNQNX_SELF_HOSTED` is `true`. No runner is registered
+today, so the workflow has not run on GitHub and the check is unmet. The gate
+cannot pass until it runs green on the candidate commit. Hosted results do not
+stand in for it. It does not build Qt or the showcase app.
+
+`qnx-vm-validation.yml` is a second self-hosted lane (`self-hosted, macOS,
+ARM64, rnqnx-qnx-vm`). It labels its results "QNX VM (QEMU, TCG, software
+render)". It is not device evidence and does not replace the device gates.
+
+(`websocket-host.yml` used to confirm that the build refused WebSockets on QNX;
+since the QNX cross-build of Qt WebSockets in the
+[dev workflow](../getting-started/dev-workflow.md) it checks that the
+development client cannot be configured without the WebSocket backend.)
 
 ## Device results
 
@@ -160,7 +164,8 @@ maintainer.
 
 ## Owner actions
 
-- Authorize a self-hosted runner with the licensed QNX SDP, then add the QNX
-  cross-build workflow described above.
+- Authorize a self-hosted runner with the licensed QNX SDP, give it the labels
+  above, and set the repository variable `RNQNX_SELF_HOSTED` to `true`. The
+  workflows exist; they have not run.
 - After the optional workflows are pinned too, turn on the Actions setting
   that requires SHA-pinned actions (`sha_pinning_required` is `false` today).

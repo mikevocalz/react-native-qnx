@@ -12,6 +12,7 @@ on:
       - 'vnext/probes/playground/main.cpp'
       - '.github/workflows/qnx-native-consumer-build.yml'
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

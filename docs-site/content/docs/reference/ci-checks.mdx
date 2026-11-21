@@ -5,7 +5,7 @@ description: The GitHub Actions workflows in the repository, what triggers and r
 
 This page describes what each workflow runs, read from the YAML in [`.github/workflows`](https://github.com/mikevocalz/react-native-qnx/tree/main/.github/workflows) at `8d7deaa`. It does not say any check passes. A run result belongs to one commit, and the [required-checks record](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md) says a run on an earlier commit does not count for a candidate.
 
-I counted 27 workflow files. Every job uses `runs-on: ubuntu-24.04`, a GitHub-hosted runner. The files were read with Ruby's YAML parser. I did not run any workflow.
+I counted 27 workflow files. Every job counted then used `runs-on: ubuntu-24.04`, a GitHub-hosted runner. The files were read with Ruby's YAML parser. I did not run any workflow.
 
 ## Three kinds of evidence
 
@@ -14,7 +14,7 @@ I counted 27 workflow files. Every job uses `runs-on: ubuntu-24.04`, a GitHub-ho
 | Category        | What it is                                                                                                                | Status in the repository                                                                                       |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | Hosted          | GitHub-hosted `ubuntu-24.04` runners. Linux host builds, source contracts and bundles. None of them compile for QNX.      | Every workflow below.                                                                                          |
-| QNX cross-build | A build with the QNX SDP toolchain for the target, on a self-hosted runner the owner authorizes to hold the licensed SDP. | Required and missing. The document says no workflow does this.                                                 |
+| QNX cross-build | A build with the QNX SDP toolchain for the target, on a self-hosted runner the owner authorizes to hold the licensed SDP. | Required. `qnx-cross-build.yml` exists and has not run: no self-hosted runner is registered.                   |
 | Device          | Supervised runs on named QNX hardware. Recorded as evidence receipts under the other v1 gates. They are not CI checks.    | Receipts under `docs/evidence/`. The Pi 400 receipts belong to earlier revisions and do not cover a candidate. |
 
 A local run of the same command never substitutes for a hosted check. A passing hosted check says nothing about a QNX cross-build or a device. The [status page](/docs/reference/status) uses "host-tested" for what a hosted job builds and runs on Linux, and "device-verified" for what a receipt shows on the Pi 400.
@@ -70,6 +70,16 @@ Triggers: `PR` is `pull_request`, `push` is a push to `main` unless noted, `disp
 | [`webgpu-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/webgpu-host.yml)             | Dispatch and a weekly schedule (`17 4 * * 1`)                                    | Fetches a pinned Dawn, builds it with the null backend and runs `rnqnx_webgpu_test`                                                                                                                | Not mentioned                                                                                                                                     |
 | [`websocket-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/websocket-host.yml)       | PR (paths), push (paths), no dispatch                                            | Builds and runs WebSocket loopback and JSI host tests with the backend on and the disabled-build behavior with it off                                                                              | Not required. Experimental backend that is off by default                                                                                         |
 | [`forge-native-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/forge-native-host.yml) | Dispatch only                                                                    | Checks out the separate `mikevocalz/nitro-forge` repository at a pinned commit, builds its Rust `nf-sys` crate and runs the CMake host tests in `tests/native/forge-host`                          | Not required. Core CI must not depend on premium components                                                                                       |
+
+### Self-hosted and candidate workflows
+
+Added after the count above, which stands for `8d7deaa`. Every job in the table above is hosted. These three are not.
+
+| Workflow file                                                                                                               | Triggers                     | What it runs                                                                                                                                                                             |
+| --------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`qnx-cross-build.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/qnx-cross-build.yml)     | Dispatch and `workflow_call` | On `self-hosted, Linux, X64, rnqnx-qnx-sdp`, only when the repository variable `RNQNX_SELF_HOSTED` is `true`: `scripts/validate-qnx-805-cross.sh`. Not run yet: no runner is registered. |
+| [`qnx-vm-validation.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/qnx-vm-validation.yml) | Dispatch and `workflow_call` | On `self-hosted, macOS, ARM64, rnqnx-qnx-vm`, same variable: `scripts/validate-qnx-vm.sh`, labelled "QNX VM (QEMU, TCG, software render)". Not run yet.                                  |
+| [`v1-candidate.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/v1-candidate.yml)           | Dispatch                     | Calls the 19 hosted required workflows and both lanes above, then one aggregate job. See [QNX lanes](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/ci/qnx-vm-lane.md).   |
 
 ## What a result means
 
