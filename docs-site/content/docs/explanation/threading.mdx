@@ -3,7 +3,7 @@ title: Threading model
 description: Which thread runs JavaScript, mounts Qt items, loads images and runs worklets, and how work moves between them.
 ---
 
-JavaScript, React Native's scheduler, the Fabric mount and every Qt Quick item share one thread: the thread that constructs `QtReactHost`, which in the playground host is the `QGuiApplication` thread. There is no separate JavaScript thread. The header says so directly: "JavaScript runs on the thread that constructs this object; there is no separate JS thread yet" (`vnext/include/react-native-qnx/runtime/QtReactHost.h`). Other threads exist for image work, the optional UI-worklet runtime and native module code, and each hands results back to the owner thread.
+JavaScript, React Native's scheduler, the Fabric mount and every Qt Quick item share one thread by default: the thread that constructs `QtReactHost`, which in the playground host is the `QGuiApplication` thread. An opt-in mode puts JavaScript on a thread the host owns ([ADR-0021](/docs/explanation/adr/0021-javascript-thread-off-the-qt-gui-thread)); the rest of this page describes the default. The header says so directly: "By default JavaScript runs on the thread that constructs this object" (`vnext/include/react-native-qnx/runtime/QtReactHost.h`). Other threads exist for image work, the optional UI-worklet runtime and native module code, and each hands results back to the owner thread.
 
 ## Threads and what runs on them
 

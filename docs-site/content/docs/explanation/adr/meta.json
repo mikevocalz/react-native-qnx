@@ -18,6 +18,7 @@
     "0017-qt-qnx-optimization-level",
     "0018-runner-hosting-and-sdp-boundary",
     "0019-nitro-package-metadata",
-    "0020-worklets-reanimated-gesture-handler-bootstrap"
+    "0020-worklets-reanimated-gesture-handler-bootstrap",
+    "0021-javascript-thread-off-the-qt-gui-thread"
   ]
 }
