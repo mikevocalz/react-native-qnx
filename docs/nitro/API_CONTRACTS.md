@@ -392,7 +392,7 @@ The library is `rnqnx_native_testing` in `native/testing`: static, built only un
 
 The accessibility tree (`QAccessible`) is not queried. The `objectName` tree covers every node the smoke paths need, and the offscreen platform does not install an accessibility bridge, so an accessibility query would not run in the host lane.
 
-## Windows API (S8, gate `window-chrome`): contract draft, revision 2, not implemented
+## Windows API (S8, gate `window-chrome`): contract draft, revision 3, not implemented
 
 Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`)
 has not run: there is no `.nitro.ts` spec, no codegen output and no C++. Per the closing brief,
@@ -400,7 +400,7 @@ no C++ is written until a lane other than the author has reviewed this contract.
 reviewed by `ecc:architect` (a lane other than the author), which found five blocking problems
 (close that cannot resolve, unguardable close paths, getters that break once JavaScript has its own
 thread, callback ownership, reload and minimize lifecycle) and several shapes Nitrogen cannot bind.
-This revision folds them in. A second review of revision 2 is still needed before step 2. Nothing
+Revision 2 was reviewed again and found one critical problem (a cancelled system close under rnqnx-winmgr still ends in SIGTERM), a regression to an anonymous type, a SafeAreaView plan that missed the JS shim, and ordering gaps. Revision 3 folds those in. It still needs a third read, and the rnqnx-winmgr change it names, before step 2. Nothing
 here is compiled or generated, and the Nitro claims come from reading the pinned
 `nitro-core` headers, not from a build.
 
@@ -419,7 +419,7 @@ compile the result against the pinned `nitro-core` source in the `nitro-v1-host`
 
 ### Shape decisions
 
-- Three HybridObjects, split by lifecycle (decision 2): `QnxWindows` (actions, guards, state),
+- Two HybridObjects, split by lifecycle (decision 2): `QnxWindows` (actions, guards, state)
   and `QnxTitleBarInset` (see "Inset and SafeAreaView"). One instance per app: a JS wrapper
   (`getQnxWindows()`, the `createQnxPlatformInfo` pattern) returns the same object each time, and
   native state is per window, so a second construction shares guards and listeners.
@@ -464,6 +464,8 @@ export interface TitleBarInset {
 
 /** One immutable snapshot of the window, outer size (title bar included), device-independent pixels. */
 export interface WindowState {
+  /** Increases with every published snapshot. */
+  sequence: number;
   title: string;
   size: Size;
   position: Point;
@@ -475,7 +477,10 @@ export interface WindowState {
 
 export interface CloseRequest {
   reason: CloseReason;
-  /** Milliseconds until the process is killed, when the source has a deadline; absent otherwise. */
+  /** False when the source cannot be cancelled: the guard may save, its return value is ignored. */
+  cancellable: boolean;
+  /** Milliseconds left until the process is killed, measured from when the close arrived to when
+   *  the guard is invoked; absent when the source states no deadline. */
   deadlineMs?: number;
 }
 
@@ -484,8 +489,12 @@ export type CloseGuard = (request: CloseRequest) => Promise<boolean>;
 /** Call to remove. Calling it again, or after teardown, does nothing. */
 export type Unsubscribe = () => void;
 
+export interface CloseOptions {
+  force?: boolean;
+}
+
 export interface QnxWindows extends HybridObject<{ qnx: 'c++' }> {
-  /** Fixed: v1 has one window per app. */
+  /** Final once the window manager has answered (`windowManagerKeepsWindowSize`), before JavaScript loads. */
   readonly capabilities: WindowCapability[];
   /** The last state the GUI thread published. */
   getState(): WindowState;
@@ -495,9 +504,10 @@ export interface QnxWindows extends HybridObject<{ qnx: 'c++' }> {
   /** Resolves with the rectangle actually applied (clamped to the screen and the minimum size). */
   setBounds(bounds: Rect): Promise<Rect>;
   minimize(): Promise<void>;
-  toggleMaximize(): Promise<void>;
+  /** Idempotent: resolves once `maximized` equals the argument. */
+  setMaximized(maximized: boolean): Promise<void>;
   /** Runs the guards. Resolves false if one cancelled; true means the close was accepted. */
-  close(options?: { force?: boolean }): Promise<boolean>;
+  close(options?: CloseOptions): Promise<boolean>;
 
   addCloseGuard(guard: CloseGuard): Unsubscribe;
   addOnFocusChangedListener(listener: (focused: boolean) => void): Unsubscribe;
@@ -525,9 +535,12 @@ import { getQnxWindows } from '@rn-qnx/qnx-nitro-runtime';
 const windows = getQnxWindows();
 
 // 1. Ask before closing with unsaved work. A guard that returns false cancels the close.
-const removeGuard = windows.addCloseGuard(async ({ reason, deadlineMs }) => {
+const removeGuard = windows.addCloseGuard(async ({ reason, cancellable, deadlineMs }) => {
   if (!hasUnsavedChanges()) return true;
-  if (deadlineMs !== undefined) return true; // the system kills the app soon; do not stall
+  if (!cancellable) {
+    await saveDraft({ withinMs: deadlineMs }); // the app ends regardless; save, do not ask
+    return true;
+  }
   return await confirmDiscard(reason);
 });
 
@@ -544,13 +557,13 @@ const applied = await windows.setBounds({ x: 40, y: 40, width: 900, height: 600 
 Methods that cannot do what they say reject. The wrapper turns the native message prefix
 (`CODE: reason`) into `error.code`, because Nitro carries only the message.
 
-| Condition                                                                         | Code                        | Notes                                                                               |
-| --------------------------------------------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------- |
-| Native installer not run, built without `RNQNX_ENABLE_WINDOW_CHROME`, or Marathon | `WINDOWS_UNAVAILABLE`       | An installation failure; no fallback object.                                        |
-| Capability absent on this target                                                  | `WINDOW_ACTION_UNSUPPORTED` | Reason text matches the `RNQNX_WINDOW_CHROME hidden=` log line.                     |
-| A number that is not finite, or a negative size                                   | `INVALID_ARGUMENT`          | Names the argument. An unknown layout string fails in the Nitro converter first.    |
-| Runtime torn down                                                                 | `WINDOWS_DISPOSED`          | Every later call rejects; guards and listeners no longer run.                       |
-| A guard rejects or throws                                                         | none                        | The close is cancelled and the error reported once through the host error reporter. |
+| Condition                                                                         | Code                        | Notes                                                                                                  |
+| --------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Native installer not run, built without `RNQNX_ENABLE_WINDOW_CHROME`, or Marathon | `WINDOWS_UNAVAILABLE`       | An installation failure; no fallback object.                                                           |
+| Capability absent on this target                                                  | `WINDOW_ACTION_UNSUPPORTED` | Reason text matches the `RNQNX_WINDOW_CHROME hidden=` log line.                                        |
+| A number that is not finite, or a negative size                                   | `INVALID_ARGUMENT`          | Names the argument. An unknown layout string fails in the Nitro converter first.                       |
+| Runtime torn down                                                                 | `WINDOWS_DISPOSED`          | Every later method call rejects; the synchronous getters throw it. Guards and listeners no longer run. |
+| A guard rejects or throws                                                         | none                        | The close is cancelled and the error reported once through the host error reporter.                    |
 
 ### Reads and threads
 
@@ -558,6 +571,14 @@ Methods that cannot do what they say reject. The wrapper turns the native messag
   immutable `WindowState` and `TitleBarInset` (`shared_ptr<const T>`). `getState()` and `getInset()`
   read the latest pointer; they never touch Qt objects. The pointer swap uses a short mutex that
   holds no callback and calls into nothing.
+- Order for one change: the GUI thread publishes the snapshot, then settles the mutating call's
+  Promise, then posts the listeners. Each listener payload is that snapshot with its `sequence`
+  (compare `LifecycleSnapshot.sequence` in `QtApplicationLifecycle.h`), so `await setBounds(...)`
+  followed by `getState()` always sees the change. For one change the order is state, then
+  visibility, then focus.
+- Coalescing: a drag changes state at pointer rate, and the dispatcher drains every accepted task
+  while JS may be blocked. At most one "state changed" task is pending: the GUI thread sets a flag
+  and the task reads the latest snapshot when it runs. The inset follows the same rule.
 - Mutating calls cross once, at this boundary, through `QtNitroDispatcher`, and settle after the
   GUI thread applied them. Nothing blocks the GUI thread waiting for JavaScript.
 - Guard and listener callbacks are `Callback` objects holding JSI handles. They are created, copied,
@@ -575,13 +596,14 @@ A guard hooks `QEvent::Close` on the `QQuickWindow`: the handler ignores the eve
 then re-issues the close with a bypass flag so the guards do not run twice. Rewriting the control's
 `trigger("close")` alone would miss the other paths.
 
-| Close source                                                           | `reason`  | Guardable                                                                                                                    |
-| ---------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Close control or Enter and Space on it                                 | `control` | Yes.                                                                                                                         |
-| `windows.close()`                                                      | `app`     | Yes, unless `force`.                                                                                                         |
-| Window manager close event (rnqnx-winmgr, `Frame=Y` fullscreen-winmgr) | `system`  | Yes, but the manager sends SIGTERM after its grace period (3 s for rnqnx-winmgr, ADR-0016 item 11). `deadlineMs` carries it. |
-| `--replace` quit from a second launch                                  | none      | No. The launcher sends SIGTERM after 5000 ms. The guard is not asked.                                                        |
-| SIGTERM, or `Frame=N` fullscreen-winmgr                                | none      | No.                                                                                                                          |
+| Close source                              | `reason`  | Guardable                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Close control or Enter and Space on it    | `control` | Yes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `windows.close()`                         | `app`     | Yes, unless `force`.                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| rnqnx-winmgr close event                  | `system`  | Not cancellable today: `check_closing()` sends SIGTERM once its grace period ends (`CLOSE_GRACE_S`, 3 s, ADR-0016 item 11) whenever the window still exists, which is what a cancelling guard leaves. The guard is called with `cancellable: false` and may save within `deadlineMs`. It becomes cancellable only after rnqnx-winmgr (ours) accepts a `rnqnx=close-cancelled` message that calls `closing_forget`, and the host sends it when a guard cancels. Not implemented. |
+| fullscreen-winmgr close event (`Frame=Y`) | `system`  | Unverified: whether it enforces a deadline is known only from disassembly. Treated as `cancellable: false` until measured.                                                                                                                                                                                                                                                                                                                                                      |
+| `--replace` quit from a second launch     | none      | No. The launcher sends SIGTERM after 5000 ms. The guard is not asked.                                                                                                                                                                                                                                                                                                                                                                                                           |
+| SIGTERM, or `Frame=N` fullscreen-winmgr   | none      | No.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 - Guards run in registration order. The first `false` cancels and later guards do not run.
 - A second `close()`, or a press on the close control, while a close is pending joins it and does
@@ -592,7 +614,394 @@ then re-issues the close with a bypass flag so the guards do not run twice. Rewr
 - A guard that never settles leaves the close pending. The API has no timeout; the table above shows
   the deadlines the app does not control. `close({ force: true })` skips the guards and is the
   app's own way out of a guard it wrote badly.
+- If the runtime is torn down or reloaded while guards are running, the pending close proceeds,
+  matching "a close with no live runtime proceeds unguarded". The teardown race harness covers it.
+- `close({ force: true })` while a guarded close is pending overrides it: every joined `close()`
+  Promise resolves `true` and late guard results are ignored. Code after an `await` of a `true`
+  result may not run, because the runtime stops right after.
 - A throwing or rejecting guard cancels the close, which protects data, and reports once.
+  For a `cancellable: false` request the result is ignored.
+
+### Lifecycle
+
+- **Dev reload.** The window and chrome survive a reload; the runtime that registered the guards
+  does not. Guards and listeners from the old runtime are dropped. A close that arrives with no live
+  runtime proceeds unguarded. A new bundle starts with no guards.
+- **Minimize on QNX.** Under `fullscreen-winmgr` minimize destroys the native window and keeps the
+  `QWindow` (ADR-0016 item 3). That is not `WINDOWS_DISPOSED`. `setTitle` and `setBounds` while
+  minimized are stored and take effect on restore, and resolve once stored. The visibility listener
+  fires `false` on minimize and `true` on restore, then the focus listener fires.
+- **`AppState`.** Proposed: `background` before the native window is released and `active` after it
+  is restored, supplied by the chrome through an explicit `QtApplicationLifecycle` record, because
+  Qt does not report `ApplicationHidden` when the native window is destroyed. Under rnqnx-winmgr the
+  same two transitions wrap its minimize and restore messages. The host logs `RNQNX_APPSTATE` lines
+  for the gate receipt. This needs an ADR-0016 amendment (item 3 says `AppState` does not change),
+  and the amendment also corrects "the chrome never calls into JavaScript", which stops being true
+  once the close control waits on guards. Not implemented.
+
+### Bounds
+
+`setBounds` takes the outer window rectangle in device-independent pixels, title bar included
+(ADR-0016 item 8), in display coordinates. It moves `normalFrame` for a contained window and the
+native window under `rnqnx-winmgr`. It clamps to the screen and to the 400 by 300 minimum, and
+resolves with the rectangle it applied, so the caller sees the clamp. Without `move` and `resize`
+capabilities it rejects with `WINDOW_ACTION_UNSUPPORTED`. `setTitle` changes the title bar text and
+the accessible name; whether the `rnqnx-winmgr` dock label follows is open (ADR-0016 item 5 fixes
+the title to `expo.name` today).
+
+### Inset and SafeAreaView
+
+The gate asks for the inset to reach JavaScript and `SafeAreaView`. Two consumers, two paths:
+
+- Core `SafeAreaView`: the host feeds the native inset into its component state in `QtReactHost`
+  (today it notes zero insets on QNX).
+- `react-native-safe-area-context`, which on QNX is the JS shim
+  `packages/expo-router-qnx/src/shims/safe-area-context.js`. It hardcodes zero insets and a 1280 by
+  800 initial frame, and `useSafeAreaInsets()` (what expo-router and most apps call) reads it. The
+  shim's `SafeAreaProvider` reads `QnxTitleBarInset.getInset()`, subscribes with
+  `addOnInsetChangedListener`, and takes `initialWindowMetrics` from the same source. It fails soft
+  to zero insets only in a build without `RNQNX_ENABLE_WINDOW_CHROME`; that is the one exception to
+  `WINDOWS_UNAVAILABLE`, because an app that never drew a bar has nothing to inset.
+
+Neither path is implemented; host tests cover only the native values (`titleBarInset*` in
+`WindowChromeQuickTest.cpp`).
+
+### What each platform promises
+
+| Platform                                   | Promise                                                                                                                                                                                                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host (Linux, macOS), offscreen or windowed | Startup to the first swap after surface start, stored swap instants, RSS. Labelled `host`.                                                                                                                                                     |
+| QNX Screen (VM, Pi 400, release board)     | None in this slice. CMake rejects `RNQNX_ENABLE_TIMING_PROBE=ON` when `CMAKE_SYSTEM_NAME` is `QNX`. The device and VM budget fields stay `unmeasured` until a QNX reader and clock mapping are written, reviewed and run on a QNX target (S9). |
+| Marathon                                   | Not in scope (frozen).                                                                                                                                                                                                                         |
+
+## Native tree query for tests: `rnqnx::testing::waitForNode` (S3)
+
+Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`) produces no `.nitro.ts` spec and no Nitrogen or `nitro-platform-codegen.mjs` output, because the hook has no JavaScript surface: it is a C++ test-support library in `native/testing`, linked only into test executables, never into an app or runner. ADR-0004 makes an _app-facing_ native API a HybridObject; this is not one. If a later slice exposes tree queries to JavaScript, it needs a `HybridObject` spec and a new contract here. Step 3 (`cpp`) is the per-file review note in the PR.
+
+Review: `ecc:cpp-reviewer` (a lane other than the author) reviewed the first draft before any C++ existed and returned "approve with changes". This text carries those changes: the application event filter is replaced by `QAbstractEventDispatcher::aboutToBlock()` (the filter saw its own timer events and spun, and only reaches main-thread objects), designated initializers are gone (the repo builds C++17 with `-Wpedantic -Werror`), the result gained a status enum, and matching, visibility and reentrancy are defined.
+
+Skill sources, all at `margelo/react-native-skills@1e9e17be6f41c838db472d6a4b943fc26355a3be` (the head on 2026-11-20): `api-design` and `cpp` read in full and byte-identical to the local install; `build-nitro-modules` read from the pinned SHA (the local install carries an extra Nitro V1 paragraph that the pin lacks).
+
+### Contract
+
+```cpp
+namespace rnqnx::testing {
+
+struct NodeQuery {
+  QString objectName;          // exact match, non-empty
+  bool requireVisible = false; // QQuickItem::isVisible() / QWindow::isVisible()
+};
+
+enum class NodeWaitStatus { Found, TimedOut, NotVisible, RootDestroyed, AppQuit };
+
+struct NodeWaitResult {
+  NodeWaitStatus status = NodeWaitStatus::TimedOut;
+  bool found() const { return status == NodeWaitStatus::Found; }
+  QPointer<QObject> node;               // set when found; may be null again by the time the caller reads it
+  std::chrono::milliseconds elapsed{0}; // steady clock
+  QString error;                        // empty when found; names the node, the budget and the root type
+};
+
+// One synchronous scan. `root` must live in the calling thread. nullptr when absent.
+QObject* findNode(QObject* root, const NodeQuery& query);
+
+// Scans now, then pumps the calling thread's event loop until the node exists or
+// `timeout` passes. `root` must live in the calling thread.
+NodeWaitResult waitForNode(QObject* root, const NodeQuery& query,
+                           std::chrono::milliseconds timeout);
+}
+```
+
+Matching: the first object in pre-order that satisfies every field of the query. At each object, `QObject::children()` come before `QQuickItem::childItems()`. Each object is visited once. The root can match. `requireVisible` reads `QQuickItem::isVisible()` or `QWindow::isVisible()` by dynamic type, so the scan runs no user code. A name match on any other type is not a match, so a later sibling can still satisfy the query. When nothing matches and such a type was seen, the call throws `std::logic_error` naming the class. That throw happens after the event loop ends, never inside a dispatcher slot. A `QQuickWindow` is walked through its `contentItem` as well. A visible node does not imply a nonzero size, opacity or an exposed window. The scan does not reach the content of a closed `Popup` and does not follow `QWindow` children except through `QObject::children()`.
+
+### Call sites
+
+```cpp
+using namespace std::chrono_literals;
+namespace t = rnqnx::testing;
+
+// 1. A node that appears after a deferred QML Loader finishes.
+t::NodeQuery bar;
+bar.objectName = QStringLiteral("rnqnxTitleBar");
+bar.requireVisible = true;
+const t::NodeWaitResult r = t::waitForNode(&window, bar, 5s);
+QVERIFY2(r.found(), qPrintable(r.error));
+
+// 2. Failure: the node never appears. The status is TimedOut and the error names
+//    the node, the budget and the root type, for example
+//    "timed out after 200 ms waiting for node 'noSuchNode' under QQuickWindow 'main'".
+t::NodeQuery missing;
+missing.objectName = QStringLiteral("noSuchNode");
+const t::NodeWaitResult gone = t::waitForNode(&window, missing, 200ms);
+QCOMPARE(gone.status, t::NodeWaitStatus::TimedOut);
+
+// 3. A negative assertion with the synchronous scan, after a node was removed.
+QVERIFY(t::findNode(&window, bar) == nullptr);
+```
+
+### Error set
+
+| Condition                                                                                                                                                          | Result                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `root` null, `objectName` empty, `timeout` not positive                                                                                                            | `std::invalid_argument` (a programming error, not a test failure)  |
+| `root` lives in another thread, a nested `waitForNode` (detected with a `thread_local` flag), no `QCoreApplication`, `requireVisible` on a type with no visibility | `std::logic_error` naming the call                                 |
+| Timeout                                                                                                                                                            | status `TimedOut`, error as above                                  |
+| Node found but not visible at the deadline                                                                                                                         | status `NotVisible`, error says the node exists and is not visible |
+| `root` destroyed while waiting                                                                                                                                     | status `RootDestroyed`                                             |
+| `QCoreApplication::quit()` while waiting                                                                                                                           | status `AppQuit`                                                   |
+
+Callers branch on `status`. The `error` string is for people.
+
+### Waiting rules
+
+- The wait is event-driven and runs a nested `QEventLoop` on the root's thread. The first scan is synchronous, before the loop starts. After that it rescans each time the thread's event dispatcher reports `aboutToBlock()`, and once more at the deadline. One single-shot timer enforces the deadline, measured on a steady clock. There is no sleep, no polling interval, no retry and no application-level event filter.
+- The wait makes no progress of its own. It does not show, expose, polish or render anything, and it cannot see a change that is not made by a handler running on the root's thread. A test that needs a window exposed exposes it first. A node created by an asynchronous incubator on a window that never renders can stay absent until the deadline.
+- Other nested loops (`QTest::qWait`, a dialog `exec`, a QML handler) may run while the wait is active. Only a nested `waitForNode` is refused.
+- The loop, the timer and the dispatcher connection live on the stack of one call. Destruction removes the connection and the timer before the loop, on every exit path including an exception, so nothing runs after the function returns. The root is held as a `QPointer` and re-checked on every scan.
+- No mutex exists. Nothing is shared between threads. The scan runs inside a dispatcher signal and only reads `objectName()`, the child lists and visibility.
+
+### Build and linkage
+
+The library is `rnqnx_native_testing` in `native/testing`: static, built only under `RNQNX_BUILD_NATIVE_TESTING_TESTS`, never installed or exported. It links Qt6::Core, Gui and Qml publicly and Qt6::Quick privately, uses C++17 and `QT_NO_KEYWORDS` like the window chrome lane, and builds with `-Wall -Wextra -Wpedantic -Werror` on Clang and GCC. A CTest check fails if a target other than a test links it.
+
+### What each platform promises
+
+| Platform                      | Promise                                                                                                                                                     |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host (macOS, Linux, Qt 6.11+) | Built and run by the `native-testing` CTest lane under `QT_QPA_PLATFORM=offscreen`.                                                                         |
+| QNX VM, Pi 400, release board | Not built. The library is not linked into any QNX target in this slice. Device smoke paths wait on app-emitted log lines through `scripts/lib/wait-log.sh`. |
+
+The accessibility tree (`QAccessible`) is not queried. The `objectName` tree covers every node the smoke paths need, and the offscreen platform does not install an accessibility bridge, so an accessibility query would not run in the host lane.
+
+## Windows API (S8, gate `window-chrome`): contract draft, revision 3, not implemented
+
+Pipeline status: step 1 (`api-design`) is this section. Step 2 (`build-nitro-modules`)
+has not run: there is no `.nitro.ts` spec, no codegen output and no C++. Per the closing brief,
+no C++ is written until a lane other than the author has reviewed this contract. Revision 1 was
+reviewed by `ecc:architect` (a lane other than the author), which found five blocking problems
+(close that cannot resolve, unguardable close paths, getters that break once JavaScript has its own
+thread, callback ownership, reload and minimize lifecycle) and several shapes Nitrogen cannot bind.
+Revision 2 was reviewed again and found one critical problem (a cancelled system close under rnqnx-winmgr still ends in SIGTERM), a regression to an anonymous type, a SafeAreaView plan that missed the JS shim, and ordering gaps. Revision 3 folds those in. It still needs a third read, and the rnqnx-winmgr change it names, before step 2. Nothing
+here is compiled or generated, and the Nitro claims come from reading the pinned
+`nitro-core` headers, not from a build.
+
+Skill sources: Margelo `api-design` and `cpp` at
+`margelo/react-native-skills@1e9e17be6f41c838db472d6a4b943fc26355a3be`. The draft was written from
+the existing chrome sources and ADR-0016, not from a skill run by the review lane.
+
+### Why it is not a spec yet
+
+`scripts/nitro-platform-codegen.mjs` accepts one class (`PlatformInfo`) with string properties and
+one two-number method. The windows API needs booleans, named structs, callbacks that return Promises
+and listener handles, none of which it emits, and Nitrogen has no QNX target. Writing a spec now
+would leave a file nothing generates from, and hand-writing the binding is not allowed. The next step
+is to extend the adapter (with a generated-output check, as `nitro:platform:check` does today) and to
+compile the result against the pinned `nitro-core` source in the `nitro-v1-host` lane.
+
+### Shape decisions
+
+- Two HybridObjects, split by lifecycle (decision 2): `QnxWindows` (actions, guards, state)
+  and `QnxTitleBarInset` (see "Inset and SafeAreaView"). One instance per app: a JS wrapper
+  (`getQnxWindows()`, the `createQnxPlatformInfo` pattern) returns the same object each time, and
+  native state is per window, so a second construction shares guards and listeners.
+- Only named interfaces cross the boundary (Nitrogen needs them for structs). A synchronous
+  guard result is accepted by the JS wrapper and turned into a Promise before it reaches native.
+- Listeners follow decision 8: additive `addOn...Listener` with an idempotent remove handle, and
+  typed payloads, so a listener never re-reads a getter that can race the next change.
+- Reads are snapshots published by the GUI thread (below), not live reads of Qt objects.
+
+### Public TypeScript contract
+
+```ts
+export type WindowControlsLayout = 'macos' | 'windows';
+/** What this target can do, from the platform capabilities, not from which controls are drawn. */
+export type WindowCapability = 'close' | 'minimize' | 'maximize' | 'move' | 'resize';
+export type CloseReason = 'control' | 'app' | 'system';
+
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+export interface Size {
+  width: number;
+  height: number;
+}
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/** Device-independent pixels, relative to the React surface. */
+export interface TitleBarInset {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+  /** The rectangle the floating controls cover; width and height 0 when none. */
+  overlay: Rect;
+}
+
+/** One immutable snapshot of the window, outer size (title bar included), device-independent pixels. */
+export interface WindowState {
+  /** Increases with every published snapshot. */
+  sequence: number;
+  title: string;
+  size: Size;
+  position: Point;
+  focused: boolean;
+  visible: boolean;
+  maximized: boolean;
+  controlsLayout: WindowControlsLayout;
+}
+
+export interface CloseRequest {
+  reason: CloseReason;
+  /** False when the source cannot be cancelled: the guard may save, its return value is ignored. */
+  cancellable: boolean;
+  /** Milliseconds left until the process is killed, measured from when the close arrived to when
+   *  the guard is invoked; absent when the source states no deadline. */
+  deadlineMs?: number;
+}
+
+/** Resolve true to let the window close, false to keep it open. */
+export type CloseGuard = (request: CloseRequest) => Promise<boolean>;
+/** Call to remove. Calling it again, or after teardown, does nothing. */
+export type Unsubscribe = () => void;
+
+export interface CloseOptions {
+  force?: boolean;
+}
+
+export interface QnxWindows extends HybridObject<{ qnx: 'c++' }> {
+  /** Final once the window manager has answered (`windowManagerKeepsWindowSize`), before JavaScript loads. */
+  readonly capabilities: WindowCapability[];
+  /** The last state the GUI thread published. */
+  getState(): WindowState;
+
+  setControlsLayout(layout: WindowControlsLayout): Promise<void>;
+  setTitle(title: string): Promise<void>;
+  /** Resolves with the rectangle actually applied (clamped to the screen and the minimum size). */
+  setBounds(bounds: Rect): Promise<Rect>;
+  minimize(): Promise<void>;
+  /** Idempotent: resolves once `maximized` equals the argument. */
+  setMaximized(maximized: boolean): Promise<void>;
+  /** Runs the guards. Resolves false if one cancelled; true means the close was accepted. */
+  close(options?: CloseOptions): Promise<boolean>;
+
+  addCloseGuard(guard: CloseGuard): Unsubscribe;
+  addOnFocusChangedListener(listener: (focused: boolean) => void): Unsubscribe;
+  addOnVisibilityChangedListener(listener: (visible: boolean) => void): Unsubscribe;
+  addOnStateChangedListener(listener: (state: WindowState) => void): Unsubscribe;
+}
+
+export interface QnxTitleBarInset extends HybridObject<{ qnx: 'c++' }> {
+  getInset(): TitleBarInset;
+  addOnInsetChangedListener(listener: (inset: TitleBarInset) => void): Unsubscribe;
+}
+```
+
+`capabilities` comes from `capabilitiesForPlatform` plus `withSizeKeepingWindowManager`. It does
+not depend on whether a control is drawn, so `titleBarStyle: 'none'` still lets `close()` and
+`minimize()` run, and `unavailableControls: 'disable'` does not change it. `move` and `resize`
+are present only under `rnqnx-winmgr` (`clientMoveResize`) and for a contained window with
+`initialSize`; a full-screen app has neither.
+
+### Typed call sites
+
+```ts
+import { getQnxWindows } from '@rn-qnx/qnx-nitro-runtime';
+
+const windows = getQnxWindows();
+
+// 1. Ask before closing with unsaved work. A guard that returns false cancels the close.
+const removeGuard = windows.addCloseGuard(async ({ reason, cancellable, deadlineMs }) => {
+  if (!hasUnsavedChanges()) return true;
+  if (!cancellable) {
+    await saveDraft({ withinMs: deadlineMs }); // the app ends regardless; save, do not ask
+    return true;
+  }
+  return await confirmDiscard(reason);
+});
+
+// 2. React to focus with a typed payload, no re-read of state.
+const off = windows.addOnFocusChangedListener((focused) => setDimmed(!focused));
+
+// 3. Minimize only where the target can. Elsewhere the call rejects.
+if (windows.capabilities.includes('minimize')) await windows.minimize();
+const applied = await windows.setBounds({ x: 40, y: 40, width: 900, height: 600 });
+```
+
+### Error set
+
+Methods that cannot do what they say reject. The wrapper turns the native message prefix
+(`CODE: reason`) into `error.code`, because Nitro carries only the message.
+
+| Condition                                                                         | Code                        | Notes                                                                                                  |
+| --------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Native installer not run, built without `RNQNX_ENABLE_WINDOW_CHROME`, or Marathon | `WINDOWS_UNAVAILABLE`       | An installation failure; no fallback object.                                                           |
+| Capability absent on this target                                                  | `WINDOW_ACTION_UNSUPPORTED` | Reason text matches the `RNQNX_WINDOW_CHROME hidden=` log line.                                        |
+| A number that is not finite, or a negative size                                   | `INVALID_ARGUMENT`          | Names the argument. An unknown layout string fails in the Nitro converter first.                       |
+| Runtime torn down                                                                 | `WINDOWS_DISPOSED`          | Every later method call rejects; the synchronous getters throw it. Guards and listeners no longer run. |
+| A guard rejects or throws                                                         | none                        | The close is cancelled and the error reported once through the host error reporter.                    |
+
+### Reads and threads
+
+- The GUI thread owns the `QWindow` and `WindowChrome`. After every change it publishes a new
+  immutable `WindowState` and `TitleBarInset` (`shared_ptr<const T>`). `getState()` and `getInset()`
+  read the latest pointer; they never touch Qt objects. The pointer swap uses a short mutex that
+  holds no callback and calls into nothing.
+- Order for one change: the GUI thread publishes the snapshot, then settles the mutating call's
+  Promise, then posts the listeners. Each listener payload is that snapshot with its `sequence`
+  (compare `LifecycleSnapshot.sequence` in `QtApplicationLifecycle.h`), so `await setBounds(...)`
+  followed by `getState()` always sees the change. For one change the order is state, then
+  visibility, then focus.
+- Coalescing: a drag changes state at pointer rate, and the dispatcher drains every accepted task
+  while JS may be blocked. At most one "state changed" task is pending: the GUI thread sets a flag
+  and the task reads the latest snapshot when it runs. The inset follows the same rule.
+- Mutating calls cross once, at this boundary, through `QtNitroDispatcher`, and settle after the
+  GUI thread applied them. Nothing blocks the GUI thread waiting for JavaScript.
+- Guard and listener callbacks are `Callback` objects holding JSI handles. They are created, copied,
+  invoked and destroyed on the JS-owned side only. The GUI side holds ids and posts "close
+  requested" or "state changed" to the JS side. Dispatch copies the registered list, releases any
+  lock, then calls, so a guard that removes itself or a listener that unsubscribes cannot invalidate
+  the iteration.
+- `QT_DISPATCHER.md` records that listener cancellation, reload and HybridClass disposal are not
+  yet established. The exit criteria for this API include tests for each, and a TSan run once JS has
+  its own thread (S2).
+
+### Closing, guards and who can be asked
+
+A guard hooks `QEvent::Close` on the `QQuickWindow`: the handler ignores the event, runs the guards,
+then re-issues the close with a bypass flag so the guards do not run twice. Rewriting the control's
+`trigger("close")` alone would miss the other paths.
+
+| Close source                              | `reason`  | Guardable                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Close control or Enter and Space on it    | `control` | Yes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `windows.close()`                         | `app`     | Yes, unless `force`.                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| rnqnx-winmgr close event                  | `system`  | Not cancellable today: `check_closing()` sends SIGTERM once its grace period ends (`CLOSE_GRACE_S`, 3 s, ADR-0016 item 11) whenever the window still exists, which is what a cancelling guard leaves. The guard is called with `cancellable: false` and may save within `deadlineMs`. It becomes cancellable only after rnqnx-winmgr (ours) accepts a `rnqnx=close-cancelled` message that calls `closing_forget`, and the host sends it when a guard cancels. Not implemented. |
+| fullscreen-winmgr close event (`Frame=Y`) | `system`  | Unverified: whether it enforces a deadline is known only from disassembly. Treated as `cancellable: false` until measured.                                                                                                                                                                                                                                                                                                                                                      |
+| `--replace` quit from a second launch     | none      | No. The launcher sends SIGTERM after 5000 ms. The guard is not asked.                                                                                                                                                                                                                                                                                                                                                                                                           |
+| SIGTERM, or `Frame=N` fullscreen-winmgr   | none      | No.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+
+- Guards run in registration order. The first `false` cancels and later guards do not run.
+- A second `close()`, or a press on the close control, while a close is pending joins it and does
+  not start a second guard run.
+- `close()` resolves `true` as "accepted": it settles before the native close is posted, because the
+  event loop and the JS runtime stop right after (ADR-0016 context, `QT_DISPATCHER.md` teardown). It
+  never resolves after the window is gone.
+- A guard that never settles leaves the close pending. The API has no timeout; the table above shows
+  the deadlines the app does not control. `close({ force: true })` skips the guards and is the
+  app's own way out of a guard it wrote badly.
+- If the runtime is torn down or reloaded while guards are running, the pending close proceeds,
+  matching "a close with no live runtime proceeds unguarded". The teardown race harness covers it.
+- `close({ force: true })` while a guarded close is pending overrides it: every joined `close()`
+  Promise resolves `true` and late guard results are ignored. Code after an `await` of a `true`
+  result may not run, because the runtime stops right after.
+- A throwing or rejecting guard cancels the close, which protects data, and reports once.
+  For a `cancellable: false` request the result is ignored.
 
 ### Lifecycle
 
@@ -645,8 +1054,12 @@ own lifecycle (hardening item H7 asks for per-root state and exactly-once event 
 
 ### Open questions for the second review
 
-1. `deadlineMs` values: 3000 and 5000 come from `CLOSE_GRACE_S` and `quitTimeoutMs`. Confirm they are
-   read from those constants at run time rather than copied.
-2. A keyboard close shortcut (Alt+F4 or Ctrl+W) does not exist; the earlier `keyboard` reason was
-   removed. Add one only if the design sequence wants it.
-3. Whether `setTitle` should update the window manager's dock label.
+1. `deadlineMs` source: `CLOSE_GRACE_S` is a `#define` in the rnqnx-winmgr binary, so the app cannot
+   read it. Proposed: rnqnx-winmgr advertises it in the manager string it already sets (for example
+   `rnqnx-winmgr windowed close_grace_ms=3000`), the host parses it where
+   `windowManagerKeepsWindowSize()` reads that property, and `deadlineMs` is absent when the manager
+   does not say. `--replace` never asks a guard, so its 5000 ms plays no part.
+2. Closed for v1: no keyboard close shortcut. No QNX convention exists and Ctrl+W collides with text
+   editing. It returns only with a design decision and a `keyboard` reason.
+3. Closed: `setTitle` changes the bar text and accessible name only. rnqnx-winmgr names its dock and
+   switcher entries from the desktop entry (app identity), as ADR-0016 item 5 keeps it.
