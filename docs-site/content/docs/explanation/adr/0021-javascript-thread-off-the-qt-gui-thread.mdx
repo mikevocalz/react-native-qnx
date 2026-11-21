@@ -7,7 +7,7 @@ Record: [`docs/adr/0021-javascript-thread-off-the-qt-gui-thread.md`](https://git
 
 ## Status
 
-Proposed. The mode sits behind `QtReactHost::Options::jsThread` and is off by default. Evidence exists for the host only. No QNX VM, Pi 400 or release-board run exists, so the `window-chrome` and `device-parity` gates stay pending.
+Proposed. The mode sits behind `QtReactHost::Options::jsThread` and is off by default. Evidence exists for the host and for the QNX VM (QEMU, TCG emulation, software render; not the Pi 400, not the release board). No Pi 400 or release-board run exists, so the `window-chrome` and `device-parity` gates stay pending.
 
 ## Context
 
@@ -25,4 +25,4 @@ With the flag on, `QtJsThread` runs a `QThread` named `rnqnx-js` with an 8 MiB s
 
 ## Consequences
 
-A five-second JavaScript block no longer freezes the title bar controls or a pan, shown on the host. The device run, the Nitro and dev-client paths, and the frame-time cost of the extra hop are open.
+A five-second JavaScript block no longer freezes the title bar controls or a pan, shown on the host and on the QNX VM (synthetic pointer events, software render, TCG), with the same block and the flag off as a control where neither works. On the QNX VM the Nitro installer, WebSocket, FileReader and `ImageLoader.getSize` ran in this mode, and Worklets, Reanimated, Gesture Handler and AppState refused with an ADR-0021 message. The Pi 400 and release-board runs, the dev-client path and the frame-time cost of the extra hop are open. Receipt: [s2-vm-2026-11-21](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/s2-vm-2026-11-21/README.md).

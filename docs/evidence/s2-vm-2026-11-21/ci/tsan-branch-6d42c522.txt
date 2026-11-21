@@ -1,0 +1,22 @@
+# ThreadSanitizer run 44921312130 on branch s2-vm-acceptance, commit 6d42c522, 2026-11-21 (workflow js-thread-tsan.yml, workflow_dispatch)
+# Host, Linux x86_64 (ubuntu-24.04), Qt 6.11.1 from install-qt-action (not instrumented), clang 18.1.3
+# TSAN_OPTIONS=halt_on_error=0:ignore_noninstrumented_modules=1; the step then fails on any line containing WARNING: ThreadSanitizer. Conclusion: success.
+# Trimmed to the test lines. Full log: gh run view 44921312130 --log
+
+[INFO] platform=offscreen blockMs=5000 responsiveMs=500
+[PASS] jsRunsOnItsOwnThread
+[PASS] mountsAreAppliedOnTheGuiThread
+[PASS] timersAndCompletionsRunOnTheJsThread
+[PASS] resizeAndWindowSizeDoNotWaitForJavaScript
+[RESULT] flag=on blockMs=5000 blocked=5008ms heartbeats@2500ms=234 total=485 panMs=2 contentY=-0->48 minimizeMs=0 closeMs=0 resizeMs=0 touchDispatchedNatively=10 touchSeenByJs=6 (starts 2, moves 2 coalesced from 6, ends 2) responsiveBoundMs=500
+[PASS] blockedJavaScriptLeavesTheGuiThreadResponsive
+[RESULT] flag=off blockMs=5000 blocked=5001ms heartbeatsDuringBlock=0 firstHeartbeatAt=5002ms lastHeartbeatAt=5002ms contentYAtBlockEnd=-0 closeActionAt=5002ms (queued click ran only after the block)
+[PASS] blockedJavaScriptFreezesTheGuiThreadWithTheFlagOff
+[PASS] teardownWithQueuedWorkIsClean
+[RESULT] no refusing library is compiled into this build
+[PASS] unmovedLibrariesRefuseWithAClearError
+[RESULT] FileReader readAsText -> rejected: FileReaderModule is not implemented on this platform
+[RESULT] ImageLoader getSize(37x23 png) -> 37x23, settled on the JS thread
+[PASS] turboModulesResolveAndCompleteOnTheJsThread
+All 9 JS-thread tests passed.
+# lines starting with "WARNING: ThreadSanitizer" in the whole job log: 0

@@ -8,6 +8,9 @@ Debug from the pinned source, `QT_QPA_PLATFORM=offscreen`,
 `QT_QUICK_BACKEND=software`, `RNQNX_ENABLE_WINDOW_CHROME=ON`. No QNX VM, Pi 400
 or release-board run exists; the Pi and the T9 drive were not available for a
 device run. The `window-chrome` and `device-parity` gates stay `pending`.
+A later QNX VM run (TCG, software render, not the Pi) is in
+[s2-vm-2026-11-21](../s2-vm-2026-11-21/README.md); the items below were not run
+in this host receipt, and the VM receipt says which of them it then ran.
 
 ## Commands
 

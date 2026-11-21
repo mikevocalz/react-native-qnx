@@ -189,7 +189,11 @@ sets these limits:
   the Qt GUI thread today. A JS call that blocks therefore blocks the title bar
   too. The gate's "chrome still operable while the JS thread is deliberately
   blocked" needs the host to move JavaScript to its own thread first; this
-  ADR does not claim it.
+  ADR does not claim it. ADR-0021 adds that thread behind an opt-in flag. On the
+  QNX VM (TCG, software render, synthetic pointer events) the minimize and close
+  controls acted during a 5 s block with the flag on and not with it off
+  ([receipt](../evidence/s2-vm-2026-11-21/README.md)). No Pi 400 or release-board
+  run exists, so the gate line stays unmet.
 - Touch coordinates: with the input-lifecycle dispatcher on, `pagePoint` and
   `screenPoint` are window coordinates (`QtTouchDispatcher.cpp`), so in the
   `default` style they include the 44 px bar. `offsetPoint` is item-local and

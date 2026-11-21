@@ -93,6 +93,9 @@ All eleven gates are `pending` (checked 2026-11-19).
   are integrated and ran on the Pi 400 on 2026-11-19 for single-pointer pan, tap,
   double-tap, a swipeable list and a `withSpring` card; pinch, rotation, gestures
   that keep running while JavaScript is blocked, and 1920x1080 were not run
+  (a native pan and the title bar controls did run during a blocked JS thread with
+  the opt-in `jsThread` flag on the QNX VM, not on the Pi 400 and not through
+  Gesture Handler: [receipt](../evidence/s2-vm-2026-11-21/README.md))
   ([run 1](../evidence/pr149-pi400-run1-2026-11-19/README.md),
   [run 2](../evidence/pr149-pi400-run2-2026-11-19/README.md)).
 - The 2026-11-06 and 2026-11-07 Pi 400 receipts used a Qt 6.12.0 evaluation build that expired on
