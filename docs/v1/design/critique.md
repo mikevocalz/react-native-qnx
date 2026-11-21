@@ -39,3 +39,13 @@ close/layout lifecycle, and the runtime thread split supplies blocked-JS
 operability. The accessibility findings are open implementation work. Verify
 both layouts, all five surfaces, reduced motion and keyboard recovery on the
 named release image before accepting the design implementation.
+
+## Disposition after S8 (2026-11-21, host only)
+
+| Finding                                                              | Disposition                                                                                                                               |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| macOS chrome: dark focus too faint, background title text unreadable | Fixed. New focus and inactive-title tokens, measured in [contrast.json](contrast.json).                                                   |
+| Windows chrome: constant layout property blocks the runtime switch   | Fixed on host. `WindowChrome::setControlsLayout` switches layout, keeps the control items and focus, and Tab follows the on-screen order. |
+| Windows chrome: close guards absent                                  | Open. Needs the windows API (contract still to be reviewed).                                                                              |
+| Blocked JS also blocks chrome                                        | Open. Needs the JS thread split (S2).                                                                                                     |
+| Launcher tile: maximum-name fit unproven on target                   | Declined for this PR. The QNX launcher has no label box in the repo, so any length would be invented. Needs the Pi 400 or release board.  |

@@ -61,3 +61,17 @@ All five need 200% text/scale testing, RTL, long identifiers and high contrast
 settings where the target supports them. The test must record unsupported
 assistive facilities explicitly. No automatic scanner was used: a web scanner
 cannot audit this Qt native semantic tree or QNX launcher.
+
+## Status after S8 (2026-11-21, host only)
+
+Host results from the Qt offscreen test lane (`native/window-chrome`); no device
+session, screen reader or QNX launcher was run.
+
+| ID            | Status                                                                                                                                                                                                                                                           |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| G-A11Y-01     | Fixed on host. Dark focus ring is `#79e8dc` (11.283:1 on the active bar). The Windows close hover (`#e81123`) uses a white ring (4.630:1) and the pressed close uses dark ink (5.882:1), because the blue ring was 1.191:1 there. Rendered check on QNX is open. |
+| G-A11Y-02     | Fixed on host. Dark inactive title `#8391a1` is 4.885:1 and light inactive title `#595963` is 6.405:1. A test caught the first dark proposal at 4.465:1 before this value was chosen.                                                                            |
+| G-A11Y-03     | Unchanged: assistive output on QNX is unverified.                                                                                                                                                                                                                |
+| Layout switch | Keyboard focus stays on the focused control across a runtime layout switch, and Tab follows the on-screen order (`runtimeLayoutSwitchKeepsFocusAndTabOrder`). Same open item as the Windows chrome row above, now for the runtime switch.                        |
+
+Measured pairs are in the `s8Pairs` array of [contrast.json](contrast.json).
