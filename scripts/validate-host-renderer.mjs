@@ -70,6 +70,7 @@ if (/^RNQNX_ENABLE_WINDOW_API:BOOL=ON$/m.test(cache)) {
   expectedTests.push(
     'rnqnx_window_api',
     'rnqnx_nitro_qt_test',
+    'rnqnx_nitro_release_receivers',
     'rnqnx_nitro_dispatcher_patch_contract'
   );
 } else {

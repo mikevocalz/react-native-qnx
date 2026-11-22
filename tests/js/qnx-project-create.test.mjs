@@ -51,6 +51,7 @@ try {
   assert.equal(qnxManifest.private, true);
   assert.equal((await lstat(path.join(qnx, 'build', 'qnx'))).isDirectory(), true);
   assert.equal(qnxManifest.dependencies.expo, '58.0.26');
+  assert.equal(qnxManifest.dependencies['nitro-core'], '1.0.0-alpha.nightly.136.gdb81de61bd32');
   assert.ok(qnxManifest.dependencies['@rn-qnx/react-native-qnx'].startsWith('file:vendor/'));
   assert.equal(qnxManifest.dependencies['@rn-qnx/react-native-marathon'], undefined);
   assert.equal(
@@ -126,6 +127,7 @@ try {
     'braces@3.0.3.patch',
     'react-native@0.88.1.patch',
     'expo-modules-autolinking@58.1.0.patch',
+    'nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32.patch',
   ]) {
     assert.ok(workspaceYaml.includes(`patches/${patch}`));
     assert.deepEqual(
@@ -182,6 +184,7 @@ try {
   );
   assert.equal(dual.status, 0, dual.stderr);
   const dualManifest = JSON.parse(await readFile(path.join(marathon, 'package.json'), 'utf8'));
+  assert.equal(dualManifest.dependencies['nitro-core'], '1.0.0-alpha.nightly.136.gdb81de61bd32');
   assert.equal((await lstat(path.join(marathon, 'build', 'qnx'))).isDirectory(), true);
   assert.equal((await lstat(path.join(marathon, 'build', 'marathon'))).isDirectory(), true);
   assert.ok(dualManifest.dependencies['@rn-qnx/react-native-marathon']);

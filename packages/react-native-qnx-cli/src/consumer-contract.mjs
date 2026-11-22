@@ -9,6 +9,9 @@ export const CONSUMER_CONTRACT = Object.freeze({
     react: '19.3.0',
     'react-native': '0.88.1',
     expo: '58.0.26',
+    // Match the runner's existing Nitro ABI and carry its reviewed release
+    // receiver-safety patch into standalone native consumers.
+    'nitro-core': '1.0.0-alpha.nightly.136.gdb81de61bd32',
     metro: '0.87.1',
     'babel-preset-expo': '58.0.26',
     '@react-native/metro-config': '0.88.1',

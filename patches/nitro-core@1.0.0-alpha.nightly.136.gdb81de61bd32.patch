@@ -1,0 +1,54 @@
+diff --git a/native/cpp/include/NitroModules/HybridFunction.hpp b/native/cpp/include/NitroModules/HybridFunction.hpp
+--- a/native/cpp/include/NitroModules/HybridFunction.hpp
++++ b/native/cpp/include/NitroModules/HybridFunction.hpp
+@@ -246,7 +246,6 @@
+                                                                     [[maybe_unused]] FunctionKind funcKind,
+                                                                     [[maybe_unused]] const std::string& funcName) {
+     // 1. Convert jsi::Value to jsi::Object
+-#ifdef NITRO_DEBUG
+     if (!value.isObject()) [[unlikely]] {
+       throw jsi::JSError(runtime, "Cannot " + getHybridFuncDebugInfo<THybrid>(funcKind, funcName) +
+                                       " - `this` is not bound! Suggestions:\n"
+@@ -257,11 +256,9 @@
+                                       "- Did you accidentally call `" +
+                                       funcName + "` on the prototype directly?");
+     }
+-#endif
+     jsi::Object object = value.getObject(runtime);
+ 
+     // 2. Check if it even has any kind of `NativeState`
+-#ifdef NITRO_DEBUG
+     if (!object.hasNativeState(runtime)) [[unlikely]] {
+       throw jsi::JSError(runtime, "Cannot " + getHybridFuncDebugInfo<THybrid>(funcKind, funcName) +
+                                       " - `this` does not have a NativeState! Suggestions:\n"
+@@ -272,17 +269,14 @@
+                                       "- Did you accidentally call `" +
+                                       funcName + "` on the prototype directly?");
+     }
+-#endif
+ 
+     // 3. Get `NativeState` from the jsi::Object and check if it is non-null
+     std::shared_ptr<jsi::NativeState> nativeState = object.getNativeState(runtime);
+-#ifdef NITRO_DEBUG
+     if (nativeState == nullptr) [[unlikely]] {
+       throw jsi::JSError(runtime, "Cannot " + getHybridFuncDebugInfo<THybrid>(funcKind, funcName) +
+                                       " - `this`'s `NativeState` is `null`, "
+                                       "did you accidentally call `dispose()` on this object?");
+     }
+-#endif
+ 
+     // 4. Try casting it to our desired target type.
+     if constexpr (std::is_final_v<THybrid>) {
+@@ -298,12 +292,10 @@
+     } else {
+       // Abstract specs and other extensible receivers still need to accept derived objects.
+       std::shared_ptr<THybrid> hybridInstance = std::dynamic_pointer_cast<THybrid>(nativeState);
+-#ifdef NITRO_DEBUG
+       if (hybridInstance == nullptr) [[unlikely]] {
+         throw jsi::JSError(runtime, "Cannot " + getHybridFuncDebugInfo<THybrid>(funcKind, funcName) +
+                                         " - `this` has a NativeState, but it's the wrong type!");
+       }
+-#endif
+       return hybridInstance;
+     }
+   }

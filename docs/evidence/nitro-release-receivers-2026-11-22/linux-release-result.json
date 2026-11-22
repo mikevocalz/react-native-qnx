@@ -1,0 +1,14 @@
+{
+  "original_control": {
+    "returncode": -11,
+    "stdout": "",
+    "stderr": ""
+  },
+  "patched": {
+    "returncode": 0,
+    "stdout": "NITRO_RELEASE_RECEIVERS_OK NDEBUG valid detached forged wrong-type disposed getter method independent\n",
+    "stderr": ""
+  },
+  "scope": "Actual Linux Hermes; every Nitro core/test translation unit rebuilt with -O2 -DNDEBUG; upstream raw original receiver header used by negative control and reviewed patched header by positive control. No Qt or mock JSI.",
+  "testSha256": "c7e6c70e2dca336d389132f03ad388a63d9d60eff5a74cdcc41a383f74bfa3df"
+}

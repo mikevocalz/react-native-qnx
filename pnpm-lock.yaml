@@ -189,6 +189,7 @@ overrides:
 patchedDependencies:
   braces@3.0.3: 6d25bdb49d4029cb4e4527d85fb4925dcf5707f7e93fc8e616518c66dad996c9
   expo-modules-autolinking@58.1.0: 972515d078e6bd5810abebfd69e7ef42c2920ab8bddc5ce1c7e09c3ca5ab5da8
+  nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32: 36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150
   react-native@0.88.1: 93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5
 
 importers:
@@ -233,7 +234,7 @@ importers:
         version: 0.87.1(supports-color@8.1.1)
       nitro-core:
         specifier: 1.0.0-alpha.nightly.136.gdb81de61bd32
-        version: 1.0.0-alpha.nightly.136.gdb81de61bd32
+        version: 1.0.0-alpha.nightly.136.gdb81de61bd32(patch_hash=36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150)
       nitrogen:
         specifier: 1.0.0-alpha.nightly.136.gdb81de61bd32
         version: 1.0.0-alpha.nightly.136.gdb81de61bd32
@@ -461,7 +462,7 @@ importers:
     dependencies:
       nitro-core:
         specifier: 1.0.0-alpha.nightly.136.gdb81de61bd32
-        version: 1.0.0-alpha.nightly.136.gdb81de61bd32
+        version: 1.0.0-alpha.nightly.136.gdb81de61bd32(patch_hash=36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150)
       react-native:
         specifier: 0.88.1
         version: 0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
@@ -6051,12 +6052,12 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32: {}
+  nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32(patch_hash=36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150): {}
 
   nitrogen@1.0.0-alpha.nightly.136.gdb81de61bd32:
     dependencies:
       chalk: 5.6.2
-      nitro-core: 1.0.0-alpha.nightly.136.gdb81de61bd32
+      nitro-core: 1.0.0-alpha.nightly.136.gdb81de61bd32(patch_hash=36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150)
       ts-morph: 28.0.0
       yargs: 18.1.0
       zod: 4.6.6
@@ -6286,7 +6287,7 @@ snapshots:
 
   react-native-nitro-modules@1.0.0-alpha.nightly.136.gdb81de61bd32(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0):
     dependencies:
-      nitro-core: 1.0.0-alpha.nightly.136.gdb81de61bd32
+      nitro-core: 1.0.0-alpha.nightly.136.gdb81de61bd32(patch_hash=36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150)
       react: 19.3.0
       react-native: 0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
 

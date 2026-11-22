@@ -1,0 +1,58 @@
+{
+  "scope": "Actual pinned Nitro release receiver validation; no physical board, publication or release gate promotion",
+  "package": "nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32",
+  "originalHeaderSha256": "949b9feed17e7576e73151a0efb6de59ba58dad36e16336d7fb6a7eed79dc9c4",
+  "patchedHeaderSha256": "9d8f3e405784bfc11a32c5226810491c02a54fe0f6d842e829be3bbca34119d8",
+  "patchSha256": "36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150",
+  "strictClang": {
+    "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
+    "scope": "Object compilation only",
+    "objects": 21,
+    "diagnostics": 0,
+    "flags": [
+      "-std=c++20",
+      "-O2",
+      "-DNDEBUG",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Werror",
+      "-Wno-nullability-extension"
+    ],
+    "detailReceiptSha256": "8a28b98fbb2e8ab89b83d1bbbb055ea3f5b7b2d28a43d919134aa27719350452"
+  },
+  "qnxVm": {
+    "identity": "QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le",
+    "render": "QEMU TCG, Screen software/dummy WFD",
+    "baseNativeSourceCommit": "d791129f00c469566021cc131d3b6c88ceef1b62",
+    "proofSourceSha256": "ace179060e2d7d39c9bd61f29ca6225e886d71e2406f36d65145d03a893e385c",
+    "unchangedHbcSha256": "3e78c260f526e86bf4ebfb815de22494107b2f43eb3adfb20ea255fa38d5e1d3",
+    "originalAppSha256": "3694b531f4f6d6e3a26ef816ed7da055f8196f61ffd00334f9c5c1a95b3cf5cd",
+    "originalExit": 139,
+    "originalFailure": "SIGSEGV at first.dispose(); first.snapshot; abstract receiver is null in HybridFunction wrapper",
+    "patchedAppSha256": "f18ccc9d667d21fbf4db0d2874dc5597efc49a5f46423519b3a38710a7592f80",
+    "patchedDefaultExit": 0,
+    "patchedHiddenExit": 0,
+    "patchedNitroQtExit": 0,
+    "fixedBuild": "38 affected commands incrementally rebuilt; all Nitro core and affected consumers; unaffected Qt/RN objects reused",
+    "flags": "Release -O2 -DNDEBUG, JOBS=6, guarded 4GiB floor",
+    "qtElfCount": 26,
+    "qtElfChanged": 0,
+    "guestCoreHashesVerified": 188,
+    "guestFixedHashesVerified": 14,
+    "newPrefixLoadedQtQpaQmlPathsVerified": 12,
+    "fonts": "Explicitly reused /data/vm/fonts; no new font qualification",
+    "hermes": "Genuine imported lean VM/JSI MinSizeRel, not rebuilt or claimed O2 release-qualified",
+    "systemDependencies": "Missing zstd/eventfd copied separately from licensed SDP into task platform-lib; no old Qt search path",
+    "noticeScope": "Original provisional Qt notice collateral used privately; corrected packaging unit has identical 26 ELFs, separate packaging receipt",
+    "defaultPngSha256": "ce6aad85272deaaebc774cad0c9b38838cd375f5d529b9a2e3ee68be8de3d1ac",
+    "hiddenPngSha256": "1036bd66f88e7050fc53ae63e1f4c5fd3bd459267f86443922141c24ed563c25",
+    "size": [
+      1280,
+      800
+    ]
+  },
+  "externalEvidence": "/Volumes/QNX/clones/rnqnx-software-20261122/qt/rootfs/output/window-api-vm-d791129f",
+  "published": false,
+  "gatePromoted": false
+}

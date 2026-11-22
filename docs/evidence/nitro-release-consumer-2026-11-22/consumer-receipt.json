@@ -1,0 +1,60 @@
+{
+  "scope": "Host-only fresh frozen standalone consumer; no native module capability or QNX runtime proof",
+  "createdAt": "2026-11-22T21:50:04.936Z",
+  "project": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned",
+  "packageManager": "pnpm@12.21.0",
+  "files": {
+    "package.json": "d97606f8ea443496f008de8abcd20b19fea6b5b3dc86f078035620312ba1e3df",
+    "pnpm-lock.yaml": "7694edba6a5e385d8a936084dbb81a57247ba7a57b3e7e880b6da43326f40f92",
+    "pnpm-workspace.yaml": "9db527a0765f19f39ce021de0666bc8dca76666474506cad060e028b9f58d385",
+    "platform-packages.json": "7595ef63ace771aa92864497f68a9136bcc106aa081c03f9fc6108d8fc5a56e7",
+    "build/qnx/app.bundle.js": "4ba8994cda3650a81dc2b13c2be460723348cc9a7a8a9715b81cad3d9a98199b",
+    "node_modules/nitro-core/native/cpp/include/NitroModules/HybridFunction.hpp": "9d8f3e405784bfc11a32c5226810491c02a54fe0f6d842e829be3bbca34119d8",
+    "vendor/rn-qnx-react-native-qnx-0.1.0.tgz": "2cf6b2fa4aa698d59a4a37036533259f901d387b25ff5bae03ee72fd431efb8f",
+    "vendor/rn-qnx-metro-config-qnx-0.1.0.tgz": "34845fb3e32729b3135d43ff4b432955075881d12c1ad8e403376c46abb6bd0c",
+    "vendor/rn-qnx-expo-router-qnx-0.1.0.tgz": "38940cb2ed1e480126482c3be13df69e679287a703176e068349609b16e81400"
+  },
+  "sourceFiles": {
+    "packages/react-native-qnx-cli/src/consumer-contract.mjs": "25970f3c92492cd0d842563f6eb4446df4ddce9479410cfb98c1f5ededd26a3f",
+    "packages/react-native-qnx-cli/src/create-project.mjs": "7a2dc84321a0960dbe2aa5e66196f224a8ce3b9b4297b9532ebe4e9f7338c049",
+    "patches/nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32.patch": "36a3049c6cac9b38d2a74d37039c2052b3c7adf91c9357c289a152e1d3acc150",
+    "pnpm-workspace.yaml": "52f24be49d6c19c51637f010400e184046dd2de52964917a0665b6125acfe66c",
+    "pnpm-lock.yaml": "e5a9a9b32fe56c179b10867dc905847b2398e2372089b911378daf3bb1007efa",
+    "tests/js/qnx-project-create.test.mjs": "2a425c51200f40886cbb66d06907ce0ae950b9d83115d790545ef84512319059"
+  },
+  "native": {
+    "nitroModules": [],
+    "expoModules": [],
+    "fabricComponents": [
+      {
+        "package": "react-native-gesture-handler",
+        "version": "3.4.0"
+      },
+      {
+        "package": "react-native-reanimated",
+        "version": "4.7.1"
+      },
+      {
+        "package": "react-native-safe-area-context",
+        "version": "5.11.1"
+      },
+      {
+        "package": "react-native-screens",
+        "version": "4.30.1"
+      }
+    ]
+  },
+  "profile": {
+    "reactNative": "0.88.1",
+    "hermesBytecodeVersion": null,
+    "nitroAbi": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+    "bundleFile": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/app.bundle.js"
+  },
+  "compatibility": {
+    "ok": true,
+    "compared": 2,
+    "mismatches": [],
+    "notChecked": ["Hermes bytecode version: the bundle is JavaScript source, not Hermes bytecode."]
+  },
+  "experimentalNativeFlagsChanged": false
+}

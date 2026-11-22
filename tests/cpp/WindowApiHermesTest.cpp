@@ -112,6 +112,9 @@ void exercise(bool jsThread, bool hidden) {
   evaluate(host, R"JS(
     observer.remove(); observer.remove();
     guard.remove(); first.dispose();
+    let disposedGetterRejected = false;
+    try { void first.snapshot; } catch (error) { disposedGetterRejected = error instanceof Error; }
+    check(disposedGetterRejected, 'disposed window getter did not reject');
     result = 'pending';
     second.close().then(closed => { check(!closed, 'first disposal removed another handle guard'); result = 'independent'; });
   )JS");

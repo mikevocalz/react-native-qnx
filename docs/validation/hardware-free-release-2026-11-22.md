@@ -14,7 +14,7 @@ board and licensed hosted runners are unavailable. No gate is waived here.
 | Loader closure     | Install-prefix directory boundaries and normalized paths replace a raw string-prefix check. Four groups exercise 27 real ELF cases, including traversal and prefix-collision rejection                                                                                                   |
 | Expo example       | Public Router tabs and a per-root Zustand store replace the empty example. Actual production Metro bundling passes                                                                                                                                                                       |
 | Expo CLI           | An exact SDK autolinker host-identity patch permits QNX Metro setup while unsupported native linking remains rejected. Actual Expo-owned development bundling, watching, source/bundle restoration, reload and cancellation cleanup pass                                                 |
-| Consumer creation  | Generated apps retain all three reviewed source/security patches, including the Expo host fix. Unknown or duplicate patch inventories are refused                                                                                                                                        |
+| Consumer creation  | Generated apps retain all four reviewed source/security patches, including the Expo host and pinned Nitro release receiver fixes. Unknown or duplicate patch inventories are refused                                                                                                     |
 | Documentation      | Isolated committed-source snapshots build at frozen candidate paths, record every file hash, reject overwritten outputs, and regenerate source links for the selected revision. Hosted CI now builds and retains a snapshot                                                              |
 | Native window API  | The experimental implementation, local test scope and remaining linked/target checks are recorded in `window-api-contract-2026-11-22.md` and the window software evidence receipt. The feature remains default OFF                                                                       |
 
@@ -88,3 +88,24 @@ orientation was changed. No SDK or system libraries are added to release units.
 The draft source offer remains draft. No merge or release publication is made
 by these host checks. Revert individual software commits to roll back; preserve
 historical receipts and any subsequently published immutable documentation.
+
+## Actual runtime and release receiver follow-up
+
+The pristine software-plugin Qt build at recipe `61d0f257` completed all seven
+stages. Actual SPDX audits, check-only RUNPATH verification and fresh closure
+checks pass. The follow-up packaging recipe at `1b3b8ce5` preserves all thirteen
+compiler-read source files flagged by the audit, retaining embedded copyright
+notices alongside unchanged upstream metadata. All 26 ELF hashes remain
+identical; the corrected package remains provisional and unpublished.
+
+The QNX VM also exposed a release-only Nitro alpha136 receiver crash after
+`dispose()`. A narrowly reviewed patch keeps existing receiver checks active in
+release builds without changing the version or ABI. The original unchanged VM
+probe crashed before the patch and passes in Default and Hidden modes after
+it. An isolated real-Hermes release fixture reproduces the original crash and
+verifies invalid-receiver rejection. See the
+[Nitro receiver receipt](../evidence/nitro-release-receivers-2026-11-22/README.md)
+and [standalone consumer receipt](../evidence/nitro-release-consumer-2026-11-22/README.md).
+These are scoped software/VM checks; final-head CI and named-board acceptance
+remain separate. The compiled Qt recipe and corrected packaging recipe retain
+their own immutable source identities.

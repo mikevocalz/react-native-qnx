@@ -338,6 +338,7 @@ export async function createProjectMain(argv) {
         react: versions.react,
         'react-native': versions['react-native'],
         expo: versions.expo,
+        'nitro-core': versions['nitro-core'],
         zustand: '5.1.0',
         ...(marathon
           ? {}
@@ -409,6 +410,7 @@ export async function createProjectMain(argv) {
       'patches/braces@3.0.3.patch',
       'patches/react-native@0.88.1.patch',
       'patches/expo-modules-autolinking@58.1.0.patch',
+      'patches/nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32.patch',
     ]);
     if (
       patches.length !== reviewedPatches.size ||
