@@ -1,0 +1,19 @@
+{
+  "liveSourceCommit": "18e708d8b4e87f97eebcfd5b68e082b978227054",
+  "liveRun": 44983128305,
+  "liveArtifact": 14738706986,
+  "liveZipSha256": "b69dc370e2d53f0ca3dfee5bcaf45ce9413c3bde5e6e7910b4cec1fb5b0ac186",
+  "candidateSourceCommit": "d92226bf757589ba7e1a2e70f96e7816b4473e8e",
+  "candidateRun": 45066530074,
+  "candidateArtifact": 14771393281,
+  "candidateZipSha256": "fb82f5f8e8b3a6f0f4a017c6e3c750e34d5be3ad838371ca2a69fd1d2465aa91",
+  "snapshotReceiptSha256": "a5c2dd46e3c6ff99fe67300935306a177bc79870b29b03004d54a682b1bfa71e",
+  "snapshotId": "candidate-d92226bf7575",
+  "preservedLiveFiles": 1503,
+  "verifiedCandidateFilesIncludingReceipt": 1505,
+  "candidateHiddenFilePresent": true,
+  "candidateFileBytesRepaired": false,
+  "assemblyReceiptSha256": "2bd4a39bbd4e3c17deea9851c6072f25ef65b9f2081da669117dd8fbc1d9b625",
+  "deployed": false,
+  "durableSnapshotRetentionConfigured": false
+}

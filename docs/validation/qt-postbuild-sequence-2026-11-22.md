@@ -112,6 +112,8 @@ host using Python 3.11 or later:
 
 ```sh
 export QT_RECEIPT="$QT_EVIDENCE_HOME/rootfs/output/qualification-$QT_RECIPE_ID"
+test ! -e "$QT_RECEIPT/outer-single-pass.log"
+cp "$QT_EVIDENCE_HOME/final-jobs6-single-pass.log" "$QT_RECEIPT/outer-single-pass.log"
 mkdir "$QT_RECEIPT/corresponding-source"
 QT_PUBLIC_ROOT="$QT_RECEIPT/source-input" QNX_SOFTWARE_GRAB=1 WITH_ARCHIVE=1 \
   bash "$QT_SOURCE_CHECKOUT/scripts/qt-public/make-source-bundle.sh" "$QT_RECEIPT/corresponding-source"
@@ -199,3 +201,16 @@ recorded hash proved it is empty; the repaired test preserved all 1503 live file
 and added 1505 candidate files including its receipt. This repaired copy is not
 a qualified final publication artifact. The workflow's hidden-file fix must be
 verified by an untouched complete upload before final actual assembly.
+
+The hidden-file correction was then verified in successful documentation run
+`45066530074`, source `d92226bf757589ba7e1a2e70f96e7816b4473e8e`.
+Its untouched artifact includes the receipt-matching `.nojekyll`. Both the live
+and candidate ZIPs matched GitHub's recorded artifact digests before extraction.
+The real assembly preserved **1503 live files** and verified/copied **1505
+candidate files including its receipt**, without repairing any candidate bytes.
+The [compact result](../evidence/pages-preservation-2026-11-22/result.json)
+records the source/run/artifact identities and receipt hashes. The combined
+export and complete inventory receipt remain externally at
+`docs/pages-review-d922/combined-export` and its `.assembly.json` sibling.
+No site was deployed. This validates the transport correction and local
+assembly at `d92226bf`; a later final code head needs its own frozen artifact.
