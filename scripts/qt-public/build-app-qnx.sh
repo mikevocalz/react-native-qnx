@@ -23,6 +23,9 @@ source "$(dirname "$0")/layout.sh"
 source "$QNX_SDP/qnxsdp-env.sh" >/dev/null
 export LANG=C.UTF-8
 : "${APP_SRC:?}" "${HERMES_QNX_DIR:?}" "${HERMES_QNX_SRC:?}" "${RN_DEPS_DIR:?}"
+APP_SRC=$(cd "$APP_SRC" && pwd -P)
+app_toolchain="$APP_SRC/vnext/cmake/qnx-aarch64le.toolchain.cmake"
+test -f "$app_toolchain" || { echo "missing application toolchain: $app_toolchain" >&2; exit 2; }
 build=${APP_BUILD:-$QT_PUBLIC_BUILD/app-qnx}
 runpath=${APP_RUNPATH:-/data/qt612-public/lib}
 test ! -e "$build/CMakeCache.txt" || { echo "refusing to reuse $build" >&2; exit 2; }
@@ -41,6 +44,7 @@ for d in boost boost_config double_conversion fast_float fmt folly glog; do
 done
 cmake -S "$APP_SRC" -B "$build" -G Ninja \
   -DCMAKE_TOOLCHAIN_FILE="$QT_PUBLIC_SCRIPTS/qnx-app-qt-public.toolchain.cmake" \
+  -DRNQNX_APP_TOOLCHAIN_PATH:FILEPATH="$app_toolchain" \
   -DCMAKE_BUILD_TYPE=Release \
   "-DCMAKE_CXX_FLAGS_RELEASE=$cxx_release" "-DCMAKE_C_FLAGS_RELEASE=-O2 -DNDEBUG" \
   -DBUILD_TESTING=OFF -DRNQNX_ENABLE_HOST_SANITIZERS=OFF -DRNQNX_WARNINGS_AS_ERRORS=OFF \
