@@ -1,0 +1,73 @@
+{
+  "codeCommit": "acb5c849b927a252c7ce7471cf2cf98e13f3444f",
+  "sourceInventorySha256": "42fc1e8fad005f72ce21d2590588ee76f0ae90572b14e5cffdc0c1c9de38572f",
+  "scope": "Public-safe text metadata and short logs only; underlying runtime/source archives remain unpublished. The overview documents exact compile versus corrected packaging provenance and pending release requirements.",
+  "review": {
+    "copiedFilesInspected": 10,
+    "payloadsExcluded": [
+      "SDK files",
+      "runtime binaries",
+      "source archives",
+      "core dumps",
+      "identity files",
+      "license configuration"
+    ],
+    "releaseGatePromoted": false,
+    "runtimePublished": false,
+    "siteDeployed": false
+  },
+  "files": {
+    "docs/evidence/pages-preservation-acb5-2026-11-22/result.json": {
+      "collectedSha256": "dc27d59d3b05c55dab149ef0f4d9fa6a82f59e5c165a202c02316bc7ff7cf28e",
+      "repositorySha256": "dc27d59d3b05c55dab149ef0f4d9fa6a82f59e5c165a202c02316bc7ff7cf28e",
+      "jsonValuesPreserved": true
+    },
+    "docs/evidence/qt-software-qualification-2026-11-22/README.md": {
+      "collectedSha256": "6594cf3fdf9ee818c75c9e7e319dedb59ba32fd83806df55ea1c256571604fd1",
+      "repositorySha256": "97a94ead559abc49b3085e203f0a95b1917c4ca4a5dd5d2d0019202aa5163b6c",
+      "jsonValuesPreserved": null,
+      "repositoryTransformation": "Expanded overview and linked actual receipts; formatted with repository Prettier. Collected original remains unchanged."
+    },
+    "docs/evidence/qt-software-qualification-2026-11-22/corrected-closure.txt": {
+      "collectedSha256": "10f96704795cbc484c8b3bbce3d0f33120644cc2b27f1cea8cb112342adba091",
+      "repositorySha256": "10f96704795cbc484c8b3bbce3d0f33120644cc2b27f1cea8cb112342adba091",
+      "jsonValuesPreserved": null
+    },
+    "docs/evidence/qt-software-qualification-2026-11-22/corrected-normalize-check.txt": {
+      "collectedSha256": "cf665664d9c16b2304983b993dc59d83f7f00b9fe2b3f96a84d9ceadc171b43a",
+      "repositorySha256": "cf665664d9c16b2304983b993dc59d83f7f00b9fe2b3f96a84d9ceadc171b43a",
+      "jsonValuesPreserved": null
+    },
+    "docs/evidence/qt-software-qualification-2026-11-22/corrected-staging-status.txt": {
+      "collectedSha256": "f09d76900059ccd713905ad39b5ab88b2b64dc8a23f9a1e1883769a21623d8f6",
+      "repositorySha256": "f09d76900059ccd713905ad39b5ab88b2b64dc8a23f9a1e1883769a21623d8f6",
+      "jsonValuesPreserved": null
+    },
+    "docs/evidence/qt-software-qualification-2026-11-22/original-single-pass.log": {
+      "collectedSha256": "1de4917a30e3c574e5bf27065093cfc886568f659e5f32d08333acdcbd164bb6",
+      "repositorySha256": "1de4917a30e3c574e5bf27065093cfc886568f659e5f32d08333acdcbd164bb6",
+      "jsonValuesPreserved": null
+    },
+    "docs/evidence/qt-software-qualification-2026-11-22/original-stages.tsv": {
+      "collectedSha256": "342352901696178a5a4a4d2b44bc6e3aef46e034ad7307dcf6edab8c11162015",
+      "repositorySha256": "342352901696178a5a4a4d2b44bc6e3aef46e034ad7307dcf6edab8c11162015",
+      "jsonValuesPreserved": null
+    },
+    "docs/evidence/qt-software-qualification-2026-11-22/result.json": {
+      "collectedSha256": "a72fe9a79a759867bc6a31670cc8cb8d5e8e4524b5e936f321280e88731d6dc2",
+      "repositorySha256": "a72fe9a79a759867bc6a31670cc8cb8d5e8e4524b5e936f321280e88731d6dc2",
+      "jsonValuesPreserved": true
+    },
+    "docs/evidence/source-notice-coverage-2026-11-22/README.md": {
+      "collectedSha256": "ac2fe9b73934201e5d54e8397defb10dfc16c3b75997ac7327303fe943ffad20",
+      "repositorySha256": "ac2fe9b73934201e5d54e8397defb10dfc16c3b75997ac7327303fe943ffad20",
+      "jsonValuesPreserved": null
+    },
+    "docs/evidence/source-notice-coverage-2026-11-22/result.json": {
+      "collectedSha256": "f33b004be5fabc4a1be750072f154483746d562ec61d5ceaa6cf7aec286732d7",
+      "repositorySha256": "ce0c91ffb6b2b9c10b5a7bf52f10df18f828fd729d06ea1857090ba6fc08e526",
+      "jsonValuesPreserved": true,
+      "repositoryTransformation": "JSON formatting only; parsed values unchanged."
+    }
+  }
+}

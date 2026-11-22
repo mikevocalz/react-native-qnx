@@ -1,0 +1,177 @@
+{
+  "compileRecipeCommit": "61d0f25786039aef16a31cb7ca94bc6c03c7b6d1",
+  "packagingRecipeCommit": "1b3b8ce56e63b80cf8a8c7021b5969c1d6e51189",
+  "qtRecompiled": false,
+  "originalQualificationFilesUnchanged": {
+    "result.json": "56ed5e228d095bb1bc15888d3adb6c59f6c6cdffb44490a7df2e6e6cc7310263",
+    "audit-base.json": "51d2777356217f6337bacc1d816bcf001054fa24d71d9f13bbea9e64268e59c1",
+    "package-manifest.json": "5d947697a85f21a900c5a14d425b2837035574cc405a53876964a8d7c47c9286",
+    "runtime.tar.gz": "e1fd448a615a7be7f5676e92f98134cf361f7c0b9c4d0beef0531aa92e061440"
+  },
+  "sameElfFiles": 26,
+  "verbatimActualCompiledSourceNotices": 13,
+  "unchangedPreviousLicenseTexts": 146,
+  "counts": {
+    "entries": 224,
+    "hashedFiles": 202,
+    "licenseFiles": 160,
+    "symlinks": 22
+  },
+  "upstreamMetadataAndClassificationsUnchanged": true,
+  "normalizeCheck": "0 file(s) would change",
+  "closurePass": true,
+  "closureChecks": {
+    "manifest": {
+      "failures": [],
+      "pass": true
+    },
+    "needed": {
+      "failures": [],
+      "pass": true
+    },
+    "no-sdp": {
+      "failures": [],
+      "pass": true
+    },
+    "notices": {
+      "failures": [],
+      "pass": true
+    },
+    "qt-closed": {
+      "failures": [],
+      "pass": true
+    },
+    "rpath": {
+      "failures": [],
+      "pass": true
+    },
+    "sums": {
+      "failures": [],
+      "pass": true
+    }
+  },
+  "recipeFilesVerified": 35,
+  "onlyChangedRecipeInput": {
+    "scripts/qt-public/stage-runtime.py": {
+      "compileSha256": "83e3b0e911b7dd6957f5898617bba7ee8416b5acd7ad5463e08cd96fffef366a",
+      "packagingSha256": "35ec13660d6e14de7372edeae0192f1908540df516051e8a9a09b903810c4c96"
+    }
+  },
+  "sourceOfferStatus": "unchanged draft",
+  "sourceOfferSha256": "0c3f04b2c96c83289a997a92284428d706d01b5669376144e82a9197e6b04953",
+  "sourceBundle": {
+    "bytes": 443549992,
+    "sha256": "8d1257da70d8583e6a6a2dae87ac0f5c3ac9af6066eaaddff594099fcc85e1dc",
+    "sourceManifestSha256": "9b7eaf3ba4d177847ce442fa584c791ceb6164fc891794a7b53d6b1db04dadaf"
+  },
+  "files": {
+    "runtime.tar.gz": {
+      "bytes": 22166539,
+      "sha256": "a9d96607e25f19bdfd3df86a8d5f488d0a8d56727c5a9d47d5f249b6ce94cd5b"
+    },
+    "package-manifest.json": {
+      "bytes": 29471,
+      "sha256": "fe4bda835c1ae60ffa5910bc6e798ae5f1ef08d0d0c1fac4a86da25dd02e953c"
+    },
+    "comparison.json": {
+      "bytes": 44379,
+      "sha256": "0a300c3881e7feeb3814f02290ecce4f25c381197f51a84fad03275618421cbb"
+    },
+    "source-verification.json": {
+      "bytes": 689,
+      "sha256": "9af8f71aa2d2c25443a1f18845506d8d36422bda6c898862cd68df73af6eea19"
+    },
+    "packaging-recipe-verification.txt": {
+      "bytes": 1592,
+      "sha256": "9e37836b51be9e046e98ab9abda9e77206afaff153a42ba63414cf06cf979e72"
+    },
+    "closure.json": {
+      "bytes": 39773,
+      "sha256": "e6172ecc66b3df275608503ee6dec64dded00b23e528b503e8451bcaa9b41685"
+    },
+    "stage-runtime.log": {
+      "bytes": 316,
+      "sha256": "09ea7ba124ba3db0c8c68b501f0c16e9425a5e3973c90cdbe71ac9c441eb6c5a"
+    }
+  },
+  "releaseEligible": false,
+  "published": false,
+  "targetQualified": false,
+  "remaining": [
+    "Owner source-offer approval and contact are still required.",
+    "Release units and corresponding source must be published.",
+    "Independent Verifier reproduction is still required.",
+    "A stage table verifies sequence and completion; it does not attest a pristine starting tree or compiled-source provenance.",
+    "The named target/plugin still requires its own qualification."
+  ],
+  "sdkPayloadIncluded": false,
+  "sourceReceiptSha256": "d30828532bf203e7f2e928ae07a5fdbfef2e03cfbf92c7e950de5a51d3a6f2bb",
+  "originalCompileStages": [
+    {
+      "stage": "extract",
+      "start_utc": "2026-11-22T20:20:00Z",
+      "end_utc": "2026-11-22T20:20:25Z",
+      "wall_s": "25",
+      "exit": "0",
+      "work_dir_kib_after": "284296",
+      "free_kib_after": "7200000"
+    },
+    {
+      "stage": "cve-patches",
+      "start_utc": "2026-11-22T20:20:25Z",
+      "end_utc": "2026-11-22T20:20:26Z",
+      "wall_s": "1",
+      "exit": "0",
+      "work_dir_kib_after": "284308",
+      "free_kib_after": "7200000"
+    },
+    {
+      "stage": "qnx-patches",
+      "start_utc": "2026-11-22T20:20:26Z",
+      "end_utc": "2026-11-22T20:20:26Z",
+      "wall_s": "0",
+      "exit": "0",
+      "work_dir_kib_after": "284320",
+      "free_kib_after": "7200000"
+    },
+    {
+      "stage": "host-tools",
+      "start_utc": "2026-11-22T20:20:26Z",
+      "end_utc": "2026-11-22T20:56:13Z",
+      "wall_s": "2147",
+      "exit": "0",
+      "work_dir_kib_after": "788732",
+      "free_kib_after": "8400000"
+    },
+    {
+      "stage": "qnx-core",
+      "start_utc": "2026-11-22T20:56:13Z",
+      "end_utc": "2026-11-22T21:22:44Z",
+      "wall_s": "1591",
+      "exit": "0",
+      "work_dir_kib_after": "1146004",
+      "free_kib_after": "8000000"
+    },
+    {
+      "stage": "qtsvg",
+      "start_utc": "2026-11-22T21:22:44Z",
+      "end_utc": "2026-11-22T21:23:50Z",
+      "wall_s": "66",
+      "exit": "0",
+      "work_dir_kib_after": "1152612",
+      "free_kib_after": "8000000"
+    },
+    {
+      "stage": "qtimageformats",
+      "start_utc": "2026-11-22T21:23:50Z",
+      "end_utc": "2026-11-22T21:25:02Z",
+      "wall_s": "72",
+      "exit": "0",
+      "work_dir_kib_after": "1159832",
+      "free_kib_after": "8000000"
+    }
+  ],
+  "qualificationScope": "Pristine seven-stage Qt cross-build, compiler-dependency SPDX reports, local notice-corrected staging and fresh ELF closure verification. Target execution, source-offer approval, publication and independent reproduction remain separate.",
+  "currentImplementationReference": "acb5c849b927a252c7ce7471cf2cf98e13f3444f",
+  "currentImplementationReferenceMeaning": "Reference only; this Qt compile used frozen 61d0 and corrected staging used 1b3b. No newer compile or target qualification is claimed."
+}

@@ -1,0 +1,16 @@
+3c174d93fa8de7abbe41706321cc8973df1fe649991084be2f8185aae49a8d93  guarded-run.py
+Clean-tree preflight passed (no extracted source, build tree or prior timing logs).
+=== extract start 2026-11-22T20:20:00Z
+=== extract exit=0 wall=25s log=/build/final/public/logs/attempt-5WoimhaR/extract.log
+=== cve-patches start 2026-11-22T20:20:25Z
+=== cve-patches exit=0 wall=1s log=/build/final/public/logs/attempt-5WoimhaR/cve-patches.log
+=== qnx-patches start 2026-11-22T20:20:26Z
+=== qnx-patches exit=0 wall=0s log=/build/final/public/logs/attempt-5WoimhaR/qnx-patches.log
+=== host-tools start 2026-11-22T20:20:26Z
+=== host-tools exit=0 wall=2147s log=/build/final/public/logs/attempt-5WoimhaR/host-tools.log
+=== qnx-core start 2026-11-22T20:56:13Z
+=== qnx-core exit=0 wall=1591s log=/build/final/public/logs/attempt-5WoimhaR/qnx-core.log
+=== qtsvg start 2026-11-22T21:22:44Z
+=== qtsvg exit=0 wall=66s log=/build/final/public/logs/attempt-5WoimhaR/qtsvg.log
+=== qtimageformats start 2026-11-22T21:23:50Z
+=== qtimageformats exit=0 wall=72s log=/build/final/public/logs/attempt-5WoimhaR/qtimageformats.log

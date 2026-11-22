@@ -1,0 +1,396 @@
+{
+  "compileRecipeCommit": "61d0f25786039aef16a31cb7ca94bc6c03c7b6d1",
+  "correctedPackagingRecipeCommit": "1b3b8ce56e63b80cf8a8c7021b5969c1d6e51189",
+  "scope": "Factual source and notice correspondence; no legal conclusion or owner approval.",
+  "historicalFindings": [
+    "Original runtime metadata retained Khronos 2013-2014 while source header says2013-2018.",
+    "Original runtime notices omitted John Layt 2013 from the actual timezone source header."
+  ],
+  "correctedCoverage": "Corrected staging preserves the entire actual source file verbatim for each of 13 audited exceptions, retaining both notices without rewriting upstream metadata.",
+  "copiedSourceNoticeHashes": {
+    "qtbase/src/corelib/global/qexpected_p.h": "61cf7e096fef0f3dc61a184561fabd9935a7e3a5f68510fb764514fdadf36014",
+    "qtbase/src/corelib/text/qlocale_data_p.h": "f0d5886ccbf22c277686dcacb7e126f8bc42b10d6f9957133cca6f77fe23d35b",
+    "qtbase/src/corelib/text/qunicodetables.cpp": "038c3683f7f94406e8793612b6ee36a0497d9386bfd43262a6b11d9d155a5e50",
+    "qtbase/src/corelib/text/qunicodetables_p.h": "a296d1585e6307e7cf86574e5a06b54bb756936c2370a69f8f6e7974047449d4",
+    "qtbase/src/corelib/time/qhijricalendar_data_p.h": "b32f159107fb5c2b379acb598a2f6b77613dc400c2b103c4cdbdc25cf14f1c0d",
+    "qtbase/src/corelib/time/qjalalicalendar_data_p.h": "1c425cc40349917ca209e8a4f714164d0a6ead19c759c0cda4756db35e22fbf6",
+    "qtbase/src/corelib/time/qromancalendar_data_p.h": "a60250ef6101616d78e2939620561b9fb70ec9bfdebcfab699e136794e6af3a5",
+    "qtbase/src/corelib/time/qtimezonelocale_data_p.h": "e75f3d1d64d12f9adc4c0db3735d50af07a1cca3d549b220c1efb3393a10ac22",
+    "qtbase/src/corelib/time/qtimezoneprivate_data_p.h": "0cbb94e073b847fe3916b4aea968af4d8fa34ba86861566dec6f67bda75e4020",
+    "qtbase/src/gui/opengl/qopengles2ext.h": "66c3fb9bcd081c869d9b23e44ef8af562eaa1814341615241c916a66f7b51864",
+    "qtbase/src/gui/painting/qgrayraster.c": "8ed8709602d7805f9de666a0a8c8c1fc3924c0b54cba5c3f31b0fafa899e6fda",
+    "qtbase/src/gui/painting/qimagescale.cpp": "a4202f3239fc97897bca05829cdb47dafd07f8a4c5b64f0c920e8fae1dc022d3",
+    "qtbase/src/gui/text/qfontsubset_agl.cpp": "ddefd4469ae50065f4099c22565979e6e73e712eb5db00842208d8562a65ba1e"
+  },
+  "sameElfFiles": 26,
+  "unchangedPreviousLicenseTexts": 146,
+  "rows": [
+    {
+      "sourceFile": "qtbase/src/corelib/global/qexpected_p.h",
+      "sourceSha256": "61cf7e096fef0f3dc61a184561fabd9935a7e3a5f68510fb764514fdadf36014",
+      "auditFirst40Spdx": "CC0-1.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2017 Sy Brand (tartanllama@gmail.com, @TartanLlama)"
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/global/qt_attribution.json",
+      "attributionSha256": "64698063a65a1502b986bd61163b5eb9c6bde87f93feb28e4eab43ff07a4f10a",
+      "component": "tl::expected",
+      "licenseId": "CC0-1.0",
+      "attributionCopyright": "To the extent possible under law, Sy Brand has waived all copyright and related or neighboring rights to the expected library. This work is published from: United Kingdom.",
+      "upstreamHomepage": "https://github.com/TartanLlama/expected/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/CC0-1.0.txt": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/text/qlocale_data_p.h",
+      "sourceSha256": "f0d5886ccbf22c277686dcacb7e126f8bc42b10d6f9957133cca6f77fe23d35b",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2019 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright \u00a9 2004-2023 Unicode, Inc."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Common Locale Data Repository (CLDR)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://cldr.unicode.org/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/text/qunicodetables.cpp",
+      "sourceSha256": "038c3683f7f94406e8793612b6ee36a0497d9386bfd43262a6b11d9d155a5e50",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2020 The Qt Company Ltd."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Character Database (UCD)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 1991-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://www.unicode.org/ucd/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/text/qunicodetables_p.h",
+      "sourceSha256": "a296d1585e6307e7cf86574e5a06b54bb756936c2370a69f8f6e7974047449d4",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2020 The Qt Company Ltd."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Character Database (UCD)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 1991-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://www.unicode.org/ucd/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/time/qhijricalendar_data_p.h",
+      "sourceSha256": "b32f159107fb5c2b379acb598a2f6b77613dc400c2b103c4cdbdc25cf14f1c0d",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2019 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright \u00a9 2004-2023 Unicode, Inc."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Common Locale Data Repository (CLDR)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://cldr.unicode.org/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/time/qjalalicalendar_data_p.h",
+      "sourceSha256": "1c425cc40349917ca209e8a4f714164d0a6ead19c759c0cda4756db35e22fbf6",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2019 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright \u00a9 2004-2023 Unicode, Inc."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Common Locale Data Repository (CLDR)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://cldr.unicode.org/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/time/qromancalendar_data_p.h",
+      "sourceSha256": "a60250ef6101616d78e2939620561b9fb70ec9bfdebcfab699e136794e6af3a5",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2019 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright \u00a9 2004-2023 Unicode, Inc."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Common Locale Data Repository (CLDR)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://cldr.unicode.org/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/time/qtimezonelocale_data_p.h",
+      "sourceSha256": "e75f3d1d64d12f9adc4c0db3735d50af07a1cca3d549b220c1efb3393a10ac22",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2024 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright \u00a9 2004-2023 Unicode, Inc."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Common Locale Data Repository (CLDR)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://cldr.unicode.org/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/corelib/time/qtimezoneprivate_data_p.h",
+      "sourceSha256": "0cbb94e073b847fe3916b4aea968af4d8fa34ba86861566dec6f67bda75e4020",
+      "auditFirst40Spdx": "Unicode-3.0",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2021 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright (C) 2013 John Layt <jlayt@kde.org>"
+        },
+        {
+          "line": 3,
+          "text": "// Copyright \u00a9 2004-2023 Unicode, Inc."
+        }
+      ],
+      "attributionFile": "qtbase/src/corelib/text/qt_attribution.json",
+      "attributionSha256": "4e23736600be956e4214849ad8baaa955441656db7324713fab6353c1163b4f5",
+      "component": "Unicode Common Locale Data Repository (CLDR)",
+      "licenseId": "Unicode-3.0",
+      "attributionCopyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+      "upstreamHomepage": "https://cldr.unicode.org/",
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634"
+      },
+      "attributionReferencedLicenseFiles": []
+    },
+    {
+      "sourceFile": "qtbase/src/gui/opengl/qopengles2ext.h",
+      "sourceSha256": "66c3fb9bcd081c869d9b23e44ef8af562eaa1814341615241c916a66f7b51864",
+      "auditFirst40Spdx": null,
+      "headerCopyrightLines": [
+        {
+          "line": 28,
+          "text": "** Copyright (c) 2013-2018 The Khronos Group Inc."
+        }
+      ],
+      "attributionFile": "qtbase/src/gui/opengl/qt_attribution.json",
+      "attributionSha256": "d05626e02386f22186b385b3ce2cd5a6431b84e2fc552c68f7133e38da552fc1",
+      "component": "OpenGL ES 2 Headers",
+      "licenseId": "MIT",
+      "attributionCopyright": "Copyright (c) 2013-2014 The Khronos Group Inc.",
+      "upstreamHomepage": "https://www.khronos.org/",
+      "upstreamPurl": "pkg:generic/khronos-opengl-es2-headers?download_url=https://www.khronos.org/?revision=27673",
+      "stagedLicenseTexts": {
+        "licenses/qtbase/MIT.txt": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc",
+        "licenses/qtbase/attributed/src/gui/opengl/LICENSE.KHRONOS.txt": "2e484f3c26ff5008c704a3ca9dd809d43f24a004a1abb6c202660fbff0d19715"
+      },
+      "attributionReferencedLicenseFiles": [
+        {
+          "source": "qtbase/src/gui/opengl/LICENSE.KHRONOS.txt",
+          "sha256": "2e484f3c26ff5008c704a3ca9dd809d43f24a004a1abb6c202660fbff0d19715",
+          "identicalStagedFiles": ["licenses/qtbase/attributed/src/gui/opengl/LICENSE.KHRONOS.txt"]
+        }
+      ]
+    },
+    {
+      "sourceFile": "qtbase/src/gui/painting/qgrayraster.c",
+      "sourceSha256": "8ed8709602d7805f9de666a0a8c8c1fc3924c0b54cba5c3f31b0fafa899e6fda",
+      "auditFirst40Spdx": "FTL OR GPL-2.0-only",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2016 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright (C) 2000-2016 by David Turner, Robert Wilhelm, and Werner Lemberg."
+        },
+        {
+          "line": 11,
+          "text": "/*  Copyright 2000-2016 by                                                 */"
+        }
+      ],
+      "attributionFile": "qtbase/src/gui/painting/qt_attribution.json",
+      "attributionSha256": "8cddd6c73a885f697261c4d6d60e5cd814a2544fcd407504b52a5eb9b7cc3600",
+      "component": "Anti-aliasing rasterizer from FreeType 2",
+      "licenseId": "FTL OR GPL-2.0-only",
+      "attributionCopyright": "Copyright 2000-2016 by David Turner, Robert Wilhelm, and Werner Lemberg.",
+      "upstreamHomepage": "http://www.freetype.org",
+      "upstreamPurl": "pkg:generic/freetype-grayraster?download_url=https://www.freetype.org/",
+      "stagedLicenseTexts": {
+        "licenses/qtbase/FTL.txt": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1",
+        "licenses/qtbase/GPL-2.0-only.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+        "licenses/qtbase/attributed/src/3rdparty/freetype/LICENSE.txt": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1"
+      },
+      "attributionReferencedLicenseFiles": [
+        {
+          "source": "qtbase/src/3rdparty/freetype/LICENSE.txt",
+          "sha256": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+          "identicalStagedFiles": [
+            "licenses/qtbase/third-party/freetype/LICENSE.txt",
+            "licenses/qtbase/attributed/src/3rdparty/freetype/LICENSE.txt"
+          ]
+        }
+      ]
+    },
+    {
+      "sourceFile": "qtbase/src/gui/painting/qimagescale.cpp",
+      "sourceSha256": "a4202f3239fc97897bca05829cdb47dafd07f8a4c5b64f0c920e8fae1dc022d3",
+      "auditFirst40Spdx": "BSD-2-Clause AND Imlib2",
+      "headerCopyrightLines": [
+        {
+          "line": 1,
+          "text": "// Copyright (C) 2016 The Qt Company Ltd."
+        },
+        {
+          "line": 2,
+          "text": "// Copyright (C) 2004, 2005 Daniel M. Duley., (C) Carsten Haitzler and various contributors., (C) Willem Monsuwe <willem@stack.nl>"
+        },
+        {
+          "line": 17,
+          "text": " * Copyright (C) 2004, 2005 Daniel M. Duley"
+        }
+      ],
+      "attributionFile": "qtbase/src/gui/painting/qt_attribution.json",
+      "attributionSha256": "8cddd6c73a885f697261c4d6d60e5cd814a2544fcd407504b52a5eb9b7cc3600",
+      "component": "Smooth Scaling Algorithm",
+      "licenseId": "BSD-2-Clause AND Imlib2",
+      "attributionCopyright": [
+        "Copyright (C) 2004, 2005 Daniel M. Duley.",
+        "(C) Carsten Haitzler and various contributors.",
+        "(C) Willem Monsuwe <willem@stack.nl>"
+      ],
+      "upstreamHomepage": null,
+      "upstreamPurl": null,
+      "stagedLicenseTexts": {
+        "licenses/qtbase/BSD-2-Clause.txt": "8fda146749ca071ac9cdce2e24d25444676ea48d1f9dccc2b7c15c054b717db8",
+        "licenses/qtbase/Imlib2.txt": "8846f2baba1a7f4c36f7ca19a923a000d8a21afa37cf0fe006f6ce88a6058a89",
+        "licenses/qtbase/attributed/src/gui/painting/LICENSE.QIMAGETRANSFORM.txt": "46b3cbfa2f2946b93291506351e9be1dd0a28d2a53260f5aa488abd36fbeca9d"
+      },
+      "attributionReferencedLicenseFiles": [
+        {
+          "source": "qtbase/src/gui/painting/LICENSE.QIMAGETRANSFORM.txt",
+          "sha256": "46b3cbfa2f2946b93291506351e9be1dd0a28d2a53260f5aa488abd36fbeca9d",
+          "identicalStagedFiles": [
+            "licenses/qtbase/attributed/src/gui/painting/LICENSE.QIMAGETRANSFORM.txt"
+          ]
+        }
+      ]
+    },
+    {
+      "sourceFile": "qtbase/src/gui/text/qfontsubset_agl.cpp",
+      "sourceSha256": "ddefd4469ae50065f4099c22565979e6e73e712eb5db00842208d8562a65ba1e",
+      "auditFirst40Spdx": null,
+      "headerCopyrightLines": [],
+      "attributionFile": "qtbase/src/gui/text/qt_attribution.json",
+      "attributionSha256": "7960234e4078c69003e4d9de24c1bf36c9370cfae8a1797ceb1501c4eec81e5d",
+      "component": "Adobe Glyph List For New Fonts",
+      "licenseId": "BSD-3-Clause",
+      "attributionCopyright": "Copyright 2002, 2003, 2005, 2006, 2008, 2010, 2015 Adobe Systems",
+      "upstreamHomepage": "https://github.com/adobe-type-tools/agl-aglfn",
+      "upstreamPurl": "pkg:github/adobe-type-tools/agl-aglfn@0276763a3cdf204a1badc283d90f5bc7ac13130d",
+      "stagedLicenseTexts": {
+        "licenses/qtbase/BSD-3-Clause.txt": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+        "licenses/qtbase/attributed/src/gui/text/LICENSE.AGLFN.txt": "40818155548ff41c67d3a40edf355e9658992b292c227f4c1147425cedc746c6"
+      },
+      "attributionReferencedLicenseFiles": [
+        {
+          "source": "qtbase/src/gui/text/LICENSE.AGLFN.txt",
+          "sha256": "40818155548ff41c67d3a40edf355e9658992b292c227f4c1147425cedc746c6",
+          "identicalStagedFiles": ["licenses/qtbase/attributed/src/gui/text/LICENSE.AGLFN.txt"]
+        }
+      ]
+    }
+  ],
+  "originalCoverageReceiptSha256": "28c728f3cacfd74530a0353ca9db5ab621a9a0c960ef17f7b0c0ee326ef4a6c6",
+  "correctedComparisonReceiptSha256": "0a300c3881e7feeb3814f02290ecce4f25c381197f51a84fad03275618421cbb",
+  "releaseEligible": false
+}

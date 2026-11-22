@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "acb5c849b927a252c7ce7471cf2cf98e13f3444f",
+  "runId": 45076473261,
+  "candidateArtifact": {
+    "id": 14775247395,
+    "sha256": "bbdab7cc51b86ba73dcd19f7ddd02043fd6d8c0f88db4ac875e4f5f35da30a0a",
+    "untouched": true,
+    "hiddenFilePresent": true
+  },
+  "liveDeployment": {
+    "id": 7973617998,
+    "sourceCommit": "18e708d8b4e87f97eebcfd5b68e082b978227054",
+    "artifactId": 14738706986,
+    "sha256": "b69dc370e2d53f0ca3dfee5bcaf45ce9413c3bde5e6e7910b4cec1fb5b0ac186",
+    "all1503ExtractedFilesReverifiedAgainstArchive": true
+  },
+  "snapshotId": "candidate-acb5c849b927",
+  "snapshotReceiptSha256": "8d93e974fbc707a8438b4bb39d7fe9ebec258b81b3f160de6989f58f50ee60b5",
+  "preservedLiveFiles": 1503,
+  "candidateFiles": 1505,
+  "assemblyReceiptSha256": "6c1ae3dc64acaf3fd9c6d4ec9e0da3d5077b00d6cfdd9b1ded739e4cc141daa3",
+  "deployed": false,
+  "remaining": "Durable snapshot registry/retrieval and owner-reviewed deployment remain required. Candidate assembly does not publish v1."
+}
