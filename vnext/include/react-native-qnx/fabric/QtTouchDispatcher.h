@@ -78,6 +78,8 @@ class QtTouchDispatcher final : public QObject {
  private:
   /// Deepest mounted item containing \a windowPoint, or -1.
   Tag hitTest(const QPointF& windowPoint) const;
+  bool inputShielded(const QPointF& windowPoint) const;
+  QPointF pagePointForTag(Tag tag, const QPointF& windowPoint) const;
 
   enum class TouchKind { Start, Move, End, Cancel };
   void cancelMouseTouch();

@@ -101,6 +101,8 @@ class WindowChrome final : public QObject {
   // tracks the window size.
   QQuickItem& contentRoot() const;
   QQuickItem* chromeItem() const;
+  // Stable native hit targets only; hidden-style free content remains interactive.
+  QList<QQuickItem*> inputShields() const;
   const ChromeLayout& layout() const { return layout_; }
   const WindowCapabilities& capabilities() const { return capabilities_; }
 

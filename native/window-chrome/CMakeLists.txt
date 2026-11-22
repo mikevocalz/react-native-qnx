@@ -35,6 +35,8 @@ add_executable(rnqnx_window_chrome_model_test WindowChromeModelTest.cpp)
 target_link_libraries(rnqnx_window_chrome_model_test PRIVATE rnqnx_window_chrome Qt6::Test)
 add_executable(rnqnx_window_chrome_quick_test WindowChromeQuickTest.cpp)
 target_link_libraries(rnqnx_window_chrome_quick_test PRIVATE rnqnx_window_chrome Qt6::Test)
+add_executable(rnqnx_window_session_test WindowSessionTest.cpp WindowSession.cpp WindowSession.h)
+target_link_libraries(rnqnx_window_session_test PRIVATE rnqnx_window_chrome Qt6::Test)
 add_executable(rnqnx_node_beacon_test NodeBeaconTest.cpp)
 target_link_libraries(rnqnx_node_beacon_test PRIVATE rnqnx_window_chrome Qt6::Test)
 
@@ -44,6 +46,8 @@ set(test_env "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;ASAN_OPTIONS=d
 add_test(NAME rnqnx_window_chrome_model COMMAND rnqnx_window_chrome_model_test)
 add_test(NAME rnqnx_window_chrome_quick COMMAND rnqnx_window_chrome_quick_test)
 add_test(NAME rnqnx_node_beacon COMMAND rnqnx_node_beacon_test)
+add_test(NAME rnqnx_window_session COMMAND rnqnx_window_session_test)
+set_tests_properties(rnqnx_window_session PROPERTIES TIMEOUT 60 ENVIRONMENT "${test_env}")
 # Same chrome under a 2x device pixel ratio: logical sizes must not change and
 # the rendered bar must double in device pixels.
 add_test(NAME rnqnx_window_chrome_quick_dpr2 COMMAND rnqnx_window_chrome_quick_test)
@@ -94,3 +98,21 @@ foreach(pair
   set_tests_properties(rnqnx_window_chrome_consumer_rejects_${case} PROPERTIES
     WILL_FAIL OFF PASS_REGULAR_EXPRESSION "${expected}")
 endforeach()
+
+# Compile the actual generated v1 descriptors against the pinned headers without
+# pretending that this object-only lane is a linked Hermes/runtime result.
+option(RNQNX_WINDOW_BINDING_COMPILE_TEST "Compile the experimental window v1 binding objects" OFF)
+if(RNQNX_WINDOW_BINDING_COMPILE_TEST)
+  set(repo "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+  add_library(rnqnx_window_binding_compile OBJECT
+    "${repo}/packages/qnx-nitro-runtime/cpp/QnxWindow.cpp"
+    "${repo}/packages/qnx-nitro-runtime/cpp/WindowObserver.cpp")
+  target_link_libraries(rnqnx_window_binding_compile PRIVATE rnqnx_window_chrome)
+  target_include_directories(rnqnx_window_binding_compile PRIVATE
+    "${repo}/packages/qnx-nitro-runtime/cpp"
+    "${repo}/node_modules/nitro-core/native/cpp/include"
+    "${repo}/node_modules/react-native/ReactCommon/jsi")
+  target_compile_features(rnqnx_window_binding_compile PRIVATE cxx_std_20)
+  target_compile_options(rnqnx_window_binding_compile PRIVATE -Wall -Wextra -Werror
+    -Wno-nullability-extension -include "${repo}/packages/qnx-nitro-runtime/cpp/NitroCoreCompat.hpp")
+endif()

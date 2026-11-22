@@ -75,6 +75,8 @@ function(rnqnx_add_nitro_qt_dispatcher)
       APPEND PROPERTY COMPILE_OPTIONS -fsanitize=address,undefined -fno-sanitize-recover=undefined)
     target_link_options(rnqnx_react_host PUBLIC -fsanitize=address,undefined)
   endif()
+  include(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/RnqnxWindowApi.cmake)
+  rnqnx_add_window_api()
   if(BUILD_TESTING)
     add_test(NAME rnqnx_nitro_dispatcher_patch_contract COMMAND "${CMAKE_COMMAND}"
       "-DREPO_ROOT=${CMAKE_SOURCE_DIR}"

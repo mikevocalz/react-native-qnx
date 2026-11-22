@@ -1,10 +1,14 @@
 // react-native-safe-area-context for QNX. The package's native half
 // (RNCSafeAreaProvider, NativeSafeAreaContext) does not exist on this
-// platform, and the window has no notch or system bars: the host's title bar
-// sits outside the React surface, so the insets are zero. Metro points
+// platform. The experimental single-window host supplies native title-bar
+// insets; hosts without it keep zero insets. Metro points
 // `react-native-safe-area-context` here for the qnx platform only.
 const React = require('react');
-const { View, useWindowDimensions } = require('react-native');
+const {
+  View,
+  useWindowDimensions,
+  __unstableQnxWindowMetrics: nativeMetrics,
+} = require('react-native');
 
 const ZERO_INSETS = Object.freeze({ top: 0, right: 0, bottom: 0, left: 0 });
 
@@ -18,8 +22,16 @@ const SafeAreaFrameContext = React.createContext(null);
 
 function SafeAreaProvider({ children, style, initialMetrics, ...rest }) {
   const { width, height } = useWindowDimensions();
-  const frame = React.useMemo(() => ({ x: 0, y: 0, width, height }), [width, height]);
-  const insets = initialMetrics?.insets ?? ZERO_INSETS;
+  const fallback = React.useMemo(
+    () => ({
+      frame: { x: 0, y: 0, width, height },
+      insets: initialMetrics?.insets ?? ZERO_INSETS,
+    }),
+    [width, height, initialMetrics]
+  );
+  const native = nativeMetrics ? nativeMetrics.useWindowMetrics(fallback) : fallback;
+  const frame = globalThis.__rnqnxWindowHost ? native.frame : fallback.frame;
+  const insets = native.insets;
   return React.createElement(
     SafeAreaFrameContext.Provider,
     { value: frame },
@@ -31,9 +43,11 @@ function SafeAreaProvider({ children, style, initialMetrics, ...rest }) {
   );
 }
 
-function SafeAreaView(props) {
-  return React.createElement(View, props);
-}
+const SafeAreaView = React.forwardRef(function SafeAreaView({ style, edges, mode, ...props }, ref) {
+  const insets = useSafeAreaInsets();
+  const resolved = nativeMetrics ? nativeMetrics.insetStyle(style, insets, edges, mode) : {};
+  return React.createElement(View, { ...props, ref, style: [style, resolved] });
+});
 
 function useSafeAreaInsets() {
   return React.useContext(SafeAreaInsetsContext) ?? ZERO_INSETS;

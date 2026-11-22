@@ -62,15 +62,22 @@ jobs:
           pnpm qt:rnsvg:check
           pnpm qt:native-ui:check
           pnpm qt:video:check
+          node scripts/window-api-codegen.mjs --check
       - name: Build and run the required full renderer graph
         run: |
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
+          if [ '${{ matrix.input-lifecycle }}' = ON ]; then
+            cp -R "$(realpath node_modules/nitro-core)" build/window-nitro-core
+          fi
           cmake --preset linux-host-renderer \
             -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_WINDOW_CHROME=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_WINDOW_API=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_NITRO_QT_DISPATCHER=${{ matrix.input-lifecycle }} \
+            -DRNQNX_NITRO_CORE_ROOT="$PWD/build/window-nitro-core" \
             -DRNQNX_ENABLE_QT_SVG=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_RNSVG=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_NATIVE_UI=${{ matrix.input-lifecycle }} \

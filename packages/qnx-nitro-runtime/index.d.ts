@@ -22,3 +22,6 @@ export interface QnxPlatformInfo {
  * registered. A Linux/Marathon host must not use this QNX-only constructor.
  */
 export function createQnxPlatformInfo(): QnxPlatformInfo;
+
+export { getCurrentWindow } from './window';
+export type { Window, WindowSubscription, WindowSnapshot, WindowInsets } from './window';
