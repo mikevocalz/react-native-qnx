@@ -6,11 +6,14 @@ import path from 'node:path';
 // must not claim a unit is published or release-eligible while its package
 // manifest says otherwise.
 const root = process.cwd();
+/** @param {string} file */
 const read = (file) => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
 const units = read('docs/releases/release-units.json');
 assert.equal(units.schema, 1);
 
-const ids = units.units.map((unit) => unit.id);
+/** @type {Array<Record<string, any>>} */
+const list = units.units;
+const ids = list.map((unit) => unit.id);
 assert.equal(new Set(ids).size, ids.length, 'unit ids are unique');
 
 const packages = new Set(
@@ -19,7 +22,7 @@ const packages = new Set(
   )
 );
 
-for (const unit of units.units) {
+for (const unit of list) {
   assert.equal(unit.published, false, `${unit.id} is published`);
   for (const key of ['packageManifest', 'closureCheck', 'assembledBy', 'offer', 'buildRecipe']) {
     if (unit[key]) assert.ok(existsSync(path.join(root, unit[key])), `${unit.id}.${key} missing`);
