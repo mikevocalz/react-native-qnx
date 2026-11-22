@@ -1,0 +1,4 @@
+$ node packages/react-native-qnx-cli/src/bin.mjs init dashboard
+Created apps/dashboard.
+Run pnpm install --no-frozen-lockfile, then:
+pnpm qnx bundle-qnx --app dashboard

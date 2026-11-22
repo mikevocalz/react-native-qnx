@@ -1,0 +1,15 @@
+@rn-qnx/expo-constants-qnx|public|0.1.0|4 files|2296 packed|6061 unpacked|e9876c6367e7acc02ba2d7e909b6886dbdf97594|flagged=[]
+@rn-qnx/expo-image-qnx|public|0.1.0|8 files|8763 packed|38362 unpacked|e8162e65e44371e4abf65240e610dcc73006e3e6|flagged=[]
+@rn-qnx/expo-modules-core-qnx|public|0.1.0|10 files|6482 packed|19576 unpacked|9bcaed6c674191ecf7397d288bbf54e97a2773fe|flagged=[]
+expo-qnx|no package.json (not a package)
+@rn-qnx/expo-qnx-autolinking|public|0.1.0|4 files|3052 packed|9171 unpacked|b9512e7b00fb6cb1cf529e6439de0d9ab195274d|flagged=[]
+@rn-qnx/expo-qnx-config-plugins|public|0.1.0|4 files|2816 packed|8013 unpacked|0cd175fbd56952c646671a72daa44e8054176c1d|flagged=[]
+@rn-qnx/expo-router-qnx|public|0.1.0|24 files|18170 packed|60058 unpacked|c28e106cdf5455b59e2bcd47f5868864b3ec15c8|flagged=[]
+@rn-qnx/metro-config-marathon|public|0.1.0|4 files|3018 packed|8267 unpacked|09d34132bdf38489f3a2877c51e89245c8c11aa4|flagged=[]
+@rn-qnx/metro-config-qnx|public|0.1.0|5 files|3458 packed|9800 unpacked|2de7121339f0a71c47aca102282124ae6b62c291|flagged=[]
+qnx-devtools|no package.json (not a package)
+@rn-qnx/qnx-nitro-runtime|public|0.1.0|14 files|3607 packed|9614 unpacked|c486dc235af47127c96d720beaff666ecd61be30|flagged=[]
+@rn-qnx/react-native-marathon|public|0.1.0|9 files|5357 packed|14681 unpacked|0ec649c60f92a6b904ce7e74a088bd3f45dc1e7f|flagged=[]
+@rn-qnx/react-native-qnx|public|0.1.0|76 files|36970 packed|144837 unpacked|495fa5c54a9c17e6d3970b9a667726aa3e142f4e|flagged=[]
+@rn-qnx/react-native-qnx-cli|private|0.1.0|24 files|69241 packed|248932 unpacked|4fc7094e16173383dac9c62f5f272e9e410a44ac|flagged=[]
+react-native-qnx-codegen|no package.json (not a package)

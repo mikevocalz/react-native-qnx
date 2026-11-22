@@ -1,0 +1,10 @@
+Scope: all 16 workspace projects
+✓ Lockfile passes supply-chain policies (verified 12h ago)
+Progress: resolved 0, reused 38, downloaded 0, added 0
+Progress: resolved 0, reused 145, downloaded 0, added 0
+Progress: resolved 0, reused 284, downloaded 0, added 0
+Progress: resolved 0, reused 446, downloaded 0, added 0
+Progress: resolved 0, reused 451, downloaded 0, added 0
+Already up to date
+Progress: resolved 0, reused 550, downloaded 0, added 0, done
+Done in 9.9s using pnpm v12.21.0

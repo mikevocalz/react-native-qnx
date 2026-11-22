@@ -1,0 +1,52 @@
+$ node packages/react-native-qnx-cli/src/bin.mjs doctor
+react-native-qnx doctor
+Started at 2026-11-22T01:53:37Z
+Log: /Volumes/QNX/clones/developer-path/artifacts/logs/2026-11-21-qnx-doctor.txt
+
+[1/8] Host environment
+  WARNING: Host OS is Darwin. QNX SDP 8.0 ships Linux and Windows host tools only, so qcc cannot run here.
+    Fix: use this host for JavaScript work and host validation; run configure/build on x86-64 Ubuntu 22.04 (docs/getting-started/build-and-deploy.md, "macOS remote-development option")
+  WARNING: Host architecture is arm64. The QNX SDP host tools are x86-64 binaries.
+    Fix: build QNX targets on an x86-64 Ubuntu 22.04 host
+
+[2/8] QNX SDP
+  ERROR: The QNX SDP environment is not loaded (QNX_HOST and QNX_TARGET are unset).
+    Fix: source <qnx-installation>/qnxsdp-env.sh in this shell, then rerun pnpm qnx doctor (see docs/getting-started/build-and-deploy.md)
+  SKIPPED: qcc/q++ (QNX SDP environment is not loaded)
+  SKIPPED: Screen headers and library (QNX SDP environment is not loaded)
+  SKIPPED: EGL headers (QNX SDP environment is not loaded)
+
+[3/8] Build tools
+  OK: cmake 4.4.5 satisfies >=3.31.9
+  OK: ninja 1.13.2 satisfies >=1.11
+  OK: Qt 6.12.0 host tools found (qtpaths6)
+
+[4/8] Node.js tooling
+  OK: node 26.13.0 satisfies >=26.0.0
+  OK: pnpm 12.21.0 matches the repository pin
+  OK: package.json found
+
+[5/8] Python
+  OK: python3 3.13.3 satisfies >=3.11
+
+[6/8] React Native / Expo / Nitro compatibility
+  OK: compatibility-matrix.md found
+  OK: Installed dependency pins and source contracts validated
+
+[7/8] Target device configuration
+  SKIPPED: target device (no target configured; configure and build do not need one. Before deploy-qnx, export QNX_TARGET_IP and QNX_TARGET_USER)
+
+[8/8] Project structure
+  OK: native/ directory present
+  OK: packages/ directory present
+  OK: apps/ directory present
+  OK: scripts/ directory present
+  OK: tests/ directory present
+  OK: docs/ directory present
+  OK: cmake/ directory present
+
+------------------------------
+Environment has 1 error(s) and 2 warning(s).
+Start with: source <qnx-installation>/qnxsdp-env.sh in this shell, then rerun pnpm qnx doctor (see docs/getting-started/build-and-deploy.md)
+Full log: /Volumes/QNX/clones/developer-path/artifacts/logs/2026-11-21-qnx-doctor.txt
+[ELIFECYCLE] Command failed with exit code 1.

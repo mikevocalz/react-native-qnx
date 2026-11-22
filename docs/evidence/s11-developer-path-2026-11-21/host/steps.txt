@@ -1,0 +1,23 @@
+### 01-pnpm-install-prefix: npm install --prefix /Volumes/QNX/cache/dp-pnpm pnpm@12.21.0
+exit=0 seconds=27
+### 02-pnpm-install-script: node /Volumes/QNX/cache/dp-pnpm/node_modules/pnpm/install.js
+exit=0 seconds=0
+### 03-pnpm-version: pnpm --version
+exit=0 seconds=1
+### 04-install-frozen: pnpm install --frozen-lockfile
+exit=0 seconds=187
+### 05-qnx-init: pnpm qnx init dashboard
+exit=0 seconds=1
+### 06-install-nofrozen: pnpm install --no-frozen-lockfile
+exit=0 seconds=10
+### 07-bundle: pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js
+exit=0 seconds=15
+### 08-cmake-configure: cmake -S . -B build/playground -G Ninja -DCMAKE_BUILD_TYPE=Debug -DRNQNX_BUILD_HERMES=ON
+exit=0 seconds=47
+### 09-cmake-build: cmake --build build/playground --target rnqnx_playground_host
+exit=0 seconds=524
+### 10-run-offscreen: ./build/playground/bin/rnqnx_playground_host --bundle build/dashboard.bundle.js -platform offscreen --screenshot build/dashboard.png
+exit=0 seconds=7
+### 11-doctor: pnpm qnx doctor
+exit=1 seconds=4
+DONE

@@ -1,0 +1,105 @@
+Scope: all 15 workspace projects
+✓ Lockfile passes supply-chain policies (verified 12h ago)
+Lockfile is up to date, resolution step is skipped
+Packages are cloned from the content-addressable store to the virtual store.
+  Content-addressable store is at: /Volumes/QNX/cache/pnpm-store/v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 14, reused 14, downloaded 0, added 11
+Progress: resolved 31, reused 31, downloaded 0, added 28
+Progress: resolved 39, reused 39, downloaded 0, added 36
+Progress: resolved 45, reused 45, downloaded 0, added 42
+Progress: resolved 48, reused 48, downloaded 0, added 45
+Progress: resolved 60, reused 60, downloaded 0, added 57
+Progress: resolved 82, reused 82, downloaded 0, added 79
+Progress: resolved 86, reused 86, downloaded 0, added 83
+Progress: resolved 91, reused 91, downloaded 0, added 88
+Progress: resolved 93, reused 93, downloaded 0, added 90
+Progress: resolved 114, reused 114, downloaded 0, added 111
+Progress: resolved 133, reused 133, downloaded 0, added 130
+Progress: resolved 155, reused 155, downloaded 0, added 152
+Progress: resolved 169, reused 169, downloaded 0, added 166
+Progress: resolved 174, reused 174, downloaded 0, added 171
+Progress: resolved 178, reused 178, downloaded 0, added 175
+Progress: resolved 182, reused 182, downloaded 0, added 179
+Progress: resolved 184, reused 184, downloaded 0, added 181
+Progress: resolved 187, reused 187, downloaded 0, added 184
+Progress: resolved 188, reused 188, downloaded 0, added 185
+Progress: resolved 199, reused 199, downloaded 0, added 196
+Progress: resolved 230, reused 230, downloaded 0, added 227
+Progress: resolved 236, reused 236, downloaded 0, added 233
+Progress: resolved 241, reused 241, downloaded 0, added 238
+Progress: resolved 245, reused 245, downloaded 0, added 242
+Progress: resolved 273, reused 273, downloaded 0, added 270
+Progress: resolved 293, reused 293, downloaded 0, added 290
+Progress: resolved 315, reused 315, downloaded 0, added 312
+Progress: resolved 337, reused 337, downloaded 0, added 334
+Progress: resolved 343, reused 343, downloaded 0, added 340
+Progress: resolved 348, reused 348, downloaded 0, added 345
+Progress: resolved 350, reused 350, downloaded 0, added 347
+Progress: resolved 353, reused 353, downloaded 0, added 350
+Progress: resolved 364, reused 364, downloaded 0, added 361
+Progress: resolved 370, reused 370, downloaded 0, added 367
+Progress: resolved 379, reused 379, downloaded 0, added 376
+Progress: resolved 388, reused 388, downloaded 0, added 385
+Progress: resolved 393, reused 393, downloaded 0, added 390
+Progress: resolved 400, reused 400, downloaded 0, added 397
+Progress: resolved 423, reused 423, downloaded 0, added 420
+Progress: resolved 424, reused 424, downloaded 0, added 421
+Progress: resolved 427, reused 427, downloaded 0, added 424
+Progress: resolved 428, reused 428, downloaded 0, added 425
+Progress: resolved 430, reused 430, downloaded 0, added 427
+Progress: resolved 434, reused 434, downloaded 0, added 431
+Progress: resolved 437, reused 437, downloaded 0, added 434
+Progress: resolved 448, reused 448, downloaded 0, added 445
+Progress: resolved 452, reused 452, downloaded 0, added 449
+Progress: resolved 480, reused 480, downloaded 0, added 477
+Progress: resolved 494, reused 494, downloaded 0, added 491
+Progress: resolved 495, reused 495, downloaded 0, added 492
+Progress: resolved 500, reused 500, downloaded 0, added 497
+Progress: resolved 504, reused 504, downloaded 0, added 501
+Progress: resolved 511, reused 511, downloaded 0, added 508
+Progress: resolved 523, reused 523, downloaded 0, added 520
+Progress: resolved 539, reused 539, downloaded 0, added 536
+Progress: resolved 568, reused 568, downloaded 0, added 567
+Progress: resolved 571, reused 571, downloaded 0, added 570
+Progress: resolved 574, reused 574, downloaded 0, added 573
+Progress: resolved 575, reused 575, downloaded 0, added 574
+Progress: resolved 575, reused 575, downloaded 0, added 575
+Progress: resolved 576, reused 576, downloaded 0, added 576
+Progress: resolved 577, reused 577, downloaded 0, added 577
+Progress: resolved 578, reused 578, downloaded 0, added 578
+Progress: resolved 579, reused 579, downloaded 0, added 579
+Progress: resolved 580, reused 580, downloaded 0, added 580
+Packages: +581
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 581, reused 581, downloaded 0, added 581, done
+
+devDependencies:
++ @babel/core 7.29.7
++ @babel/plugin-transform-modules-commonjs 7.29.7
++ @babel/plugin-transform-react-jsx 7.29.7
++ @legendapp/list 3.7.3
++ @legendapp/motion 2.5.3
++ @react-native/metro-config 0.88.1
++ @types/node 26.6.6
++ @types/react 19.3.0
++ @typescript/typescript6 6.0.2
++ babel-preset-expo 58.0.26
++ expo 58.0.26
++ metro 0.87.1
++ nitro-core 1.0.0-alpha.nightly.136.gdb81de61bd32
++ nitrogen 1.0.0-alpha.nightly.136.gdb81de61bd32
++ prettier 3.10.1
++ react 19.3.0
++ react-native 0.88.1
++ react-native-gesture-handler 3.4.0
++ react-native-nitro-modules 1.0.0-alpha.nightly.136.gdb81de61bd32
++ react-native-reanimated 4.7.1
++ react-native-svg 15.16.0
++ react-native-worklets 0.13.1
++ react-test-renderer 19.3.0
++ typescript 7.0.2
++ yoga-layout 3.2.1
++ zustand 5.1.0
+
+Done in 3m 7.4s using pnpm v12.21.0
