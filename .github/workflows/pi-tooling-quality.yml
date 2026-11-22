@@ -59,6 +59,12 @@ jobs:
           bash -n scripts/qt-public/assert-clean-tree.sh tests/scripts/qt-public-clean-tree.test.sh
           bash tests/scripts/qt-public-clean-tree.test.sh
 
+      - name: Qt QNX plugin patch-selection regression
+        run: |
+          bash -n scripts/qt-public/qnx-patch-set.sh scripts/qt-public/apply-qnx-patches.sh scripts/qt-public/make-source-bundle.sh tests/scripts/qt-public-patch-selection.test.sh
+          bash tests/scripts/qt-public-patch-selection.test.sh
+          python3 -I tests/python/test_qt_public_source_bundle.py
+
       - name: ShellCheck
         run: |
           shellcheck -x \

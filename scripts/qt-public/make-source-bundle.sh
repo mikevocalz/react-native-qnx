@@ -23,8 +23,18 @@ set -euo pipefail
 
 out=${1:?usage: make-source-bundle.sh <out-dir>}
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "$here/qnx-patch-set.sh"
 repo=$(cd "$here/../.." && pwd)
 root=${QT_PUBLIC_ROOT:?set QT_PUBLIC_ROOT to the directory that holds download/}
+# When built sources are present, refuse an offer for a different plugin variant.
+stamp=$root/src/qt-everywhere-src-6.12.0/qtbase/.qnx-patches-applied
+if [ -e "$stamp" ] || [ -L "$stamp" ]; then
+  if [ ! -f "$stamp" ] || [ -L "$stamp" ] ||
+     [ "$(cat "$stamp")" != "$(printf '%s\n' "${patches[@]}")" ]; then
+    echo 'QNX_SOFTWARE_GRAB does not match the applied QNX patch stamp' >&2
+    exit 1
+  fi
+fi
 archive_name=qt-everywhere-src-6.12.0.tar.xz
 archive=$root/download/$archive_name
 archive_sha=98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165
@@ -66,6 +76,7 @@ if [ "${WITH_ARCHIVE:-0}" = 1 ]; then cp "$archive" "$dest/$archive_name"; fi
 
 commit=$(cd "$repo" && git rev-parse HEAD)
 BUNDLE=$dest ARCHIVE_SHA=$archive_sha COMMIT=$commit WITH_ARCHIVE=${WITH_ARCHIVE:-0} \
+  QNX_PATCHES="$(printf '%s\n' "${patches[@]}")" \
   python3 -I - <<'PY'
 import hashlib, json, os, pathlib
 
@@ -101,8 +112,9 @@ manifest = {
         'files': files('cve-patches'),
     },
     'rnQnxPatches': {
-        'appliedByScript': ['qtbase-qnx-offscreen-surface.patch', 'qtbase-qnx-resize-swap.patch'],
-        'notAppliedByScript': ['qtbase-qnx-software-grab.patch'],
+        'softwareGrab': os.environ['QNX_SOFTWARE_GRAB'] == '1',
+        'appliedByScript': os.environ['QNX_PATCHES'].splitlines(),
+        'notAppliedByScript': [] if os.environ['QNX_SOFTWARE_GRAB'] == '1' else ['qtbase-qnx-software-grab.patch'],
     },
     'recipe': {
         'repository': 'https://github.com/mikevocalz/react-native-qnx',

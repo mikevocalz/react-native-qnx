@@ -32,9 +32,15 @@ staying up. Each release lists the SHA-256 of its bundle.
 
 The exact patch set of a given runtime is the one named in that release's
 package manifest (`docs/releases/release-units.json` names the manifest file).
-At the time of writing, `apply-qnx-patches.sh` applies two react-native-qnx
-patches (`qtbase-qnx-offscreen-surface.patch`, `qtbase-qnx-resize-swap.patch`)
-and does not apply `qtbase-qnx-software-grab.patch`; see
+By default, `apply-qnx-patches.sh` applies two react-native-qnx patches
+(`qtbase-qnx-offscreen-surface.patch`, `qtbase-qnx-resize-swap.patch`). The owner
+selected option C: `QNX_SOFTWARE_GRAB=1` also applies
+`qtbase-qnx-software-grab.patch`. Use the same selection when running
+`make-source-bundle.sh`; its `SOURCE-MANIFEST.json` records the variant and patch
+list and refuses a mismatch with an existing source-tree patch stamp. Each
+runtime package manifest must record `softwareGrab`, its actual `patchesApplied`
+and the plugin hash. The default and opt-in variants require separate build and
+target receipts; historical manifests retain their original patch sets. See
 [the software-grab proposal](../evidence/distribution-2026-11-21/proposals/software-grab-decision.md).
 A fourth qtbase diff, `CVE-2026-105943-qtbase-6.12.diff`, is not applied
 because it changes only a Windows SSPI code path that this build does not

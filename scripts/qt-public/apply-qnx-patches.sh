@@ -4,10 +4,12 @@
 # Runs inside qnx805-build as qnxbuild. Refuses to run twice.
 set -euo pipefail
 source "$(dirname "$0")/layout.sh"
+# shellcheck source=qnx-patch-set.sh
+source "$QT_PUBLIC_SCRIPTS/qnx-patch-set.sh"
 qtbase=$QT_PUBLIC_SRC/qtbase
 stamp=$qtbase/.qnx-patches-applied
 test ! -e "$stamp"
-patches=(qtbase-qnx-offscreen-surface.patch qtbase-qnx-resize-swap.patch)
+test ! -L "$stamp"
 cd "$qtbase"
 # The extracted tree has no .git of its own. When a parent directory is a git
 # repository (the container's /work is one), git apply resolves paths against
