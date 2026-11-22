@@ -69,3 +69,4 @@ jobs:
           name: docs-candidate-${{ github.event.pull_request.head.sha || github.sha }}
           path: build/docs-candidate/
           if-no-files-found: error
+          include-hidden-files: true
