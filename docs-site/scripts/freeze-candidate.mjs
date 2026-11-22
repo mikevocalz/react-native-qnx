@@ -112,7 +112,13 @@ try {
         docsLockSha256: createHash('sha256')
           .update(readFileSync(join(site, 'package-lock.json')))
           .digest('hex'),
-        checks: ['npm ci', 'npm run data:check', 'npm run data', 'npm run build', 'npm run check:content'],
+        checks: [
+          'npm ci',
+          'npm run data:check',
+          'npm run data',
+          'npm run build',
+          'npm run check:content',
+        ],
         files,
       },
       null,

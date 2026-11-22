@@ -24,15 +24,15 @@ The documentation gate remains pending until publication and independent review.
 Host: macOS, Node 26.13.0, npm 12.2.1. No QNX toolchain, simulator, device or
 native runtime was used.
 
-| Check | Actual result |
-| --- | --- |
-| `node tests/js/docs-candidate-snapshot.test.mjs` | Pass: real clone/checkout/npm pipeline on a tiny synthetic site; committed-source isolation, frozen path and hash receipt, preserved existing output, refused dangling symlink and unsafe path, failed-build cleanup |
-| Root TypeScript `tsc --noEmit` | Pass after typed fixture helpers and UTF-8 JSON parsing |
-| `node docs-site/scripts/generate-data.mjs --check` | Pass with default live-site settings |
-| `node docs-site/scripts/generate-api.mjs --check` | Pass; 226 headers, 1904 declarations, none unparsed |
-| `node docs-site/scripts/check-content.mjs` | Pass: 164 pages |
-| `node scripts/validate-docs.mjs` | Pass before dependency-directory relocation |
-| Pinned Prettier on changed docs/code | Pass before dependency-directory relocation; rerun on final integrated head |
+| Check                                              | Actual result                                                                                                                                                                                                        |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node tests/js/docs-candidate-snapshot.test.mjs`   | Pass: real clone/checkout/npm pipeline on a tiny synthetic site; committed-source isolation, frozen path and hash receipt, preserved existing output, refused dangling symlink and unsafe path, failed-build cleanup |
+| Root TypeScript `tsc --noEmit`                     | Pass after typed fixture helpers and UTF-8 JSON parsing                                                                                                                                                              |
+| `node docs-site/scripts/generate-data.mjs --check` | Pass with default live-site settings                                                                                                                                                                                 |
+| `node docs-site/scripts/generate-api.mjs --check`  | Pass; 226 headers, 1904 declarations, none unparsed                                                                                                                                                                  |
+| `node docs-site/scripts/check-content.mjs`         | Pass: 164 pages                                                                                                                                                                                                      |
+| `node scripts/validate-docs.mjs`                   | Pass before dependency-directory relocation                                                                                                                                                                          |
+| Pinned Prettier on changed docs/code               | Pass before dependency-directory relocation; rerun on final integrated head                                                                                                                                          |
 
 An actual isolated Next.js build of the base revision completed on the external
 volume. `npm ci --no-audit --no-fund`, `npm run data:check`, `npm run build` and

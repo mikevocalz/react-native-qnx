@@ -107,6 +107,17 @@ try {
     assert.ok(platformListing.stdout.includes(entry), entry);
   }
   const workspaceYaml = await readFile(path.join(qnx, 'pnpm-workspace.yaml'), 'utf8');
+  for (const patch of [
+    'braces@3.0.3.patch',
+    'react-native@0.88.1.patch',
+    'expo-modules-autolinking@58.1.0.patch',
+  ]) {
+    assert.ok(workspaceYaml.includes(`patches/${patch}`));
+    assert.deepEqual(
+      await readFile(path.join(qnx, 'patches', patch)),
+      await readFile(path.join(process.cwd(), 'patches', patch))
+    );
+  }
   assert.match(workspaceYaml, /'@rn-qnx\/expo-router-qnx': 'file:vendor\//);
   for (const name of [
     'react-native-drawer-layout',
