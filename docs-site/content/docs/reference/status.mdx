@@ -3,14 +3,15 @@ title: Status and limits
 description: What is proven on a device, what is host-tested, what is not proven, and how the matrix defines each status.
 ---
 
-Four statuses appear in these docs. No page uses "seamless" or similar wording for a feature without a device-verified row and the commit behind it.
+Five statuses appear in these docs. No page uses "seamless" or similar wording for a feature without a device-verified row and the commit behind it.
 
-| Status          | Meaning                                                                       |
-| --------------- | ----------------------------------------------------------------------------- |
-| Device-verified | A receipt shows it running on the custom Pi 400 image. The scenario is named. |
-| Host-tested     | A host test covers it, run in CI or locally. No device receipt.               |
-| Untested        | No claim either way.                                                          |
-| Not supported   | Not implemented.                                                              |
+| Status          | Meaning                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Device-verified | A receipt shows it running on the custom Pi 400 image. The scenario is named.                                            |
+| VM-tested       | A receipt shows it running on the QNX VM (QEMU, TCG, software render). Not a board result, and not a performance result. |
+| Host-tested     | A host test covers it, run in CI or locally. No device receipt.                                                          |
+| Untested        | No claim either way.                                                                                                     |
+| Not supported   | Not implemented.                                                                                                         |
 
 "Host-tested" in this repository means a hosted CI job builds and runs the test on Linux. The repository does not use a "Tier A" label for it.
 
@@ -28,9 +29,19 @@ Hardware: Raspberry Pi 400, custom BCM2711 image, QNX 8.0.5.
 | Held key repeat via synthetic Screen events     | [key hold](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-keyhold-2026-11-19)                                                                                                                                     |
 | Metro, Fast Refresh and reload                  | [dev client](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pi400-dev-client-2026-11-13)                                                                                                                                      |
 
+## Run on the QNX VM
+
+The QNX VM runs QNX SDP 8.0.5 under QEMU with software rendering. It shows that code builds and runs on QNX. It does not show behavior on a Pi 400, a stock Pi 4 or the release board, and its timings are not measurements of any board.
+
+| Capability                                                                                    | Receipt                                                                                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Twelve component cards rendered (render only, nothing pressed)                                | [2026-11-20](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/qnx-vm-2026-11-20), [2026-11-21 re-capture](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/qnx-vm-2026-11-21) |
+| JavaScript off the GUI thread: native pan and window controls while JavaScript is blocked 5 s | [S2 on the VM](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/s2-vm-2026-11-21)                                                                                                                   |
+| `validate-qnx-vm.sh` lane, three runs and a staged-copy run                                   | [S5 lane](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/s5-vm-lane-2026-11-21)                                                                                                                   |
+
 ## Not proven
 
-Pinch, rotation, multi-pointer, 1920x1080 output beyond the Hello World capture (the 2026-11-19 runs used 1024x768), Video and audio beyond the single 2026-11-13 QtVideo run (see [known gaps](/docs/reference/known-gaps)), a real USB keyboard hold, a stock Pi 4, and all 11 release gates. See [known gaps](/docs/reference/known-gaps) and [release gates](/docs/reference/release-gates).
+Pinch, rotation, multi-pointer, 1920x1080 output beyond the Hello World capture (the 2026-11-19 runs used 1024x768), Video and audio beyond the single 2026-11-13 QtVideo run (see [known gaps](/docs/reference/known-gaps)), a real USB keyboard hold, a stock Pi 4, and ten of the 11 release gates (only `dependencies` has passed). See [known gaps](/docs/reference/known-gaps) and [release gates](/docs/reference/release-gates).
 
 ## Commit SHAs
 

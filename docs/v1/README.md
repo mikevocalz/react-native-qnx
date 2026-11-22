@@ -1,10 +1,11 @@
 # React Native QNX v1 documentation
 
 Draft. This is the documentation set for the v1 release of the React Native
-0.88 line. v1 is not released: all eleven gates in the
+0.88 line. v1 is not released: ten of the eleven gates in the
 [readiness record](../releases/v1-readiness.md) are open. Until they pass, each
 page below describes the current `main` branch, and every device claim names
-the board it ran on.
+the board it ran on. Results from the QNX VM are labelled as such and do not
+count as board results.
 
 Gates 8 to 11 came from
 [PR #115](https://github.com/mikevocalz/react-native-qnx/pull/115), merged on
@@ -38,8 +39,8 @@ QSTI are different targets with different results.
 
 ## Evidence
 
-[Evidence gallery](evidence-gallery.md): every receipt, sorted by host, Pi 400
-and stock Pi 4 QSTI. The stock Pi 4 column is empty today.
+[Evidence gallery](evidence-gallery.md): every receipt, sorted by host, QNX VM,
+Pi 400 and stock Pi 4 QSTI. The stock Pi 4 section is empty today.
 
 ## Decisions
 

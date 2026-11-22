@@ -1,34 +1,24 @@
 # Evidence gallery
 
-The 2026-11-06 and 2026-11-07 receipts in [`docs/evidence/`](../evidence/) and the three 2026-11-19 runs, sorted by the machine they ran
-on. Later receipts are not tabulated here; see `docs/evidence/` and `docs/validation/`. A receipt that covers a host run and a device run appears in both tables;
-each row states only what ran on that table's target. A host result never
-counts toward a device column.
+Every receipt in [`docs/evidence/`](../evidence/) is listed on this page, grouped by the machine it ran on:
+the development host, the QNX VM, the custom Pi 400 image and stock Pi 4 QSTI. The first set of tables
+covers the 2026-11-06 and 2026-11-07 receipts in detail. The sections under
+[Later receipts](#later-receipts-2026-11-12-to-2026-11-21) cover everything dated 2026-11-12 or later.
+A receipt that covers a host run and a device run appears in both tables; each row states only what ran
+on that table's target. A host result never counts toward a device column, and a QNX VM result never
+counts toward a Pi 400 or release-board column.
 
-All receipts in the tables below are dated 2026-11-06 or 2026-11-07 and record
-the candidate revision named inside them. None was rerun for this page. They are
-historical prerequisite evidence and have not been attached to any v1 gate in
-[v1-readiness.json](../releases/v1-readiness.json). The Hello World and Nitro
-receipts ran Nitro `1.0.0-alpha.nightly.105.g69d365fc9b18`; the pin on `main`
+Each receipt records the revision it ran on. None was rerun for this page. [v1-readiness.json](../releases/v1-readiness.json)
+cites the `dependencies` receipt (gate passed) and two `window-chrome` receipts (gate still pending); no other receipt is attached to a gate. The 2026-11-06 and
+2026-11-07 Hello World and Nitro receipts ran Nitro `1.0.0-alpha.nightly.105.g69d365fc9b18`; the pin on `main`
 is `alpha.nightly.136.gdb81de61bd32`, and the Nitro device result was not rerun on it.
 
-Three later Pi 400 receipts, dated 2026-11-19, are not in the tables:
-[run 1](../evidence/pr149-pi400-run1-2026-11-19/README.md) (commit `26bd6aa`),
-[run 2](../evidence/pr149-pi400-run2-2026-11-19/README.md) (commit `240dc08`) and
-[the held-key run](../evidence/pr149-pi400-keyhold-2026-11-19/README.md). They
-cover Worklets, Reanimated, Gesture Handler pan, tap and double-tap, SVG,
-`expo-image` animated GIF and WebP, modal and drawer Escape, and key repeat, on a
-1024x768 display. They do not cover pinch, rotation, multi-pointer input,
-1920x1080, Video, Audio or a gesture that runs while JavaScript is blocked. (The
-[QNX VM receipt](../evidence/s2-vm-2026-11-21/README.md) ran a native pan during a
-blocked JS thread with the opt-in flag; it is not a Pi 400 receipt and not Gesture Handler.)
-They are not attached to any v1 gate.
-
-| Target                       | What that target means here                                                                                                                          |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Development host             | macOS arm64 unless the row says otherwise; Linux container runs are labelled                                                                         |
-| Pi 400, custom BCM2711 image | Physical Pi 400, QNX SDP 8.0.5, Qt 6.12.0 evaluation build (expired 2026-11-17) for the 2026-11-06/07 rows; public-source Qt later, run as `qnxuser` |
-| Stock Pi 4, QSTI             | QSTI 0.5.0 build 50, the stock release board for v1. No receipts yet                                                                                 |
+| Target                       | What that target means here                                                                                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Development host             | macOS arm64 unless the row says otherwise; Linux container runs are labelled                                                                                                   |
+| QNX VM                       | QEMU 11.1.3 on the Mac, QNX SDP 8.0.5, software render, TCG emulation. Not a board: timings are not performance evidence and no row counts as Pi 400 or release-board evidence |
+| Pi 400, custom BCM2711 image | Physical Pi 400, QNX SDP 8.0.5, Qt 6.12.0 evaluation build (expired 2026-11-17) for the 2026-11-06/07 rows; public-source Qt from 2026-11-12 onward, run as `qnxuser`          |
+| Stock Pi 4, QSTI             | QSTI 0.5.0 build 50, the stock release board for v1. No receipts yet                                                                                                           |
 
 ## Development host
 
@@ -78,6 +68,64 @@ The fullscreen Hello World capture from the Pi 400. The
 [Nitro/Qt capture](../evidence/pi400-nitro-qt-hello-world-2026-11-07.png) and
 [input lifecycle capture](../evidence/pi400-input-lifecycle-2026-11-07.png) show
 the same screen.
+
+## Later receipts (2026-11-12 to 2026-11-21)
+
+These receipts were added after the tables above. Each row names the target that its own README states and the
+limit that README states. Nothing here is stock Pi 4 QSTI or release-board evidence.
+
+### Development host and hosted runners
+
+| Receipt                                                                                                                                                                                                                   | What ran                                                                                                                                                                                                     | Limit stated in the receipt                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| [Clean-host simulation, 2026-11-12](../evidence/clean-host-sim-2026-11-12-b51b49c.md)                                                                                                                                     | Fresh clone and empty `HOME` on a used Mac                                                                                                                                                                   | A simulation: the Mac already had Homebrew, Node, Qt and the SDP, so it is not a clean machine          |
+| [Package contents audit, 2026-11-12](../evidence/pack-contents-2026-11-12-b51b49c.md)                                                                                                                                     | `pnpm pack` in every non-private package, then listing                                                                                                                                                       | Nothing was published                                                                                   |
+| [Quick start host render, 2026-11-19](../evidence/quickstart-host-2026-11-19.md)                                                                                                                                          | The README quick start commands on a fresh clone                                                                                                                                                             | No board, no container                                                                                  |
+| [Gallery layout through Yoga, 2026-11-13](../evidence/gallery-yoga-layout-2026-11-13.md)                                                                                                                                  | A JS test that feeds `onLayout` back through `yoga-layout` 3.2.1 for the gallery routes                                                                                                                      | Layout only; no pixels                                                                                  |
+| [Router option audit, 2026-11-13](../evidence/router-prop-audit-2026-11-13.md)                                                                                                                                            | Source reading of `Tabs` and `Drawer` options in `expo-router` 58.0.31                                                                                                                                       | A source audit, no runtime claim                                                                        |
+| [Hermes build hygiene, 2026-11-20](../evidence/hermes-build-hygiene-2026-11-20.md)                                                                                                                                        | Hermes build configuration and timing on one Mac                                                                                                                                                             | Other lanes shared the machine, so wall times carry noise                                               |
+| [Performance budgets, 2026-11-20](../evidence/s4-budgets-2026-11-20/README.md)                                                                                                                                            | Budget file, validator, host lane and timing probe                                                                                                                                                           | Nothing measured on the VM, the Pi 400 or the release board; `performance` stays pending                |
+| [Expo gate slice, 2026-11-20](../evidence/expo-gate-2026-11-20/README.md)                                                                                                                                                 | Prebuild idempotence test and the Expo SDK 58 capability table generator                                                                                                                                     | `expo` stays pending                                                                                    |
+| [Runner analyze, pack and check, 2026-11-20](../evidence/s6-runner-2026-11-20/README.md)                                                                                                                                  | `rnqnx analyze`, `runner pack`, `runner check` with five mutation checks, against a macOS arm64 runner                                                                                                       | No QNX runner was built; nothing was published                                                          |
+| [JavaScript thread, host, 2026-11-21](../evidence/s2-js-thread-2026-11-21/README.md)                                                                                                                                      | ASan build and tests for the opt-in JavaScript thread                                                                                                                                                        | Host only; the VM receipt below extends it                                                              |
+| [Window chrome, host, 2026-11-21](../evidence/s8-app-identity-window-chrome-2026-11-21/README.md)                                                                                                                         | Layout switch, title-bar inset model and contrast fixes under the offscreen QPA                                                                                                                              | `window-chrome` and `app-identity` stay pending                                                         |
+| [Dependencies re-check, 2026-11-21](../evidence/dependencies-2026-11-21/README.md)                                                                                                                                        | Dependency validation, audit and `pnpm outdated -r` on `fb20c3ad`, host and GitHub-hosted                                                                                                                    | Cited by the `dependencies` gate, which is passed                                                       |
+| [Distribution, host and container parts, 2026-11-21](../evidence/distribution-2026-11-21/README.md)                                                                                                                       | Qt source identity, patch and configure reproduction, qtimageformats build, closure check script                                                                                                             | `distribution` stays pending: Qt core libraries were not rebuilt, and no source offer or package exists |
+| PR 149, 159 and 161 Linux host receipts, [PR 149](../validation/pr149-stack-integration-2026-11-16.md), [PR 159](../validation/pr159-review-followup-2026-11-14.md), [PR 161](../validation/pr161-geometry-2026-11-16.md) | Worklets, Reanimated, Gesture Handler, image fetcher and SVG layout host tests with negative controls; raw outputs sit in the `pr149-*`, `pr159-*` and `pr161-*` folders of [`docs/evidence/`](../evidence/) | Linux host evidence; the PR 159 receipt says it contains no QNX or physical-device result               |
+
+### QNX VM
+
+QEMU 11.1.3, TCG, software render. Timings from these runs are not performance evidence.
+
+| Receipt                                                                              | What ran                                                                                           | Limit stated in the receipt                                                        |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Component captures, 2026-11-20](../evidence/qnx-vm-2026-11-20/README.md)            | Twelve component cards rendered by the showcase app and captured with `--screenshot`               | Render only; five cards failed on the public entry, which the next row re-captured |
+| [Re-capture of five components, 2026-11-21](../evidence/qnx-vm-2026-11-21/README.md) | The five cards that failed, on the fixed public entry; all five exited 0                           | Render only; nothing pressed or scrolled                                           |
+| [VM validation lane, 2026-11-21](../evidence/s5-vm-lane-2026-11-21/README.md)        | `scripts/validate-qnx-vm.sh` three times plus a staged-copy run, all passing                       | Not the Pi 400 and not the release board; no budget changes                        |
+| [JavaScript thread on the VM, 2026-11-21](../evidence/s2-vm-2026-11-21/README.md)    | A native pan, minimize and close controls, and a 5 s blocked JS thread, three runs of 11 cases     | Synthetic `QMouseEvent`s; the showcase app was not used; not Gesture Handler       |
+| [Runner preflight, 2026-11-21](../evidence/s6-preflight-2026-11-21/README.md)        | The preflight unit test, cross-built and run on the VM, beside the host run                        | No playground host or app ran on the VM                                            |
+| [Distribution, VM part, 2026-11-21](../evidence/distribution-2026-11-21/README.md)   | All 26 ELF files of the staged runtime load on the VM; the gallery app ran after the RPATH rewrite | See the host row for what stays open                                               |
+
+A Linux VM receipt also exists, [Marathon VM run, 2026-11-20](../evidence/marathon-vm-2026-11-20/README.md).
+It is a Lima VM on a Mac with software rendering and is not QNX evidence; Marathon is outside the v1 scope.
+
+### Pi 400, custom BCM2711 image
+
+| Receipt                                                                                                                                                                                         | What ran                                                                                                                          | Limit stated in the receipt                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [Public-source Qt, 2026-11-12](../evidence/pi400-public-qt-2026-11-12-b51b49c.md) and [at -O2](../evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md)                                            | Hello World, the Qt/Nitro dispatcher probe and the Pressable probe with only public-source Qt loaded; then the `-O2` runtime      | The `-O2` runtime is the one the component gallery uses                                                                  |
+| [Qt Multimedia and QtVideo, 2026-11-13](../evidence/media-2026-11-13.md)                                                                                                                        | A QtVideo run with the multimedia add-on                                                                                          | Off by default; control-bar taps and fullscreen were not run and audio was not heard                                     |
+| [Image format plugins, 2026-11-13](../evidence/pi-image-formats-2026-11-13.md)                                                                                                                  | Animated GIF and WebP through `expo-image`                                                                                        | GIF played; WebP did not until the plugin build step was added, which the receipt then proves on the device              |
+| [Development client, 2026-11-13](../evidence/pi400-dev-client-2026-11-13/README.md)                                                                                                             | Fast Refresh, LogBox, developer menu and Metro-unreachable screen                                                                 | Input injected through Screen; pointer injection did not reach the right coordinates                                     |
+| [Gallery layout, 2026-11-13](../evidence/tile-layout-pi400-2026-11-13/README.md)                                                                                                                | Component gallery at three window sizes and one live resize                                                                       | Its own review says the host identity, revision and commands were not recorded, so it cannot qualify a candidate         |
+| [PR 149 run 1](../evidence/pr149-pi400-run1-2026-11-19/README.md), [run 2](../evidence/pr149-pi400-run2-2026-11-19/README.md), [held key](../evidence/pr149-pi400-keyhold-2026-11-19/README.md) | Worklets, Reanimated, Gesture Handler pan, tap and double-tap, SVG, `expo-image`, modal and drawer Escape, key repeat at 1024x768 | No pinch, rotation, multi-pointer, 1920x1080, Video, Audio or JS-blocked gesture; key repeat was synthetic Screen events |
+
+Several 2026-11-13 folders hold raw captures and logs and no README: `drawer-route-`, `drawer-runtime-`,
+`drawer-selection-`, `expo-image-device-`, `expo-image-io-`, `expo-image-resize-`, `svg-device-`,
+`worklets-frame-`, `rnsvg-corpus-` and `window-chrome-host-2026-11-12`. Read them through the write-ups in
+[`docs/validation/`](../validation/) (for example [drawer selection](../validation/pr159-drawer-selection-2026-11-13.md)
+and [SVG gallery](../validation/pr161-device-gallery-2026-11-13.md)). The folders themselves do not state a board,
+so this page does not assign them to a column. [`webgpu-qnx-2026-11-13`](../evidence/webgpu-qnx-2026-11-13/) belongs to the v2 research track and is outside v1.
 
 ## Stock Pi 4, QSTI
 

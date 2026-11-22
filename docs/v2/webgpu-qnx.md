@@ -30,8 +30,8 @@ opened its own Screen window next to the gallery under `rnqnx-winmgr` and passed
 | `no-uncaptured-errors`          | Dawn raised no uncaptured error outside the expected loss                                                                                                                                                                                        |
 
 The final result line is `RNQNX_WEBGPU RESULT PASS stages=10 passed=10
-verified=1`. The raw log is
-[dawn-gles-run-app.log](../evidence/webgpu-qnx-2026-11-13/dawn-gles-run-app.log).
+verified=1`. The raw log, `dawn-gles-run-app.log`, is not in the
+repository (`.gitignore` excludes `*.log`).
 
 The on-glass check is separate. The stock `screenshot` tool captured the whole
 1920x1080 display while the window was held on screen.
@@ -235,7 +235,7 @@ frame back, and uploads it as a `QSGTexture` in a Qt Quick item.
 through the CPU. A zero-copy path would import a Qt-owned texture into Dawn as
 an EGL image, which this stage did not attempt. At most one frame is in flight
 between the worker and the GUI thread. The path ran on the Pi 400
-([qt-compose-run.log](../evidence/webgpu-qnx-2026-11-13/qt-compose-run.log)):
+(`qt-compose-run.log`, not in the repository because `.gitignore` excludes `*.log`):
 `QtGraphicsSurface` reported `Initialized` with backend `OpenGL` for the
 640x480 window, 259 frames were produced in eight seconds, and a
 `grabWindow()` of the scene showed the triangle's red at the item centre, a black

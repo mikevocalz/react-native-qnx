@@ -3,7 +3,7 @@
 Not released. No tag, npm package or binary exists for v1. This draft collects
 what the notes will say once the eleven gates in the
 [readiness record](../releases/v1-readiness.md) pass. Anything in **Pending**
-blocks the release.
+blocks the release. Status below is as of `main` at `4a4c4818`.
 
 ## Scope
 
@@ -69,21 +69,22 @@ candidate needs its own.
 
 ## Pending
 
-All eleven gates are `pending` (checked 2026-11-19).
+Ten of the eleven gates are `pending`. `dependencies` passed on host and hosted
+evidence ([receipt](../evidence/dependencies-2026-11-21/README.md)); it says
+nothing about a device.
 
-| Gate             | What is missing                                                                              |
-| ---------------- | -------------------------------------------------------------------------------------------- |
-| `distribution`   | A public-source Qt build with its notices, hashes and library/plugin closure                 |
-| `ci`             | Required checks passing for the release candidate on authorized runners                      |
-| `cold-boot`      | 20 consecutive supervised graphics cold boots on the release board and image                 |
-| `device-parity`  | A disposition for every component on stock Pi 4 QSTI, plus keyboard and touch proof          |
-| `performance`    | Startup-to-first-frame, presented-frame intervals and RSS on QNX; none are measured yet      |
-| `developer-path` | A new licensed developer creating, building, deploying and running an app from the docs      |
-| `documentation`  | This set, reviewed and published at a versioned location                                     |
-| `app-identity`   | Icon and short name from Expo config, with measured tile-label fit (PR #115)                 |
-| `window-chrome`  | Native title bar, minimize on QNX Screen, and the Nitro v1 windows API (PR #115)             |
-| `expo`           | Prebuild from config plugins, a prebuilt runner, and Expo Router on device (PR #115)         |
-| `dependencies`   | Every Bump row in the dependency baseline landed, with `pnpm outdated -r` attached (PR #115) |
+| Gate             | What is missing                                                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `distribution`   | A rebuilt Qt core, a source offer and package manifests; the closure check exists ([receipt](../evidence/distribution-2026-11-21/README.md))  |
+| `ci`             | Required checks passing for the release candidate on authorized runners                                                                       |
+| `cold-boot`      | 20 consecutive supervised graphics cold boots on the release board and image                                                                  |
+| `device-parity`  | A disposition for every component on stock Pi 4 QSTI, plus keyboard and touch proof                                                           |
+| `performance`    | Startup-to-first-frame, presented-frame intervals and RSS on QNX; none are measured yet                                                       |
+| `developer-path` | A new licensed developer creating, building, deploying and running an app from the docs                                                       |
+| `documentation`  | A `v1` tag to freeze the docs under, and a review of this set by someone other than its author; see [documentation gate](#documentation-gate) |
+| `app-identity`   | Icon and short name from Expo config, with measured tile-label fit on each target launcher                                                    |
+| `window-chrome`  | Device receipts for both layouts, minimize and restore, and the close guards; host and QNX VM receipts exist                                  |
+| `expo`           | A prebuilt QNX runner, and Expo Router and a standalone package running on a device                                                           |
 
 ## Known limits
 
@@ -102,3 +103,20 @@ All eleven gates are `pending` (checked 2026-11-19).
   2026-11-17. The 2026-11-12 and 2026-11-19 receipts used the public-source build. Release artifacts need the public-source build from `distribution`.
 - The CLI and template work inside this repository checkout. No npm package is
   published.
+
+## Documentation gate
+
+The `documentation` gate asks for published, versioned documentation with
+reviewed local links. At `main` `4a4c4818`:
+
+- Published: the documentation site builds from `docs-site/` and deploys to
+  GitHub Pages on every push to `main` (workflow `docs-pages.yml`).
+- Versioned: not yet. `docs-site/versions.json` lists no snapshot, and the
+  repository has no tag. The site labels itself `latest (main, 0.1.0)`. A frozen
+  copy under `/v/<tag>/` needs a release tag, which waits on the other gates.
+- Local links: checked by `docs-site` (`npm run check:content`) for site pages
+  and by a one-off script for the Markdown under `docs/`, which found sixteen
+  links to log files that were never committed. They are now plain text, with a
+  note in each receipt.
+- Review: this set has not been read end to end by someone who did not write it.
+  `TODO.md` asks for that review before the gate flips.

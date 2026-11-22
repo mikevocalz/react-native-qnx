@@ -12,7 +12,7 @@ React Native QNX has no release. This page records what the repository says abou
 | Root workspace (`react-native-qnx-monorepo`) | `0.1.0`, private                                              | [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json)                               |
 | The 12 packages under `packages/`            | `0.1.0` each, published under the provisional `@rn-qnx` scope | `packages/*/package.json`                                                                                           |
 | `@rn-qnx/react-native-qnx-cli`               | `0.1.0`, marked private                                       | [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx-cli/package.json) |
-| Git tags                                     | none                                                          | `git tag` printed nothing on `main` at `8d7deaa`                                                                    |
+| Git tags                                     | none                                                          | `git tag` printed nothing in a fresh clone of `main` at `4a4c4818`                                                  |
 | npm                                          | nothing published                                             | [CONTRIBUTING.md](https://github.com/mikevocalz/react-native-qnx/blob/main/CONTRIBUTING.md), [FAQ](/docs/faq)       |
 
 I read the 12 package versions with `node -e "require('./packages/<dir>/package.json')"` in each package directory. All 12 printed `0.1.0` and license `MIT`.
@@ -29,7 +29,7 @@ I read the 12 package versions with `node -e "require('./packages/<dir>/package.
 - Package versions stay at their existing values until package ownership, release units and publication are reviewed.
 - The preparation work does not tag or publish a release.
 
-v1 is defined by eleven gates in [v1-readiness.json](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.json): distribution, ci, cold-boot, device-parity, performance, developer-path, documentation, app-identity, window-chrome, expo and dependencies. I ran `jq -r '.. | objects | select(has("id") and has("status")) | "\(.id) \(.status)"'` on that file. All eleven print `pending`. The [release gates page](/docs/reference/release-gates) shows the same table.
+v1 is defined by eleven gates in [v1-readiness.json](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.json): distribution, ci, cold-boot, device-parity, performance, developer-path, documentation, app-identity, window-chrome, expo and dependencies. The [release gates page](/docs/reference/release-gates) is generated from that file and gives each gate's current status; at `main` 4a4c4818 ten were `pending` and `dependencies` was `passed`. The [release gates page](/docs/reference/release-gates) shows the same table.
 
 `pnpm validate:v1` exits nonzero unless every required gate is passed with a repository evidence path (stated in the readiness record; I did not run it). A reviewer has to inspect the cited revision and result before changing a gate.
 
