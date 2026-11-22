@@ -1,0 +1,39 @@
+Test project /Volumes/QNX/clones/rnqnx-software-20261122/window-build
+      Start  1: rnqnx_window_chrome_model
+ 1/17 Test  #1: rnqnx_window_chrome_model ............................   Passed    0.08 sec
+      Start  2: rnqnx_window_chrome_quick
+ 2/17 Test  #2: rnqnx_window_chrome_quick ............................   Passed    4.42 sec
+      Start  3: rnqnx_node_beacon
+ 3/17 Test  #3: rnqnx_node_beacon ....................................   Passed    1.18 sec
+      Start  4: rnqnx_window_session
+ 4/17 Test  #4: rnqnx_window_session .................................   Passed    0.45 sec
+      Start  5: rnqnx_window_chrome_quick_dpr2
+ 5/17 Test  #5: rnqnx_window_chrome_quick_dpr2 .......................   Passed    4.31 sec
+      Start  6: rnqnx_window_chrome_consumer_windows_hidden_sized
+ 6/17 Test  #6: rnqnx_window_chrome_consumer_windows_hidden_sized ....   Passed    0.07 sec
+      Start  7: rnqnx_window_chrome_consumer_legacy_no_window
+ 7/17 Test  #7: rnqnx_window_chrome_consumer_legacy_no_window ........   Passed    0.07 sec
+      Start  8: rnqnx_window_chrome_consumer_empty_window
+ 8/17 Test  #8: rnqnx_window_chrome_consumer_empty_window ............   Passed    0.07 sec
+      Start  9: rnqnx_window_chrome_consumer_rejects_bad-controls
+ 9/17 Test  #9: rnqnx_window_chrome_consumer_rejects_bad-controls ....   Passed    0.01 sec
+      Start 10: rnqnx_window_chrome_consumer_rejects_bad-style
+10/17 Test #10: rnqnx_window_chrome_consumer_rejects_bad-style .......   Passed    0.01 sec
+      Start 11: rnqnx_window_chrome_consumer_rejects_unknown-key
+11/17 Test #11: rnqnx_window_chrome_consumer_rejects_unknown-key .....   Passed    0.01 sec
+      Start 12: rnqnx_window_chrome_consumer_rejects_not-object
+12/17 Test #12: rnqnx_window_chrome_consumer_rejects_not-object ......   Passed    0.01 sec
+      Start 13: rnqnx_window_chrome_consumer_rejects_size-fraction
+13/17 Test #13: rnqnx_window_chrome_consumer_rejects_size-fraction ...   Passed    0.01 sec
+      Start 14: rnqnx_window_chrome_consumer_rejects_size-large
+14/17 Test #14: rnqnx_window_chrome_consumer_rejects_size-large ......   Passed    0.01 sec
+      Start 15: rnqnx_window_chrome_consumer_rejects_size-extra
+15/17 Test #15: rnqnx_window_chrome_consumer_rejects_size-extra ......   Passed    0.01 sec
+      Start 16: rnqnx_window_chrome_consumer_rejects_size-string
+16/17 Test #16: rnqnx_window_chrome_consumer_rejects_size-string .....   Passed    0.01 sec
+      Start 17: rnqnx_window_chrome_consumer_rejects_injection
+17/17 Test #17: rnqnx_window_chrome_consumer_rejects_injection .......   Passed    0.01 sec
+
+100% tests passed out of 17
+
+Total Test time (real) =  10.74 sec
