@@ -88,6 +88,16 @@ qtsvg into `$QT_PUBLIC_ROOT/src-svg`, not into `src`: with a `qtsvg` directory
 beside `qtbase`, running `configure-qnx.sh` again stops with `Failed to find the
 host tool "Qt6::svgtoqml"`.
 
+Each `single-pass-build.sh` invocation now creates an atomic `attempt-XXXXXXXX/`
+directory under `STAGE_LOG_DIR`. Individual stage output and guarded host/QNX
+build logs are written inside that directory, rather than replacing logs from
+earlier `ONLY` reruns. The original `stages.tsv` and `disk-samples.tsv`
+remain append-only and compatible with existing receipts; `stage-attempts.tsv`
+records the stage log and (if applicable) detailed build log for each new
+attempt. Earlier rows in a pre-upgrade `stages.tsv` have no corresponding
+log paths in the new index. Run the host regressions with
+`node --test tests/js/qnx-pr217-regressions.test.mjs`.
+
 `stage-runtime.py` writes `manifest.json` and
 `needed.json`; the receipt's `SHA256SUMS` was then written with
 `shasum -a 256` over every staged file.
@@ -369,3 +379,13 @@ from `CMAKE_INSTALL_RPATH` and needs `libhermesvmlean.so` beside it (or on
 `LD_LIBRARY_PATH`). React Native builds its own sources with `-Werror`; at `-O2`
 the script demotes the GCC 12 `maybe-uninitialized` family, the list the
 2026-11-19 PR 149 build used.
+
+When using `build-app-qnx.sh` from the extracted source bundle, set
+`APP_SRC` to an application repository checkout containing
+`vnext/cmake/qnx-aarch64le.toolchain.cmake`. The build script passes that
+absolute path as `RNQNX_APP_TOOLCHAIN_PATH`, which also propagates to CMake
+`try_compile`. The bundle does not include the application checkout.
+For previously configured Qt module trees, the toolchain adds
+`--enable-new-dtags` to existing cached linker flags without discarding
+other flags; still inspect the ELF dynamic sections of rebuilt outputs
+using `dump-dynsec.sh` and `verify-closure.py` before staging.
