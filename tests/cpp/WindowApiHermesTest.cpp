@@ -51,7 +51,9 @@ void exercise(bool jsThread, bool hidden) {
   evaluate(host, std::string("globalThis.expectedInset = ") + (hidden ? "44;" : "0;") +
       "globalThis.expectedContentHeight = " + (hidden ? "600;" : "556;"));
   evaluate(host, R"JS(
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
+    // Each evaluate() is a separate Hermes program: reusable helpers must be
+    // global object properties, rather than program-scoped lexical bindings.
+    globalThis.check = (ok, message) => { if (!ok) throw new Error(message); };
     globalThis.first = __rnqnxWindowHost.getCurrentWindow();
     globalThis.second = __rnqnxWindowHost.getCurrentWindow();
     check(!first.equals(second), 'handles must be independent');

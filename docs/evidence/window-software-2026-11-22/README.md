@@ -96,3 +96,12 @@ The recorded generator hash identifies the original compile receipt. A later
 entry-point refactor exports the same generation check for the root codegen gate;
 its generated C++ and declaration outputs are unchanged. Both standalone and
 root generation checks pass after that refactor.
+
+The original fixture hash in `source-sha256.json` predates the cross-evaluation
+helper fix. Hosted linked CI subsequently exposed that Hermes does not retain
+program-scoped `const check` between evaluations. The fixture now installs
+`globalThis.check`; its existing assertions remain intact. The
+[actual Hermes scope control](hermes-scope-repro.txt) records the original
+failure, successful cross-evaluation lookup and intentional false-assertion
+rejection. This local control covers helper scope only; the full linked window
+fixture requires a fresh CI result. Historical source hashes are unchanged.
