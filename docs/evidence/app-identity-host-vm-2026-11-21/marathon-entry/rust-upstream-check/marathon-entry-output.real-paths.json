@@ -1,0 +1,11 @@
+{
+  "action": "written",
+  "directory": "/Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/desktop",
+  "file": "org.example.fieldnotes.desktop",
+  "sha256": "f613fc7a59c805d6fb945e13a7e614fa8a41f965f55e66a9c1f7854a6d279ea5",
+  "entry": {
+    "name": "Notes",
+    "exec": "sh /Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/run.sh",
+    "icon": "/Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/icons/icon-128.png"
+  }
+}

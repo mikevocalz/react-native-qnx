@@ -76,6 +76,8 @@ The tile label must fit the launcher box on one line. The check measures the ren
 
 The [2026-11-21 host and QNX VM receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/app-identity-host-vm-2026-11-21) lists each gate criterion with its state: the QNX VM loaded all ten icon sizes and drew the icon in the title bar. No launcher tile or task switcher has been checked on a device.
 
+For Marathon, `pnpm qnx project marathon-entry --project <dir> --app-dir <device directory> --exec "<command>"` writes the launcher `.desktop` entry from the prepared descriptor, after `prepare-native --platform marathon`. Its output is checked on the host against Marathon-Shell's own reader. No Marathon device has loaded one yet. See [App icon and tile name](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/app-identity.md) for the options and the commands it refuses.
+
 A device result for tile layout is in the [tile-layout receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/tile-layout-pi400-2026-11-13) (Pi 400, 2026-11-13).
 
 ## Troubleshooting

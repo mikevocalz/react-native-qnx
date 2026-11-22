@@ -1,0 +1,1 @@
+rnqnx: --exec starts with "/": Marathon keeps only the file name and drops the directory, so the command would not be found. Use a command on PATH, or "sh /absolute/path/to/script".

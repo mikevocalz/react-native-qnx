@@ -1,0 +1,44 @@
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
+  '[Desktop Entry]\n' +
+    'Type=Application\n' +
+    'Name=Notes\n' +
+    'Exec=sh /home/user/fieldnotes/run.sh\n' +
+    'Icon=/home/user/fieldnotes/icons/icon-128.png\n' +
+    'Terminal=false\n' +
++   'StartupWMClass=org.example.fieldnotes\n'
+-   'StartupWMClass=org.example.fieldnotes\n' +
+-   'X-Purism-FormFactor=Mobile;\n'
+
+    at file:///Volumes/QNX/clones/marathon-manifest/tests/js/marathon-entry.test.mjs:99:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '[Desktop Entry]\n' +
+    'Type=Application\n' +
+    'Name=Notes\n' +
+    'Exec=sh /home/user/fieldnotes/run.sh\n' +
+    'Icon=/home/user/fieldnotes/icons/icon-128.png\n' +
+    'Terminal=false\n' +
+    'StartupWMClass=org.example.fieldnotes\n',
+  expected: '[Desktop Entry]\n' +
+    'Type=Application\n' +
+    'Name=Notes\n' +
+    'Exec=sh /home/user/fieldnotes/run.sh\n' +
+    'Icon=/home/user/fieldnotes/icons/icon-128.png\n' +
+    'Terminal=false\n' +
+    'StartupWMClass=org.example.fieldnotes\n' +
+    'X-Purism-FormFactor=Mobile;\n',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.13.0
+exit=1

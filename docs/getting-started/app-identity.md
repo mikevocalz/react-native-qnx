@@ -311,6 +311,64 @@ that comparison. The existing icon files are then checked against the hashes
 the existing file records. If everything matches, the existing descriptor and
 icons are kept and the rerun reports `unchanged`.
 
+## Marathon launcher entry
+
+`rnqnx project marathon-entry` writes the entry Marathon-Shell lists on its
+home grid for a prepared app. Run `prepare-native --platform marathon` first:
+
+```bash
+pnpm qnx project marathon-entry --project . \
+  --app-dir /home/user/fieldnotes --exec "sh /home/user/fieldnotes/run.sh"
+```
+
+It reads `build/marathon/native-app.json` and writes
+`build/marathon/desktop/<appId>.desktop`, then prints the file's SHA-256 and the
+three values that matter (`Name`, `Exec`, `Icon`). Rerunning with the same
+inputs writes the same bytes. `--dry-run` writes nothing.
+
+```ini
+[Desktop Entry]
+Type=Application
+Name=Notes
+Exec=sh /home/user/fieldnotes/run.sh
+Icon=/home/user/fieldnotes/icons/icon-128.png
+Terminal=false
+StartupWMClass=org.example.fieldnotes
+X-Purism-FormFactor=Mobile;
+```
+
+This is a freedesktop `.desktop` entry, not a signed `.marathon` manifest: the
+`.marathon` schema takes only a QML entry point, so it cannot start this
+host ([ADR-0022](../adr/0022-marathon-launcher-entry-generator.md) has the
+derivation from Marathon-Shell's `desktop.rs`). Copy it to
+`~/.local/share/applications` on the device, with the app's `icons/`
+directory in `--app-dir`. The icon file must exist when Marathon scans the
+entry, or the tile gets the fallback icon.
+
+| Option        | Meaning                                                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--app-dir`   | Absolute device directory that holds `icons/`. Letters, digits, `_ . + -` only.                                            |
+| `--exec`      | The command Marathon starts. Refused when Marathon would rewrite or drop it: see below.                                    |
+| `--icon-size` | A size from the generated set. Default 128, which covers the launcher tile at Keel pixel ratio 1 (86 px) and 1.5 (128 px). |
+
+`Name` is the tile label (`shortName`, else `expo.name`), already measured
+against the launcher box by prepare-native. `X-Purism-FormFactor=Mobile;` keeps
+the entry on the grid under Marathon's default "filter mobile friendly apps"
+setting.
+
+Marathon keeps only the file name of a command that starts with `/`, so
+`--exec /opt/app/bin/app` would run `app` from `PATH`. The command is refused;
+use a command on `PATH`, or `sh /absolute/path/to/script`. Field codes (`%U`),
+repeated whitespace, `--new-window` style flags, `flatpak run`, `snap run`,
+`gapplication`, `sailfish-qml` and X11-only tools are refused for the same
+reason: Marathon would run something other than what the entry says.
+
+Checked on the host only. The generated entry was read by Marathon-Shell's own
+`read_app` and `fits_a_phone` code (copied unchanged, see the
+[receipt](../evidence/app-identity-host-vm-2026-11-21/marathon-entry/)). No
+Marathon device has loaded one, so how the tile looks and whether it starts the
+app are not measured.
+
 ## native-app.json fields
 
 ```json
@@ -350,9 +408,9 @@ lists every closure criterion with its state. On a QNX VM (not the Pi 400) a PR 
 build of the showcase app loaded all ten icon sizes into `QGuiApplication::windowIcon()`
 and drew the icon in the title bar. Still open, and the gate stays `pending`:
 
-- No Marathon app-manifest or `.desktop` generator exists for consumer apps,
-  so the icon set is not yet written into a launcher manifest. The playground's
-  `.desktop` file is hand-written.
+- The Marathon launcher entry is generated (see above) and checked against
+  Marathon-Shell's reader on the host. It has not been installed on a Marathon
+  device. The playground's `.desktop` file is still hand-written.
 - Launcher tile and task switcher on a Marathon device: not run. QNX has no
   launcher or task switcher to run them on.
 - The tile grid with a maximum-length and a short name: the receipt has a host

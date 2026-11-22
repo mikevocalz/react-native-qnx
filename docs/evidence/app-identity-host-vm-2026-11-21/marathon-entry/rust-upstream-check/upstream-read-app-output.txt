@@ -1,0 +1,35 @@
+== generated entry, icon dir exists on this host
+id=org.example.fieldnotes
+name=Notes
+icon=/Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/icons/icon-128.png
+missing_icon=None
+exec=sh /Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/run.sh
+shown=true
+flatpak=false
+keel_hosted=false
+fits_a_phone=true
+exit=0
+== negative control: no X-Purism-FormFactor
+id=nohint
+name=Notes
+icon=/Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/icons/icon-128.png
+missing_icon=None
+exec=sh /Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/run.sh
+shown=true
+flatpak=false
+keel_hosted=false
+fits_a_phone=false
+exit=1
+== negative control: Exec with leading /
+exec=run.sh
+== generator's own default-path output (icon file absent on this host)
+id=missing-icon
+name=Notes
+icon=layout-grid
+missing_icon=Some("/home/user/fieldnotes/icons/icon-128.png")
+exec=sh /home/user/fieldnotes/run.sh
+shown=true
+flatpak=false
+keel_hosted=false
+fits_a_phone=true
+exit=1

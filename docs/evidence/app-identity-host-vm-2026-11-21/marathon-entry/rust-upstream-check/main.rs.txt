@@ -1,0 +1,301 @@
+use std::collections::HashSet;
+use std::fs;
+use std::path::Path;
+use freedesktop_entry_parser::Entry;
+
+// Everything below is copied unchanged from
+// patrickjquinn/Marathon-Shell@567f1faa crates/marathon-shell-native/src/desktop.rs,
+// except: the cxx-qt bridge and to_qt are left out, and `Icons` is a stub that
+// returns the Icon value when it is an existing absolute file (the branch of
+// Icons::find that applies to an absolute path) and the fallback otherwise.
+const KEEL_HOST: &str = "marathon-keel-host ";
+trait MapOrDefault<T> { fn map_or_default<U: Default, F: FnOnce(T) -> U>(self, f: F) -> U; }
+impl<T> MapOrDefault<T> for Option<T> { fn map_or_default<U: Default, F: FnOnce(T) -> U>(self, f: F) -> U { self.map_or_else(U::default, f) } }
+
+const FALLBACK_ICON: &str = "layout-grid";
+
+// Sailfish's stock launcher icons, as Marathon's own apps.
+const SAILFISH_LAUNCHERS: &[(&str, &str)] = &[
+    ("browser", "browser"),
+    ("calculator", "calculator"),
+    ("calendar", "calendar"),
+    ("camera", "camera"),
+    ("clock", "clock"),
+    ("email", "email"),
+    ("gallery", "gallery"),
+    ("mediaplayer", "music"),
+    ("messaging", "messages"),
+    ("notes", "notes"),
+    ("phone", "phone"),
+    ("settings", "settings"),
+    ("store", "store"),
+];
+
+// Wayland only: an app that needs an X server would spin on its splash.
+const X11_ONLY: &[&str] = &[
+    "xterm", "uxterm", "xclock", "xcalc", "xeyes", "xlogo", "xev", "xinit", "xrdb", "xfontsel",
+    "xkbcomp", "xkill", "xset", "xsetbg", "xsetroot", "xrandr", "xdpyinfo",
+];
+
+// Desktop tools that ship ordinary entries but are no phone app.
+const DEV_TOOLS: &[&str] = &[
+    "alacritty",
+    "foot",
+    "footclient",
+    "foot-server",
+    "htop",
+    "btop",
+    "lxterminal",
+    "xterm",
+    "uxterm",
+    "qterminal",
+    "marathon-test",
+    "marathon-dev",
+    "marathon-camera-dev-pre",
+];
+
+// Adaptive apps that do not say so in their entry.
+const ADAPTIVE: &[&str] = &[
+    "org.gnome.Calendar",
+    "org.gnome.Calls",
+    "org.gnome.Chess",
+    "org.gnome.Contacts",
+    "org.gnome.Loupe",
+    "org.gnome.Maps",
+    "org.gnome.Music",
+    "org.gnome.Papers",
+    "org.gnome.Snapshot",
+    "org.gnome.TextEditor",
+    "org.gnome.Weather",
+    "org.gnome.clocks",
+    "org.gnome.font-viewer",
+    "sm.puri.Chatty",
+    "sm.puri.Phosh",
+    "org.sigxcpu.Phosh",
+    "org.kde.angelfish",
+    "org.kde.calindori",
+    "org.kde.kalk",
+    "org.kde.kasts",
+    "org.kde.kclock",
+    "org.kde.koko",
+    "org.kde.neochat",
+    "org.kde.tokodon",
+    "org.gnome.Console",
+    "io.github.tchx84.Flatseal",
+    "page.codeberg.libre_menteur.LibreMenteur",
+];
+
+const WINDOW_FLAGS: &[&str] = &[
+    "--new-window",
+    "-new-window",
+    "--new-tab",
+    "-new-tab",
+    "--new-instance",
+    "-new-instance",
+];
+
+#[derive(Debug, Default, PartialEq)]
+struct App {
+    id: String,
+    name: String,
+    icon: String,
+    missing_icon: Option<String>,
+    exec: String,
+    flatpak_ref: Option<String>,
+    categories: Vec<String>,
+    keywords: Vec<String>,
+    // Form-factor hints: X-Purism-FormFactor, then X-KDE-FormFactors.
+    purism: Vec<String>,
+    kde: Vec<String>,
+    shown: bool,
+}
+
+impl App {
+    fn is_flatpak(&self) -> bool {
+        self.exec.starts_with("FLATPAK:")
+    }
+
+    fn fits_a_phone(&self, phone_apps: &HashSet<String>) -> bool {
+        let has = |list: &[String], words: &[&str]| {
+            list.iter()
+                .any(|v| words.iter().any(|w| v.to_lowercase().contains(w)))
+        };
+        if DEV_TOOLS.contains(&self.id.to_lowercase().as_str()) {
+            return false;
+        }
+        phone_apps.contains(&self.id)
+            || has(&self.purism, &["mobile"])
+            || has(&self.kde, &["handset", "phone"])
+            || self
+                .categories
+                .iter()
+                .any(|c| c.eq_ignore_ascii_case("mobile") || c.eq_ignore_ascii_case("phone"))
+            || ADAPTIVE.contains(&self.id.as_str())
+    }
+}
+fn read_app(path: &Path, icons: &mut Icons) -> Option<App> {
+    let entry = Entry::parse(fs::read(path).ok()?).ok()?;
+    let desktop = entry.section("Desktop Entry")?;
+    let get = |key: &str| desktop.attr(key).last().map(String::as_str);
+    let list = |key: &str| get(key).map(split).unwrap_or_default();
+    let yes = |key: &str| get(key).is_some_and(|v| v.eq_ignore_ascii_case("true"));
+    if get("Type").is_some_and(|t| t != "Application") {
+        return None;
+    }
+    let raw_exec = get("Exec")?;
+    let mut exec = clean_exec(raw_exec)?;
+    let binary = exec
+        .split_whitespace()
+        .find(|t| !t.starts_with('-'))
+        .map(file_name)
+        .unwrap_or_default();
+    if X11_ONLY.contains(&binary) {
+        return None;
+    }
+    let id = path.file_stem()?.to_string_lossy().into_owned();
+    // A Keel app runs under marathon-keel-host.
+    let sailjail = entry.section("X-Sailjail");
+    let keel =
+        sailjail.is_some() || raw_exec.starts_with("sailfish-qml ") || yes("X-Marathon-KeelHost");
+    if keel {
+        // Sandboxed by its Sailjail permissions when it names itself.
+        let jail = sailjail.and_then(|s| {
+            let named = |key| s.attr(key).last().filter(|v| !v.is_empty());
+            let permissions = split(s.attr("Permissions").last()?).join(",");
+            Some(format!(
+                " --sailjail {permissions} --org {} --app {}",
+                named("OrganizationName")?,
+                named("ApplicationName")?
+            ))
+        });
+        exec = format!(
+            "{KEEL_HOST}--app-id {id}{} -- {exec}",
+            jail.unwrap_or_default()
+        );
+    }
+    let icon_name = get("Icon").unwrap_or_default();
+    let icon = icons.resolve(icon_name);
+    let mut app = App {
+        name: get("Name")?.to_owned(),
+        missing_icon: (icon_name.starts_with('/') && icon == FALLBACK_ICON)
+            .then(|| icon_name.to_owned()),
+        icon,
+        flatpak_ref: get("X-Flatpak").map(str::to_owned),
+        categories: list("Categories"),
+        keywords: list("Keywords"),
+        purism: list("X-Purism-FormFactor"),
+        kde: list("X-KDE-FormFactors"),
+        shown: !yes("NoDisplay") && !yes("Hidden"),
+        id,
+        exec,
+    };
+    if app.is_flatpak() && app.flatpak_ref.is_none() {
+        // Older exports have no X-Flatpak: the ref ends the command.
+        app.flatpak_ref = app
+            .exec
+            .split_whitespace()
+            .rev()
+            .find(|t| !t.starts_with('-') && t.contains('.'))
+            .map(str::to_owned);
+    }
+    Some(app)
+}
+
+fn split(value: &str) -> Vec<String> {
+    value
+        .split(';')
+        .filter(|s| !s.is_empty())
+        .map(str::to_owned)
+        .collect()
+}
+
+fn file_name(path: &str) -> &str {
+    path.rsplit('/').next().unwrap_or(path)
+}
+
+/// The command the compositor runs for an entry's `Exec`, or `None` for a
+/// D-Bus-activated service.
+fn clean_exec(exec: &str) -> Option<String> {
+    let mut stripped = String::with_capacity(exec.len());
+    let mut chars = exec.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c == '%' && chars.peek().is_some_and(|n| "fFuUdDnNickvm".contains(*n)) {
+            chars.next();
+        } else {
+            stripped.push(c);
+        }
+    }
+    let mut cleaned = stripped
+        .split_whitespace()
+        .filter(|t| !WINDOW_FLAGS.contains(t))
+        .collect::<Vec<_>>()
+        .join(" ");
+    if cleaned.is_empty() {
+        return None;
+    }
+    if let Some(app_id) = cleaned.strip_prefix("gapplication launch ") {
+        // org.gnome.Calculator runs as gnome-calculator.
+        let parts: Vec<&str> = app_id.trim().split('.').collect();
+        return Some(match parts.as_slice() {
+            [.., vendor, name] if parts.len() >= 3 => {
+                format!("{}-{}", vendor.to_lowercase(), name.to_lowercase())
+            }
+            [_, name] => name.to_lowercase(),
+            _ => cleaned,
+        });
+    }
+    if cleaned.contains("--gapplication-service") {
+        return None;
+    }
+    if let Some(rest) = cleaned.strip_prefix("/usr/bin/flatpak run ") {
+        cleaned = format!("flatpak run {rest}");
+    }
+    if cleaned.starts_with("flatpak run ") {
+        return Some(format!("FLATPAK:{cleaned}"));
+    }
+    if cleaned.starts_with("snap run ") || cleaned.starts_with("/snap/bin/") {
+        return Some(format!("SNAP:{cleaned}"));
+    }
+    if cleaned.starts_with('/') {
+        let (binary, args) = cleaned.split_once(' ').unwrap_or((&cleaned, ""));
+        return Some(
+            format!("{} {args}", file_name(binary))
+                .trim_end()
+                .to_owned(),
+        );
+    }
+    Some(cleaned)
+}
+
+
+struct Icons;
+impl Icons {
+    fn new() -> Self { Icons }
+    fn resolve(&mut self, name: &str) -> String {
+        if name.starts_with('/') && Path::new(name).is_file() { name.to_owned() } else { FALLBACK_ICON.to_owned() }
+    }
+}
+
+fn main() {
+    let phone_apps: HashSet<String> = HashSet::new();
+    let mut ok = true;
+    for arg in std::env::args().skip(1) {
+        let path = Path::new(&arg);
+        match read_app(path, &mut Icons::new()) {
+            None => { println!("DROPPED {arg}"); ok = false; }
+            Some(app) => {
+                println!("id={}", app.id);
+                println!("name={}", app.name);
+                println!("icon={}", app.icon);
+                println!("missing_icon={:?}", app.missing_icon);
+                println!("exec={}", app.exec);
+                println!("shown={}", app.shown);
+                println!("flatpak={}", app.is_flatpak());
+                println!("keel_hosted={}", app.exec.starts_with("marathon-keel-host "));
+                println!("fits_a_phone={}", app.fits_a_phone(&phone_apps));
+                if !(app.shown && app.fits_a_phone(&phone_apps) && app.missing_icon.is_none()) { ok = false; }
+            }
+        }
+    }
+    std::process::exit(if ok { 0 } else { 1 });
+}
