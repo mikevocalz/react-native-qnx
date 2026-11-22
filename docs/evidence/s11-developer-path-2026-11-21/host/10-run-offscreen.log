@@ -1,0 +1,7 @@
+Running "RNQnxPlayground"
+qt.qpa.fonts: Populating font family aliases took 159 ms. Replace uses of missing font family "Sans Serif" with one that exists to avoid this cost. 
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1121 20:53:35.645102 4211310464 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x109449e68).
+W1121 20:53:35.645293 1847062528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x10944c988).
+W1121 20:53:35.645316 1847062528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x10944a568).
+RNQNX_PLAYGROUND_SCREENSHOT build/dashboard.png 640x480
