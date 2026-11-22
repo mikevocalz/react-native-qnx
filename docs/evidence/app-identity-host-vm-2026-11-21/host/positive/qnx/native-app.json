@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "react-native-qnx/prepare-native-v1",
+  "appId": "org.example.fieldnotes",
+  "displayName": "Field Notes Professional",
+  "componentName": "FieldNotes",
+  "platform": "qnx",
+  "bundle": "/Volumes/QNX/clones/ai-build/sample/build/qnx/app.bundle.js",
+  "bundleSha256": "73cb3858a687a8494ca3323053016282f3dad39d42cf62ca4e79dda2aac7d9ac",
+  "window": {
+    "controls": "macos",
+    "titleBarStyle": "default"
+  },
+  "shortName": "Notes",
+  "icon": {
+    "source": "/Volumes/QNX/clones/ai-build/sample/assets/icon.png",
+    "sha256": "9fba285290a9bb88e332c2763d4272a42acc5b76827765a8e60585f73ff42da0",
+    "sizes": [
+      {
+        "size": 16,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-16.png",
+        "sha256": "c1f4c1421243e37f7b3123f18b9bd9d2b85b05e6877ca8b0ed5cc24dacd51d3d"
+      },
+      {
+        "size": 24,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-24.png",
+        "sha256": "1c90d73362c87e4e870023bb984476c41cc780d11cf1bead343b3b925661d9bd"
+      },
+      {
+        "size": 32,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-32.png",
+        "sha256": "b013bdb45530cdbe0ae1041c5cf3aa868634992ef2f024d90ecbadfa16fd0891"
+      },
+      {
+        "size": 48,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-48.png",
+        "sha256": "b75de0a2c59d5de2e3c137a5a6d8f2ff61840b4d37704879a0a64426be61ad01"
+      },
+      {
+        "size": 64,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-64.png",
+        "sha256": "333caa122398ea67d647def2eee959af936aba479659ebd3fbf693c5cae3f910"
+      },
+      {
+        "size": 96,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-96.png",
+        "sha256": "7fc5192809c2e466d2ef731e59223a2265d1401bb7b17fd5dfd74aab4e2723a3"
+      },
+      {
+        "size": 128,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-128.png",
+        "sha256": "8cc70ecc3df955fb6a94cca8c0b8ef265d2ae7ab3049f9f0007807e5e3132152"
+      },
+      {
+        "size": 192,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-192.png",
+        "sha256": "0fa6325c5f8c6fbb574f563dd21a91c0d64568b6b0c66d73a5c4860ed66b8032"
+      },
+      {
+        "size": 256,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-256.png",
+        "sha256": "6e19239193541a5b5ec5406826c7294231096d866a20dca1cb266560b2d56302"
+      },
+      {
+        "size": 512,
+        "path": "/Volumes/QNX/clones/ai-build/sample/build/qnx/icons/icon-512.png",
+        "sha256": "58617c170afd3d7d0627063eedd19aef53770daa5800dfc3295e6062e6ac004c"
+      }
+    ]
+  },
+  "labelFit": {
+    "target": "qnx",
+    "status": "not-measured",
+    "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+    "deviceMeasured": false
+  }
+}

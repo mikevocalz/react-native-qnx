@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Field Notes Professional",
+    "slug": "field-notes",
+    "icon": "./assets/icon.png",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.example.fieldnotes",
+        "componentName": "FieldNotes",
+        "shortName": "Notes"
+      }
+    }
+  }
+}

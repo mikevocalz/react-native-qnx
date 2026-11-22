@@ -1,0 +1,6 @@
+long-name-no-shortname rc=1
+no-icon-default rc=0
+small-icon rc=1
+empty-icon-string rc=1
+non-square-icon rc=1
+cjk-over rc=1

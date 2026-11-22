@@ -1,0 +1,84 @@
+UpdateCTestConfiguration  from :/Volumes/QNX/clones/ai-build/ts/DartConfiguration.tcl
+Parse Config file:/Volumes/QNX/clones/ai-build/ts/DartConfiguration.tcl
+Test project /Volumes/QNX/clones/ai-build/ts
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: rnqnx_app_identity
+
+1: Test command: /Volumes/QNX/clones/ai-build/ts/rnqnx_app_identity_test
+1: Working Directory: /Volumes/QNX/clones/ai-build/ts
+1: Environment variables: 
+1:  QT_QPA_PLATFORM=offscreen
+1: Test timeout computed to be: 60
+1: ********* Start testing of ApplicationIdentityTest *********
+1: Config: Using QtTest library 6.12.0, Qt 6.12.0 (arm64-little_endian-lp64 shared (dynamic) release build; by Apple LLVM 21.0.0 (clang-2100.3.34.2)), macos 27.0.0
+1: PASS   : ApplicationIdentityTest::initTestCase()
+1: PASS   : ApplicationIdentityTest::legacyDefaults()
+1: PASS   : ApplicationIdentityTest::publicIdentity()
+1: PASS   : ApplicationIdentityTest::incompleteAndDuplicateRejected()
+1: PASS   : ApplicationIdentityTest::invalidIds()
+1: PASS   : ApplicationIdentityTest::invalidNamesAndComponents()
+1: PASS   : ApplicationIdentityTest::unicodeDisplayName()
+1: PASS   : ApplicationIdentityTest::compiledDefaultsCannotBeChanged()
+1: PASS   : ApplicationIdentityTest::cleanupTestCase()
+1: Totals: 9 passed, 0 failed, 0 skipped, 0 blacklisted, 3ms
+1: ********* Finished testing of ApplicationIdentityTest *********
+1/3 Test #1: rnqnx_app_identity ...............   Passed    0.25 sec
+test 2
+    Start 2: rnqnx_icon_set
+
+2: Test command: /Volumes/QNX/clones/ai-build/ts/rnqnx_icon_set_test
+2: Working Directory: /Volumes/QNX/clones/ai-build/ts
+2: Environment variables: 
+2:  QT_QPA_PLATFORM=offscreen
+2: Test timeout computed to be: 60
+2: ********* Start testing of IconSetTest *********
+2: Config: Using QtTest library 6.12.0, Qt 6.12.0 (arm64-little_endian-lp64 shared (dynamic) release build; by Apple LLVM 21.0.0 (clang-2100.3.34.2)), macos 27.0.0
+2: PASS   : IconSetTest::initTestCase()
+2: PASS   : IconSetTest::writesEverySizeWithSquareCorners()
+2: PASS   : IconSetTest::outputIsDeterministic()
+2: PASS   : IconSetTest::rejectsSmallNonSquareAndNonPng()
+2: PASS   : IconSetTest::runtimeAppliesTheStagedSet()
+2: PASS   : IconSetTest::runtimeRejectsPartialSets()
+2: PASS   : IconSetTest::cleanupTestCase()
+2: Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 935ms
+2: ********* Finished testing of IconSetTest *********
+2/3 Test #2: rnqnx_icon_set ...................   Passed    1.08 sec
+test 3
+    Start 3: rnqnx_label_fit
+
+3: Test command: /Volumes/QNX/clones/ai-build/ts/rnqnx_label_fit_test
+3: Working Directory: /Volumes/QNX/clones/ai-build/ts
+3: Environment variables: 
+3:  QT_QPA_PLATFORM=offscreen
+3: Test timeout computed to be: 60
+3: ********* Start testing of LabelFitTest *********
+3: Config: Using QtTest library 6.12.0, Qt 6.12.0 (arm64-little_endian-lp64 shared (dynamic) release build; by Apple LLVM 21.0.0 (clang-2100.3.34.2)), macos 27.0.0
+3: PASS   : LabelFitTest::initTestCase()
+3: PASS   : LabelFitTest::upstreamReferenceLabelFits()
+3: PASS   : LabelFitTest::longestFittingNameAndOneGlyphOver()
+3: PASS   : LabelFitTest::wideGlyphsFitFewerThanNarrowOnes()
+3: PASS   : LabelFitTest::cjkUsesFallbackAndStillMeasures()
+3: PASS   : LabelFitTest::emojiClustersAreOneStep()
+3: PASS   : LabelFitTest::rightToLeftStaysOneLine()
+3: PASS   : LabelFitTest::overflowIsMeasuredNotTruncated()
+3: PASS   : LabelFitTest::widestFaceDecides()
+3: PASS   : LabelFitTest::goldenWidthsPerFace()
+3: PASS   : LabelFitTest::fixedFitCounts()
+3: PASS   : LabelFitTest::marginShrinksTheBox()
+3: PASS   : LabelFitTest::markupIsMeasuredAsPlainTextAndFlagged()
+3: PASS   : LabelFitTest::faceResolvesToItsOwnFile()
+3: PASS   : LabelFitTest::invalidInputsThrow()
+3: PASS   : LabelFitTest::cleanupTestCase()
+3: Totals: 16 passed, 0 failed, 0 skipped, 0 blacklisted, 856ms
+3: ********* Finished testing of LabelFitTest *********
+3/3 Test #3: rnqnx_label_fit ..................   Passed    1.55 sec
+
+100% tests passed out of 3
+
+Total Test time (real) =   3.07 sec

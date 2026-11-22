@@ -345,10 +345,17 @@ when any of them changed.
 
 ## Not covered yet
 
+The [2026-11-21 host and QNX VM receipt](../evidence/app-identity-host-vm-2026-11-21/README.md)
+lists every closure criterion with its state. On a QNX VM (not the Pi 400) a PR 149
+build of the showcase app loaded all ten icon sizes into `QGuiApplication::windowIcon()`
+and drew the icon in the title bar. Still open, and the gate stays `pending`:
+
 - No Marathon app-manifest or `.desktop` generator exists for consumer apps,
   so the icon set is not yet written into a launcher manifest. The playground's
   `.desktop` file is hand-written.
-- Launcher tile, title bar and task switcher on a device: not run (needs
-  device and the public-source Qt build).
-- The tile grid with a maximum-length and a short name: not run (needs
-  device); this repository has no launcher to render it on the host.
+- Launcher tile and task switcher on a Marathon device: not run. QNX has no
+  launcher or task switcher to run them on.
+- The tile grid with a maximum-length and a short name: the receipt has a host
+  mock of the derived Marathon box, not a launcher render.
+- The measured label box for each target launcher on a device.
+- The QNX VM binary is the PR 149 build, not a rebuild of `main`.

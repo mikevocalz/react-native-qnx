@@ -1,0 +1,856 @@
+{
+  "action": "dry-run",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 48.171875,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 48.171875,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/prepared/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 48.171875,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/Volumes/QNX/clones/app-identity/template/qnx/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 48.171875,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/Volumes/QNX/clones/app-identity/template/qnx/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/auto-built/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 48.171875,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/host-a/build/marathon/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 50,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes JS",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/art/tile.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-app-config-js/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 72.4375,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes Professional",
+    "componentName": "Notes",
+    "platform": "marathon",
+    "bundle": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/app.bundle.js",
+    "bundleSha256": "ef17b7d320f2acc023f2018dab381827ba22f9d01b6c4c97894e1bbfe4928313",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Pad",
+    "icon": {
+      "source": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/art/tile.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-app-identity-cy3kaf/from-plugin-options/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 31.625,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+App identity: 87 checks passed (real Qt identity tool).
+✔ tests/js/app-identity.test.mjs (15171.98025ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15178.114583

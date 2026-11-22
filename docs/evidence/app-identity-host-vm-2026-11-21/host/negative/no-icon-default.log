@@ -1,0 +1,95 @@
+rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used. Set expo.icon to a square PNG of at least 1024x1024 to use your own.
+{
+  "action": "created",
+  "output": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.example.fn",
+    "displayName": "Notes",
+    "componentName": "FN",
+    "platform": "marathon",
+    "bundle": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/app.bundle.js",
+    "bundleSha256": "73cb3858a687a8494ca3323053016282f3dad39d42cf62ca4e79dda2aac7d9ac",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Notes",
+    "icon": {
+      "source": "/Volumes/QNX/clones/app-identity/template/qnx/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/Volumes/QNX/clones/ai-build/neg-no-icon-default/build/marathon/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "marathon",
+      "status": "measured",
+      "launcher": "marathon-shell-567f1fa",
+      "launcherSource": "patrickjquinn/Marathon-Shell@567f1faa8bfdf31611dd401134c293daa160221c shell/qml/components/MarathonAppGrid.qml",
+      "fontNames": [
+        "Source Sans 3 Regular",
+        "Source Sans 3 Light"
+      ],
+      "pixelSize": 20,
+      "boxWidthPx": 92.4,
+      "marginPx": 2,
+      "lineCount": 1,
+      "widthPx": 48.171875,
+      "fallbackCodePoints": [],
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}

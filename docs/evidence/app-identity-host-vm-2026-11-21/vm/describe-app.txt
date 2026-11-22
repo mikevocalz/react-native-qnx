@@ -1,0 +1,14 @@
+QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le
+{"applicationName":"org.rnqnx.showcase","componentName":"RNQnxPlayground","customIdentity":true,"desktopFileName":"org.rnqnx.showcase","displayName":"QNX Components","osAuthorizationVerified":false,"runtimeVerified":false,"schemaVersion":1,"windowIconSizes":[16,24,32,48,64,96,128,192,256,512]}
+exit=0
+total 178
+-rw-r--r--  1 501 20  8074 2026-11-21 00:40 icon-128.png
+-rw-r--r--  1 501 20   624 2026-11-21 00:40 icon-16.png
+-rw-r--r--  1 501 20 12910 2026-11-21 00:40 icon-192.png
+-rw-r--r--  1 501 20  1111 2026-11-21 00:40 icon-24.png
+-rw-r--r--  1 501 20 16779 2026-11-21 00:40 icon-256.png
+-rw-r--r--  1 501 20  1628 2026-11-21 00:40 icon-32.png
+-rw-r--r--  1 501 20  2809 2026-11-21 00:40 icon-48.png
+-rw-r--r--  1 501 20 35394 2026-11-21 00:40 icon-512.png
+-rw-r--r--  1 501 20  3989 2026-11-21 00:40 icon-64.png
+-rw-r--r--  1 501 20  6284 2026-11-21 00:40 icon-96.png
