@@ -65,6 +65,8 @@ jobs:
           bash tests/scripts/qt-public-patch-selection.test.sh
           python3 -I tests/python/test_qt_public_source_bundle.py
           python3 -I tests/python/test_qt_build_guard.py
+          python3 -I tests/python/test_qt_package_manifest.py
+          python3 -I tests/python/test_qt_closure_runpath.py
 
       - name: ShellCheck
         run: |

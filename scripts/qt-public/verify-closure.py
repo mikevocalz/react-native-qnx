@@ -17,8 +17,9 @@ Checks:
   qt-closed every DT_NEEDED entry starting with libQt6 resolves inside the runtime.
   rpath     no ELF file carries a DT_RPATH (QNX's loader searches it before
             LD_LIBRARY_PATH), and no DT_RUNPATH with an empty entry or an absolute path
-            unless the path starts with --runpath-prefix (the install location, see
-            normalize-rpath.py).
+            unless the path is at or below the normalized absolute --runpath-prefix
+            on a directory boundary. Absolute paths with dot segments or repeated
+            slashes are rejected. Relative-path behavior is unchanged.
   no-sdp    no file in the runtime has the name of a QNX system library.
   notices   licenses/ holds the LGPL-3.0 text and THIRD_PARTY_ATTRIBUTIONS.txt, and
             a licenses/<module>/ directory exists for each Qt module a staged
@@ -100,6 +101,19 @@ def read_elf(path):
     return out
 
 
+def normalized_absolute(path):
+    """Lexical QNX path check; do not resolve target paths on the host filesystem."""
+    return (path.startswith('/') and '//' not in path and
+            all(part not in ('.', '..') for part in path.split('/')))
+
+
+def within_install_prefix(entry, prefix):
+    if not prefix or not normalized_absolute(entry):
+        return False
+    entry = entry.rstrip('/') or '/'
+    return prefix == '/' or entry == prefix or entry.startswith(prefix + '/')
+
+
 def main(argv):
     args = list(argv)
     if not args or args[0].startswith('-'):
@@ -116,7 +130,10 @@ def main(argv):
         elif a == '--sums':
             sums_name = args.pop(0)
         elif a == '--runpath-prefix':
-            runpath_prefix = args.pop(0)
+            if not args or not normalized_absolute(args[0]):
+                print('--runpath-prefix must be a normalized absolute install path')
+                return 2
+            runpath_prefix = args.pop(0).rstrip('/') or '/'
         elif a == '--allow-system':
             while args and not args[0].startswith('--'):
                 system.add(args.pop(0))
@@ -210,7 +227,7 @@ def main(argv):
         for entry in info['runpath']:
             if not entry:
                 fails.append(f'{name} DT_RUNPATH has an empty entry (current directory)')
-            elif entry.startswith('/') and not (runpath_prefix and entry.startswith(runpath_prefix)):
+            elif entry.startswith('/') and not within_install_prefix(entry, runpath_prefix):
                 fails.append(f'{name} DT_RUNPATH {entry}')
     check('rpath', fails)
     check('no-sdp', [rel[p] for p in files if p.name in SDP_NAMES])
