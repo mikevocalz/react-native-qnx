@@ -184,6 +184,11 @@ owner has checked QNX's licence terms for it; nothing in this repository is a
 reading of those terms. [ADR-0018](adr/0018-runner-hosting-and-sdp-boundary.md)
 records how `rnqnx runner fetch` enforces this.
 
+A draft written source offer is in [docs/distribution/source-offer.md](distribution/source-offer.md),
+`scripts/qt-public/make-source-bundle.sh` assembles the Corresponding Source bundle, and
+[release-units.json](releases/release-units.json) defines the release units. None is
+published. The owner has to review the offer and fill in its contact line first.
+
 No package has been produced yet. The public runtime currently exists only as
 a local build output and the board copies under the test user's home
 (`qt612-public` for the first build, `qt612-public-o2` for the `-O2` build).

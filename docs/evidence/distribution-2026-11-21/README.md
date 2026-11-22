@@ -1,6 +1,6 @@
 # Distribution gate: Qt source build and closure, 2026-11-21
 
-**The `distribution` gate stays pending.** This receipt re-checks the public Qt
+**The `distribution` gate stays pending.** (Later the same day, a second pass added drafts and a blocker note: see [Second pass](#second-pass-later-on-2026-11-21-what-ran-and-what-did-not).) This receipt re-checks the public Qt
 source identity, reproduces the source preparation and the configure step,
 builds the qtimageformats plugins, stages a runtime for the current closure with
 notices and hashes, checks it with a new script, and finds and works around one
@@ -298,6 +298,74 @@ this receipt names open items against every row of the table at the top.
 | Staged current runtime: 188 of 188 hashes, all seven closure checks (host)                                          | That the staged `libqqnx.so` renders (it aborts on the VM without a GPU) |
 | Build-host `DT_RPATH` defeats replacement, `$ORIGIN` is unsupported, `DT_RUNPATH` works (QNX VM)                    | A written source offer, a source bundle or any release package           |
 | 26 of 26 ELF files load on the VM through the runpath; gallery app runs, also with a replaced `libQt6Core` (QNX VM) | A fresh application link against these libraries                         |
+
+## Second pass, later on 2026-11-21: what ran and what did not
+
+**The gate stays `pending` with `evidence: []`.** This pass did the host-side
+paper work and could not start the rebuild. Labels: host is macOS on the Mac;
+container is `qnx805-build`.
+
+### Rebuild on the T9: blocked, not started
+
+Item 1 (clean single-pass rebuild of host tools and the Qt core libraries,
+on `/Volumes/QNX`, with space and time measured) was not run. Nothing was
+built, so there is no space or time figure.
+
+Why ([build-environment-probe.txt](blocked/build-environment-probe.txt), host):
+
+- Colima's only guest mount is `/Users/mikevocalz` (`mounts: []` in
+  `~/.colima/default/colima.yaml`, virtiofs line in the probe).
+  `/Volumes/QNX` is not visible to Docker, and `qnx805-build` binds only
+  `/Users/mikevocalz/qnx-pi400-8.0.5` at `/work`. A running container cannot gain
+  a bind mount.
+- The container's own volumes are on the internal disk: `/work` reports 13 GB
+  free, the overlay root 70 GB free of 98 GB. Building there breaks the rule
+  that the build runs on the T9.
+- Adding `/Volumes/QNX` to the Colima mounts needs a change to the shared
+  Colima configuration and a restart of the VM, then a new container (the
+  existing one has no such mount). The harness refused that configuration edit
+  when this lane tried it, so it was not made and no workaround was attempted.
+  Other lanes use the same VM.
+- The container reports `uname -m` = `x86_64`: it runs under Rosetta, not as
+  the aarch64 container the earlier text of this receipt and `scripts/qt-public/README.md` call it.
+  The QNX SDP host tools in `/work/qnx800/host` are Linux x86_64 only, so a
+  Linux x86_64 environment is needed whatever the VM is.
+
+What the owner needs to approve for the rebuild (from this lane's reading, not
+yet tried): a `mounts:` entry for `/Volumes/QNX` (writable) in the Colima
+profile, `colima stop && colima start`, then a container from `ubuntu:24.04`
+(amd64) with the apt packages of the old one plus `/Volumes/QNX/...` bound at
+`/work`. macOS may also ask to let the VM access removable volumes. The old
+container's installed packages are the 146 packages `apt-mark showmanual`
+lists, plus cmake 3.31.9 from `/home/qnxbuild/tools` and Node in `/usr/local`.
+
+Sizes of the 2026-11-12 trees (container, `du -sh`): `host-build` 499 MB,
+`qnx-build` 360 MB at `-O2`, `svg-qnx` 4.3 MB, extracted source 266 MB, archive
+423 MB. These are the size of what was kept, and they are not the peak a clean
+build needs (the earlier `-O0` tree was 897 MB, per `scripts/qt-public/README.md`).
+
+### Item by item
+
+| #   | Item                                     | State after this pass                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Clean single-pass rebuild                | **Open.** Blocked as above.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 2   | Software-grab decision                   | **Proposal written, decision is the owner's:** [proposals/software-grab-decision.md](proposals/software-grab-decision.md). Three options with costs; recommends opt-in now, default later after a Pi 400 run.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 3   | Source offer, source bundle, manifests   | **Drafted (host).** [docs/distribution/source-offer.md](../../distribution/source-offer.md) is a draft with a blank contact line and needs the owner's review. `scripts/qt-public/make-source-bundle.sh` ran once: [source/source-bundle-run.txt](source/source-bundle-run.txt) (bundle without the archive, 37 tar entries, hashes of the diffs, patches and recipe in its `SOURCE-MANIFEST.json`). [package-manifest.runtime-current.json](package-manifest.runtime-current.json) describes the staged runtime and says `releaseEligible: false` with four reasons. [docs/releases/release-units.json](../../releases/release-units.json) defines three units, none published, checked by `tests/js/release-units.test.mjs`. The bundle itself is not committed. |
+| 4   | Fresh application link against public Qt | **Open.** Needs the container and the Qt tree from item 1.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 5   | Build-level RPATH fix                    | **Open, not attempted.** Candidates from reading `qtbase/cmake/QtRpathHelpers.cmake` (not run): `QT_DISABLE_RPATH` or `FEATURE_rpath` off, and `CMAKE_INSTALL_RPATH` with `CMAKE_BUILD_WITH_INSTALL_RPATH` for the app. Whether QNX's linker then still resolves `DT_NEEDED` without `-rpath-link` needs a build to find out. No guess is committed.                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 6   | Independent reproduction                 | Left to the Verifier lane.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+Counts in the package manifest come from `runtime-current/manifest.json`: 208
+entries, 186 with a hash, 22 symlinks, 147 license files. The 188 in
+`runtime-files.sha256` also covers `manifest.json` and `needed.json`.
+
+### What would close the gate
+
+All of: items 1, 4 and 5 done and logged; the owner's decision on item 2
+applied; the owner's review of the source offer; a package manifest with
+`releaseEligible: true` produced from the single-pass runtime; this receipt's
+table rows 1 to 4 and 7 moved to met by evidence, not by this paragraph; and
+the Verifier lane's independent reproduction.
 
 ## Files
 
