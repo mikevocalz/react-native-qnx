@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "status": "provisional",
+  "note": "Defines what a release ships and what each part needs. No unit is published, tagged or owned yet: the npm organization, package owners and CODEOWNERS identities are the owner's to name (docs/packaging.md, CONTRIBUTING.md).",
+  "units": [
+    {
+      "id": "qt-runtime-qnx-aarch64le",
+      "kind": "binary-runtime",
+      "description": "Qt 6.12.0 libraries, plugins and QML plugins built from the public source for QNX SDP 8.0.5 aarch64le, with licenses/ and hashes.",
+      "licenses": ["LGPL-3.0-only", "see licenses/THIRD_PARTY_ATTRIBUTIONS.txt"],
+      "buildRecipe": "scripts/qt-public/",
+      "packageManifest": "docs/evidence/distribution-2026-11-21/package-manifest.runtime-current.json",
+      "closureCheck": "scripts/qt-public/verify-closure.py",
+      "mustCarry": [
+        "licenses/",
+        "licenses/THIRD_PARTY_ATTRIBUTIONS.txt",
+        "docs/distribution/source-offer.md",
+        "FreeType credit line"
+      ],
+      "mustNotCarry": [
+        "QNX SDP files",
+        "QNX system libraries",
+        "evaluation Qt artifacts",
+        "/data/pi400-graphics-compat"
+      ],
+      "requires": ["qt-corresponding-source"],
+      "published": false,
+      "releaseEligible": false
+    },
+    {
+      "id": "qt-corresponding-source",
+      "kind": "source-bundle",
+      "description": "Corresponding Source for the runtime: archive identity, applied qtbase diffs, react-native-qnx patches and the build recipe.",
+      "assembledBy": "scripts/qt-public/make-source-bundle.sh",
+      "offer": "docs/distribution/source-offer.md",
+      "published": false,
+      "releaseEligible": false
+    },
+    {
+      "id": "rn-qnx-npm-packages",
+      "kind": "npm-packages",
+      "description": "The @rn-qnx workspace packages. The scope stays provisional until the owner names the publishable npm organization.",
+      "members": [
+        "expo-constants-qnx",
+        "expo-image-qnx",
+        "expo-modules-core-qnx",
+        "expo-qnx-autolinking",
+        "expo-qnx-config-plugins",
+        "expo-router-qnx",
+        "metro-config-qnx",
+        "qnx-nitro-runtime",
+        "react-native-qnx",
+        "react-native-qnx-cli"
+      ],
+      "excluded": {
+        "metro-config-marathon": "frozen scope",
+        "react-native-marathon": "frozen scope"
+      },
+      "releaseTool": "release-please, once real manifests, owners and the organization exist",
+      "published": false,
+      "releaseEligible": false
+    }
+  ]
+}

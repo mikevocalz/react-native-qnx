@@ -1,0 +1,74 @@
+# make-source-bundle.sh, host (macOS), 2026-11-21, base 4a4c4818 plus the new script and docs/distribution/source-offer.md staged
+# QT_PUBLIC_ROOT=~/qnx-pi400-8.0.5/qt-6.12.0-public (archive and three diffs hash-checked by the script)
+98114382598dc6cbda542f239edf39cbbc59fe6daa417b677548fd6c2e87dbce  rnqnx-qt612-source-bundle.tar.gz
+# tar -tzf | wc -l:
+      37
+# bundle assembly is not byte-reproducible (tar stores mtimes); the manifest hashes inside are
+# SOURCE-MANIFEST.json:
+{
+  "appliedQtbaseDiffs": {
+    "files": {
+      "cve-patches/CVE-2026-105924-qtbase-6.12.diff": "c27d27b86aaf2cdab0c18d513fbb94a432e98782eddfc5f856387e4be68be50b",
+      "cve-patches/CVE-2026-116337-qtbase-6.12-0001.diff": "74c5028985dcc0455255909de4dc80f50cf5472dbf465ce46ebc791a7b080f12",
+      "cve-patches/CVE-2026-116337-qtbase-6.12-0002.diff": "83abc89d507dbd9a94dc5718b0125492c1c37b0609a8f404a1f164925940faec"
+    },
+    "urlBase": "https://download.qt.io/official_releases/qt/6.12/"
+  },
+  "qt": {
+    "archive": "qt-everywhere-src-6.12.0.tar.xz",
+    "includedInBundle": false,
+    "md5": "ac677cc64158740f257fd37a5b4c5ffb",
+    "modulesBuilt": [
+      "qtbase",
+      "qtshadertools",
+      "qtdeclarative",
+      "qtimageformats",
+      "qtsvg"
+    ],
+    "sha256": "98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165",
+    "url": "https://download.qt.io/official_releases/qt/6.12/6.12.0/single/qt-everywhere-src-6.12.0.tar.xz",
+    "version": "6.12.0"
+  },
+  "recipe": {
+    "commit": "4a4c4818c37c8107f5c92471ed024f61243627cf",
+    "files": {
+      "qt-public/README.md": "4e077ddca1deaa01a1c07b1b100b45e4cb230826b1de9ad848baef00d155362f",
+      "qt-public/apply-cve-patches.sh": "b740abf7e0d2cee0ae66d6960258dd44e3d6bc83012623ec45cd9dcf0e4514a9",
+      "qt-public/apply-qnx-patches.sh": "d25a0d463b3b27f3142c4241a5d0ed8be8616c4e2f3317b3e3d696e39d339ffd",
+      "qt-public/build-imageformats-qnx.sh": "ae1c71f06c1b0d8650c0b0c5cf2a6f9546b65208363a1c0bead9689de5b0b257",
+      "qt-public/build-svg-qnx.sh": "81f548ee458f218ffb1625077d9412ad62f1c3449ed096a5eafab1cbd6d04209",
+      "qt-public/build-websockets-qnx.sh": "136d0e45e5222d02d69ba3a2a15a9c86f8ae14c3e499bee87a3dd48516da4d83",
+      "qt-public/configure-host.sh": "633d60d16c6136aa966ec82927c273f9a3a10b9b02213a47f45948c6bb7d98ee",
+      "qt-public/configure-qnx.sh": "7ac7d428103f05868836a9d7cb7c6c82039b2cd9387b6bdced6acdf7ebffb3c8",
+      "qt-public/extract-source.sh": "da714239dd479f0459854c44c4f665de17fc81d045298ba4567b2078c7e9d303",
+      "qt-public/guarded-run.sh": "68951b24719dd4e6e862ad155a502ca311156ba6f5063c38bf1117e0150392a1",
+      "qt-public/layout.sh": "9a902cd42b2785edf12ec6439921384f24bf7d8b71bb272831db15e3153c3f07",
+      "qt-public/make-source-bundle.sh": "973c3f80847012109d008916566d618f2c528586d95b5e8a4f7469dbbb3e34fa",
+      "qt-public/normalize-rpath.py": "d02875503a3e59ea25d3fb9e3d856d2b358ffa318a1516473377556692f530c6",
+      "qt-public/patches/qtbase-qnx-offscreen-surface.patch": "1f42b3b7aa56fd7511c6eeeb8559f432d9adf533c5a1078f0b55e45d50e48140",
+      "qt-public/patches/qtbase-qnx-resize-swap.patch": "c1e098336dcbd9784e9a3800a3ab6f3451e61ef55e9e029a1b58e3d1af5927ba",
+      "qt-public/patches/qtbase-qnx-software-grab.patch": "d19a2e97450a13cea9362c61cdff33326f39e856e4b2df48b51219751c72a815",
+      "qt-public/probes/image-formats/CMakeLists.txt": "ba9bf9b5ac10074e16d2300ef8b5a0d56d4c1acab7835c1743fb224159441987",
+      "qt-public/probes/image-formats/probe.cpp": "c48e469caf7f3b402acce1d4215155fe6ed6e561eb1a9ccc452dd00179544b3a",
+      "qt-public/public-qt-env.sh": "63dc677ae585ef90fdfd72cbc09af2d5e38778e93151cd37566eb8717ff7f1c4",
+      "qt-public/qt612-public-qnx-aarch64le.cmake": "89b696189c7ef81b6364e2704116b9b05b166374261294a4435a1869a92b96a3",
+      "qt-public/run-public-hello-world.sh": "0a0710c160586cd234ba9265c16b799c256ded43f928afd627a8d34a4a523b47",
+      "qt-public/run-public-nitro-qt.sh": "6a9812c5c53d06d6a68594e33b006dfa794c6c0af0e908b971b4dc2acd8c36f7",
+      "qt-public/run-public-pressable.sh": "3bfc72e5ebfe6d9217a13670bed5a2807bb2b2c21df1fd5bcbb440123229941b",
+      "qt-public/spdx-audit.py": "8b180903c5e9ad747ffb5e2fbf834e23274e7c49db581f71cb1e48e8a440f90e",
+      "qt-public/stage-runtime.py": "cd45495cf1552a34221435958754653e09fe76f2f3c7b5a978fb635022358576",
+      "qt-public/verify-closure.py": "40ccbba2685a09a951e9895222b1542812055ab2f1b2123903310f4d241d34ae"
+    },
+    "repository": "https://github.com/mikevocalz/react-native-qnx"
+  },
+  "rnQnxPatches": {
+    "appliedByScript": [
+      "qtbase-qnx-offscreen-surface.patch",
+      "qtbase-qnx-resize-swap.patch"
+    ],
+    "notAppliedByScript": [
+      "qtbase-qnx-software-grab.patch"
+    ]
+  },
+  "schema": 1
+}

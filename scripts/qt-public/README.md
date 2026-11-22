@@ -170,6 +170,8 @@ script. It does two things:
 
 Receipt: [QEMU VM captures](../../docs/evidence/qnx-vm-2026-11-20/README.md).
 This patch has not run on the Pi 400.
+Whether the script should apply it is an open owner decision:
+[proposal](../../docs/evidence/distribution-2026-11-21/proposals/software-grab-decision.md).
 
 ## QNX platform plugin patch
 
@@ -268,6 +270,14 @@ python3 stage-runtime.py  # stages both files when the build exists
 ```
 
 Qt Quick and `QImageReader` find the plugin through `QT_PLUGIN_PATH`.
+
+## Source bundle
+
+`make-source-bundle.sh <out-dir>` packs the applied qtbase diffs, `scripts/qt-public/`
+and `SOURCE-MANIFEST.json` (archive URL and hashes, diff and recipe hashes, repository commit)
+into `rnqnx-qt612-source-bundle.tar.gz`. `WITH_ARCHIVE=1` adds the Qt archive. It runs on the host
+and needs `QT_PUBLIC_ROOT` to hold `download/`. See the
+[written source offer](../../docs/distribution/source-offer.md).
 
 ## Closure check and RPATH
 

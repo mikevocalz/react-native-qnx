@@ -1,0 +1,26 @@
+# Build environment probe, 2026-11-21 (host commands run from this lane)
+## docker exec qnx805-build: uname -m, df
+x86_64
+Filesystem             Size  Used Avail Use% Mounted on
+lima-93c8eb203ea5b376  461G  449G   13G  98% /work
+overlay                 98G   23G   70G  25% /
+6
+               total        used        free      shared  buff/cache   available
+Mem:              11           0           5           0           5          10
+## docker inspect qnx805-build mounts
+[{"Type":"bind","Source":"/Users/mikevocalz/qnx-pi400-8.0.5","Destination":"/work","Mode":"","RW":true,"Propagation":"rprivate"}]
+## colima mounts (virtiofs lines only)
+lima-93c8eb203ea5b376 on /Users/mikevocalz type virtiofs (rw,relatime)
+vz-rosetta on /mnt/lima-rosetta type virtiofs (rw,relatime)
+## colima.yaml mounts line
+260:mounts: []
+## T9 volume
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk5s1   931Gi    23Gi   908Gi     3%    953k  9.5G    0%   /Volumes/QNX
+## sizes of the 2026-11-12 build trees (du -sh, inside container)
+499M	/home/qnxbuild/qt-6.12.0-public/host-build
+360M	/home/qnxbuild/qt-6.12.0-public/qnx-build
+16K	/home/qnxbuild/qt-6.12.0-public/qnx-build.features
+4.3M	/home/qnxbuild/qt-6.12.0-public/svg-qnx
+266M	/work/qt-6.12.0-public/src
+423M	/work/qt-6.12.0-public/download
