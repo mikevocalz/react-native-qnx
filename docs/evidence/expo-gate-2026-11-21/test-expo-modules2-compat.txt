@@ -1,0 +1,1 @@
+expo-modules2-compat.test.mjs passed (source only)

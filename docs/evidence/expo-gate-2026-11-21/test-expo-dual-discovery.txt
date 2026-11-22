@@ -1,0 +1,2 @@
+real Expo qnx discovery and CMake INTERFACE linkage passed; no native runtime claim
+real Expo marathon discovery and CMake INTERFACE linkage passed; no native runtime claim

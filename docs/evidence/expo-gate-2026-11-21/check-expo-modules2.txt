@@ -1,0 +1,1 @@
+Expo 58 native module API contract verified. Expo Modules API 2.0 native QNX bindings remain unsupported.

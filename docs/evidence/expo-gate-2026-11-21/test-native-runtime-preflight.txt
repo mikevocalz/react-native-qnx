@@ -1,0 +1,10 @@
+[1/3] Building CXX object CMakeFiles/rnqnx_runtime_preflight_test.dir/RuntimePreflightTest.cpp.o
+[2/3] Building CXX object CMakeFiles/rnqnx_runtime_preflight_test.dir/Volumes/QNX/clones/expo/vnext/src/runtime/RuntimePreflight.cpp.o
+[3/3] Linking CXX executable rnqnx_runtime_preflight_test
+Test project /Volumes/QNX/clones/expo-preflight-build
+    Start 1: rnqnx_runtime_preflight_test
+1/1 Test #1: rnqnx_runtime_preflight_test .....   Passed    0.75 sec
+
+100% tests passed out of 1
+
+Total Test time (real) =   0.90 sec

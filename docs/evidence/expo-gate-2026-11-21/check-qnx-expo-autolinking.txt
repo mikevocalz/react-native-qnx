@@ -1,0 +1,1 @@
+validate:qnx-expo-autolinking passed for expo-modules-autolinking 58.1.0

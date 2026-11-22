@@ -1,0 +1,7 @@
+v26.13.0
+npm notice run react-native-qnx-monorepo@0.1.0 npx
+npm notice run 'pnpm' -v
+12.21.0
+Darwin 27.0.0 arm64
+4a4c4818c37c8107f5c92471ed024f61243627cf
+124

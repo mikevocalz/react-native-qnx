@@ -1,0 +1,4 @@
+rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used. Set expo.icon to a square PNG of at least 1024x1024 to use your own.
+rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used. Set expo.icon to a square PNG of at least 1024x1024 to use your own.
+rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used. Set expo.icon to a square PNG of at least 1024x1024 to use your own.
+qnx-runner-compat: 67 checks passed
