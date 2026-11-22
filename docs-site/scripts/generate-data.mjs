@@ -13,7 +13,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const site = resolve(here, '..');
 const repo = resolve(site, '..');
 const check = process.argv.includes('--check');
-const BLOB = 'https://github.com/mikevocalz/react-native-qnx/blob/main/';
+const BLOB = `https://github.com/mikevocalz/react-native-qnx/blob/${process.env.DOCS_SOURCE_COMMIT || 'main'}/`;
 const banned = new RegExp(['mara', 'thon'].join(''), 'i');
 
 const git = (...args) => execFileSync('git', args, { cwd: repo, encoding: 'utf8' }).trim();

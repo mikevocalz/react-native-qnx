@@ -19,4 +19,46 @@ npm run check:content
 - `src/app/global.css` holds the design tokens (`--rq-*`) and maps the Fumadocs colours to them. `src/app/bench.css` styles the home page (`/`), the releases page (`/releases`) and the docs details. Fonts are declared in `src/app/fonts.ts` and fetched from Google Fonts at build time, so a build needs network access to `fonts.googleapis.com` and `fonts.gstatic.com`.
 - `/releases` is built from `../CHANGELOG.md` ("Unreleased") and the generated `content/docs/reference/changelog.mdx`. The home page table reads `../docs/component-support.json`. See `src/lib/site-data.ts`.
 
-The site is not deployed from this repository. Set `DOCS_SITE_URL` when building for a host so `sitemap.xml` and `robots.txt` carry absolute URLs.
+The `docs-pages.yml` workflow builds and deploys the live site to GitHub Pages
+on qualifying pushes to `main`. Set `DOCS_SITE_URL` when building for another
+host so `sitemap.xml` and `robots.txt` carry absolute URLs.
+
+## Freeze documentation for a candidate
+
+Build a reviewable copy without creating a release tag or claiming the platform
+is release-ready. You need Node, npm, Git, network access for the locked site
+dependencies and Google Fonts, and space for an isolated checkout and build.
+The output's parent directory must exist; the output itself must not exist.
+Set `DOCS_SNAPSHOT_WORK` to an existing work directory on a volume with room for
+the temporary checkout, `node_modules` and static build. Set `npm_config_cache`
+there too when the internal disk has limited space.
+
+From the repository root:
+
+```sh
+mkdir -p artifacts/docs
+node docs-site/scripts/freeze-candidate.mjs HEAD artifacts/docs/candidate /react-native-qnx
+```
+
+The command resolves `HEAD` to its full commit, clones that committed tree into a
+temporary directory, installs the site's locked dependencies, checks generated
+pages, regenerates source links for that commit, builds and checks the export.
+Uncommitted edits are excluded. The copy is
+built for `/react-native-qnx/v/candidate-<12-character-commit>/`, and
+`snapshot.json` records the full commit, site lockfile hash, checks and every
+exported file's SHA-256. The receipt is a build inventory; it is not a signed
+attestation. Source links use the frozen commit when the selected revision
+includes support for `DOCS_SOURCE_COMMIT`.
+
+An existing output or lock is refused. A failed command removes its temporary
+checkout and leaves no completed snapshot. If the process is interrupted, inspect
+the named output and its `.freeze-lock` sibling before removing the lock; an
+existing snapshot must be preserved.
+
+To publish a reviewed copy, place its contents at that exact `/v/candidate-…/`
+path alongside the live export and add `{ "tag": "candidate-…" }` to
+`versions.json` only once the copy is available there. The command does not
+publish or edit that index. Keep `snapshot.json` with the copy so reviewers can
+verify its source and hashes. A candidate identifier freezes documentation while
+hardware acceptance continues; reserve `v1.0.0` and a release-ready claim for the
+completed release process.

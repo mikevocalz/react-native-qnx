@@ -4,7 +4,7 @@ import type { VersionOption } from '@/components/version-select';
 import { basePath } from './shared';
 
 interface Snapshot {
-  /** Release tag the copy was built from, for example v1.0.0. */
+  /** Published snapshot identifier: a release tag or candidate-<commit>. */
   tag: string;
 }
 

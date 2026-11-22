@@ -10,7 +10,7 @@ export interface VersionOption {
 
 /**
  * Switches between the live docs (latest) and frozen copies built at a release
- * tag. With no snapshots it still shows which version latest describes.
+ * tag or candidate commit. With no snapshots it still shows which version latest describes.
  */
 export function VersionSelect({ options, current }: { options: VersionOption[]; current: string }) {
   const id = useId();
