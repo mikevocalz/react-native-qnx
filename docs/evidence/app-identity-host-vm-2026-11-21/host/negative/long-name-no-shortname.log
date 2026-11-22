@@ -1,0 +1,1 @@
+rnqnx: Tile label "Field Notes Professional" (expo.name) is 109.6 px too wide for the Marathon launcher: it measures 200.0 px in Source Sans 3 Regular / Source Sans 3 Light at 20 px, and the label box is 92.4 px wide on one line with 2 px kept free. Set expo.extra.rnqnx.shortName to a shorter label, for example "Field". expo.name stays the window title.

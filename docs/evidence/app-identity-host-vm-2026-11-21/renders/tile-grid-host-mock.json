@@ -1,0 +1,54 @@
+{
+  "lineHeightPx": 26.515625,
+  "qtVersion": "6.12.0",
+  "tiles": [
+    {
+      "cellH": 116.515625,
+      "cellW": 98.4,
+      "elided": false,
+      "fits": true,
+      "iconPx": 86,
+      "label": "Notes",
+      "labelBoxH": 26.515625,
+      "labelBoxW": 92.4,
+      "overflowPx": 0,
+      "widthPx": 48.171875
+    },
+    {
+      "cellH": 116.515625,
+      "cellW": 98.4,
+      "elided": false,
+      "fits": true,
+      "iconPx": 86,
+      "label": "Calculator",
+      "labelBoxH": 26.515625,
+      "labelBoxW": 92.4,
+      "overflowPx": 0,
+      "widthPx": 85.734375
+    },
+    {
+      "cellH": 116.515625,
+      "cellW": 98.4,
+      "elided": false,
+      "fits": true,
+      "iconPx": 86,
+      "label": "WWWWW",
+      "labelBoxH": 26.515625,
+      "labelBoxW": 92.4,
+      "overflowPx": 0,
+      "widthPx": 78.59375
+    },
+    {
+      "cellH": 116.515625,
+      "cellW": 98.4,
+      "elided": true,
+      "fits": false,
+      "iconPx": 86,
+      "label": "Field Notes Professional",
+      "labelBoxH": 26.515625,
+      "labelBoxW": 92.4,
+      "overflowPx": 109.646875,
+      "widthPx": 200.046875
+    }
+  ]
+}
