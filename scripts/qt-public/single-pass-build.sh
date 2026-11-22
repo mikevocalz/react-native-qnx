@@ -37,7 +37,7 @@ sampler() {
     sleep "${SAMPLE_S:-60}"
   done
 }
-sampler & samp=$!
+sampler >/dev/null 2>&1 & samp=$!
 trap 'kill $samp 2>/dev/null' EXIT
 
 stage() { # name command...
