@@ -19,7 +19,7 @@ From `scripts/lib/docs-model.mjs`:
 
 ## Recorded state
 
-All eleven gates are `pending` and every `evidence` array is empty. `evidenceBaseline.reviewedAt` is `2026-11-07`, with source commit `be71bc9`, QNX SDP `8.0.5`, stock target `Pi 4/5 QSTI 0.5.0 build 50; full-runtime device result pending`, and experimental target `Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts`. The baseline also records `performance` as `unmeasured on QNX`. Later entries in `evidenceBaseline` (named `pr105`, `pr149...`, `pr159...`, `pr161...`) carry receipts for individual changes and state, in each case, that the release gates stay pending.
+At `main` 4a4c4818, ten gates were `pending` and `dependencies` was `passed`. Only `dependencies` and `window-chrome` have a non-empty `evidence` array; `window-chrome` stays `pending`. The generated [release gates](/docs/reference/release-gates) page is the current state. `evidenceBaseline.reviewedAt` is `2026-11-07`, with source commit `be71bc9`, QNX SDP `8.0.5`, stock target `Pi 4/5 QSTI 0.5.0 build 50; full-runtime device result pending`, and experimental target `Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts`. The baseline also records `performance` as `unmeasured on QNX`. Later entries in `evidenceBaseline` (named `pr105`, `pr149...`, `pr159...`, `pr161...`) carry receipts for individual changes and state, in each case, that the release gates stay pending.
 
 Pi 400 results never count for the stock Pi 4 QSTI board. Hosted CI, QNX cross-build and device runs are separate categories (`docs/releases/required-checks.md`).
 

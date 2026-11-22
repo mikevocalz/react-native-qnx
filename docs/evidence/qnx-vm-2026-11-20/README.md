@@ -97,8 +97,8 @@ offline.
 
 ## Other things the logs show
 
-- The gallery logs `Could not parse yoga::PositionType: left` once
-  ([gallery.log](logs/gallery.log)).
+- The gallery logs `Could not parse yoga::PositionType: left` once (in
+  `gallery.log`; see the note on logs below).
 - The remote image card fails with an SSL handshake error. The VM has no CA
   bundle deployed and its only network is QEMU user-mode NAT.
 - The first run of `image-background` on an earlier set of bundles drew no
@@ -111,3 +111,16 @@ offline.
 No pointer or keyboard input, no scrolling, no GPU rendering, no timing that
 means anything (TCG on an M3 Pro), and nothing about the Pi 400's Screen driver
 or its V3D GPU path.
+
+## Per-card logs are not in the repository
+
+`SHA256SUMS.txt` once listed thirteen `logs/*.log` files. They were never
+committed, because `.gitignore` excludes `*.log`. On 2026-11-21 the guest copies
+in `/data/vm/shots/` were read back, and none of the thirteen has the SHA-256
+recorded here at the time ([logs-not-committed.txt](logs-not-committed.txt)
+lists both hashes per file). A log whose hash differs from the recorded one is
+not the log the receipt was written from, so the guest copies were not
+committed and the thirteen entries were removed from `SHA256SUMS.txt`. The PNG
+captures are unaffected and still verify. The statements above that cite
+log text (the yoga warning, the SSL failure) rest on the author's reading at the
+time; this receipt no longer carries the log that shows them.

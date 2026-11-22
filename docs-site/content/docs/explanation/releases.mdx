@@ -7,7 +7,7 @@ React Native QNX has no release. `docs/v1/release-notes.md` opens with "Not rele
 
 ## One record, eleven gates
 
-`docs/releases/v1-readiness.json` holds the v1 record: a schema version, an `evidenceBaseline` block and a list of gates. Each gate has an `id`, a `title`, a `status` (`blocked`, `pending` or `passed`), an `acceptance` text and an `evidence` list. The eleven ids are `distribution`, `ci`, `cold-boot`, `device-parity`, `performance`, `developer-path`, `documentation`, `app-identity`, `window-chrome`, `expo` and `dependencies`. All eleven are `pending` on this branch.
+`docs/releases/v1-readiness.json` holds the v1 record: a schema version, an `evidenceBaseline` block and a list of gates. Each gate has an `id`, a `title`, a `status` (`blocked`, `pending` or `passed`), an `acceptance` text and an `evidence` list. The eleven ids are `distribution`, `ci`, `cold-boot`, `device-parity`, `performance`, `developer-path`, `documentation`, `app-identity`, `window-chrome`, `expo` and `dependencies`. The generated [release gates](/docs/reference/release-gates) page gives each status; at `main` 4a4c4818 ten were `pending` and `dependencies` was `passed`.
 
 Two scripts read the record through `scripts/lib/docs-model.mjs`.
 
