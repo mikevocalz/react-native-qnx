@@ -47,10 +47,7 @@
     "noticeScope": "Original provisional Qt notice collateral used privately; corrected packaging unit has identical 26 ELFs, separate packaging receipt",
     "defaultPngSha256": "ce6aad85272deaaebc774cad0c9b38838cd375f5d529b9a2e3ee68be8de3d1ac",
     "hiddenPngSha256": "1036bd66f88e7050fc53ae63e1f4c5fd3bd459267f86443922141c24ed563c25",
-    "size": [
-      1280,
-      800
-    ]
+    "size": [1280, 800]
   },
   "externalEvidence": "/Volumes/QNX/clones/rnqnx-software-20261122/qt/rootfs/output/window-api-vm-d791129f",
   "published": false,
