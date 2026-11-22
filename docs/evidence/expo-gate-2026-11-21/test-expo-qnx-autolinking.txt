@@ -1,0 +1,1 @@
+expo-qnx-autolinking.test.mjs passed

@@ -1,0 +1,1 @@
+Add QNX to an existing Expo app: 36 checks passed (fixture outside the checkout).

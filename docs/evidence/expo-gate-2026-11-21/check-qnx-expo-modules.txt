@@ -1,0 +1,1 @@
+validate:qnx-expo-modules passed for expo-modules-core 58.1.0

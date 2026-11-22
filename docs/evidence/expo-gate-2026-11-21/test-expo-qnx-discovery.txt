@@ -1,0 +1,1 @@
+Expo QNX: real Expo discovery, deterministic preparation and CMake target wiring passed.
