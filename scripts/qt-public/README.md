@@ -31,6 +31,22 @@ rebuilt everything in a new container, not in `qnx805-build`:
   wall seconds, exit code, size of the work directory) and `disk-samples.tsv`
   (one row a minute).
 
+
+### Strict final-pass qualification
+
+For the **final** distribution qualification (not a partial/recovery build), run
+`REQUIRE_CLEAN=1 ./single-pass-build.sh` with fresh source, build and logging
+paths. The guard refuses pre-existing extracted source, SVG source, any of the
+four Qt build trees, or previous stage/disk timing tables. Downloaded archives
+and CVE patches are allowed. It checks before creating logs or launching work,
+never deletes prior evidence, and fails closed on dangling symlinks.
+
+Run `bash tests/scripts/qt-public-clean-tree.test.sh` from the repository root
+(or from any current directory) to exercise pristine and stale-state controls.
+This is a **preflight only**: a passing result does not prove a successful
+one-pass Qt build, SPDX review, publication, independent reproduction or gate
+completion. Keep `distribution` pending until those are recorded.
+
 ## Layout
 
 [`layout.sh`](layout.sh) sets every path; override with environment
