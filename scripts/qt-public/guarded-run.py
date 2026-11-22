@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Run a build in its own session and stop only that group on low disk space."""
+"""Own one build: Linux uses pidfd session cleanup; Darwin uses group cleanup."""
 import datetime
 import math
 import os
+from pathlib import Path
 import signal
 import subprocess
 import sys
@@ -22,6 +23,17 @@ def main():
     def available():
         info = os.statvfs(path)
         return info.f_bavail * info.f_frsize // 1024
+
+    linux_sessions = sys.platform.startswith('linux')
+    if linux_sessions:
+        # Refuse Linux builds when identity-safe session cleanup is unavailable.
+        if not hasattr(os, 'pidfd_open') or not hasattr(signal, 'pidfd_send_signal'):
+            raise SystemExit('Linux build guard requires pidfd session cleanup support')
+        try:
+            probe = os.pidfd_open(os.getpid())
+            os.close(probe)
+        except OSError as error:
+            raise SystemExit(f'Linux build guard requires usable pidfds: {error}') from error
 
     with open(sys.argv[2], 'a', buffering=1) as log:
         # Refuse before starting work as well as during the build.
@@ -50,16 +62,56 @@ def main():
                         if not fields[2].startswith('Z'):
                             raise
 
+        def signal_owned_session(signum):
+            # Ninja may place commands in additional process groups while they
+            # remain in this session. A PID descriptor anchors each inspected
+            # process so PID reuse cannot redirect a signal to another build.
+            def member(pid):
+                try:
+                    fields = Path(f'/proc/{pid}/stat').read_text().rsplit(')', 1)[1].split()
+                except (FileNotFoundError, ProcessLookupError):
+                    return False
+                return int(fields[3]) == child.pid and fields[0] != 'Z'
+
+            count = 0
+            for entry in Path('/proc').iterdir():
+                if not entry.name.isdecimal():
+                    continue
+                pid = int(entry.name)
+                if not member(pid):
+                    continue
+                try:
+                    descriptor = os.pidfd_open(pid)
+                except ProcessLookupError:
+                    continue
+                try:
+                    if member(pid):
+                        try:
+                            signal.pidfd_send_signal(descriptor, signum)
+                            count += 1
+                        except ProcessLookupError:
+                            pass
+                finally:
+                    os.close(descriptor)
+            return count
+
         def stop():
             nonlocal stopping
             stopping = True
             # start_new_session completes before Popen returns. The group ID
             # belongs to this child and its descendants, not another ninja.
-            signal_owned_group(signal.SIGTERM)
+            signal_owned_session(signal.SIGTERM) if linux_sessions else signal_owned_group(signal.SIGTERM)
             # Do not reap the leader before the group cleanup: its unreaped
             # PID reserves the group ID while TERM-ignoring descendants exit.
             time.sleep(grace)
-            signal_owned_group(signal.SIGKILL)
+            if linux_sessions:
+                deadline = time.monotonic() + max(grace, 1.0)
+                while signal_owned_session(signal.SIGKILL):
+                    if time.monotonic() >= deadline:
+                        raise RuntimeError('Owned build session did not stop after SIGKILL')
+                    time.sleep(0.01)
+            else:
+                signal_owned_group(signal.SIGKILL)
             child.wait()
 
         def interrupted(signum, _frame):
