@@ -59,7 +59,8 @@ hosted: [dependencies-2026-11-21](../evidence/dependencies-2026-11-21/README.md)
 - `validate:dependencies`, `audit:dependencies` (0 advisories), `typecheck`, the Expo SDK 58
   validators, `validate:docs` and host `test:js` exit 0 (host).
 - `v1-candidate` run [44951214656](https://github.com/mikevocalz/react-native-qnx/actions/runs/44951214656)
-  passed all 21 hosted jobs on this commit (hosted).
+  passed on this commit (hosted): 23 jobs succeeded, `qnx-cross` and `qnx-vm` were skipped, and the
+  aggregate succeeded.
 - Checked 2026-11-21: react-native `next` is `0.89.0-rc.2`, hermes-compiler `latest-v1` is
   `260318099.0.8`. Both stay held.
 

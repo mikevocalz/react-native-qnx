@@ -1,0 +1,19 @@
+-- The CXX compiler identification is QCC 12.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /work/qnx800/host/linux/x86_64/usr/bin/q++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Configuring done (3.9s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/qnxbuild/s6rerun-1795307016/b
+[ 66%] Building CXX object CMakeFiles/rnqnx_runtime_preflight_test.dir/RuntimePreflightTest.cpp.o
+[ 66%] Building CXX object CMakeFiles/rnqnx_runtime_preflight_test.dir/home/qnxbuild/s6rerun-1795307016/src/vnext/src/runtime/RuntimePreflight.cpp.o
+[100%] Linking CXX executable rnqnx_runtime_preflight_test
+[100%] Built target rnqnx_runtime_preflight_test

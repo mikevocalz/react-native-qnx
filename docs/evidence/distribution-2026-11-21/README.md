@@ -54,7 +54,7 @@ and [packaging](../../packaging.md) say what a package must carry.
   SHA-256 `dd22629ce948cf0a900421323cca331907180242a9b51c3fd75b25c75f068099`,
   last modified 2026-11-13 13:07 GMT, one day after the 2026-11-12 receipt
   that counted three. It is not applied. It changes `qSspiContinue()` in
-  `src/network/kernel/qauthenticator.cpp`, lines 1718 to 1750, which sit inside
+  `src/network/kernel/qauthenticator.cpp`, lines 1718 to 1756 (two hunks, old-side ranges 1718 to 1723 and 1745 to 1756), which sit inside
   the `#if QT_CONFIG(sspi)` block (lines 1655 to 1787). The configure cache has
   `FEATURE_sspi:BOOL=OFF`, and SSPI is Windows-only. It applies cleanly
   ([source/patch-applicability.txt](source/patch-applicability.txt)) and has no

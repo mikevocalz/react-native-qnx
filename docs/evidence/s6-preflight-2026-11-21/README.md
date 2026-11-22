@@ -70,7 +70,33 @@ Not Pi 400 evidence and not release-board evidence.
   ([vm/test-binary.sha256](vm/test-binary.sha256)). The guest has no
   `sha256sum`, so the hash on the guest was not compared.
 - Run: `RNQNX_PREFLIGHT_FIXTURES_DIR=/data/s6pf/fixtures ./rnqnx_runtime_preflight_test`
-  printed `runtime preflight: all checks passed`, exit 0 ([vm/run.log](vm/run.log)).
+  printed `runtime preflight: all checks passed`, exit 0. That original `vm/run.log`
+  was never committed (`*.log` is git-ignored) and no copy with a known hash survives:
+  the S6 clone was deleted, and a search of `/Volumes/QNX/cache`, the VM guest and the
+  scratch directories found no file for it. The claim above is therefore unsupported
+  by a committed log. The re-run below replaces it as the evidence.
+
+### QNX VM re-run, 2026-11-21 (not the original run)
+
+Run on 2026-11-21 after the original, from `main` at f61b61b4. It is a new build and
+a new run of the same test, not a recovery of the original.
+
+- Build: `qnx805-build` container, `q++` 12.2.0, aarch64le, Release, Qt 6.12.0 for
+  QNX, `-Wall -Wextra -Wpedantic -Werror` from the test's `CMakeLists.txt`
+  ([cross-build.log](vm/rerun-2026-11-21/cross-build.log)). Sources were
+  `tests/native/runtime-preflight`, `tests/fixtures/runner-preflight`, and
+  `vnext/{include,src/runtime,cmake}` from the same commit.
+- Binary SHA-256 on the host before `scp`:
+  `8d22a3c2b211f2e341a017d52c6ff5bc87019068cc63e7e4a7cca5e447e7ec1f`
+  ([test-binary.sha256](vm/rerun-2026-11-21/test-binary.sha256)). It differs from the
+  original binary's hash above because the build directory and source paths differ.
+  The guest has no `sha256sum`, so the hash on the guest was not compared.
+- Guest: `QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le`.
+- Run: `LD_LIBRARY_PATH=/data/vm/qt/lib RNQNX_PREFLIGHT_FIXTURES_DIR=/data/s6pf2/fixtures ./rnqnx_runtime_preflight_test`
+  printed `runtime preflight: all checks passed`, `exit=0`
+  ([run.log](vm/rerun-2026-11-21/run.log)). The first attempt without
+  `LD_LIBRARY_PATH` failed with `Could not load library libQt6Core.so.6`; the guest
+  Qt lives in `/data/vm/qt/lib`. Only the passing run is saved.
 
 This shows the comparison and its text behave the same on QNX aarch64le. It
 does not show a runner on QNX refusing an app: no QNX build of the playground
