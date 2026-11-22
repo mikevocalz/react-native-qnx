@@ -14,7 +14,7 @@ run. Never append a failed/reused build into the final run's evidence.
 The restarted run uses recipe commit
 `61d0f25786039aef16a31cb7ca94bc6c03c7b6d1`, recipe directory `/recipe-final`,
 roots `/build/final/public` and `/build/final/build`, and six build jobs. Its
-outer log is `qt/logs/final-jobs6-single-pass.log` on the external volume.
+outer log is `qt/final-jobs6-single-pass.log` on the external volume.
 The inspected container is `rnqnx-qualify-20261122`, Docker context `colima`.
 It uses `chroot /task/rootfs`; `/build` is its isolated ext4 filesystem and
 `/output` maps to the external host directory
@@ -33,9 +33,17 @@ test "${#RECIPE_SHA}" = 40
 export QT_EVIDENCE_HOME=/Volumes/QNX/clones/rnqnx-software-20261122/qt
 export QT_RECIPE_ID=${RECIPE_SHA:0:12}
 export QT_SOURCE_CHECKOUT="$QT_EVIDENCE_HOME/source-checkout-$QT_RECIPE_ID"
-git clone -c core.autocrlf=false --no-hardlinks \
-  /tmp/rnqnx-release-gates-20261122 "$QT_SOURCE_CHECKOUT"
-git -C "$QT_SOURCE_CHECKOUT" checkout --detach "$RECIPE_SHA"
+test ! -e "$QT_SOURCE_CHECKOUT"
+test ! -L "$QT_SOURCE_CHECKOUT"
+git init -q "$QT_SOURCE_CHECKOUT"
+git -C "$QT_SOURCE_CHECKOUT" config core.autocrlf false
+git -C "$QT_SOURCE_CHECKOUT" config core.sparseCheckout true
+printf '/scripts/qt-public/\n/docs/distribution/\n' > "$QT_SOURCE_CHECKOUT/.git/info/sparse-checkout"
+git -C "$QT_SOURCE_CHECKOUT" remote add origin file:///tmp/rnqnx-release-gates-20261122
+git -C "$QT_SOURCE_CHECKOUT" fetch --depth=1 origin "$RECIPE_SHA"
+git -C "$QT_SOURCE_CHECKOUT" checkout --detach FETCH_HEAD
+test "$(git -C "$QT_SOURCE_CHECKOUT" rev-parse HEAD)" = "$RECIPE_SHA"
+test "$(git -C "$QT_SOURCE_CHECKOUT" rev-parse --is-shallow-repository)" = true
 test -z "$(git -C "$QT_SOURCE_CHECKOUT" status --porcelain)"
 python3 - <<'PY'
 import hashlib, os, pathlib, subprocess
