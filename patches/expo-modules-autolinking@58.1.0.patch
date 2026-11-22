@@ -1,0 +1,35 @@
+diff --git a/build/platforms/index.js b/build/platforms/index.js
+--- a/build/platforms/index.js
++++ b/build/platforms/index.js
+@@ -49,6 +49,9 @@
+ }
+ function getSupportPackageForPlatform(platform) {
+     switch(platform){
++        case 'qnx':
++            // Host identity only; QNX native linking remains the separate platform adapter.
++            return '@rn-qnx/react-native-qnx';
+         case 'ios':
+         case 'android':
+         case 'tvos':
+diff --git a/src/platforms/index.ts b/src/platforms/index.ts
+--- a/src/platforms/index.ts
++++ b/src/platforms/index.ts
+@@ -57,5 +57,8 @@
+-export function getSupportPackageForPlatform(platform: SupportedPlatform): string | null {
++export function getSupportPackageForPlatform(platform: SupportedPlatform | 'qnx'): string | null {
+   switch (platform) {
++    case 'qnx':
++      // Host identity only; QNX native linking remains the separate platform adapter.
++      return '@rn-qnx/react-native-qnx';
+     case 'ios':
+     case 'android':
+     case 'tvos':
+diff --git a/build/platforms/index.d.ts b/build/platforms/index.d.ts
+--- a/build/platforms/index.d.ts
++++ b/build/platforms/index.d.ts
+@@ -15,4 +15,4 @@
+ declare function getLinkingImplementationForPlatform(platform: 'web'): PlatformImplementations['web'];
+ declare function getLinkingImplementationForPlatform(platform: SupportedPlatform): PlatformImplementations[keyof PlatformImplementations];
+ export { getLinkingImplementationForPlatform };
+-export declare function getSupportPackageForPlatform(platform: SupportedPlatform): string | null;
++export declare function getSupportPackageForPlatform(platform: SupportedPlatform | 'qnx'): string | null;

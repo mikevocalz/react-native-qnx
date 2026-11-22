@@ -1,0 +1,13 @@
+{
+  "scope": "host-only Expo CLI Metro source watching; no device or native Fast Refresh acceptance",
+  "node": "v26.13.0",
+  "port": 61462,
+  "initialBytes": 5811236,
+  "watchedBytes": 5811266,
+  "restoredBytes": 5811236,
+  "reloadStatus": 200,
+  "initialSha256": "0993b97575cc7974edd67bb1cf2ada22a23ff945f0362ab636a146ce79ef9484",
+  "restoredSha256": "0993b97575cc7974edd67bb1cf2ada22a23ff945f0362ab636a146ce79ef9484",
+  "sourceRestored": true,
+  "serverStopped": true
+}

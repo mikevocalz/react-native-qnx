@@ -35,8 +35,15 @@ module.exports = withExpoRouterQnx(getQnxMetroConfig(__dirname, { ... }), {
 ```
 
 `app-ctx.js` exports `ctx = require.context('./app', true, <route pattern>, 'sync')`;
-`index.js` registers `App` from `expo-router/build/qualified-entry` under the host's
-component name. A follow-up change makes `rnqnx project create` write all three; today copy them from `apps/component-gallery`.
+The source CLI's `rnqnx project create` already writes the Router context,
+entry and Metro configuration for QNX-only projects, using `template/qnx-router`.
+Projects that also enable Marathon retain their separately documented starter.
+See [project creation](../../docs/getting-started/expo-project-create.md).
+
+The [small Router example](../../apps/expo-router-example/README.md) registers
+`ExpoRoot` from the public `expo-router` export under its own configured component
+name. It demonstrates two tab routes, public Link navigation and per-app Zustand
+state without importing Router internals in application source.
 
 The Tabs layout turns the window width into a bar position:
 

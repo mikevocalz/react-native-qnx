@@ -79,6 +79,19 @@ jobs:
           pnpm validate:architecture
           pnpm codegen:check
 
+      - name: Exercise Expo-owned QNX Metro workflow
+        run: |
+          mkdir -p build
+          node scripts/probe-expo-qnx-dev-server.mjs --out build/expo-qnx-host-evidence
+
+      - name: Preserve Expo host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: expo-qnx-host-${{ github.event.pull_request.head.sha || github.sha }}
+          path: build/expo-qnx-host-evidence/
+          if-no-files-found: warn
+
       - name: Exercise a fresh source checkout
         run: pnpm validate:clean-app
 
