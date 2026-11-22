@@ -1,0 +1,7 @@
+virtiofs /t9 open(O_CREAT,0o644): ok
+virtiofs /t9 open(O_CREAT,0o600): ok
+virtiofs /t9 open(O_CREAT,0o400): ok
+virtiofs /t9 open(O_CREAT,0o200): ERR [Errno 13] Permission denied: 'd/m200'
+virtiofs /t9 open(O_CREAT,0o0): ERR [Errno 13] Permission denied: 'd/m0'
+ext4 loop /build open(O_CREAT,0o200): ok
+ext4 loop /build open(O_CREAT,0o0): ok

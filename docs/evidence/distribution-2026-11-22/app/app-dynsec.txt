@@ -1,0 +1,17 @@
+534378c98373567e0a3b1924fd6fa005745d06fb3ac70b2cc43aeda9b3a8c455  /build/build/app-qnx/bin/rnqnx_playground_qnx
+ 0x0000000000000001 (NEEDED)             Shared library: [libQt6Quick.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libQt6OpenGL.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libQt6Qml.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libQt6Gui.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libGLESv2.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libEGL.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libhermesvmlean.so]
+ 0x0000000000000001 (NEEDED)             Shared library: [libQt6Network.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libQt6Core.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libsocket.so.4]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc++.so.2]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.3]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x000000000000001d (RUNPATH)            Library runpath: [/data/qt612-public/lib]
+/t9/clones/distribution3-build/deps/hermes-qnx-lean/lib/libhermesvmlean.so

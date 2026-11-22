@@ -1,12 +1,12 @@
 # Distribution gate: Qt source build and closure, 2026-11-21
 
-**The `distribution` gate stays pending.** (Later the same day, a second pass added drafts and a blocker note: see [Second pass](#second-pass-later-on-2026-11-21-what-ran-and-what-did-not).) This receipt re-checks the public Qt
+**The `distribution` gate stays pending.** (Later the same day, a second pass added drafts and a blocker note: see [Second pass](#second-pass-later-on-2026-11-21-what-ran-and-what-did-not). The rebuild, the RPATH fix and the app link that pass left open were done on 2026-11-22: [receipt](../distribution-2026-11-22/README.md).) This receipt re-checks the public Qt
 source identity, reproduces the source preparation and the configure step,
 builds the qtimageformats plugins, stages a runtime for the current closure with
 notices and hashes, checks it with a new script, and finds and works around one
 defect in how the closure resolves libraries. It does not rebuild Qt's core
 libraries, and it does not produce a release package or a source offer. Every result below is labelled **host**, **container**
-(`qnx805-build`, Linux aarch64 on Colima, QNX SDP 8.0.5 `qcc`) or **QNX VM**
+(`qnx805-build`, Linux x86_64 under Rosetta on Colima, QNX SDP 8.0.5 `qcc`; corrected on 2026-11-22, this line first said aarch64) or **QNX VM**
 (QEMU TCG, software render). Nothing here is Pi 400 or release-board evidence,
 and the gate does not need a device (`TODO.md`: "Needs a device: No").
 

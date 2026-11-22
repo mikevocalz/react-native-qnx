@@ -15,3 +15,11 @@ set(CMAKE_NM $ENV{QNX_HOST}/usr/bin/ntoaarch64-nm)
 set(CMAKE_C_COMPILER_ARG1 "-Vgcc_ntoaarch64le -D_QNX_SOURCE")
 set(CMAKE_CXX_COMPILER_ARG1 "-Vgcc_ntoaarch64le -D_QNX_SOURCE")
 set(CMAKE_ASM_FLAGS_INIT "-Vgcc_ntoaarch64le -D_QNX_SOURCE")
+
+# QNX's ld writes -rpath as DT_RPATH, which the loader searches before
+# LD_LIBRARY_PATH. DT_RUNPATH is searched after it, so a replacement library on
+# LD_LIBRARY_PATH wins. Qt's enable_new_dtags feature cannot be turned on here
+# (QT_FEATURE_elf is OFF on QNX), so pass the linker flag directly.
+foreach(kind SHARED MODULE EXE)
+  string(APPEND CMAKE_${kind}_LINKER_FLAGS_INIT " -Wl,--enable-new-dtags")
+endforeach()

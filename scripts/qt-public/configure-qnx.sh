@@ -6,6 +6,12 @@
 # -optimize-size; Qt 6.12.0 defines no size flag for qcc, so that option
 # stripped -O2 and compiled Qt with no -O level. The check after configure
 # stops the build if the Release flags lose -O2 again.
+# RPATH (README, "RPATH"): the last line of options makes the linker write the
+# install-prefix path (/data/qt612-public/lib) into the build outputs as
+# DT_RUNPATH, so no build-host directory reaches a shipped file and no
+# post-link rewrite is needed. QNX's ld defaults to DT_RPATH and takes
+# --enable-new-dtags; Qt's feature for it needs QT_FEATURE_elf, which is OFF on
+# QNX, so the flag is in the toolchain file instead.
 set -euo pipefail
 source "$(dirname "$0")/layout.sh"
 source "$QNX_SDP/qnxsdp-env.sh" >/dev/null
@@ -25,7 +31,8 @@ mkdir -p "$build"; cd "$build"
   -DFEATURE_system_freetype=OFF -DFEATURE_system_harfbuzz=OFF \
   -DFEATURE_system_zlib=OFF -DFEATURE_system_png=OFF -DFEATURE_system_jpeg=OFF \
   -DFEATURE_system_pcre2=OFF -DFEATURE_vulkan=OFF -DFEATURE_qml_debug=OFF \
-  -DFEATURE_qqnx_imf=OFF -DFEATURE_optimize_size=OFF -DFEATURE_optimize_full=OFF
+  -DFEATURE_qqnx_imf=OFF -DFEATURE_optimize_size=OFF -DFEATURE_optimize_full=OFF \
+  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
 for lang in C CXX; do
   flags=$(sed -n "s/^CMAKE_${lang}_FLAGS_RELEASE:STRING=//p" CMakeCache.txt)
   case " $flags " in

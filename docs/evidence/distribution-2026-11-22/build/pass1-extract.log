@@ -1,0 +1,27 @@
+/build/root/download/qt-everywhere-src-6.12.0.tar.xz: OK
+ef25002ed292b132d1ed3246bfcee1d24a9cd966
+
+CHANGELOG.md
+CMakeLists.txt
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+GOVERNANCE.md
+LICENSE.md
+LICENSES
+README.md
+README.md.template
+REUSE.toml
+SECURITY.md
+cmake
+coin
+configure
+configure.bat
+configure.json
+gradle.properties
+init-repository.bat
+init-repository.pl
+qtbase
+qtdeclarative
+qtimageformats
+qtshadertools
+settings.gradle

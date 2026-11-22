@@ -1,0 +1,135 @@
+/build/root/download/qt-everywhere-src-6.12.0.tar.xz: OK
+'/build/build/qnx-build/qtbase/bin/../libexec/qt-cmake-private' '-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON' '-DQT_INTERNAL_CALLED_FROM_CONFIGURE:BOOL=TRUE' '/build/root/src-svg/qt-everywhere-src-6.12.0/qtsvg'
+-- The CXX compiler identification is QCC 12.2.0
+-- The C compiler identification is QCC 12.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /work/qnx800/host/linux/x86_64/usr/bin/q++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /work/qnx800/host/linux/x86_64/usr/bin/qcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Performing Test HAVE_EGL
+-- Performing Test HAVE_EGL - Success
+-- Found EGL: /work/qnx800/target/qnx/usr/include (found version "1.5")
+-- Performing Test HAVE_GLESv2
+-- Performing Test HAVE_GLESv2 - Success
+-- Force setting build type to 'Release'.
+-- Checking for feature set changes
+-- CMAKE_STRIP (original): /work/qnx800/host/linux/x86_64/usr/bin/ntoaarch64-strip
+-- Performing Test strip --keep-section
+-- Performing Test strip --keep-section - TRUE
+-- CMAKE_STRIP (used by Qt): /work/qnx800/host/linux/x86_64/usr/bin/ntoaarch64-strip
+-- Running syncqt.cpp for module: QtSvg
+-- The following packages have been found:
+
+ * Qt6BuildInternals (required version >= 6.12.0)
+ * Qt6CorePrivate (required version == 6.12.0)
+ * Qt6Core (required version >= 6.12.0)
+ * EGL, A platform-agnostic mechanism for creating rendering surfaces for use with other graphics libraries, such as OpenGL|ES and OpenVG., <https://www.khronos.org/egl/>
+ * Qt6CoreTools (required version >= 6.12.0)
+ * Qt6GuiTools (required version >= 6.12.0)
+ * Qt6GuiPrivate (required version == 6.12.0)
+ * Qt6Gui (required version >= 6.12.0)
+ * Qt6XmlPrivate (required version == 6.12.0)
+ * Qt6Xml (required version >= 6.12.0)
+ * Qt6NetworkPrivate (required version == 6.12.0)
+ * Qt6Network (required version >= 6.12.0)
+ * Qt6HostInfo
+ * Qt6ZlibPrivate
+ * Qt6
+
+-- The following OPTIONAL packages have not been found:
+
+ * PkgConfig
+ * PlatformGraphics
+ * Qt6Widgets (required version >= 6.12.0)
+
+
+-- Configuration summary shown below. It has also been written to /build/build/svg-qnx/config.summary
+-- Configure with --log-level=STATUS or higher to increase CMake's message verbosity. The log level does not persist across reconfigurations.
+ 
+-- Configure summary:
+
+SBOM:
+  Generate SBOM .......................... no
+  Generate source SPDX SBOM .............. no
+ 
+
+Note: Due to CMAKE_STAGING_PREFIX usage and an unfixed CMake bug,
+      to ensure correct build time rpaths, directory-level install
+      rules like ninja src/gui/install will not work.
+      Check QTBUG-102592 for further details.
+
+-- Configuring done (9.5s)
+-- Generating done (0.2s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    QT_USE_ORIGINAL_COMPILER
+
+
+-- Build files have been written to: /build/build/svg-qnx
+[1/42] Generating version linker script for target QSvgPlugin
+[2/42] Running syncqt.cpp for module: QtSvg
+[3/42] Generating ../../mkspecs/modules/qt_lib_svg_private.pri
+[4/42] Generating version linker script for target Svg
+[5/42] Automatic MOC for target Svg
+[6/42] Running AUTOMOC file extraction for target Svg
+[7/42] Generating pc file for target Qt6::Svg
+[8/42] Generating prl file for target Svg
+[9/42] Running moc --collect-json for target Svg
+[10/42] Building CXX object src/svg/CMakeFiles/Svg.dir/Svg_autogen/mocs_compilation.cpp.o
+[11/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgfont.cpp.o
+[12/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvggraphics.cpp.o
+[13/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvggenerator.cpp.o
+[14/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgnode.cpp.o
+[15/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgrenderer.cpp.o
+[16/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvghandler.cpp.o
+[17/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgstructure.cpp.o
+[18/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgstyle.cpp.o
+[19/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgfilter.cpp.o
+[20/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgpaintserver.cpp.o
+[21/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvganimate.cpp.o
+[22/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgdocument.cpp.o
+[23/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgdebug.cpp.o
+[24/42] Building CXX object src/svg/CMakeFiles/Svg.dir/qsvgvisitor.cpp.o
+[25/42] Building CXX object src/svg/CMakeFiles/Svg.dir/animation/qsvgeasinginterface.cpp.o
+[26/42] Building CXX object src/svg/CMakeFiles/Svg.dir/animation/qsvgabstractanimation.cpp.o
+[27/42] Building CXX object src/svg/CMakeFiles/Svg.dir/animation/qsvganimator.cpp.o
+[28/42] Building CXX object src/svg/CMakeFiles/Svg.dir/animation/qsvgcssanimation.cpp.o
+[29/42] Building CXX object src/svg/CMakeFiles/Svg.dir/animation/qsvganimatedproperty.cpp.o
+[30/42] Building CXX object src/svg/CMakeFiles/Svg.dir/css/qsvgstyleselector.cpp.o
+[31/42] Building CXX object src/svg/CMakeFiles/Svg.dir/css/animation/qsvgcsseasing.cpp.o
+[32/42] Building CXX object src/svg/CMakeFiles/Svg.dir/css/qsvgcssproperties.cpp.o
+[33/42] Building CXX object src/svg/CMakeFiles/Svg.dir/css/qsvgcsshandler.cpp.o
+[34/42] Linking CXX shared library lib/libQt6Svg.so.6.12.0
+[35/42] Creating library symlink lib/libQt6Svg.so.6 lib/libQt6Svg.so
+[36/42] Automatic MOC for target QSvgPlugin
+[37/42] Running AUTOMOC file extraction for target QSvgPlugin
+[38/42] Running moc --collect-json for target QSvgPlugin
+[39/42] Building CXX object src/plugins/imageformats/svg/CMakeFiles/QSvgPlugin.dir/QSvgPlugin_autogen/mocs_compilation.cpp.o
+[40/42] Building CXX object src/plugins/imageformats/svg/CMakeFiles/QSvgPlugin.dir/main.cpp.o
+[41/42] Building CXX object src/plugins/imageformats/svg/CMakeFiles/QSvgPlugin.dir/qsvgiohandler.cpp.o
+[42/42] Linking CXX shared module plugins/imageformats/libqsvg.so
+lib:
+total 824
+drwxr-xr-x 6 root root   4096 Nov 22 07:05 cmake
+-rw-r--r-- 1 root root    293 Nov 22 07:05 libQt6Svg.prl
+lrwxrwxrwx 1 root root     14 Nov 22 07:05 libQt6Svg.so -> libQt6Svg.so.6
+lrwxrwxrwx 1 root root     19 Nov 22 07:05 libQt6Svg.so.6 -> libQt6Svg.so.6.12.0
+-rwxr-xr-x 1 root root 828968 Nov 22 07:05 libQt6Svg.so.6.12.0
+drwxr-xr-x 2 root root   4096 Nov 22 07:05 pkgconfig
+
+plugins/imageformats:
+total 36
+-rwxr-xr-x 1 root root 34816 Nov 22 07:05 libqsvg.so

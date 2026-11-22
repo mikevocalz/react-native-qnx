@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Replace build-host DT_RPATH entries in staged ELF files with an install-path DT_RUNPATH.
+"""Check, or still rewrite, the search path of staged ELF files.
+
+Since 2026-11-22 the build writes DT_RUNPATH /data/qt612-public/lib itself
+(configure-qnx.sh, qt612-public-qnx-aarch64le.cmake, build-app-qnx.sh), so the
+staged runtime needs no rewrite. Run this script with --check as part of
+staging: it exits 0 with "0 file(s) would change" on a build from the current
+scripts. The rewrite stays for a runtime built from older scripts, such as the
+2026-11-12 libraries.
+
+Replace build-host DT_RPATH entries in staged ELF files with an install-path DT_RUNPATH.
 
 Usage: python3 -I normalize-rpath.py <dir> --runpath PATH[:PATH...] [--check]
 

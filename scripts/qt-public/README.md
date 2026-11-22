@@ -2,9 +2,34 @@
 
 These scripts rebuild the Qt runtime recorded in
 [the Pi 400 receipt](../../docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md).
-They run in a Linux container with QNX SDP 8.0.5 installed (the
-`qnx805-build` container used on 2026-11-12, user `qnxbuild`). The QNX SDP is
-licensed separately and is not part of this repository.
+They run in a Linux x86_64 container with QNX SDP 8.0.5 available (the
+`qnx805-build` container used on 2026-11-12, user `qnxbuild`). That container
+reports `uname -m` = `x86_64`: Colima runs it under Rosetta. Earlier text here
+called it aarch64; the QNX SDP host tools in `qnx800/host/linux/x86_64` run only
+on x86_64 Linux, so the container has to be x86_64 whatever the VM is. The QNX
+SDP is licensed separately and is not part of this repository.
+
+### Clean container, work directory on the T9 (2026-11-22)
+
+[`distribution-2026-11-22`](../../docs/evidence/distribution-2026-11-22/README.md)
+rebuilt everything in a new container, not in `qnx805-build`:
+
+- `ubuntu:24.04` with `--platform linux/amd64`, `--privileged`, the SDP bound
+  read-only at `/work` (the build writes nothing there) and the external volume
+  at `/t9`. The packages are the manual installs of `qnx805-build` (the list is
+  in the receipt's `build/apt-packages.txt`) and CMake 3.31.9 from the tarball
+  that container holds. Node is not needed to build Qt.
+- A virtiofs mount (Colima's `/Volumes/...` mount) refuses to create a file whose
+  owner-read bit is off: `open(O_CREAT, 0200)` fails with `EACCES`. libstdc++'s
+  `std::filesystem::copy` creates its destination that way, so Qt's `syncqt`
+  stops during the host-tools configure with `Unable to remove file ... error:
+(13)Permission denied`. The sources and build trees therefore live in a
+  sparse ext4 image file on the T9, loop-mounted at `/build`
+  (`mount -o loop`), which has normal Linux semantics while every byte still
+  lands on the T9. The archive and the staged outputs stay on the T9 itself.
+- `single-pass-build.sh` runs the stages and writes `stages.tsv` (start, end,
+  wall seconds, exit code, size of the work directory) and `disk-samples.tsv`
+  (one row a minute).
 
 ## Layout
 
@@ -53,6 +78,15 @@ python3 -I spdx-audit.py "${IMAGEFORMATS_BUILD:-$QT_PUBLIC_BUILD/imageformats-qn
 python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" \
   "$QT_PUBLIC_ROOT/runtime-spdx-audit.json" "$QT_PUBLIC_ROOT/imageformats-spdx-audit.json"
 ```
+
+[`single-pass-build.sh`](single-pass-build.sh) runs everything from
+`extract-source.sh` to `build-imageformats-qnx.sh` in one go, timed, and
+[`audit-and-stage.sh`](audit-and-stage.sh) runs the three SPDX audits and the
+staging after it. `ONLY="qnx svg imageformats"` (any of `extract cve qnxpatch
+host qnx svg imageformats`) runs part of the list. `build-svg-qnx.sh` extracts
+qtsvg into `$QT_PUBLIC_ROOT/src-svg`, not into `src`: with a `qtsvg` directory
+beside `qtbase`, running `configure-qnx.sh` again stops with `Failed to find the
+host tool "Qt6::svgtoqml"`.
 
 `stage-runtime.py` writes `manifest.json` and
 `needed.json`; the receipt's `SHA256SUMS` was then written with
@@ -281,25 +315,57 @@ and needs `QT_PUBLIC_ROOT` to hold `download/`. See the
 
 ## Closure check and RPATH
 
-`stage-runtime.py` does not remove the build-host `DT_RPATH` that the build
-writes into every Qt library and plugin. QNX's loader searches `DT_RPATH` before
-`LD_LIBRARY_PATH`, so a user's replacement Qt library is ignored whenever the
-build-host directory exists, and it does not expand `$ORIGIN`
+QNX's linker writes `-rpath` as `DT_RPATH`, and the loader searches `DT_RPATH`
+before `LD_LIBRARY_PATH`. A build that keeps the default therefore puts the
+build directory into every Qt library, plugin and app, and a user's replacement
+Qt library is ignored while that directory exists. The loader does not expand
+`$ORIGIN` either
 ([QNX VM probe](../../docs/evidence/distribution-2026-11-21/vm/rpath-probe.txt)).
-After staging, rewrite the search path and check the result, then write the
-`SHA256SUMS` (the rewrite changes file hashes):
+
+**The build now writes the right search path itself** (2026-11-22,
+[receipt](../../docs/evidence/distribution-2026-11-22/README.md)). Three
+settings, all in the scripts here:
+
+- `CMAKE_BUILD_WITH_INSTALL_RPATH=ON` in `configure-qnx.sh`, `build-svg-qnx.sh`,
+  `build-imageformats-qnx.sh` and `build-app-qnx.sh`: the linked file gets the
+  install path `/data/qt612-public/lib` (Qt's `INSTALL_RPATH`) and not the
+  build directory. This also removed the 22 empty entries libQt6Core carried.
+- `-Wl,--enable-new-dtags` in `qt612-public-qnx-aarch64le.cmake` and
+  `qnx-app-qt-public.toolchain.cmake`: QNX's `ld` then writes `DT_RUNPATH`,
+  which is searched after `LD_LIBRARY_PATH`. Qt's own `enable_new_dtags` feature
+  cannot be switched on here, because `QT_FEATURE_elf` is OFF on QNX (forcing it
+  fails the configure).
+- `FEATURE_rpath` and `QT_DISABLE_RPATH` are not needed. They only govern the
+  install rpath Qt adds, not the one CMake writes for the build tree.
+
+[`dump-dynsec.sh`](dump-dynsec.sh) prints the hash and search path of every
+library and plugin straight from the build trees. After staging, check the result and
+write the `SHA256SUMS`:
 
 ```sh
-python3 -I normalize-rpath.py "$QT_PUBLIC_ROOT/runtime" --runpath /data/qt612-public/lib
+python3 -I normalize-rpath.py "$QT_PUBLIC_ROOT/runtime" --runpath /data/qt612-public/lib --check
 python3 -I verify-closure.py "$QT_PUBLIC_ROOT/runtime" --runpath-prefix /data/qt612-public/ \
   --json "$QT_PUBLIC_ROOT/runtime-closure.json"
 ```
 
-`normalize-rpath.py` turns each `DT_RPATH` (and any `DT_RUNPATH` with an absolute
-or empty entry) into a `DT_RUNPATH` holding the given absolute path, in place;
-it never grows a string, and `--check` reports what would change without writing.
+`normalize-rpath.py --check` now reports `0 file(s) would change`. Without
+`--check` it still rewrites a `DT_RPATH` (or a `DT_RUNPATH` with an absolute or
+empty entry) into a `DT_RUNPATH` holding the given absolute path, in place and
+never growing a string; that is for a runtime built from the 2026-11-12 libraries
+or older scripts.
 `verify-closure.py` reads the ELF dynamic section itself (no SDK needed) and fails on
 a missing or unlisted file, a hash mismatch, an unresolved `libQt6*` dependency, any
 `DT_RPATH`, a build-host `DT_RUNPATH`, a QNX system library in the runtime, or missing
-license texts. App executables take the same tools with the app's install paths,
-for example `--runpath /data/app/qt/lib:/data/app` (the new string must fit in the old one).
+license texts.
+
+## Linking an app against this Qt
+
+[`build-app-qnx.sh`](build-app-qnx.sh) configures and builds the playground app
+(`rnqnx_playground_qnx`) with `qnx-app-qt-public.toolchain.cmake`, which adds
+`$QT_PUBLIC_BUILD/qnx-build/qtbase` and `svg-qnx` to the package search path. The
+variables it needs (checkout, Hermes build tree, third-party sources) are listed
+at the top of the script. The app takes `DT_RUNPATH` `/data/qt612-public/lib`
+from `CMAKE_INSTALL_RPATH` and needs `libhermesvmlean.so` beside it (or on
+`LD_LIBRARY_PATH`). React Native builds its own sources with `-Werror`; at `-O2`
+the script demotes the GCC 12 `maybe-uninitialized` family, the list the
+2026-11-19 PR 149 build used.

@@ -1,5 +1,5 @@
 # configure-only checks, fresh tree /work/dist-root2, 2026-11-21T21:36:32Z
-# host: container qnx805-build (Linux aarch64 on Colima), QNX SDP 8.0.5 qcc
+# host: container qnx805-build (Linux x86_64 under Rosetta on Colima; the first version of this line said aarch64, corrected 2026-11-22), QNX SDP 8.0.5 qcc
 CMAKE_BUILD_TYPE:STRING=Release
 CMAKE_CXX_FLAGS_RELEASE:STRING=-DNDEBUG   -DNDEBUG -O2
 CMAKE_C_FLAGS_RELEASE:STRING=-DNDEBUG   -DNDEBUG -O2

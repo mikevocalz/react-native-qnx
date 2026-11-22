@@ -1,0 +1,74 @@
+{
+  "targets": ["QWebpPlugin", "QTiffPlugin", "QTgaPlugin", "QICNSPlugin", "QWbmpPlugin"],
+  "objects": 176,
+  "translation_units": 176,
+  "translation_units_without_deps_entry": [],
+  "files_read_total": 1510,
+  "qt_files_by_expression": {
+    "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only": 192
+  },
+  "qt_files_without_lgpl_option": [],
+  "third_party_components": {
+    "qtbase/src/3rdparty/libjpeg": {
+      "attribution": [
+        {
+          "name": "LibJPEG-turbo",
+          "version": "3.2.0",
+          "license": "IJG AND BSD-3-Clause",
+          "copyright": null,
+          "license_files": ["LICENSE", "ijg-license.txt"]
+        }
+      ],
+      "files_read": 4,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/libjpeg/LICENSE"]
+    },
+    "qtbase/src/3rdparty/zlib": {
+      "attribution": [
+        {
+          "name": "Data Compression Library (zlib)",
+          "version": "1.3.2",
+          "license": "Zlib",
+          "copyright": "(C) 1995-2026 Jean-loup Gailly and Mark Adler",
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 2,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/zlib/LICENSE"]
+    },
+    "qtimageformats/src/3rdparty/libtiff": {
+      "attribution": [
+        {
+          "name": "TIFF Software Distribution (libtiff)",
+          "version": "4.7.2",
+          "license": "libtiff",
+          "copyright": "Copyright (c) 1988-1997 Sam Leffler\nCopyright (c) 1991-1997 Silicon Graphics, Inc.",
+          "license_files": "COPYRIGHT"
+        }
+      ],
+      "files_read": 48,
+      "spdx_in_files": [],
+      "license_files_in_dir": []
+    },
+    "qtimageformats/src/3rdparty/libwebp": {
+      "attribution": [
+        {
+          "name": "WebP (libwebp)",
+          "version": "1.6.0",
+          "license": "BSD-3-Clause",
+          "copyright": "Copyright (c) 2010, Google Inc. All rights reserved.",
+          "license_files": "COPYING"
+        }
+      ],
+      "files_read": 171,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtimageformats/src/3rdparty/libwebp/COPYING"]
+    }
+  },
+  "embedded_attributions": [],
+  "generated_files_by_dir": {
+    "src/plugins/imageformats": 10
+  },
+  "toolchain_and_sysroot_files": 1083
+}

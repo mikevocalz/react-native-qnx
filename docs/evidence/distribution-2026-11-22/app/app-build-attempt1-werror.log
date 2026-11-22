@@ -1,0 +1,200 @@
+-- The C compiler identification is QCC 12.2.0
+-- The CXX compiler identification is QCC 12.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /work/qnx800/host/linux/x86_64/usr/bin/qcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /work/qnx800/host/linux/x86_64/usr/bin/q++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring react-native-qnx for QNX
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Performing Test HAVE_EGL
+-- Performing Test HAVE_EGL - Success
+-- Found EGL: /work/qnx800/target/qnx/usr/include (found version "1.5")
+-- Performing Test HAVE_GLESv2
+-- Performing Test HAVE_GLESv2 - Success
+-- Found GLESv2: /work/qnx800/target/qnx/usr/include
+-- Qt 6.12.0 found; building full React/Fabric/Qt Quick QNX targets
+-- Configuring done (7.7s)
+-- Generating done (0.5s)
+-- Build files have been written to: /build/build/app-qnx
+[0/2] Re-checking globbed directories...
+[1/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtModalQml.cpp.o
+[2/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtExtraItems.cpp.o
+[3/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QnxImageProvider.cpp.o
+[4/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ImageDiskCache.cpp.o
+[5/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtQuickItemFactory.cpp.o
+[6/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ImageFetchQueue.cpp.o
+[7/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ImageLoadedNotifier.cpp.o
+[8/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ImageRefRegistry.cpp.o
+[9/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/QtImageFetcher.cpp.o
+[10/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/BlurHash.cpp.o
+[11/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ImageDecode.cpp.o
+[12/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ThumbHash.cpp.o
+[13/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/BlurHashEncoder.cpp.o
+[14/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtTextInputQml.cpp.o
+[15/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ThumbHashEncoder.cpp.o
+[16/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ImageEffects.cpp.o
+[17/419] Building CXX object CMakeFiles/rnqnx_glog.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_glog-src/src/demangle.cc.o
+[18/419] Building CXX object CMakeFiles/rnqnx_glog.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_glog-src/src/raw_logging.cc.o
+[19/419] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtQuickMountingLayer.cpp.o
+[20/419] Linking CXX static library librnqnx_views_qt.a
+[21/419] Building CXX object CMakeFiles/rnqnx_glog.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_glog-src/src/logging.cc.o
+[22/419] Building CXX object CMakeFiles/rnqnx_glog.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_glog-src/src/signalhandler.cc.o
+[23/419] Building CXX object CMakeFiles/rnqnx_glog.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_glog-src/src/symbolize.cc.o
+[24/419] Building CXX object CMakeFiles/rnqnx_glog.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_glog-src/src/utilities.cc.o
+[25/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/bignum.cc.o
+[26/419] Building CXX object CMakeFiles/rnqnx_glog.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_glog-src/src/vlog_is_on.cc.o
+[27/419] Linking CXX static library librnqnx_glog.a
+[28/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/bignum-dtoa.cc.o
+[29/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/diy-fp.cc.o
+[30/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/cached-powers.cc.o
+[31/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/fast-dtoa.cc.o
+[32/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/double-conversion.cc.o
+[33/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/fixed-dtoa.cc.o
+[34/419] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/strtod.cc.o
+[35/419] Linking CXX static library librnqnx_double_conversion.a
+[36/419] Building CXX object CMakeFiles/rnqnx_fmt.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_fmt-src/src/format.cc.o
+[37/419] Linking CXX static library librnqnx_fmt.a
+[38/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/Demangle.cpp.o
+[39/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/FileUtil.cpp.o
+[40/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/Format.cpp.o
+[41/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/Conv.cpp.o
+[42/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/ScopeGuard.cpp.o
+[43/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/SharedMutex.cpp.o
+[44/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/Unicode.cpp.o
+[45/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/String.cpp.o
+[46/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/detail/FileUtilDetail.cpp.o
+[47/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/concurrency/CacheLocality.cpp.o
+[48/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/container/detail/F14Table.cpp.o
+[49/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/hash/SpookyHashV2.cpp.o
+[50/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/detail/Futex.cpp.o
+[51/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/detail/UniqueInstance.cpp.o
+[52/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/json/json_pointer.cpp.o
+[53/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/detail/SplitStringSimd.cpp.o
+[54/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/json/dynamic.cpp.o
+[55/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/lang/CString.cpp.o
+[56/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/lang/Exception.cpp.o
+[57/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/memory/detail/MallocImpl.cpp.o
+[58/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/lang/SafeAssert.cpp.o
+[59/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/json/json.cpp.o
+[60/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/synchronization/SanitizeThread.cpp.o
+[61/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/lang/ToAscii.cpp.o
+[62/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/net/NetOps.cpp.o
+[63/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/portability/SysUio.cpp.o
+[64/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/synchronization/ParkingLot.cpp.o
+[65/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/system/AtFork.cpp.o
+[66/419] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src/folly/system/ThreadId.cpp.o
+[67/419] Linking CXX static library librnqnx_folly_runtime.a
+[68/419] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/EventEmitters.cpp.o
+[69/419] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/ComponentDescriptors.cpp.o
+[70/419] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/States.cpp.o
+[71/419] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/ShadowNodes.cpp.o
+[72/419] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/Props.cpp.o
+[73/419] Building CXX object CMakeFiles/react_renderer_textlayoutmanager.dir/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextMeasureCache.cpp.o
+[74/419] Building CXX object CMakeFiles/react_renderer_textlayoutmanager.dir/vnext/src/text/QtTextLayoutManager.cpp.o
+[75/419] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputEventEmitter.cpp.o
+[76/419] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputProps.cpp.o
+[77/419] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/ios/react/renderer/components/iostextinput/TextInputProps.cpp.o
+[78/419] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/ios/react/renderer/components/iostextinput/TextInputShadowNode.cpp.o
+[79/419] Building CXX object CMakeFiles/rrc_switch.dir/vnext/src/fabric/SwitchShadowNode.cpp.o
+[80/419] Building CXX object CMakeFiles/rrc_safeareaview.dir/node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewShadowNode.cpp.o
+[81/419] Building CXX object CMakeFiles/rrc_safeareaview.dir/node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewState.cpp.o
+[82/419] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewComponentDescriptor.cpp.o
+[83/419] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/platform/cxx/ModalHostViewUtils.cpp.o
+[84/419] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewShadowNode.cpp.o
+[85/419] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewState.cpp.o
+[86/419] Automatic MOC for target rnqnx_fabric_adapter
+[87/419] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/ErrorUtils.cpp.o
+[88/419] Building CXX object CMakeFiles/rnqnx_jsi_dynamic.dir/node_modules/react-native/ReactCommon/jsi/jsi/JSIDynamic.cpp.o
+[89/419] Linking CXX static library librnqnx_jsi_dynamic.a
+[90/419] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/JsErrorHandler.cpp.o
+[91/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/rnqnx_fabric_adapter_autogen/mocs_compilation.cpp.o
+[92/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/runtime/QtImageCache.cpp.o
+[93/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtScrollBridge.cpp.o
+[94/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[95/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtTouchDispatcher.cpp.o
+[96/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtModalBridge.cpp.o
+[97/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtExtraComponents.cpp.o
+[98/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtSwitchBridge.cpp.o
+[99/419] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtImageBridge.cpp.o
+[100/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtRuntimeTaskQueue.cpp.o
+[101/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtJsThread.cpp.o
+[102/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QueuedCallTarget.cpp.o
+[103/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxFileReaderModule.cpp.o
+[104/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxExceptionsManager.cpp.o
+[105/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoader.cpp.o
+[106/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtImageCache.cpp.o
+[107/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoaderRefs.cpp.o
+[108/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[109/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxSegmentFetcher.cpp.o
+[110/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxWebSocketModule.cpp.o
+[111/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxDevSupportModules.cpp.o
+[112/419] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/RuntimePreflight.cpp.o
+[113/419] Building CXX object react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserver.cpp.o
+[114/419] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/StackTraceParser.cpp.o
+[115/419] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/react_native_assert.cpp.o
+[116/419] Building CXX object CMakeFiles/rnqnx_playground_qnx.dir/vnext/probes/playground/main.cpp.o
+[117/419] Building CXX object react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserverManager.cpp.o
+FAILED: react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserverManager.cpp.o 
+/work/qnx800/host/linux/x86_64/usr/bin/q++ -Vgcc_ntoaarch64le -D_QNX_SOURCE -Wc,-isysroot,/work/qnx800/target/qnx -x c++ -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_PTHREAD=1 -DFOLLY_MOBILE=1 -DFOLLY_NO_CONFIG=1 -DFOLLY_USE_LIBCPP=1 -DHERMES_V1_ENABLED=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -D_FORTIFY_SOURCE=2 -D_REENTRANT -I/t9/clones/distribution3/node_modules/react-native/ReactCommon -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/callinvoker/. -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/jserrorhandler/. -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/featureflags -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/oscompat/. -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/timing -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/runtimeexecutor -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/reactperflogger/. -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/logger/. -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/yoga/yoga/.. -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/components/scrollview/. -I/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/React -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/jsi -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/callinvoker -Wp,-isystem,/work/pr102-consumer/build/qnx/native/_deps/rnqnx_folly-src -Wp,-isystem,/build/build/app-qnx/glog-exported -Wp,-isystem,/work/pr102-consumer/build/qnx/native/_deps/rnqnx_fmt-src/include -Wp,-isystem,/work/pr102-consumer/build/qnx/native/_deps/rnqnx_fast_float-src/include -Wp,-isystem,/build/build/app-qnx/double-conversion-staged -Wp,-isystem,/work/pr102-consumer/build/qnx/native/_deps/rnqnx_boost-src -Wp,-isystem,/work/pr102-consumer/build/qnx/native/_deps/rnqnx_boost_config-src/include -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/components/modal/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/components/scrollview/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/components/text/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/components/view/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/graphics/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/utils/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/runtimeexecutor/platform/cxx -Wp,-isystem,/t9/clones/distribution3/node_modules/react-native/ReactCommon/react/nativemodule/core -Wp,-isystem,/build/build/qnx-build/qtbase/include -Wp,-isystem,/build/build/qnx-build/qtbase/include/QtGui -Wp,-isystem,/build/build/qnx-build/qtbase/include/QtCore -Wp,-isystem,/build/root/src/qt-everywhere-src-6.12.0/qtbase/mkspecs/qnx-aarch64le-qcc -Vgcc_ntoaarch64le -D_QNX_SOURCE -O2 -DNDEBUG -std=c++20 -Wall -Werror -fexceptions -frtti -std=c++20 -DFOLLY_NO_CONFIG=1 -DLOG_TAG=\"ReactNative\" -Wpedantic -Wno-unknown-pragmas -DNDEBUG -Wp,-MD,react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserverManager.cpp.o.d -Wp,-MT,react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserverManager.cpp.o -Wp,-MF,react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserverManager.cpp.o.d -o react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserverManager.cpp.o -c /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserverManager.cpp
+In file included from /work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/iter_swap.h:14,
+                 from /work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/iterator_operations.h:12,
+                 from /work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/search.h:14,
+                 from /work/qnx800/target/qnx/usr/include/c++/v1/functional:515,
+                 from /t9/clones/distribution3/node_modules/react-native/ReactCommon/jsi/jsi/jsi.h:15,
+                 from /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserverManager.h:12,
+                 from /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserverManager.cpp:8:
+In function 'constexpr std::__2::__swap_result_t<_Tp> std::__2::swap(_Tp&, _Tp&) [with _Tp = __shared_weak_count*]',
+    inlined from 'void std::__2::shared_ptr<_Tp>::swap(std::__2::shared_ptr<_Tp>&) [with _Tp = facebook::react::ShadowNodeFamily]' at /work/qnx800/target/qnx/usr/include/c++/v1/__memory/shared_ptr.h:695:14,
+    inlined from 'std::__2::shared_ptr<_Tp>& std::__2::shared_ptr<_Tp>::operator=(std::__2::shared_ptr<_Tp>&&) [with _Tp = facebook::react::ShadowNodeFamily]' at /work/qnx800/target/qnx/usr/include/c++/v1/__memory/shared_ptr.h:663:36,
+    inlined from 'facebook::react::ResizeObserverEntry& facebook::react::ResizeObserverEntry::operator=(facebook::react::ResizeObserverEntry&&)' at /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserver.h:27:8,
+    inlined from 'constexpr void std::__2::__optional_storage_base<_Tp, <anonymous> >::__assign_from(_That&&) [with _That = std::__2::__optional_move_assign_base<facebook::react::ResizeObserverEntry, false>; _Tp = facebook::react::ResizeObserverEntry; bool <anonymous> = false]' at /work/qnx800/target/qnx/usr/include/c++/v1/optional:383:22,
+    inlined from 'constexpr std::__2::__optional_move_assign_base<_Tp, false>& std::__2::__optional_move_assign_base<_Tp, false>::operator=(std::__2::__optional_move_assign_base<_Tp, false>&&) [with _Tp = facebook::react::ResizeObserverEntry]' at /work/qnx800/target/qnx/usr/include/c++/v1/optional:551:24,
+    inlined from 'constexpr std::__2::optional<_Tp>& std::__2::optional<_Tp>::operator=(std::__2::optional<_Tp>&&) [with _Tp = facebook::react::ResizeObserverEntry]' at /work/qnx800/target/qnx/usr/include/c++/v1/optional:725:45,
+    inlined from 'constexpr facebook::react::ResizeObservationResult& facebook::react::ResizeObservationResult::operator=(facebook::react::ResizeObservationResult&&)' at /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserver.h:36:8,
+    inlined from 'constexpr facebook::react::ResizeObserverManager::ActiveObservation& facebook::react::ResizeObserverManager::ActiveObservation::operator=(facebook::react::ResizeObserverManager::ActiveObservation&&)' at /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserverManager.h:67:10,
+    inlined from 'bool std::__2::__insertion_sort_incomplete(_RandomAccessIterator, _RandomAccessIterator, _Comp) [with _AlgPolicy = _ClassicAlgPolicy; _Comp = facebook::react::ResizeObserverManager::broadcastActiveResizeObservations(facebook::jsi::Runtime&, std::__2::vector<ActiveObservation>&)::<lambda(const auto:146&, const auto:147&)>&; _RandomAccessIterator = facebook::react::ResizeObserverManager::ActiveObservation*]' at /work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/sort.h:385:12:
+/work/qnx800/target/qnx/usr/include/c++/v1/__utility/swap.h:44:7: error: '*(std::__2::shared_ptr<facebook::react::ShadowNodeFamily>*)((char*)&__t + offsetof(facebook::react::ResizeObserverManager::value_type, facebook::react::ResizeObserverManager::ActiveObservation::result.facebook::react::ResizeObservationResult::entry.std::__2::optional<facebook::react::ResizeObserverEntry>::<unnamed>.std::__2::__optional_move_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_move_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_storage_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_destruct_base<facebook::react::ResizeObserverEntry, false>::<unnamed>) + 8).std::__2::shared_ptr<facebook::react::ShadowNodeFamily>::__cntrl_' may be used uninitialized [-Werror=maybe-uninitialized]
+   44 |   __y = std::move(__t);
+      |   ~~~~^~~~~~~~~~~~~~~~
+In file included from /work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/nth_element.h:15,
+                 from /work/qnx800/target/qnx/usr/include/c++/v1/algorithm:1847,
+                 from /work/qnx800/target/qnx/usr/include/c++/v1/array:502,
+                 from /work/qnx800/target/qnx/usr/include/c++/v1/__functional/boyer_moore_searcher.h:25,
+                 from /work/qnx800/target/qnx/usr/include/c++/v1/functional:526:
+/work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/sort.h: In function 'bool std::__2::__insertion_sort_incomplete(_RandomAccessIterator, _RandomAccessIterator, _Comp) [with _AlgPolicy = _ClassicAlgPolicy; _Comp = facebook::react::ResizeObserverManager::broadcastActiveResizeObservations(facebook::jsi::Runtime&, std::__2::vector<ActiveObservation>&)::<lambda(const auto:146&, const auto:147&)>&; _RandomAccessIterator = facebook::react::ResizeObserverManager::ActiveObservation*]':
+/work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/sort.h:378:18: note: '*(std::__2::shared_ptr<facebook::react::ShadowNodeFamily>*)((char*)&__t + offsetof(facebook::react::ResizeObserverManager::value_type, facebook::react::ResizeObserverManager::ActiveObservation::result.facebook::react::ResizeObservationResult::entry.std::__2::optional<facebook::react::ResizeObserverEntry>::<unnamed>.std::__2::__optional_move_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_move_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_storage_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_destruct_base<facebook::react::ResizeObserverEntry, false>::<unnamed>) + 8).std::__2::shared_ptr<facebook::react::ShadowNodeFamily>::__cntrl_' was declared here
+  378 |       value_type __t(_Ops::__iter_move(__i));
+      |                  ^~~
+In function 'constexpr std::__2::__swap_result_t<_Tp> std::__2::swap(_Tp&, _Tp&) [with _Tp = facebook::react::ShadowNodeFamily*]',
+    inlined from 'void std::__2::shared_ptr<_Tp>::swap(std::__2::shared_ptr<_Tp>&) [with _Tp = facebook::react::ShadowNodeFamily]' at /work/qnx800/target/qnx/usr/include/c++/v1/__memory/shared_ptr.h:694:14,
+    inlined from 'std::__2::shared_ptr<_Tp>& std::__2::shared_ptr<_Tp>::operator=(std::__2::shared_ptr<_Tp>&&) [with _Tp = facebook::react::ShadowNodeFamily]' at /work/qnx800/target/qnx/usr/include/c++/v1/__memory/shared_ptr.h:663:36,
+    inlined from 'facebook::react::ResizeObserverEntry& facebook::react::ResizeObserverEntry::operator=(facebook::react::ResizeObserverEntry&&)' at /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserver.h:27:8,
+    inlined from 'constexpr void std::__2::__optional_storage_base<_Tp, <anonymous> >::__assign_from(_That&&) [with _That = std::__2::__optional_move_assign_base<facebook::react::ResizeObserverEntry, false>; _Tp = facebook::react::ResizeObserverEntry; bool <anonymous> = false]' at /work/qnx800/target/qnx/usr/include/c++/v1/optional:383:22,
+    inlined from 'constexpr std::__2::__optional_move_assign_base<_Tp, false>& std::__2::__optional_move_assign_base<_Tp, false>::operator=(std::__2::__optional_move_assign_base<_Tp, false>&&) [with _Tp = facebook::react::ResizeObserverEntry]' at /work/qnx800/target/qnx/usr/include/c++/v1/optional:551:24,
+    inlined from 'constexpr std::__2::optional<_Tp>& std::__2::optional<_Tp>::operator=(std::__2::optional<_Tp>&&) [with _Tp = facebook::react::ResizeObserverEntry]' at /work/qnx800/target/qnx/usr/include/c++/v1/optional:725:45,
+    inlined from 'constexpr facebook::react::ResizeObservationResult& facebook::react::ResizeObservationResult::operator=(facebook::react::ResizeObservationResult&&)' at /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserver.h:36:8,
+    inlined from 'constexpr facebook::react::ResizeObserverManager::ActiveObservation& facebook::react::ResizeObserverManager::ActiveObservation::operator=(facebook::react::ResizeObserverManager::ActiveObservation&&)' at /t9/clones/distribution3/node_modules/react-native/ReactCommon/react/renderer/observers/resize/ResizeObserverManager.h:67:10,
+    inlined from 'bool std::__2::__insertion_sort_incomplete(_RandomAccessIterator, _RandomAccessIterator, _Comp) [with _AlgPolicy = _ClassicAlgPolicy; _Comp = facebook::react::ResizeObserverManager::broadcastActiveResizeObservations(facebook::jsi::Runtime&, std::__2::vector<ActiveObservation>&)::<lambda(const auto:146&, const auto:147&)>&; _RandomAccessIterator = facebook::react::ResizeObserverManager::ActiveObservation*]' at /work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/sort.h:385:12:
+/work/qnx800/target/qnx/usr/include/c++/v1/__utility/swap.h:44:7: error: '*(std::__2::shared_ptr<facebook::react::ShadowNodeFamily>*)((char*)&__t + offsetof(facebook::react::ResizeObserverManager::value_type, facebook::react::ResizeObserverManager::ActiveObservation::result.facebook::react::ResizeObservationResult::entry.std::__2::optional<facebook::react::ResizeObserverEntry>::<unnamed>.std::__2::__optional_move_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_move_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_storage_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_destruct_base<facebook::react::ResizeObserverEntry, false>::<unnamed>) + 8).std::__2::shared_ptr<facebook::react::ShadowNodeFamily>::__ptr_' may be used uninitialized [-Werror=maybe-uninitialized]
+   44 |   __y = std::move(__t);
+      |   ~~~~^~~~~~~~~~~~~~~~
+/work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/sort.h: In function 'bool std::__2::__insertion_sort_incomplete(_RandomAccessIterator, _RandomAccessIterator, _Comp) [with _AlgPolicy = _ClassicAlgPolicy; _Comp = facebook::react::ResizeObserverManager::broadcastActiveResizeObservations(facebook::jsi::Runtime&, std::__2::vector<ActiveObservation>&)::<lambda(const auto:146&, const auto:147&)>&; _RandomAccessIterator = facebook::react::ResizeObserverManager::ActiveObservation*]':
+/work/qnx800/target/qnx/usr/include/c++/v1/__algorithm/sort.h:378:18: note: '*(std::__2::shared_ptr<facebook::react::ShadowNodeFamily>*)((char*)&__t + offsetof(facebook::react::ResizeObserverManager::value_type, facebook::react::ResizeObserverManager::ActiveObservation::result.facebook::react::ResizeObservationResult::entry.std::__2::optional<facebook::react::ResizeObserverEntry>::<unnamed>.std::__2::__optional_move_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_assign_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_move_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_copy_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_storage_base<facebook::react::ResizeObserverEntry, false>::<unnamed>.std::__2::__optional_destruct_base<facebook::react::ResizeObserverEntry, false>::<unnamed>) + 8).std::__2::shared_ptr<facebook::react::ShadowNodeFamily>::__ptr_' was declared here
+  378 |       value_type __t(_Ops::__iter_move(__i));
+      |                  ^~~
+cc1plus: all warnings being treated as errors
+[118/419] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/AnsiParser.cpp.o
+[119/419] Building CXX object react-native/react/nativemodule/resizeobserver/CMakeFiles/react_nativemodule_resizeobserver.dir/NativeResizeObserver.cpp.o
+[120/419] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/JscSafeUrl.cpp.o
+ninja: build stopped: subcommand failed.
