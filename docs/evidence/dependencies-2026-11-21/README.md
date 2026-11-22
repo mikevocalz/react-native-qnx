@@ -30,8 +30,9 @@ with pnpm 12.21.0 first on PATH. The hosted `sdk58-validation / validate` job al
 
 `v1-candidate.yml` dispatched on `main` with `run_hosted=true` and `require_qnx_lanes=false`:
 [run 44951214656](https://github.com/mikevocalz/react-native-qnx/actions/runs/44951214656),
-head `fb20c3adad0cb2aacbc92eb97e0d5a5acc04bf3e`, conclusion `success`. All 21 hosted jobs and the
-aggregate passed (hosted-run-44951214656-jobs.txt). The `qnx-cross` and `qnx-vm` lanes were skipped
+head `fb20c3adad0cb2aacbc92eb97e0d5a5acc04bf3e`, conclusion `success`. The file
+hosted-run-44951214656-jobs.txt lists 26 entries: 23 jobs succeeded, 2 were skipped
+(`qnx-cross`, `qnx-vm`) and the aggregate succeeded. The two skipped lanes were skipped
 because no self-hosted runner is registered; they belong to the `ci` gate, not this one.
 
 ## Hold reasons checked against npm and the installed packages

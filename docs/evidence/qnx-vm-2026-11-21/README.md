@@ -50,7 +50,11 @@ the public entry and not the deep-import fallback.
 | `SafeAreaView`           | [safe-area-view.png](captures/safe-area-view.png)                     | Public entry resolves. The child box renders; no inset is visible.                                              |
 | `ImageBackground`        | [image-background.png](captures/image-background.png)                 | Public entry resolves. The bundled image paints behind the child text.                                          |
 
-All five runs exited 0. Stderr per card is in [logs/](logs/). It contains the
+All five runs exited 0. Stderr per card is in [logs/](logs/). These five logs are
+`*.log` files, which `.gitignore` excludes, and were first missing from the repository
+(found by the 2026-11-21 verifier). They were recovered from the VM guest at
+`/data/vm/shots-2/` (files dated 2026-11-21 12:44) and each matches the SHA-256 in
+[SHA256SUMS.txt](SHA256SUMS.txt); they were added with `git add -f`. It contains the
 known `no EGL display ... continuing without OpenGL` and `QNX_PHYSICAL_SCREEN_SIZE`
 warnings from the software path.
 

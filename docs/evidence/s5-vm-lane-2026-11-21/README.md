@@ -104,7 +104,9 @@ local run, not the self-hosted workflow, and it proves cross-compilation only.
 
 ## Finding
 
-The [S2 receipt](../s2-vm-2026-11-21/README.md) links `build/` files and
-lists `build/` and `vm/run1` to `run3` entries in its `SHA256SUMS`, but those
-files are not in the repository: `*.log` is git-ignored, and the `build/`
-directory was never added. This change does not touch that receipt.
+History: when this lane was written, the [S2 receipt](../s2-vm-2026-11-21/README.md)
+linked `build/` files and listed `build/` and `vm/run1` to `run3` entries in its
+`SHA256SUMS`, but those files were not in the repository: `*.log` is git-ignored,
+and the `build/` directory had not been added. PR #205 recovered them, and
+`shasum -a 256 -c SHA256SUMS` in the S2 folder passes for all 16 entries
+(host check at f61b61b4). This lane's change did not touch that receipt.

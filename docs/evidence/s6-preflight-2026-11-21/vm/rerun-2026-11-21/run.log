@@ -1,0 +1,4 @@
+QNX qnxvm 8.0.0 2026/06/05-16:21:14EDT QEMU_virt aarch64le
+-rwxr-xr-x  1 root root 64448 2026-11-22 00:24 rnqnx_runtime_preflight_test
+runtime preflight: all checks passed
+exit=0
