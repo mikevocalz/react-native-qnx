@@ -38,7 +38,8 @@ For the **final** distribution qualification (not a partial/recovery build), run
 paths. The guard refuses pre-existing extracted source, SVG source, any of the
 four Qt build trees, or previous stage/disk timing tables. Downloaded archives
 and CVE patches are allowed. It checks before creating logs or launching work,
-never deletes prior evidence, and fails closed on dangling symlinks.
+never deletes prior evidence, and fails closed on dangling symlinks. Existing
+`stage-attempts.tsv` and `attempt-*` entries are also rejected for a final pass.
 
 Run `bash tests/scripts/qt-public-clean-tree.test.sh` from the repository root
 (or from any current directory) to exercise pristine and stale-state controls.
@@ -102,6 +103,15 @@ host qnx svg imageformats`) runs part of the list. `build-svg-qnx.sh` extracts
 qtsvg into `$QT_PUBLIC_ROOT/src-svg`, not into `src`: with a `qtsvg` directory
 beside `qtbase`, running `configure-qnx.sh` again stops with `Failed to find the
 host tool "Qt6::svgtoqml"`.
+
+Each invocation uses a unique `attempt-XXXXXXXX/` directory under
+`STAGE_LOG_DIR`. Stage output and guarded build logs remain in that directory;
+`stage-attempts.tsv` records their paths. `stages.tsv` retains its seven-column
+format and both it and `disk-samples.tsv` remain append-only. Older receipt rows
+have no new log-path index. The sampler uses a Bash timer rather than an external
+sleep process, so sampler shutdown cannot leave an hour-long sleep behind.
+Run `node tests/js/qnx-pr217-regressions.test.mjs` for the host control-flow
+checks; these do not establish QNX ELF or runtime acceptance.
 
 `stage-runtime.py` writes `manifest.json` and
 `needed.json`; the receipt's `SHA256SUMS` was then written with
@@ -413,3 +423,12 @@ from `CMAKE_INSTALL_RPATH` and needs `libhermesvmlean.so` beside it (or on
 `LD_LIBRARY_PATH`). React Native builds its own sources with `-Werror`; at `-O2`
 the script demotes the GCC 12 `maybe-uninitialized` family, the list the
 2026-11-19 PR 149 build used.
+
+When invoking the recipe from an extracted source bundle, set `APP_SRC` to the
+application checkout containing `vnext/cmake/qnx-aarch64le.toolchain.cmake`.
+The script passes its absolute path through `RNQNX_APP_TOOLCHAIN_PATH`, including
+CMake `try_compile` projects. The source bundle does not contain that checkout.
+The Qt and application wrappers also refresh existing cached linker flags,
+preserving unrelated flags and making `--enable-new-dtags` the last dtags choice.
+Inspect rebuilt ELF dynamic sections and runtime closure before staging; cache
+configuration tests alone cannot verify the linked binaries.

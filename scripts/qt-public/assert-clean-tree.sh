@@ -15,7 +15,9 @@ for path in \
   "${SVG_BUILD:-$QT_PUBLIC_BUILD/svg-qnx}" \
   "${IMAGEFORMATS_BUILD:-$QT_PUBLIC_BUILD/imageformats-qnx}" \
   "$log_dir/stages.tsv" \
-  "$log_dir/disk-samples.tsv"; do
+  "$log_dir/disk-samples.tsv" \
+  "$log_dir/stage-attempts.tsv" \
+  "$log_dir"/attempt-*; do
   if [[ -e "$path" || -L "$path" ]]; then
     printf 'CLEAN RUN REFUSED: pre-existing path: %s\n' "$path" >&2
     printf '%s\n' 'Use a new isolated source/build/log tree; do not delete evidence automatically.' >&2

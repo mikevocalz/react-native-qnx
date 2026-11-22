@@ -6,7 +6,7 @@ trap 'rm -rf "$tmp"' EXIT
 export QT_PUBLIC_ROOT="$tmp/public" QT_PUBLIC_BUILD="$tmp/build" STAGE_LOG_DIR="$tmp/logs"
 mkdir -p "$QT_PUBLIC_ROOT/download" "$QT_PUBLIC_BUILD" "$STAGE_LOG_DIR"
 bash "$script" >/dev/null
-for path in "$QT_PUBLIC_ROOT/src" "$QT_PUBLIC_ROOT/src-svg" "$QT_PUBLIC_BUILD/host-build" "$QT_PUBLIC_BUILD/qnx-build" "$QT_PUBLIC_BUILD/svg-qnx" "$QT_PUBLIC_BUILD/imageformats-qnx" "$STAGE_LOG_DIR/stages.tsv" "$STAGE_LOG_DIR/disk-samples.tsv"; do
+for path in "$QT_PUBLIC_ROOT/src" "$QT_PUBLIC_ROOT/src-svg" "$QT_PUBLIC_BUILD/host-build" "$QT_PUBLIC_BUILD/qnx-build" "$QT_PUBLIC_BUILD/svg-qnx" "$QT_PUBLIC_BUILD/imageformats-qnx" "$STAGE_LOG_DIR/stages.tsv" "$STAGE_LOG_DIR/disk-samples.tsv" "$STAGE_LOG_DIR/stage-attempts.tsv" "$STAGE_LOG_DIR/attempt-previous"; do
   mkdir -p "$(dirname "$path")"
   touch "$path"
   if bash "$script" >"$tmp/output" 2>&1; then echo "FAIL: accepted $path" >&2; exit 1; fi
@@ -30,4 +30,4 @@ if grep -q 'unknown stage\|=== .* start' "$tmp/output"; then
   echo 'FAIL: orchestrator continued after failed preflight' >&2; exit 1
 fi
 rm "$QT_PUBLIC_ROOT/src"
-printf '%s\n' 'PASS: pristine, 8 stale paths, dangling symlink, restored pristine'
+printf '%s\n' 'PASS: pristine, 10 stale paths including attempt evidence, dangling symlink, restored pristine'

@@ -18,10 +18,27 @@ board and licensed hosted runners are unavailable. No gate is waived here.
 | Documentation      | Isolated committed-source snapshots build at frozen candidate paths, record every file hash, reject overwritten outputs, and regenerate source links for the selected revision. Hosted CI now builds and retains a snapshot                                                              |
 | Native window API  | The experimental implementation, local test scope and remaining linked/target checks are recorded in `window-api-contract-2026-11-22.md` and the window software evidence receipt. The feature remains default OFF                                                                       |
 
+Reviewed functional changes from PR #219 are adapted: cached linker flags,
+unique attempt logs and extracted-bundle application toolchains. Four host
+groups cover effective flags, real `try_compile`, retained logs and failed
+attempt creation. The existing pinned tooling workflow runs these regressions;
+the parallel PR's unpinned workflow is not copied.
+
 The root locked install, dependency contracts and peer check pass. The registry
 security audit reports zero advisories across 646 dependencies. The complete
 JavaScript suite, linked native ON/OFF graphs and exact-head hosted results must
 be checked on the final continuation; local component checks do not replace them.
+
+The complete ordered JavaScript suite exposed inherited React loader mocks in
+the new inset fixture. The fixture now runs unchanged in a fresh Node worker.
+The exact old ordering fails its negative control; the isolated ordering and
+the complete suite pass. No assertion is skipped or weakened.
+
+Additional compile-only checks produced QNX aarch64 objects for the new window
+bindings, observer and host installer using exact Nitro alpha136/JSI headers.
+The observer uses existing release-profile warning demotions for two dependency
+diagnostics. No new suppression or source change was introduced. See the window
+evidence receipt; linked runtime acceptance remains separate.
 
 ## Actual frozen documentation build
 

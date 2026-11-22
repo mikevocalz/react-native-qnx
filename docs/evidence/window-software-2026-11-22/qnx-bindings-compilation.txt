@@ -1,0 +1,22 @@
+QNX window API object compatibility receipt — 2026-11-22
+Scratch: qnx805-build:/tmp/rnqnx-window-bindings-20261122 (1.9MB total)
+Compiler: licensed existing QNX8 SDP q++ -Vgcc_ntoaarch64le (GCC12).
+Exact installed Nitro: 1.0.0-alpha.nightly.136.gdb81de61bd32.
+Current installed RN JSI headers and current vnext/include staged before old read-only dependency includes.
+Existing repository QNX/Nitro dispatcher compatibility patches applied only to scratch core headers.
+No owner dependency graph, license, runtime, mount or source changed.
+Flags: -D_QNX_SOURCE -std=c++20 -O2 -fPIC -Wall -Wextra -Werror -DQT_NO_KEYWORDS; existing dependency includes/defines from /home/qnxbuild/pr149b/qnx-build/build.ninja QtReactHost.cpp rule.
+QnxWindow compiled with these strict flags. WindowObserver and installer used only the recorded release rule's existing -Wno-error flags: maybe-uninitialized,array-bounds,stringop-overflow,restrict,free-nonheap-object,dangling-pointer,use-after-free,null-dereference,stringop-overread,uninitialized.
+Observer emits two existing Nitro Callback/libc++ optimized string -Warray-bounds diagnostics (offset24..80 and24..98). They are not treated as proven harmless; they remain dependency/compiler warnings demoted by the existing release profile. Installer no diagnostics. No added suppression or source change.
+All outputs ELF64 ARM aarch64 relocatable. Compile-only; not linked or executed.
+
+Source SHA256:
+94337ca7363a1858bbb659b9175422fa67f1d7c91916365835ef24f2bc06ed7d QnxWindow.cpp
+795d8eabb5653ecd725af266342cae43de4acf1acf208c285bdd1f1b79ff60da WindowObserver.cpp
+b3c52f2a75f50d0ec1474848de82550ecf24c804dac678fb6ad1587053d60d71 QnxWindowHostInstall.cpp
+733951898a5f342bd06dfcf901b309ec166a5d60c5e7d4715420684cfae349c4 generated/WindowBindings.hpp
+
+Object SHA256:
+881a87356efca04d793369e5e90067483922ab0d03317329f2281b1213afa97c QnxWindow.o
+401e9a73fadac5c26676d31c80f6da9d33c60d418e0872238e4f01d9fca955ca WindowObserver.o
+f04c2ca52021e854ed1159f64ab3276c9d7923cf18ef3f590e61701d306bc22c QnxWindowHostInstall.o

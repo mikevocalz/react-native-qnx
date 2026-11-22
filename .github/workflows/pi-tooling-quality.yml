@@ -34,7 +34,13 @@ jobs:
       - name: Install ShellCheck
         run: |
           sudo apt-get update
-          sudo apt-get install -y shellcheck
+          sudo apt-get install -y shellcheck cmake build-essential
+
+      - name: Use pinned Node for tooling regressions
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 26.13.1
+          package-manager-cache: false
 
       - name: Bash syntax
         run: |
@@ -67,6 +73,12 @@ jobs:
           python3 -I tests/python/test_qt_build_guard.py
           python3 -I tests/python/test_qt_package_manifest.py
           python3 -I tests/python/test_qt_closure_runpath.py
+
+      - name: Qt cached-toolchain and attempt-log regressions
+        run: |
+          cmake --version
+          cc --version
+          node tests/js/qnx-pr217-regressions.test.mjs
 
       - name: ShellCheck
         run: |

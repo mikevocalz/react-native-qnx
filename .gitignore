@@ -26,6 +26,7 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+__pycache__/
 
 # Logs may contain personal paths or secrets; preserve locally but sanitize before committing
 artifacts/logs/*
