@@ -49,9 +49,9 @@ b4493aa7a1764079e7a55e1ec24f0c3b2480a84333b435ebb0a80f796a50a144  ./vm/describe-
 c7697c3d3a735159dd4ad8367c27a1e03ed9c14472deafbd9a67ae2334d8c0b7  ./marathon-entry/generated/prepare-native-marathon.log
 47bb03dc662aeee150b32d7cc7484f71355832f1550c70239705e2d88f221491  ./marathon-entry/generated/reject-leading-slash-exec.txt
 4c3e5cadaddcc8d2d775594930e7e3dbbe8f3f232fd150c82c4ca08305fcf4ba  ./marathon-entry/logs/js-green.log
-2e184395c7db30ae085ebc5aeb531801847fa3b18c22201f5cc0254331ad1ad6  ./marathon-entry/logs/js-red-allow-leading-slash-exec.log
-113781484a675672f13e88df6307619590d4a3c5e86187a12545df3d53d9c287  ./marathon-entry/logs/js-red-drop-form-factor-hint.log
-37f208cbd66a0ec43121ec9c4e20b7d574c03c28d942b0ac45d06774f2f1fd61  ./marathon-entry/logs/js-red-label-uses-expo-name.log
+304cd0d9b0daa9b51e040004bb1922afda38255825ca69f584b4670012c8b2b3  ./marathon-entry/logs/js-red-allow-leading-slash-exec.log
+cecae2bd09a3388adb31c29e580333d47ac1d38fffd27e079604ff2499e80960  ./marathon-entry/logs/js-red-drop-form-factor-hint.log
+3065808026bdd2ede6393055d086829eee1abf5140b1ad34e602597c3b9d2779  ./marathon-entry/logs/js-red-label-uses-expo-name.log
 3e79c4d6d91c61e9f59b4813445c1ab5816a3040aeee8fa07af741265d65a69e  ./marathon-entry/logs/js-red-module-absent.log
 7b0687552d29081714826329089acac54a88ce1a1a46dc5b2e192787177cd462  ./marathon-entry/rust-upstream-check/Cargo.lock
 91686da484c7da69d0a11e0539b60a1a70caed74fc59bc106b5204cfbe72d2fa  ./marathon-entry/rust-upstream-check/Cargo.toml

@@ -18,8 +18,11 @@ import {
 // evidence run feeds the generated file to upstream's own Rust code
 // (docs/evidence/app-identity-host-vm-2026-11-21/marathon-entry). The last
 // value of a repeated key wins in upstream; this oracle refuses repeats.
+/** @param {string} text */
 function parseEntry(text) {
+  /** @type {Map<string, Map<string, string>>} */
   const groups = new Map();
+  /** @type {Map<string, string> | undefined} */
   let group;
   for (const line of text.split('\n')) {
     if (!line || line.startsWith('#')) continue;
@@ -40,24 +43,27 @@ function parseEntry(text) {
   return groups;
 }
 
+/** @param {string} fileName @param {string} text */
 function marathonReadApp(fileName, text) {
   const groups = parseEntry(text);
   const desktop = groups.get('Desktop Entry');
   if (!desktop) return null;
+  /** @param {string} key */
   const get = (key) => desktop.get(key);
+  /** @param {string} key */
   const list = (key) => (get(key) ?? '').split(';').filter(Boolean);
+  /** @param {string} key */
   const yes = (key) => get(key)?.toLowerCase() === 'true';
   if (get('Type') !== undefined && get('Type') !== 'Application') return null;
-  if (get('Exec') === undefined) return null;
-  const exec = marathonCleanExec(get('Exec'));
+  const rawExec = get('Exec');
+  if (rawExec === undefined) return null;
+  const exec = marathonCleanExec(rawExec);
   if (exec === null) return null;
   const binary = exec.split(/\s+/).find((token) => !token.startsWith('-')) ?? '';
-  if (['xterm', 'xclock', 'xeyes', 'xev', 'xinit', 'xset'].includes(binary.split('/').pop()))
+  if (['xterm', 'xclock', 'xeyes', 'xev', 'xinit', 'xset'].includes(binary.split('/').pop() ?? ''))
     return null;
   const keel =
-    groups.has('X-Sailjail') ||
-    get('Exec').startsWith('sailfish-qml ') ||
-    yes('X-Marathon-KeelHost');
+    groups.has('X-Sailjail') || rawExec.startsWith('sailfish-qml ') || yes('X-Marathon-KeelHost');
   if (get('Name') === undefined) return null;
   return {
     id: fileName.replace(/\.desktop$/, ''),
@@ -74,7 +80,9 @@ function marathonReadApp(fileName, text) {
 
 // fits_a_phone with the Settings default filterMobileFriendlyApps = true and
 // no Store phone list, which a fresh device does not have.
+/** @param {{purism: string[], kde: string[], categories: string[]}} app */
 function fitsAPhone(app) {
+  /** @param {string[]} values @param {string[]} words */
   const has = (values, words) =>
     values.some((value) => words.some((word) => value.toLowerCase().includes(word)));
   return (
@@ -129,10 +137,9 @@ assert.ok(fitsAPhone(app), 'filtered off the grid by the default mobile filter')
 
 // Without the hint the default grid would hide the app: the test is not
 // vacuous.
-assert.ok(
-  !fitsAPhone(marathonReadApp(entry.fileName, entry.desktop.replace(/^X-Purism.*\n/m, ''))),
-  'the oracle must reject an entry without the form-factor hint'
-);
+const unhinted = marathonReadApp(entry.fileName, entry.desktop.replace(/^X-Purism.*\n/m, ''));
+assert.ok(unhinted);
+assert.ok(!fitsAPhone(unhinted), 'the oracle must reject an entry without the form-factor hint');
 
 // No shortName: the label is expo.name, which is what the descriptor stores.
 assert.match(
@@ -150,7 +157,8 @@ assert.throws(() => marathonEntry({ ...descriptor, icon: { sizes: [] } }, option
 
 // Exec: what Marathon runs must be what we wrote. These are the rewrites of
 // clean_exec in desktop.rs, each of which would start something else.
-for (const [exec, why] of [
+/** @type {[string, RegExp][]} */
+const refusals = [
   ['/usr/local/bin/fieldnotes', /directory/],
   ['fieldnotes %U', /field code/],
   ['fieldnotes  --x', /whitespace/],
@@ -165,7 +173,8 @@ for (const [exec, why] of [
   ['sh "/a b"', /characters/],
   ['sh /a/b\nExec=evil', /characters/],
   ['', /--exec/],
-]) {
+];
+for (const [exec, why] of refusals) {
   assert.throws(() => marathonEntry(descriptor, { ...options, exec }), why, exec);
 }
 // A command on PATH, with arguments, passes unchanged.
@@ -205,7 +214,7 @@ assert.equal(
   marathonReadApp(
     entry.fileName,
     marathonEntry({ ...descriptor, shortName: '学習ノート' }, options).desktop
-  ).name,
+  )?.name,
   '学習ノート'
 );
 
@@ -218,7 +227,9 @@ try {
     path.join(temporary, 'build/marathon/native-app.json'),
     JSON.stringify(descriptor)
   );
+  /** @param {string[]} [extra] */
   const run = async (extra = []) => {
+    /** @type {string[]} */
     const lines = [];
     const log = console.log;
     console.log = (line) => lines.push(line);
