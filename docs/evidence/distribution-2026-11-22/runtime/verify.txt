@@ -1,0 +1,8 @@
+PASS sums (188 listed, 188 files)
+PASS manifest
+PASS needed (26 ELF files, system libraries used: 12)
+PASS qt-closed
+PASS rpath
+PASS no-sdp
+PASS notices
+RESULT PASS

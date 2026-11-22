@@ -1,0 +1,52 @@
+38dca9e606dd023c02b1dfb8dc6cb1aba862e9a8261773ace9c67d17c4b68800  /build/build/qnx-build/qtbase/lib/libQt6Core.so.6.12.0
+(RPATH)              Library rpath: [::::::::::::::::::::::]
+98bf64e99a185cb0ce0ab43c7d5f15890f0f07b122d460823ed426ac592bb7ab  /build/build/qnx-build/qtbase/lib/libQt6Gui.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+eb737e454375d3f4bfd0ff6abd8c756d7339a9979658335db3b09e0498ef15c7  /build/build/qnx-build/qtbase/lib/libQt6Network.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+27b4d074aad45cd32ff8e458785577f07c7ca71541ba9195c1a89a480e889ba8  /build/build/qnx-build/qtbase/lib/libQt6OpenGL.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+c730418cd9b15af58d08affdda12bd2b3dce189cbadab2bbdfb83e21ae7de62f  /build/build/qnx-build/qtbase/lib/libQt6Qml.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+b7379444213dcc02f771f5304a82f9a8f8877f5882fd10457918d7f3250097e6  /build/build/qnx-build/qtbase/lib/libQt6QmlMeta.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+5e5dbe44f82853bb01988320de35257dbf35da39cd25287cd10ad79ef0939af1  /build/build/qnx-build/qtbase/lib/libQt6QmlModels.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+55a0f0df0e8c07f1777e8f6fd23f98e0a9088f63e10f83f135c794b7947278d5  /build/build/qnx-build/qtbase/lib/libQt6QmlWorkerScript.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+c924f236c7b7561c16decfbb6318938f05d1f731d0b4fe4ba2afb429ad056ede  /build/build/qnx-build/qtbase/lib/libQt6Quick.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+c46c862aa9dca544de5a2ebcc1090a6dea932c410700d4ffca260efa0ab75c90  /build/build/qnx-build/qtbase/lib/libQt6QuickShapes.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+ef3d5216e4629bef8a6c2315ffe26f2048d069916fc7846f2a1ce43a1b359f14  /build/build/qnx-build/qtbase/plugins/imageformats/libqgif.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+9251345a349552fe9302dac5b1184a5a557b6a046b5fcb3a4a34d3aff6718ab3  /build/build/qnx-build/qtbase/plugins/imageformats/libqjpeg.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+eb62a60b0e72a66f00f9dd8343f1f395d2d7f4f1444c10b200f2e63e5b2c2c2a  /build/build/qnx-build/qtbase/plugins/platforms/libqqnx.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+185becaf14f065df010a73eee379fcf77773c0586e860bfb8830df4068754f89  /build/build/qnx-build/qtbase/plugins/tls/libqopensslbackend.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+683fc1c12f431f703e33ed3246a464b444792700ffc641448c3f2daec64a33d1  /build/build/qnx-build/qtbase/qml/QtQml/Models/libmodelsplugin.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+bcabf885ca7384fc415defce8da81520dc68ec61a3cc664b55cf3ef083350afd  /build/build/qnx-build/qtbase/qml/QtQml/WorkerScript/libworkerscriptplugin.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+2aab6fa2e5bd77bdaff99b63ff1e5282c88c27bdf123793ed3bb1ab5a498e517  /build/build/qnx-build/qtbase/qml/QtQml/libqmlplugin.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+e68be085124c8d9f2ea33df365bda7268158d6d3093555487ec1b7b421df6c4f  /build/build/qnx-build/qtbase/qml/QtQuick/Shapes/libqmlshapesplugin.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+bb7c40338e74633d1ffd6bb5a2f85f8e883813c6fd3b6382435b87d8874153ca  /build/build/qnx-build/qtbase/qml/QtQuick/libqtquick2plugin.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+828bc3fbcc8efa2877322daaae80ac06ea0de0e55707d9989dc1aa8b26a82049  /build/build/svg-qnx/lib/libQt6Svg.so.6.12.0
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+69227ba24366d920e4c8ab0964cac76b6f084c1daf065932740801bab0b62d5f  /build/build/svg-qnx/plugins/imageformats/libqsvg.so
+(RPATH)              Library rpath: [/build/build/svg-qnx/lib:/build/build/qnx-build/qtbase/lib:]
+9abf601f937e9151832ce45affec09a4888b75680d783c36697ad787199f1cb8  /build/build/imageformats-qnx/plugins/imageformats/libqicns.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+dbb0c0d5ce7a8b293e4d82d47cff27e40e73c8e8c0361a063cf5c8dfad54ae95  /build/build/imageformats-qnx/plugins/imageformats/libqtga.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+98c31a4c8eea5111e817b41736ba12991380e70c9025b9279e3b76adfc93764e  /build/build/imageformats-qnx/plugins/imageformats/libqtiff.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+c49f8b82c10446f7afa2e433fdc4de908e5120f7eb38b15206b2b31cbede6fca  /build/build/imageformats-qnx/plugins/imageformats/libqwbmp.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]
+574daefd5c16c36436a1478111f253d75712275f57c720699efec69948522e97  /build/build/imageformats-qnx/plugins/imageformats/libqwebp.so
+(RPATH)              Library rpath: [/build/build/qnx-build/qtbase/lib:]

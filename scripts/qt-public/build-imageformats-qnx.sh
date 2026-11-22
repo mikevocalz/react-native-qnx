@@ -29,7 +29,8 @@ mkdir -p "$build"; cd "$build"
 "$QT_PUBLIC_BUILD/qnx-build/qtbase/bin/qt-configure-module" \
   "$srcparent/$top/qtimageformats" -- \
   -DFEATURE_system_webp=OFF -DFEATURE_system_tiff=OFF \
-  -DFEATURE_jasper=OFF -DFEATURE_mng=OFF
+  -DFEATURE_jasper=OFF -DFEATURE_mng=OFF \
+  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
 flags=$(sed -n 's/^CMAKE_CXX_FLAGS_RELEASE:STRING=//p' CMakeCache.txt)
 case " $flags " in
   *" -O2 "*) ;;

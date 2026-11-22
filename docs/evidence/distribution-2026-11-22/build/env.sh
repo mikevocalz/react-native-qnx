@@ -1,0 +1,9 @@
+export PATH=/t9/clones/distribution3-build/tools/cmake-3.31.9-linux-x86_64/bin:$PATH
+export QT_PUBLIC_ROOT=/build/root
+export QT_PUBLIC_BUILD=/build/build
+export QNX_SDP=/work/qnx800
+export WORK_DIR=/build
+export GUARD_PATH=/t9
+export STAGE_LOG_DIR=/t9/clones/distribution3-build/logs-pass2
+export HOME=/t9/clones/distribution3-build/home
+export JOBS=4

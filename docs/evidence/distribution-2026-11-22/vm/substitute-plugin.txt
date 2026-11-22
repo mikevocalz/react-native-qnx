@@ -1,0 +1,3 @@
+531bdd5392ff4d55ed0e99b073989a9a178ffb7fe9c0a20a96e0ba13427f692f  qtpatch/libqqnx.so (substitute plugin, from the 2026-11-20 VM lane)
+c24ebd2843180da8be0751934d2b561009fea700b2e6579f16c615803d6eef43  /Volumes/QNX/clones/distribution3-build/runtime-single-pass.tar.gz
+35e1e8a8be8e876540c0230c824bc2effa3caf62cf36253845c0b46d51a487fd  /Volumes/QNX/clones/distribution3-build/vmstage.tar.gz

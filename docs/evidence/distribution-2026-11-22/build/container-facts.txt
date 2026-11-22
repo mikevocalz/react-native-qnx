@@ -1,0 +1,18 @@
+# container qt-dist3-build, 2026-11-22T07:29:37Z
+x86_64
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+NAME="Ubuntu"
+cmake version 3.31.9
+1.11.1
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Python 3.12.3
+git version 2.43.0
+lima-93c8eb203ea5b376 on /work type virtiofs (ro,relatime)
+lima-f431dae2250b278c on /t9 type virtiofs (rw,relatime)
+/t9/clones/distribution3-build/work.ext4 on /build type ext4 (rw,noatime)
+6
+               total        used        free      shared  buff/cache   available
+Mem:           11935         542        2979           0        8631       11392
+sha256:ff6c732fc462ba6516475bacbd53b86fd8832b99fabe1b823cbf08d88843a745 privileged=true platform=linux
+qt-dist3-img:latest ff6c732fc462
+ubuntu:24.04 9c7f200c07e3

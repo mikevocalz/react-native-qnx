@@ -24,6 +24,9 @@ svg_build = Path(os.environ.get('SVG_BUILD', stage.parent.parent / 'svg-qnx'))
 imageformats = Path(os.environ.get('IMAGEFORMATS_BUILD', stage.parent.parent / 'imageformats-qnx'))
 imageformats_src = (Path(os.environ.get('IMAGEFORMATS_SRC', root / 'src')) /
                     'qt-everywhere-src-6.12.0/qtimageformats')
+# build-svg-qnx.sh extracts qtsvg beside, not inside, the main source tree.
+svg_src = (Path(os.environ.get('SVG_SRC', root / 'src-svg')) /
+           'qt-everywhere-src-6.12.0/qtsvg')
 out = Path(sys.argv[1] if len(sys.argv) > 1 else root / 'runtime')
 eval_manifest = Path(os.environ.get('QT_EVAL_MANIFEST', '/work/qt612-runtime/manifest.json'))
 
@@ -63,7 +66,7 @@ def staging_destination(destination):
         raise ValueError(f'output must not be a symlink: {destination}')
     destination = destination.resolve()
     input_roots = (stage.resolve(), src.resolve(), svg_build.resolve(), imageformats.resolve(),
-                   imageformats_src.resolve())
+                   imageformats_src.resolve(), svg_src.resolve())
     protected = [root.resolve(), *input_roots, Path(__file__).resolve().parents[2]]
     if any(destination == p or destination in p.parents for p in protected):
         raise ValueError(f'output contains a source/build tree: {destination}')
@@ -140,6 +143,8 @@ with staging_destination(out) as out:
         # tree. Only that module's notice copies may read the selected root.
         if mod == 'qtimageformats':
             return imageformats_src, (imageformats_src,)
+        if mod == 'qtsvg' and not (src / 'qtsvg').is_dir():
+            return svg_src, (svg_src,)
         return src / mod, (stage, src)
 
     for lib in LIBS:

@@ -49,10 +49,12 @@ are in [`scripts/qt-public/README.md`](../../scripts/qt-public/README.md). On
 QNX 8.0.5 the loader reads `LD_LIBRARY_PATH` before a `DT_RUNPATH`, so putting
 your library directory first on `LD_LIBRARY_PATH`, or copying your files over
 the ones in the runtime directory, selects your build. A build-host `DT_RPATH`
-would defeat that, which is why shipped files are rewritten with
-`normalize-rpath.py` and checked with `verify-closure.py`
-([packaging](../packaging.md)). This works on the QNX VM for the gallery app
-([receipt](../evidence/distribution-2026-11-21/README.md)). For a device that
+would defeat that, which is why the build writes a `DT_RUNPATH` and the result is
+checked with `verify-closure.py` ([packaging](../packaging.md)). This works on the
+QNX VM for the gallery app after a rewrite
+([receipt](../evidence/distribution-2026-11-21/README.md)) and for the playground
+app with a runtime built that way
+([receipt](../evidence/distribution-2026-11-22/README.md)). For a device that
 only accepts signed software, LGPL-3.0 section 4 and GPL-3.0 section 6 also
 require the installation information; the owner has to decide how a release
 supplies it.

@@ -148,10 +148,11 @@ that includes these Qt libraries carries:
    application binaries linked against the evaluation libraries ran
    unchanged on the public-source libraries.
    Shipped Qt libraries, plugins and application binaries must not carry a
-   build-host `DT_RPATH`. They do today: all 16 ELF files in the staged `-O2`
-   runtime have one (`/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib`;
-   `libQt6Core` has 23 empty entries, which mean the current directory), and
-   the RN executable has
+   build-host `DT_RPATH`. Qt libraries and plugins built before 2026-11-22 did:
+   all 16 ELF files in the staged 2026-11-12 `-O2` runtime had one
+   (`/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib`;
+   `libQt6Core` had 23 empty entries, which mean the current directory), and
+   the RN executable had
    `/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib:/home/qnxbuild/qt-6.12.0-public/svg-qnx/lib:/home/qnxbuild/hermes-qnx-full/lib:`.
    QNX's loader searches `DT_RPATH` before `LD_LIBRARY_PATH`. On the QNX VM a
    probe whose build-host directory exists loaded that directory's library and
@@ -159,17 +160,21 @@ that includes these Qt libraries carries:
    ([probe](evidence/distribution-2026-11-21/vm/rpath-probe.txt)). On the Pi
    the replacement worked only because those directories do not exist there.
    `$ORIGIN` does not fix this: QNX 8.0.5's loader does not expand it (same
-   probe, the loader tries the literal `$ORIGIN/lib/libfoo.so.1`). Rewrite
-   each file's `DT_RPATH` to a `DT_RUNPATH` that names the install directory
-   with [`normalize-rpath.py`](../scripts/qt-public/normalize-rpath.py), then
-   check the result with
-   [`verify-closure.py`](../scripts/qt-public/verify-closure.py). A
-   `DT_RUNPATH` is searched after `LD_LIBRARY_PATH`, so a user's library on
-   `LD_LIBRARY_PATH` or a file copied over the one in the runtime directory
-   decides which Qt is loaded; both worked for the RN gallery app on the QNX
-   VM ([receipt](evidence/distribution-2026-11-21/README.md)). The long-term
-   fix is to stop the build from writing the RPATH; that needs a rebuild and
-   is not done. For a locked-down device
+   probe, the loader tries the literal `$ORIGIN/lib/libfoo.so.1`). A
+   `DT_RUNPATH` that names the install directory is searched after
+   `LD_LIBRARY_PATH`, so a user's library on `LD_LIBRARY_PATH` or a file copied
+   over the one in the runtime directory decides which Qt is loaded.
+   **The scripts now build that way** (2026-11-22,
+   [receipt](evidence/distribution-2026-11-22/README.md)): the Qt build and the
+   app link use `CMAKE_BUILD_WITH_INSTALL_RPATH=ON` and `-Wl,--enable-new-dtags`,
+   so all 26 libraries and plugins and the playground app carry
+   `DT_RUNPATH` `/data/qt612-public/lib` and no `DT_RPATH`, and a replacement
+   `libQt6Svg.so.6` on `LD_LIBRARY_PATH` was loaded on the QNX VM. Check a
+   staged runtime with
+   [`verify-closure.py`](../scripts/qt-public/verify-closure.py) and
+   `normalize-rpath.py --check`
+   ([`normalize-rpath.py`](../scripts/qt-public/normalize-rpath.py) still
+   rewrites a runtime built from older scripts). For a locked-down device
    ("User Product" under LGPL-3.0 section 4e and GPL-3.0 section 6), the
    installation information needed to run a modified library must also be
    supplied.
