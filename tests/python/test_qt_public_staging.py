@@ -197,6 +197,122 @@ class StagingTest(unittest.TestCase):
         self.audit.write_text(json.dumps({'third_party_components': {}, 'embedded_attributions': []}))
         self.assert_preserved_failure('no webp attribution')
 
+    def add_source_notice_audit(self, files):
+        audit = json.loads(self.audit.read_text())
+        audit['qt_files_without_lgpl_option'] = [{'file': name, 'spdx': None} for name in files]
+        self.audit.write_text(json.dumps(audit))
+
+    def test_actual_source_notices_survive_upstream_copyright_year_mismatch(self):
+        # Model the real Qt Khronos mismatch: metadata/license text has an
+        # older year range than the compiler-read header. Keep both verbatim;
+        # this fixture is not a licensing decision or an actual Qt build.
+        header = 'qtbase/src/gui/opengl/qopengles2ext.h'
+        adobe = 'qtbase/src/gui/text/qfontsubset_agl.cpp'
+        sources = {
+            header: (b'/*\r\n * Copyright (c) 2013-2018 The Khronos Group Inc.\r\n'
+                     b' * Permission is hereby granted, free of charge, to any person\r\n'
+                     b' * obtaining a copy of this software and associated documentation.\r\n'
+                     b' * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY.\r\n */\r\n'
+                     b'#define SYNTHETIC_GL_CONSTANT 1\r\n'),
+            adobe: (b'/* Copyright 1997, 1998 Adobe Systems Incorporated.\n'
+                    b'Permission to use, copy, modify, and distribute this software\n'
+                    b'for any purpose and without fee is hereby granted. */\n'
+                    b'static const char *synthetic_glyph = "A";\n'),
+        }
+        for name, data in sources.items():
+            path = self.src / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        notice = self.src / 'qtbase/src/gui/opengl/LICENSE.KHRONOS.txt'
+        notice.write_bytes(b'Copyright (c) 2013-2014 The Khronos Group Inc.\r\nOlder upstream license text.\r\n')
+        upstream = self.src / 'qtbase/src/gui/opengl/qt_attribution.json'
+        metadata = {'Name': 'Khronos OpenGL headers', 'Copyright': 'Copyright (c) 2013-2014 The Khronos Group Inc.',
+                    'LicenseId': 'MIT', 'Files': ['qopengles2ext.h'], 'LicenseFiles': ['LICENSE.KHRONOS.txt']}
+        upstream.write_text(json.dumps(metadata))
+        upstream_before = upstream.read_bytes()
+        self.add_source_notice_audit(sources)
+        audit = json.loads(self.audit.read_text())
+        audit['embedded_attributions'] = [{
+            'attribution': 'qtbase/src/gui/opengl/qt_attribution.json',
+            'name': metadata['Name'], 'license': metadata['LicenseId'],
+            'copyright': metadata['Copyright'], 'license_files': metadata['LicenseFiles'],
+            'files_read': ['qopengles2ext.h']}]
+        self.audit.write_text(json.dumps(audit))
+        audit_before = self.audit.read_bytes()
+        result = self.run_stage(audits=[self.audit, self.audit])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        entries = json.loads((self.out / 'manifest.json').read_text())
+        for name, data in sources.items():
+            rel = 'licenses/source-notices/' + name
+            self.assertTrue((self.out / rel).is_file(), f'missing verbatim compiled-source notice: {name}')
+            self.assertEqual((self.out / rel).read_bytes(), data)
+            self.assertEqual(entries[rel]['sha256'], hashlib.sha256(data).hexdigest())
+            self.assertEqual(entries[rel]['bytes'], len(data))
+            self.assertEqual((self.src / name).read_bytes(), data)
+        staged_license = self.out / 'licenses/qtbase/attributed/src/gui/opengl/LICENSE.KHRONOS.txt'
+        self.assertEqual(staged_license.read_bytes(), notice.read_bytes())
+        notices = (self.out / 'licenses/THIRD_PARTY_ATTRIBUTIONS.txt').read_text()
+        self.assertIn(metadata['Copyright'], notices)
+        for name in sources:
+            self.assertEqual(notices.count('  Source notice: licenses/source-notices/' + name), 1)
+        self.assertEqual(upstream.read_bytes(), upstream_before)
+        self.assertEqual(self.audit.read_bytes(), audit_before)
+
+    def test_source_notice_paths_are_confined_to_selected_modules(self):
+        for name in ('/etc/passwd', '../outside', 'qtbase/../../outside',
+                     'qtbase/./src/file.h', 'qtbase//src/file.h', 'qtbase\\src\\file.h',
+                     'unselected-module/src/file.h', 'qtbase'):
+            with self.subTest(name=name):
+                self.add_source_notice_audit([name])
+                self.assert_preserved_failure('invalid source notice path')
+
+    def test_missing_source_notice_preserves_previous_runtime(self):
+        self.add_source_notice_audit(['qtbase/src/gui/missing.h'])
+        self.assert_preserved_failure('missing in public build')
+
+    def test_source_notice_symlinks_are_rejected_even_within_selected_tree(self):
+        name = 'qtbase/src/gui/notice.h'
+        link = self.src / name
+        link.parent.mkdir(parents=True)
+        internal = self.src / 'qtbase/inside.h'
+        internal.write_text('internal fixture')
+        external = self.base / 'outside-notice.h'
+        external.write_text('outside fixture')
+        for target in (internal, external, self.base / 'missing-notice.h'):
+            with self.subTest(target=target):
+                link.symlink_to(target)
+                self.add_source_notice_audit([name])
+                self.assert_preserved_failure('source notice must not traverse a symlink')
+                link.unlink()
+        folder = link.parent
+        folder.rmdir()
+        folder.symlink_to(internal.parent, target_is_directory=True)
+        self.add_source_notice_audit(['qtbase/src/gui/inside.h'])
+        self.assert_preserved_failure('source notice must not traverse a symlink')
+
+    def test_non_null_unicode_exception_retains_actual_embedded_copyright(self):
+        name = 'qtbase/src/corelib/time/qtimezoneprivate_data_p.h'
+        source = self.src / name
+        data = (b'// Copyright (C) 2013 John Layt\n'
+                b'// SPDX-License-Identifier: Unicode-3.0\n'
+                b'// Copyright (c) 1991-2025 Unicode, Inc.\n'
+                b'static const char *synthetic_timezone = "UTC";\n')
+        source.parent.mkdir(parents=True)
+        source.write_bytes(data)
+        audit = json.loads(self.audit.read_text())
+        audit['qt_files_without_lgpl_option'] = [
+            {'file': name, 'spdx': 'Unicode-3.0'}]
+        self.audit.write_text(json.dumps(audit))
+        audit_before = self.audit.read_bytes()
+        result = self.run_stage()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rel = 'licenses/source-notices/' + name
+        self.assertTrue((self.out / rel).is_file(), f'missing verbatim compiled-source notice: {name}')
+        self.assertEqual((self.out / rel).read_bytes(), data)
+        self.assertEqual(json.loads((self.out / 'manifest.json').read_text())[rel]['sha256'],
+                         hashlib.sha256(data).hexdigest())
+        self.assertEqual(self.audit.read_bytes(), audit_before)
+
     def test_no_audit_with_bundled_codec_plugins_preserves_previous_runtime(self):
         before = self.snapshot()
         result = self.run_stage(audits=[])
