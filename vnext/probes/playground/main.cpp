@@ -34,6 +34,10 @@
 #if RNQNX_ENABLE_WINDOW_CHROME
 #include "NodeBeacon.h"
 #include "WindowChrome.h"
+#if RNQNX_ENABLE_WINDOW_API
+#include "QnxWindow.hpp"
+#include "WindowSession.h"
+#endif
 #include "WindowHost.h"
 #ifdef RNQNX_CONSUMER_WINDOW_HEADER
 #include RNQNX_CONSUMER_WINDOW_HEADER
@@ -893,6 +897,9 @@ int main(int argc, char** argv) {
   rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *mountRoot);
   adapter.setTouchDispatcher(&touchDispatcher);
   window.installEventFilter(&touchDispatcher);
+#if RNQNX_ENABLE_WINDOW_CHROME
+  if (chrome) for (auto* shield : chrome->inputShields()) touchDispatcher.addInputShield(*shield);
+#endif
 #endif
 #if RNQNX_ENABLE_GESTURE_HANDLER
   // Fabric descriptors must exist before the first host builds its registry.
@@ -1012,6 +1019,17 @@ int main(int argc, char** argv) {
 #else
   rnqnx::runtime::QtReactHost host(adapter);
 #endif
+#if RNQNX_ENABLE_WINDOW_API
+  // GUI controller precedes runtime teardown. Its guard rejects any native
+  // commands still queued when this application attempt exits or reloads.
+  const auto apiCapabilities = chrome ? chrome->capabilities() :
+      rnqnx::window::capabilitiesForPlatform(QGuiApplication::platformName());
+  rnqnx::window::WindowSession windowSession(window, chrome.get(), apiCapabilities);
+  struct CloseWindowAdmission {
+    rnqnx::window::WindowSession& session;
+    ~CloseWindowAdmission() { session.shutdown(); }
+  } closeWindowAdmission{windowSession};
+#endif
   // A reload creates a new host. Keep this boundary explicit as well: only
   // reports from this application attempt can reject its startup or capture.
   const auto firstErrorReport = host.javaScriptErrors().size();
@@ -1052,6 +1070,9 @@ int main(int argc, char** argv) {
 #else
   rnqnx::nitro::installQnxNitroRuntime(host.runtime());
 #endif
+#endif
+#if RNQNX_ENABLE_WINDOW_API
+  rnqnx::nitro::windowapi::installWindowHost(host, windowSession.state());
 #endif
 #ifdef RNQNX_MARATHON_NITRO
   // Marathon's own Nitro v1 adapter. The dispatcher is the Qt one over the

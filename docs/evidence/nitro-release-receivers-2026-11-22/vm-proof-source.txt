@@ -1,0 +1,54 @@
+const React = require('react');
+const {AppRegistry, View, Text} = require('react-native');
+function check(ok, message) { if (!ok) throw new Error(message); }
+function App() {
+ return React.createElement(View, {style:{flex:1, backgroundColor:'#152238', padding:30}},
+  React.createElement(Text, {style:{fontSize:24,color:'white'}}, 'QNX experimental window API / actual Nitro v1'));
+}
+AppRegistry.registerComponent('RNQnxPlayground', () => App);
+(async () => {
+ check(globalThis.__rnqnxWindowHost, 'native window host absent');
+ const first=__rnqnxWindowHost.getCurrentWindow();
+ const second=__rnqnxWindowHost.getCurrentWindow();
+ check(!first.equals(second), 'handles share resource identity');
+ const initial=first.snapshot;
+ check(initial.width>0 && initial.height>0, 'native dimensions absent');
+ check(initial.contentWidth===initial.width, 'content width mismatch');
+ check(initial.insets.top===0 || initial.insets.top===44, 'unknown native inset');
+ const expected=initial.insets.top===0 ? initial.height-44 : initial.height;
+ check(initial.contentHeight===expected, 'double title-bar inset');
+ const events=[]; const observer=first.addSnapshotListener(s=>events.push(s));
+ await first.setTitle('QNX window API proof');
+ check(first.snapshot.title==='QNX window API proof', 'native cached title did not update');
+ check(events.length>=1 && events[0].title===initial.title, 'ordered initial observer snapshot absent');
+ await first.setControlsLayout('windows');
+ check(first.snapshot.controlsLayout==='windows', 'native controls layout did not update');
+ let invalid=false;
+ try { await first.setSize(-1,400); } catch (_) {invalid=true;}
+ check(invalid, 'invalid dimensions accepted');
+ let stale=await first.cancelCloseRequest('not-a-native-request');
+ check(stale===false, 'forged close request accepted');
+ if (first.snapshot.canPreventClose) {
+  const guard=first.addCloseGuard(); const otherGuard=second.addCloseGuard();
+  check(await first.close()===false, 'native close guard failed');
+  const id=first.snapshot.closeRequestId;
+  check(id.length>0, 'native close request ID absent');
+  check(await second.cancelCloseRequest(id)===true, 'native close cancellation failed');
+  guard.remove(); guard.remove(); otherGuard.remove();
+  console.log('RNQNX_WINDOW_VM_GUARDS_OK');
+ } else {
+  let unsupported=false; try { first.addCloseGuard(); } catch (_) {unsupported=true;}
+  check(unsupported, 'unmanaged close guard falsely supported');
+  console.log('RNQNX_WINDOW_VM_GUARDS_UNSUPPORTED');
+ }
+ observer.remove(); observer.remove();
+ const count=events.length;
+ await first.setTitle('QNX window API proof complete');
+ check(events.length===count, 'removed observer received callback');
+ first.dispose();
+ let disposed=false; try { first.snapshot; } catch (_) {disposed=true;}
+ check(disposed, 'disposed handle remains readable');
+ check(second.snapshot.width>0, 'disposing first invalidated independent second');
+ second.dispose();
+ console.log('RNQNX_WINDOW_VM_OK handles snapshot insets title controls errors guards cancellation subscriptions disposal');
+})().catch(error => {console.error('RNQNX_WINDOW_VM_FAIL', String(error)); throw error;});

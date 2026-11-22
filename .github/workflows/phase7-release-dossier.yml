@@ -48,7 +48,15 @@ jobs:
           set -euo pipefail
           node scripts/qnx-release-dossier.mjs create --file build/release-candidate/dossier.json
           node scripts/qnx-release-dossier.mjs verify --file build/release-candidate/dossier.json > build/release-candidate/verification.json
-          node -e "const r=require('./build/release-candidate/verification.json'); if(r.releaseAuthorized!==false || r.openGates.length!==require('./docs/releases/v1-readiness.json').gates.length || r.receiptCount!==0) process.exit(1)"
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const report = require('./build/release-candidate/verification.json');
+          const pending = require('./docs/releases/v1-readiness.json').gates
+            .filter(({ status }) => status !== 'passed').map(({ id }) => id);
+          assert.equal(report.releaseAuthorized, false);
+          assert.deepEqual(report.openGates, pending);
+          assert.equal(report.receiptCount, 0);
+          NODE
           if pnpm validate:v1 > build/release-candidate/release-gate.txt 2>&1; then
             echo 'Unexpected release approval: these experimental phases have no physical qualification.'
             exit 1

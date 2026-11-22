@@ -208,22 +208,22 @@ the controls cover, in device-independent pixels):
 | `none`          | All zero.                                                                        |
 
 Host tests cover the values (`titleBarInsetPerStyle`,
-`titleBarInsetFollowsStyleAndLayout`). Nothing delivers them to JavaScript yet.
+`titleBarInsetFollowsStyleAndLayout`). The experimental window API below delivers
+cached native insets and content dimensions to JavaScript; the default build keeps
+that API disabled.
 
 ## Known gaps
 
-- The title-bar inset is not reported to JavaScript or `SafeAreaView`. The
-  native side computes it (above); the `safe-area-context` shim still returns
-  zero insets. With the `default` style the React surface already starts below
-  the bar, so the native drawer (`RNQnxDrawer`) needs nothing; with `hidden`,
-  set its `topInset` to the bar height so the edge-swipe strip does not run
-  under the floating controls.
+- The experimental window API supplies insets to `SafeAreaView` and the
+  `safe-area-context` shim. With the default style, the surface is below the bar
+  and its safe inset is zero; hidden style retains the full surface with a 44px
+  inset. Native `RNQnxDrawer` users must pass the inset to `topInset`. QNX
+  runtime acceptance of the new API remains pending.
 - JavaScript runs on the Qt GUI thread, so a long JS call freezes the title
   bar along with the rest of the window.
-- With `hidden`, a press on a floating control also reaches the React view
-  under it when the input-lifecycle dispatcher is on.
-- With the input-lifecycle dispatcher on, touch `pageX`/`pageY` include the
-  44 px bar in the `default` style.
+- The candidate input-lifecycle dispatcher shields native chrome hit targets
+  and maps page coordinates relative to their React surface. The linked host
+  regressions and QNX interaction receipts must qualify those changes.
 - On QNX, maximize needs `initialSize`; a full-screen app has nothing to
   expand to, so the control is left out.
 - On QNX the window is a frame inside a display-sized native window, so the
@@ -235,10 +235,51 @@ Host tests cover the values (`titleBarInsetPerStyle`,
   Alt+Tab list.
 - Wayland, including Marathon, gets close only, and the chrome build is
   rejected for Marathon until its shell's behaviour is defined.
-- No runtime layout change or close guard yet. Edge resize exists only for
-  the QNX contained window.
+- Runtime layout changes and native close guards are available through the
+  experimental API. A QNX manager must explicitly advertise `close-veto` before
+  guards can be installed. Edge resize keeps its existing QPA limits.
 - `Dimensions` reports the screen, not the window; use `onLayout` for the
   window's content size.
+
+## Experimental window API
+
+Build with `RNQNX_ENABLE_WINDOW_API=ON`, `RNQNX_ENABLE_WINDOW_CHROME=ON` and
+`RNQNX_ENABLE_NITRO_QT_DISPATCHER=ON`, using an isolated copy of the pinned
+Nitro core as required by the dispatcher build. It defaults OFF. The native host
+installs the runtime-specific window host before evaluating the app.
+
+```ts
+import { getCurrentWindow } from '@rn-qnx/qnx-nitro-runtime';
+const window = getCurrentWindow();
+const updates = window.addSnapshotListener((snapshot) => {
+  console.info(snapshot.insets, snapshot.contentWidth, snapshot.contentHeight);
+});
+await window.setControlsLayout('windows');
+updates.remove();
+window.dispose();
+```
+
+The handle never creates another window. It reports actual focus and visibility;
+`requestFocus()` asks the window system rather than guaranteeing focus. Snapshots
+are cached, with an ordered initial notification followed by coalesced changes.
+Sizes and positions are logical pixels; unsupported operations reject. Resources
+and queued operations close with the host; disposing one handle leaves another
+handle usable. The public API includes title, size, position, minimize, restore,
+visibility, focus requests, native close guards and explicit close requests.
+
+[The API contract](../validation/window-api-contract-2026-11-22.md) covers close
+confirmation and cancellation by request ID. The patched `rnqnx-winmgr` accepts a
+veto only through an owner-written `SCREEN_PROPERTY_MANAGER_STRING` change for
+that same window, and cancels its pending termination deadline. Old managers do
+not advertise the capability and guard creation fails. An acknowledgement failure
+is logged as `RNQNX_WINDOW_CLOSE_VETO_FAILED`; a local Qt veto does not establish
+that the manager received it. Explicit process termination and forced replacement
+are outside a window close guard.
+
+The standard playground still uses the default GUI/JS owner configuration.
+Dedicated-JS-owner behavior is tested separately and is not a physical-device
+receipt. The native API remains experimental until its linked candidate checks
+and QNX target acceptance are complete.
 
 ## Host tests
 

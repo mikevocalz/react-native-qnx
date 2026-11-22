@@ -2,7 +2,7 @@
 // switched live from the measured width. At most five tabs; put the rest
 // under a More tab.
 import * as React from 'react';
-import { View } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { Tabs } from 'expo-router';
 import { qnxTabsScreenOptions } from '@rn-qnx/expo-router-qnx';
 import { ACCENT, BACKGROUND, MUTED } from '../../theme';
@@ -14,33 +14,25 @@ const TABS = [
 ];
 
 export default function TabsLayout() {
-  const [width, setWidth] = React.useState(1280);
+  const { width } = useWindowDimensions();
   return (
-    <View
-      style={{ flex: 1 }}
-      onLayout={(event) => {
-        const next = Math.round(event.nativeEvent.layout.width);
-        if (next > 0) setWidth(next);
-      }}
+    <Tabs
+      screenOptions={qnxTabsScreenOptions({
+        width,
+        headerShown: false,
+        tabBarActiveTintColor: ACCENT,
+        tabBarInactiveTintColor: MUTED,
+        tabBarStyle: { backgroundColor: '#102338' },
+        sceneStyle: { backgroundColor: BACKGROUND },
+      })}
     >
-      <Tabs
-        screenOptions={qnxTabsScreenOptions({
-          width,
-          headerShown: false,
-          tabBarActiveTintColor: ACCENT,
-          tabBarInactiveTintColor: MUTED,
-          tabBarStyle: { backgroundColor: '#102338' },
-          sceneStyle: { backgroundColor: BACKGROUND },
-        })}
-      >
-        {TABS.map((tab) => (
-          <Tabs.Screen
-            key={tab.name}
-            name={tab.name}
-            options={{ title: tab.title, qnxIcon: tab.icon }}
-          />
-        ))}
-      </Tabs>
-    </View>
+      {TABS.map((tab) => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{ title: tab.title, qnxIcon: tab.icon }}
+        />
+      ))}
+    </Tabs>
   );
 }

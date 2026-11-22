@@ -9,7 +9,10 @@
     "index.js",
     "index.d.ts",
     "cpp",
-    "CMakeLists.txt"
+    "CMakeLists.txt",
+    "window.js",
+    "specs",
+    "window.d.ts"
   ],
   "peerDependencies": {
     "react-native": "0.88.1",

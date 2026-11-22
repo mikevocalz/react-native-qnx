@@ -52,5 +52,7 @@ overrides:
 # backport below is the sole separately documented exception.
 
 patchedDependencies:
+  nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32: patches/nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32.patch
+  expo-modules-autolinking@58.1.0: patches/expo-modules-autolinking@58.1.0.patch
   braces@3.0.3: patches/braces@3.0.3.patch
   react-native@0.88.1: patches/react-native@0.88.1.patch

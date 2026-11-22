@@ -1,0 +1,5 @@
+{
+  "type": "InternalError",
+  "errors": [],
+  "message": "Metro has encountered an error: No support package is known for platform \"qnx\": /private/tmp/rnqnx-release-gates-20261122/node_modules/.pnpm/expo-modules-autolinking@58.1.0_supports-color@8.1.1_typescript@7.0.2/node_modules/expo-modules-autolinking/build/platforms/index.js (64:19)\n\n\u001b[0m \u001b[90m 62 |\u001b[39m             \u001b[36mreturn\u001b[39m \u001b[36mnull\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 63 |\u001b[39m         \u001b[36mdefault\u001b[39m\u001b[33m:\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 64 |\u001b[39m             \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`No support package is known for platform \"${platform}\"`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 65 |\u001b[39m     }\n \u001b[90m 66 |\u001b[39m }\n \u001b[90m 67 |\u001b[39m\u001b[0m"
+}

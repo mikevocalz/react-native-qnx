@@ -75,6 +75,42 @@ function(rnqnx_add_nitro_qt_dispatcher)
       APPEND PROPERTY COMPILE_OPTIONS -fsanitize=address,undefined -fno-sanitize-recover=undefined)
     target_link_options(rnqnx_react_host PUBLIC -fsanitize=address,undefined)
   endif()
+  # RuntimeData::Entry has a debug-only field, so the release binding and its
+  # entire Nitro core must share NDEBUG. Never mix it with a Debug core archive.
+  if(BUILD_TESTING AND NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
+    get_target_property(release_core_sources rnqnx_nitro_core SOURCES)
+    get_target_property(release_core_includes rnqnx_nitro_core INCLUDE_DIRECTORIES)
+    add_library(rnqnx_nitro_release_test_core STATIC ${release_core_sources})
+    target_include_directories(rnqnx_nitro_release_test_core PUBLIC ${release_core_includes})
+    target_link_libraries(rnqnx_nitro_release_test_core PUBLIC Threads::Threads)
+    target_compile_features(rnqnx_nitro_release_test_core PUBLIC cxx_std_20)
+    target_compile_definitions(rnqnx_nitro_release_test_core PUBLIC NDEBUG)
+    target_compile_options(rnqnx_nitro_release_test_core PRIVATE -O2
+      "-include" "${RNQNX_NITRO_V1_COMPAT}")
+    rnqnx_enable_strict_warnings(rnqnx_nitro_release_test_core)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+      target_compile_options(rnqnx_nitro_release_test_core PUBLIC -Wno-nullability-extension)
+    endif()
+    add_executable(rnqnx_nitro_release_receiver_test
+      "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tests/cpp/NitroReleaseReceiverTest.cpp")
+    target_link_libraries(rnqnx_nitro_release_receiver_test PRIVATE
+      rnqnx_nitro_release_test_core rnqnx_hermes)
+    target_compile_options(rnqnx_nitro_release_receiver_test PRIVATE -O2
+      "-include" "${RNQNX_NITRO_V1_COMPAT}")
+    rnqnx_enable_strict_warnings(rnqnx_nitro_release_receiver_test)
+    if(RNQNX_ENABLE_HOST_SANITIZERS)
+      foreach(target rnqnx_nitro_release_test_core rnqnx_nitro_release_receiver_test)
+        target_compile_options(${target} PRIVATE
+          -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer)
+        target_link_options(${target} PUBLIC -fsanitize=address,undefined)
+      endforeach()
+    endif()
+    add_test(NAME rnqnx_nitro_release_receivers COMMAND rnqnx_nitro_release_receiver_test)
+    set_tests_properties(rnqnx_nitro_release_receivers PROPERTIES TIMEOUT 30
+      ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1")
+  endif()
+  include(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/RnqnxWindowApi.cmake)
+  rnqnx_add_window_api()
   if(BUILD_TESTING)
     add_test(NAME rnqnx_nitro_dispatcher_patch_contract COMMAND "${CMAKE_COMMAND}"
       "-DREPO_ROOT=${CMAKE_SOURCE_DIR}"

@@ -1,0 +1,16 @@
+2026-11-22 — local Linux Hermes evaluation scope control
+Scope: actual Hermes API/runtime, not the complete Qt window fixture.
+Runtime reused read-only: qnx805-build:/home/qnxbuild/svg-corpus/hermes/lib/libhermesvm.so (Linux x86-64).
+Headers: pinned Hermes 260318099.0.5 API/public and current installed RN JSI.
+Source: hermes-scope-repro.cpp. Scratch output only /tmp/rnqnx-window-helper-scope.
+
+Observed output (exit 0):
+EXPECTED_ORIGINAL_HERMES_SCOPE_FAILURE Property 'lexicalCheck' doesn't exist
+
+ReferenceError: Property 'lexicalCheck' doesn't exist
+    at global (window-api-host-test.js:1:1)
+WINDOW_API_HELPER_SCOPE_OK separate Hermes programs preserve global helper and reject false assertions
+
+The negative control reproduces program-scoped const losing visibility across evaluateJavaScript calls. The fixed globalThis.check succeeds in a later evaluation; check(false, ...) still throws the intentional error. Existing window API assertions are retained. This does not replace the full linked fixture CI rerun.
+
+Updated fixture SHA256: 836e28b967fbfcc3866fea988da59b22b8c0cfb9c40028672a70267b0a241dbb

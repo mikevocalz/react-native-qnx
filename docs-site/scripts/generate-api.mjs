@@ -5,8 +5,8 @@
 //   node scripts/generate-api.mjs --check  fail if committed files differ
 //
 // Inputs are the tracked *.h and *.hpp files (git ls-files) and the tracked *.nitro.ts files.
-// Nothing here reads the network, a timestamp, an absolute path or a commit SHA, so two runs
-// over the same tree are byte-identical.
+// No network or timestamps are read. DOCS_SOURCE_COMMIT optionally pins source
+// links for a frozen candidate; identical trees and that setting produce identical output.
 //
 // The C++ scanner is a small, tolerant, brace-depth scanner. It is not a C++ parser. Anything
 // it cannot classify is counted and listed on the index page ("Not parsed") instead of dropped.
@@ -26,7 +26,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const site = resolve(here, '..');
 const repo = resolve(site, '..');
 const check = process.argv.includes('--check');
-const BLOB = 'https://github.com/mikevocalz/react-native-qnx/blob/main/';
+const BLOB = `https://github.com/mikevocalz/react-native-qnx/blob/${process.env.DOCS_SOURCE_COMMIT || 'main'}/`;
 const OUT_DIR = 'content/docs/reference/native-api';
 const DOCS_URL = '/docs/reference/native-api';
 const banned = new RegExp(['mara', 'thon'].join(''), 'i');

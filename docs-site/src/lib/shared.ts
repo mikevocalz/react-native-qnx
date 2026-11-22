@@ -13,7 +13,7 @@ export const docsImageRoute = '/og/docs';
 export const gitConfig = {
   user: 'mikevocalz',
   repo: 'react-native-qnx',
-  branch: 'main',
+  branch: process.env.DOCS_SOURCE_COMMIT ?? 'main',
   contentDir: 'docs-site/content/docs',
 };
 

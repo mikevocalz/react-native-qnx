@@ -43,6 +43,7 @@
 #include <screen/screen.h>
 
 #include "appkey.h"
+#include "close-veto.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -63,7 +64,7 @@
 #include <unistd.h>
 
 #define MAX_WINDOWS 64
-#define MANAGER_REPLY "rnqnx-winmgr windowed"
+#define MANAGER_REPLY "rnqnx-winmgr windowed close-veto"
 #define DESKTOP_DIR "/system/etc/desktop_files"
 #define DOCK_HEIGHT 56
 #define DOCK_MARGIN 8
@@ -144,11 +145,7 @@ static int swallowed_count;
 static int tile_x[MAX_WINDOWS], tile_y[MAX_WINDOWS]; /* display coordinates */
 
 /* Windows asked to close from the switcher, with their SIGTERM deadline. */
-typedef struct {
-  screen_window_t win;
-  pid_t pid;
-  struct timespec deadline;
-} closing_t;
+typedef rnqnx_closing_t closing_t;
 static closing_t closing[MAX_WINDOWS];
 static int closing_count;
 
@@ -1276,6 +1273,10 @@ static void on_property(screen_window_t win, int name) {
      * answer by writing ours again when the app replaced it. */
     char current[128] = {0};
     screen_get_window_property_cv(win, SCREEN_PROPERTY_MANAGER_STRING, sizeof current - 1, current);
+    /* Only owner-written window property changes may cancel that window's
+     * deadline. Never accept a manager-message payload naming another window. */
+    if (rnqnx_apply_close_veto(closing, &closing_count, win, current))
+      LOG("close veto pid=%d '%s'", (int)m->pid, m->title);
     if (strcmp(current, MANAGER_REPLY) != 0) {
       screen_set_window_property_cv(win, SCREEN_PROPERTY_MANAGER_STRING,
                                     (int)strlen(MANAGER_REPLY), MANAGER_REPLY);

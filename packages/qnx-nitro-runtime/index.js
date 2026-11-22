@@ -11,3 +11,4 @@ function createQnxPlatformInfo() {
 }
 
 module.exports = { createQnxPlatformInfo };
+module.exports.getCurrentWindow = require('./window').getCurrentWindow;

@@ -73,18 +73,18 @@ Ten of the eleven gates are `pending`. `dependencies` passed on host and hosted
 evidence ([receipt](../evidence/dependencies-2026-11-21/README.md)); it says
 nothing about a device.
 
-| Gate             | What is missing                                                                                                                               |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `distribution`   | A rebuilt Qt core, a source offer and package manifests; the closure check exists ([receipt](../evidence/distribution-2026-11-21/README.md))  |
-| `ci`             | Required checks passing for the release candidate on authorized runners                                                                       |
-| `cold-boot`      | 20 consecutive supervised graphics cold boots on the release board and image                                                                  |
-| `device-parity`  | A disposition for every component on stock Pi 4 QSTI, plus keyboard and touch proof                                                           |
-| `performance`    | Startup-to-first-frame, presented-frame intervals and RSS on QNX; none are measured yet                                                       |
-| `developer-path` | A new licensed developer creating, building, deploying and running an app from the docs                                                       |
-| `documentation`  | A `v1` tag to freeze the docs under, and a review of this set by someone other than its author; see [documentation gate](#documentation-gate) |
-| `app-identity`   | Icon and short name from Expo config, with measured tile-label fit on each target launcher                                                    |
-| `window-chrome`  | Device receipts for both layouts, minimize and restore, and the close guards; host and QNX VM receipts exist                                  |
-| `expo`           | A prebuilt QNX runner, and Expo Router and a standalone package running on a device                                                           |
+| Gate             | What is missing                                                                                                                                       |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `distribution`   | A rebuilt Qt core, a source offer and package manifests; the closure check exists ([receipt](../evidence/distribution-2026-11-21/README.md))          |
+| `ci`             | Required checks passing for the release candidate on authorized runners                                                                               |
+| `cold-boot`      | 20 consecutive supervised graphics cold boots on the release board and image                                                                          |
+| `device-parity`  | A disposition for every component on stock Pi 4 QSTI, plus keyboard and touch proof                                                                   |
+| `performance`    | Startup-to-first-frame, presented-frame intervals and RSS on QNX; none are measured yet                                                               |
+| `developer-path` | A new licensed developer creating, building, deploying and running an app from the docs                                                               |
+| `documentation`  | A published immutable documentation snapshot and a review of this set by someone other than its author; see [documentation gate](#documentation-gate) |
+| `app-identity`   | Icon and short name from Expo config, with measured tile-label fit on each target launcher                                                            |
+| `window-chrome`  | Device receipts for both layouts, minimize and restore, and the close guards; host and QNX VM receipts exist                                          |
+| `expo`           | A prebuilt QNX runner, and Expo Router and a standalone package running on a device                                                                   |
 
 ## Known limits
 
@@ -113,7 +113,12 @@ reviewed local links. At `main` `4a4c4818`:
   GitHub Pages on every push to `main` (workflow `docs-pages.yml`).
 - Versioned: not yet. `docs-site/versions.json` lists no snapshot, and the
   repository has no tag. The site labels itself `latest (main, 0.1.0)`. A frozen
-  copy under `/v/<tag>/` needs a release tag, which waits on the other gates.
+  copy can be built under `/v/candidate-<commit>/` before the platform release,
+  using the [candidate snapshot command](../../docs-site/README.md#freeze-documentation-for-a-candidate).
+  This freezes the documentation source without creating a release tag. Publish
+  the reviewed export and its hash receipt, then add it to the version index.
+  A final `v1.0.0` tag follows the completed release process; the documentation
+  gate does not depend on that final tag.
 - Local links: checked by `docs-site` (`npm run check:content`) for site pages
   and by a one-off script for the Markdown under `docs/`, which found sixteen
   links to log files that were never committed. They are now plain text, with a

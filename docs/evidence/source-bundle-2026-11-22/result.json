@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "61d0f25786039aef16a31cb7ca94bc6c03c7b6d1",
+  "shallowCleanCheckout": true,
+  "softwareGrab": true,
+  "recipeFilesVerified": 35,
+  "cveFilesVerified": 3,
+  "qtArchiveBytes": 443394020,
+  "qtArchiveSha256": "98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165",
+  "sourceManifestSha256": "b8e5cff683d06bdc17c5b12f56c34d2fa1c96a0adcbeadb2bb3dcb1a689ba80e",
+  "sourceOfferSha256": "0c3f04b2c96c83289a997a92284428d706d01b5669376144e82a9197e6b04953",
+  "sourceOfferStatus": "draft",
+  "bundleBytes": 443549453,
+  "bundleSha256": "e906f4156bd9f402d9b031940415d4d632dbeed917bc28a2aa297c4608cf4946",
+  "runtimeQualified": false,
+  "published": false
+}

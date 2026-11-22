@@ -84,6 +84,17 @@ QQuickItem& WindowChrome::contentRoot() const { return *content_; }
 
 QQuickItem* WindowChrome::chromeItem() const { return chrome_.get(); }
 
+QList<QQuickItem*> WindowChrome::inputShields() const {
+  QList<QQuickItem*> shields;
+  if (!chrome_) return shields;
+  for (auto* item : chrome_->childItems()) {
+    const auto name = item->objectName();
+    if (name == QLatin1String("rnqnxTitleBar") || name.startsWith(QLatin1String("rnqnxWindowControl_")))
+      shields.append(item);
+  }
+  return shields;
+}
+
 QVariantMap WindowChrome::controlGeometry() const {
   QVariantMap result;
   for (const auto& slot : layout_.controls) {

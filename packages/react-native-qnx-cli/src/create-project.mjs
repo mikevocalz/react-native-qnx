@@ -338,6 +338,7 @@ export async function createProjectMain(argv) {
         react: versions.react,
         'react-native': versions['react-native'],
         expo: versions.expo,
+        'nitro-core': versions['nitro-core'],
         zustand: '5.1.0',
         ...(marathon
           ? {}
@@ -405,7 +406,17 @@ export async function createProjectMain(argv) {
     );
     await mkdir(path.join(destination, 'patches'));
     const patches = [...policy.matchAll(/^  [^\n]+: (patches\/[A-Za-z0-9@._-]+\.patch)$/gm)];
-    if (patches.length !== 2) {
+    const reviewedPatches = new Set([
+      'patches/braces@3.0.3.patch',
+      'patches/react-native@0.88.1.patch',
+      'patches/expo-modules-autolinking@58.1.0.patch',
+      'patches/nitro-core@1.0.0-alpha.nightly.136.gdb81de61bd32.patch',
+    ]);
+    if (
+      patches.length !== reviewedPatches.size ||
+      new Set(patches.map((match) => match[1])).size !== reviewedPatches.size ||
+      patches.some((match) => !reviewedPatches.has(match[1]))
+    ) {
       throw new Error('Platform patch inventory drifted; review required.');
     }
     for (const match of patches) {

@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "QNX Router Example",
+    "slug": "qnx-router-example",
+    "scheme": "rnqnx-router-example",
+    "orientation": "default",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.rnqnx.routerexample",
+        "shortName": "QNX Router",
+        "componentName": "RNQnxRouterExample",
+        "platforms": ["qnx"]
+      }
+    }
+  }
+}

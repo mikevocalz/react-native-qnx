@@ -1,7 +1,6 @@
-// Registers the expo-router app under the name the QNX host starts. The route
-// files live in ./app and are found by app-ctx.js; keep this file free of
-// components so Fast Refresh can swap a route without reloading the app.
-const { AppRegistry } = require('react-native');
-const { App } = require('expo-router/build/qualified-entry');
+// Registration stays separate from the component/context module so route
+// changes can refresh without repeating application registration.
+import { AppRegistry } from 'react-native';
+import App from './components/router-root';
 
 AppRegistry.registerComponent('__COMPONENT_NAME__', () => App);

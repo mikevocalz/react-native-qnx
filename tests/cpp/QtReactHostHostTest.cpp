@@ -955,6 +955,38 @@ void sendTouch(
   flushTouchEvents(fixture);
 }
 
+void nativeSurfaceOffsetIsRemovedFromPageCoordinates() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  fixture.root().setPosition(QPointF(50, 44));
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {70, 54}, {170, 154})});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {75, 59}, {175, 159})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    const start = touchEvents[0].payload.changedTouches[0];
+    const end = touchEvents[1].payload.changedTouches[0];
+    if (start.pageX !== 20 || start.pageY !== 10 || start.screenX !== 170 || start.screenY !== 154 ||
+        start.locationX !== 20 || start.locationY !== 10 || end.pageX !== 25 || end.pageY !== 15 || end.screenY !== 159)
+      throw new Error('native surface origin leaked into React coordinates');
+  )JS", "surface-offset-touch.js"));
+}
+
+void nativeControlShieldCannotBeBypassedByClaimedResponder() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  QQuickItem shield(&fixture.root());
+  shield.setSize(QSizeF(30, 30));
+  fixture.enableTouch().addInputShield(shield);
+  fixture.enableTouch().setJsResponder(501, true);
+  sendTouch(fixture, QEvent::TouchBegin, {QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {QEventPoint(7, QEventPoint::Released, {20, 10}, {20, 10})});
+  EXPECT(fixture.host().evaluate("if (touchEvents.length) throw new Error('native shield leaked to responder');", "shield-start.js"));
+  sendTouch(fixture, QEvent::TouchBegin, {QEventPoint(8, QEventPoint::Pressed, {80, 10}, {80, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {QEventPoint(8, QEventPoint::Released, {80, 10}, {80, 10})});
+  EXPECT(fixture.host().evaluate("if (touchEvents.length !== 2) throw new Error('shield blocked free hidden-style content');", "shield-free-content.js"));
+}
+
 void inputLifecycleOptOutPreservesExistingDispatch() {
   Fixture fixture(false);
   mountTouchFixture(fixture);
@@ -2935,6 +2967,8 @@ int main(int argc, char** argv) {
       {"layoutListenerRemovalAndReadditionPreserveChangedBounds",
        layoutListenerRemovalAndReadditionPreserveChangedBounds},
       {"inputLifecycleOptOutPreservesExistingDispatch", inputLifecycleOptOutPreservesExistingDispatch},
+      {"nativeSurfaceOffsetIsRemovedFromPageCoordinates", nativeSurfaceOffsetIsRemovedFromPageCoordinates},
+      {"nativeControlShieldCannotBeBypassedByClaimedResponder", nativeControlShieldCannotBeBypassedByClaimedResponder},
       {"touchCancelEndsEveryContactAndAllowsIdReuse", touchCancelEndsEveryContactAndAllowsIdReuse},
       {"inputTransparentDecorationPreservesTouchTarget", inputTransparentDecorationPreservesTouchTarget},
       {"touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact", touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact},

@@ -42,6 +42,11 @@ namespace rnqnx::window {
 // available area because a window manager sized it so.
 bool windowExpanded(const QWindow& window);
 
+// Explicit protocol capability; old managers may SIGTERM after a veto.
+bool managerReplySupportsCloseVeto(const QString& reply);
+bool windowManagerSupportsCloseVeto(QWindow& window);
+bool acknowledgeWindowCloseVeto(QWindow& window);
+
 // Build-variant suffixes an app id can carry (`org.example.app.dev`). The
 // instance key is the id without them, so a development client and the
 // release build of one app are the same app. This is the one list.

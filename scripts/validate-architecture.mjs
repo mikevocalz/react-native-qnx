@@ -37,6 +37,16 @@ const expected = [
 ];
 
 const expectedFiles = [
+  'apps/expo-router-example/package.json',
+  'apps/expo-router-example/app.json',
+  'apps/expo-router-example/index.js',
+  'apps/expo-router-example/app-ctx.js',
+  'apps/expo-router-example/metro.config.js',
+  'apps/expo-router-example/babel.config.js',
+  'apps/expo-router-example/app/_layout.js',
+  'apps/expo-router-example/app/index.js',
+  'apps/expo-router-example/app/review.js',
+  'apps/expo-router-example/components/router-root.js',
   'CMakeLists.txt',
   'CMakePresets.json',
   'CHANGELOG.md',
@@ -67,7 +77,6 @@ const expectedFiles = [
 
 const trackedScaffolds = [
   'apps/component-conformance',
-  'apps/expo-router-example',
   'apps/native-service-demo',
   'apps/performance-lab',
   'apps/rn-playground',

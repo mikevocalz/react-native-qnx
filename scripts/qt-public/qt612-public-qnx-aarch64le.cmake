@@ -21,5 +21,18 @@ set(CMAKE_ASM_FLAGS_INIT "-Vgcc_ntoaarch64le -D_QNX_SOURCE")
 # LD_LIBRARY_PATH wins. Qt's enable_new_dtags feature cannot be turned on here
 # (QT_FEATURE_elf is OFF on QNX), so pass the linker flag directly.
 foreach(kind SHARED MODULE EXE)
-  string(APPEND CMAKE_${kind}_LINKER_FLAGS_INIT " -Wl,--enable-new-dtags")
+  if(NOT CMAKE_${kind}_LINKER_FLAGS_INIT MATCHES "(^|[ ;])-Wl,--enable-new-dtags[ ;]*$")
+    string(APPEND CMAKE_${kind}_LINKER_FLAGS_INIT " -Wl,--enable-new-dtags")
+  endif()
+  # _INIT does not refresh an existing cache. Keep effective user flags and
+  # make the canonical enable flag last, including after an earlier disable.
+  if(DEFINED CACHE{CMAKE_${kind}_LINKER_FLAGS})
+    set(_flags "${CMAKE_${kind}_LINKER_FLAGS}")
+    if(NOT _flags MATCHES "(^|[ ;])-Wl,--enable-new-dtags[ ;]*$")
+      string(APPEND _flags " -Wl,--enable-new-dtags")
+    endif()
+    set(CMAKE_${kind}_LINKER_FLAGS "${_flags}" CACHE STRING "Linker flags" FORCE)
+    set(CMAKE_${kind}_LINKER_FLAGS "${_flags}")
+    unset(_flags)
+  endif()
 endforeach()

@@ -1,0 +1,134 @@
+{
+  "scope": "Host prepare-native only; no native compilation or deployment",
+  "beforeProtectedHashes": {
+    "package.json": "d97606f8ea443496f008de8abcd20b19fea6b5b3dc86f078035620312ba1e3df",
+    "pnpm-lock.yaml": "7694edba6a5e385d8a936084dbb81a57247ba7a57b3e7e880b6da43326f40f92",
+    "pnpm-workspace.yaml": "9db527a0765f19f39ce021de0666bc8dca76666474506cad060e028b9f58d385",
+    "app.json": "836eeadf65bfd1c7fa23a21cbdc042532c090ec5f9c936455f8627290a661a9e",
+    "index.js": "6bd6d99378478f6e9028d4a222eb79cc8bd8ab291fe5bbc3889300336870777c",
+    "components/router-root.js": "ea13cf61599cceec285d9f63f56d074d389126b815ee7ee536cbdfba66d59343",
+    "app/(tabs)/index.js": "8de9853722899901b1f92d644c430345b2aa3542612e104554bb6aca45c5ff14"
+  },
+  "afterProtectedHashes": {
+    "package.json": "d97606f8ea443496f008de8abcd20b19fea6b5b3dc86f078035620312ba1e3df",
+    "pnpm-lock.yaml": "7694edba6a5e385d8a936084dbb81a57247ba7a57b3e7e880b6da43326f40f92",
+    "pnpm-workspace.yaml": "9db527a0765f19f39ce021de0666bc8dca76666474506cad060e028b9f58d385",
+    "app.json": "836eeadf65bfd1c7fa23a21cbdc042532c090ec5f9c936455f8627290a661a9e",
+    "index.js": "6bd6d99378478f6e9028d4a222eb79cc8bd8ab291fe5bbc3889300336870777c",
+    "components/router-root.js": "ea13cf61599cceec285d9f63f56d074d389126b815ee7ee536cbdfba66d59343",
+    "app/(tabs)/index.js": "8de9853722899901b1f92d644c430345b2aa3542612e104554bb6aca45c5ff14"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "exitCode": 0,
+      "generatedHashes": {
+        "build/qnx/icons/icon-128.png": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266",
+        "build/qnx/icons/icon-16.png": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1",
+        "build/qnx/icons/icon-192.png": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b",
+        "build/qnx/icons/icon-24.png": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537",
+        "build/qnx/icons/icon-256.png": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69",
+        "build/qnx/icons/icon-32.png": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1",
+        "build/qnx/icons/icon-48.png": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170",
+        "build/qnx/icons/icon-512.png": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56",
+        "build/qnx/icons/icon-64.png": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec",
+        "build/qnx/icons/icon-96.png": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81",
+        "build/qnx/native-app.json": "2959f5e2f8c074fbd99e304f66c6fd069a47cab380042e60f91f6db01331fd2b"
+      }
+    },
+    {
+      "run": 2,
+      "exitCode": 0,
+      "generatedHashes": {
+        "build/qnx/icons/icon-128.png": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266",
+        "build/qnx/icons/icon-16.png": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1",
+        "build/qnx/icons/icon-192.png": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b",
+        "build/qnx/icons/icon-24.png": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537",
+        "build/qnx/icons/icon-256.png": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69",
+        "build/qnx/icons/icon-32.png": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1",
+        "build/qnx/icons/icon-48.png": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170",
+        "build/qnx/icons/icon-512.png": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56",
+        "build/qnx/icons/icon-64.png": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec",
+        "build/qnx/icons/icon-96.png": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81",
+        "build/qnx/native-app.json": "2959f5e2f8c074fbd99e304f66c6fd069a47cab380042e60f91f6db01331fd2b"
+      }
+    }
+  ],
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.example.nitrorelease",
+    "displayName": "Nitro Release",
+    "componentName": "main",
+    "platform": "qnx",
+    "bundle": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/app.bundle.js",
+    "bundleSha256": "4ba8994cda3650a81dc2b13c2be460723348cc9a7a8a9715b81cad3d9a98199b",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "shortName": "Nitro Release",
+    "icon": {
+      "source": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/assets/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-16.png",
+          "sha256": "84fbcde1f0c4047a19c3f9e54b6473dc47b3605b3adcf93de05ed33e4b8bd6d1"
+        },
+        {
+          "size": 24,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-24.png",
+          "sha256": "09a799843e30d582ad54c0f47767a48b668dd5fa082819455f6bde4ae9974537"
+        },
+        {
+          "size": 32,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-32.png",
+          "sha256": "4c7b640fe784a12b814fa37800b10dbe31cef0db8973139d611dbd7987012ca1"
+        },
+        {
+          "size": 48,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-48.png",
+          "sha256": "f38051ca2effee6768e63beb456146b95e7466d87465bec12dce03ae4acf3170"
+        },
+        {
+          "size": 64,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-64.png",
+          "sha256": "bd3011024fdf84b6c626e282272369a36e21dc1e08744a6ae88dfb1084cdefec"
+        },
+        {
+          "size": 96,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-96.png",
+          "sha256": "b0dc1f577f487a2a12752ac9594f94b77ec5918bfe315f5f558be653b2631c81"
+        },
+        {
+          "size": 128,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-128.png",
+          "sha256": "51c53c925a6d67ddb7acdee6b51444242610e211998156f376a9daef651c7266"
+        },
+        {
+          "size": 192,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-192.png",
+          "sha256": "3c2bf9b14b4bf0358e380a999433a7494e980df7cfd962146a0301009d66b69b"
+        },
+        {
+          "size": 256,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-256.png",
+          "sha256": "e4b0295b810b3c360e0f26c66d2400f175cffa76faa13dc674ddefc758fd0f69"
+        },
+        {
+          "size": 512,
+          "path": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer-nitro-release-pinned/build/qnx/icons/icon-512.png",
+          "sha256": "6448655990a3539c83536f94f599e7852ac7f2119a5c7635dca6b56ec800fd56"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "qnx",
+      "status": "not-measured",
+      "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+      "deviceMeasured": false
+    }
+  }
+}

@@ -1,0 +1,28 @@
+Label: cross-build only, not executed on QNX.
+Existing licensed qnx805-build container; QNX SDP 8.0.5.
+Fresh scratch objects/binary; owner build graphs unchanged.
+
+Manager build:
+qcc -Vgcc_ntoaarch64le -O2 -Wall -Wextra -Werror -Wno-format-truncation
+  SDK FreeType/libpng headers; -lscreen -lfreetype -lpng16
+Result: ELF 64-bit LSB pie executable, ARM aarch64, interpreter /usr/lib/ldqnx-64.so.2.
+SHA256 2a2f79211394468d56295589e1c46e5824199e5e6e1f853f0121d638b79ff745
+
+Qt source objects:
+q++ -Vgcc_ntoaarch64le -D_QNX_SOURCE -std=c++20 -O2 -fPIC -Wall -Wextra -Werror
+  -DQT_NO_KEYWORDS
+  Existing public Qt 6.12.0 qnx-build/qtbase headers:
+  include, include/QtCore, include/QtGui, include/QtNetwork, include/QtQml,
+  include/QtQmlIntegration, include/QtQuick, mkspecs/qnx-aarch64le-qcc
+Result: both ELF 64-bit LSB relocatable, ARM aarch64.
+
+5c7a499bcc94cc8fe60a296b62637d84c5d70e8c47b9911c8dba8df5ae0faffb  WindowHost.cpp
+42c83aa935150e34e204f1b81d7631775ce801cfd4a1e581e19641b133248333  WindowSession.cpp
+64afa293049767f5942b430a88ce8cb53ee10f72f603f6fed06e5f0de390ecb4  WindowHost.o
+3b48db3102df09e6a23233f0f5f049924eb094c9450e58c8aa06d3627975ade4  WindowSession.o
+
+An initial hand-written command omitted the repository toolchain's _QNX_SOURCE
+macro and failed POSIX declarations (getuid/kill/open/fcntl). The corrected
+command above matches cmake/toolchains/qnx-8.0*.cmake and passes without source
+changes. These object checks do not link a full application or establish runtime
+Qt manager acknowledgement, display behavior, target performance or device input.

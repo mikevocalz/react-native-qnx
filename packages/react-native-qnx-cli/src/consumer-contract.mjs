@@ -9,6 +9,9 @@ export const CONSUMER_CONTRACT = Object.freeze({
     react: '19.3.0',
     'react-native': '0.88.1',
     expo: '58.0.26',
+    // Match the runner's existing Nitro ABI and carry its reviewed release
+    // receiver-safety patch into standalone native consumers.
+    'nitro-core': '1.0.0-alpha.nightly.136.gdb81de61bd32',
     metro: '0.87.1',
     'babel-preset-expo': '58.0.26',
     '@react-native/metro-config': '0.88.1',
@@ -25,6 +28,11 @@ export const CONSUMER_CONTRACT = Object.freeze({
     'react-native-safe-area-context': '5.11.1',
     'react-native-screens': '4.30.1',
     'react-native-drawer-layout': '4.2.12',
+    // Pin native peer ABIs to the same reviewed graph as the platform. Otherwise
+    // a new consumer silently auto-installs newer Reanimated/Worklets/RNGH.
+    'react-native-reanimated': '4.7.1',
+    'react-native-worklets': '0.13.1',
+    'react-native-gesture-handler': '3.4.0',
     'react-dom': '19.3.0',
   }),
   marathonPackages: Object.freeze({

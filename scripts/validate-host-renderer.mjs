@@ -66,6 +66,16 @@ if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
   );
 }
 const disabledQtTests = [];
+if (/^RNQNX_ENABLE_WINDOW_API:BOOL=ON$/m.test(cache)) {
+  expectedTests.push(
+    'rnqnx_window_api',
+    'rnqnx_nitro_qt_test',
+    'rnqnx_nitro_release_receivers',
+    'rnqnx_nitro_dispatcher_patch_contract'
+  );
+} else {
+  disabledQtTests.push('rnqnx_window_api');
+}
 const workletsTests = [
   'rnqnx_worklets_integration_host_test',
   'rnqnx_worklets_rejects_missing_bootstrap',

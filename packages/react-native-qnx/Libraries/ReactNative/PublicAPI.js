@@ -191,13 +191,18 @@ const api = Object.freeze({
     return require('react-native/Libraries/Image/ImageBackground').default;
   },
   get SafeAreaView() {
-    // Upstream selects the native component on iOS only; elsewhere it is View.
-    return require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
+    // Keep the no-chrome path identical to the upstream View fallback.
+    if (!globalThis.__rnqnxWindowHost) {
+      return require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
+    }
+    return require('../../src/SafeAreaView').default;
   },
 });
 
 module.exports = new Proxy(api, {
   get(target, name, receiver) {
+    // Private adapter seam, intentionally absent from the public export inventory.
+    if (name === '__unstableQnxWindowMetrics') return require('../../src/window-metrics');
     // CommonJS interop and promise introspection are metadata, not RN exports.
     if (name === '__esModule' || name === 'default' || name === 'then') return undefined;
     if (typeof name === 'string' && !Object.prototype.hasOwnProperty.call(target, name)) {

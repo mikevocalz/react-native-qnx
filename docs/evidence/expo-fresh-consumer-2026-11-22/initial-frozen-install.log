@@ -1,0 +1,59 @@
+✓ Lockfile passes supply-chain policies (verified 1s ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Progress: resolved 7, reused 7, downloaded 0, added 4
+Packages are cloned from the content-addressable store to the virtual store.
+  Content-addressable store is at: /Volumes/QNX/cache/rnqnx-gates-20261122/dependency-store/v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 11, reused 11, downloaded 0, added 8
+Progress: resolved 25, reused 25, downloaded 0, added 22
+Progress: resolved 28, reused 28, downloaded 0, added 25
+Progress: resolved 50, reused 50, downloaded 0, added 47
+Progress: resolved 63, reused 63, downloaded 0, added 60
+Progress: resolved 86, reused 86, downloaded 0, added 83
+Progress: resolved 108, reused 108, downloaded 0, added 105
+Progress: resolved 151, reused 151, downloaded 0, added 148
+Progress: resolved 181, reused 181, downloaded 0, added 178
+Progress: resolved 202, reused 202, downloaded 0, added 199
+Progress: resolved 213, reused 213, downloaded 0, added 210
+Progress: resolved 246, reused 246, downloaded 0, added 243
+Progress: resolved 303, reused 303, downloaded 0, added 300
+Progress: resolved 366, reused 366, downloaded 0, added 363
+Progress: resolved 397, reused 397, downloaded 0, added 394
+Progress: resolved 453, reused 453, downloaded 0, added 450
+Progress: resolved 458, reused 458, downloaded 0, added 457
+Progress: resolved 480, reused 480, downloaded 0, added 480
+Downloading react-native-worklets@0.13.1: 0.00 B/7.42 MB
+Downloading react-native-worklets@0.13.1: 7.42 MB/7.42 MB, done
+Progress: resolved 492, reused 488, downloaded 4, added 491
+Packages: +492
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 492, reused 488, downloaded 4, added 492, done
+
+dependencies:
++ @expo/metro-runtime 58.0.17
++ @rn-qnx/expo-router-qnx 0.1.0
++ @rn-qnx/metro-config-qnx 0.1.0
++ @rn-qnx/react-native-qnx 0.1.0
++ expo 58.0.26
++ expo-linking 58.0.17
++ expo-router 58.0.31
++ expo-status-bar 58.0.5
++ react 19.3.0
++ react-dom 19.3.0
++ react-native 0.88.1
++ react-native-drawer-layout 4.2.12
++ react-native-gesture-handler 3.4.0
++ react-native-reanimated 4.7.1
++ react-native-safe-area-context 5.11.1
++ react-native-screens 4.30.1
++ react-native-worklets 0.13.1
++ zustand 5.1.0
+
+devDependencies:
++ @react-native/metro-config 0.88.1
++ babel-preset-expo 58.0.26
++ metro 0.87.1
++ metro-config 0.87.1
+
+Done in 1m 6s using pnpm v12.21.0

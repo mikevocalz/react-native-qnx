@@ -121,6 +121,34 @@ bool windowManagerKeepsWindowSize([[maybe_unused]] QWindow& window, [[maybe_unus
   return false;
 }
 
+bool managerReplySupportsCloseVeto(const QString& reply) {
+  const auto parts = reply.split(QLatin1Char(' '), Qt::SkipEmptyParts);
+  return parts.size() >= 3 && parts[0] == QLatin1String("rnqnx-winmgr") &&
+         parts[1] == QLatin1String("windowed") && parts.contains(QStringLiteral("close-veto"));
+}
+
+bool windowManagerSupportsCloseVeto([[maybe_unused]] QWindow& window) {
+#if defined(Q_OS_QNX)
+  screen_window_t native = nativeHandle(window);
+  if (native == nullptr) return false;
+  char answer[256] = {};
+  if (screen_get_window_property_cv(native, SCREEN_PROPERTY_MANAGER_STRING, sizeof answer - 1,
+                                    answer) != 0) return false;
+  return managerReplySupportsCloseVeto(QString::fromLatin1(answer));
+#else
+  return true;
+#endif
+}
+
+bool acknowledgeWindowCloseVeto([[maybe_unused]] QWindow& window) {
+#if defined(Q_OS_QNX)
+  screen_window_t native = nativeHandle(window);
+  return native != nullptr && setManagerString(native, "rnqnx:close-cancelled");
+#else
+  return true;
+#endif
+}
+
 void applyNativePosition([[maybe_unused]] QWindow& window) {
 #if defined(Q_OS_QNX)
   screen_window_t native = nativeHandle(window);

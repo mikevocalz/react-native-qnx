@@ -5,6 +5,9 @@ closure, and write sha256 manifests.
 Usage: stage-runtime.py [<out-dir> [<spdx-audit.json>...]]
 With audits for the base and imageformats build trees, also writes licenses/THIRD_PARTY_ATTRIBUTIONS.txt and
 copies the license files named by each qt_attribution.json the audit found.
+For compiler-read Qt files flagged by the audit as lacking an LGPL option,
+preserves the complete file verbatim under licenses/source-notices/ as well. This
+retains embedded notices without parsing or changing upstream classifications.
 Paths come from layout.sh's QT_PUBLIC_ROOT and QT_PUBLIC_BUILD.
 The qtimageformats plugins and notices come from IMAGEFORMATS_BUILD and
 IMAGEFORMATS_SRC respectively (build-imageformats-qnx.sh).
@@ -199,11 +202,34 @@ with staging_destination(out) as out:
                  'pass the qtbase and imageformats audits (see scripts/qt-public/README.md)')
     if audits:
         items = []
+        source_notices = set()
         for audit in audits:
             a = json.loads(audit.read_text())
             items += [(d, e) for d, c in a['third_party_components'].items()
                       for e in (c['attribution'] or [])]
             items += [(str(Path(e['attribution']).parent), e) for e in a['embedded_attributions']]
+            for e in a.get('qt_files_without_lgpl_option', []):
+                # These paths come from the compiler-dependency audit, not an
+                # attribution's approximate copyright field. Preserve the full
+                # file so year ranges and embedded license text cannot be lost
+                # to a notice parser. No license is inferred or reclassified.
+                name = e['file']
+                if not isinstance(name, str) or '\\' in name:
+                    raise ValueError(f'invalid source notice path: {name!r}')
+                parts = name.split('/')
+                if len(parts) < 2 or any(p in ('', '.', '..') for p in parts) or parts[0] not in MODULES:
+                    raise ValueError(f'invalid source notice path: {name!r}')
+                base, _ = module_source(parts[0])
+                source = base
+                for component in (None, *parts[1:]):
+                    if component is not None:
+                        source = source / component
+                    if source.is_symlink():
+                        raise ValueError(f'source notice must not traverse a symlink: {name}')
+                rel = f'licenses/source-notices/{name}'
+                if rel not in source_notices:
+                    copy(rel, source, source_roots=(base,))
+                    source_notices.add(rel)
         lines = ['Bundled third-party code compiled into this Qt 6.12.0 runtime.',
                  'Generated from qt_attribution.json entries listed by the SPDX audit.', '']
         for d, e in items:
@@ -232,6 +258,12 @@ with staging_destination(out) as out:
                     marker in f"{d} {e.get('name') or ''}".lower() for d, e in items):
                 sys.exit(f'no {marker} attribution in the supplied SPDX audits for staged {plugin}; '
                          'pass the imageformats audit (see scripts/qt-public/README.md)')
+        if source_notices:
+            lines += ['Compiler-read source files flagged as lacking an LGPL option by the audit.',
+                      'Complete files preserved verbatim for embedded copyright and license notices;',
+                      'upstream attribution metadata and license classifications are unchanged.']
+            lines += [f'  Source notice: {rel}' for rel in sorted(source_notices)]
+            lines.append('')
         rel = 'licenses/THIRD_PARTY_ATTRIBUTIONS.txt'
         (out / rel).write_text('\n'.join(lines))
         data = (out / rel).read_bytes()

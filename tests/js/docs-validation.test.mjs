@@ -27,6 +27,8 @@ try {
     'scripts/qt-public/README.md',
     'scripts/qt-public/patches/qtbase-qnx-software-grab.patch',
     'scripts/qualify-qnx-evidence.mjs',
+    'docs-site/README.md',
+    'docs-site/scripts/freeze-candidate.mjs',
   ]) {
     await mkdir(path.dirname(path.join(temporary, file)), { recursive: true });
     await cp(path.join(root, file), path.join(temporary, file), { recursive: true });
