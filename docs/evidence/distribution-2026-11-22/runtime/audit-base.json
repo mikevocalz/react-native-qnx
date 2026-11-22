@@ -99,9 +99,7 @@
       ],
       "files_read": 4,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/blake2/COPYING"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/blake2/COPYING"]
     },
     "qtbase/src/3rdparty/double-conversion": {
       "attribution": [
@@ -115,9 +113,7 @@
       ],
       "files_read": 20,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/double-conversion/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/double-conversion/LICENSE"]
     },
     "qtbase/src/3rdparty/easing": {
       "attribution": [
@@ -131,9 +127,7 @@
       ],
       "files_read": 1,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/easing/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/easing/LICENSE"]
     },
     "qtbase/src/3rdparty/emoji-segmenter": {
       "attribution": [
@@ -161,9 +155,7 @@
       ],
       "files_read": 4,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/forkfd/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/forkfd/LICENSE"]
     },
     "qtbase/src/3rdparty/freetype": {
       "attribution": [
@@ -274,9 +266,7 @@
       ],
       "files_read": 358,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/harfbuzz-ng/COPYING"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/harfbuzz-ng/COPYING"]
     },
     "qtbase/src/3rdparty/libjpeg": {
       "attribution": [
@@ -285,17 +275,12 @@
           "version": "3.2.0",
           "license": "IJG AND BSD-3-Clause",
           "copyright": null,
-          "license_files": [
-            "LICENSE",
-            "ijg-license.txt"
-          ]
+          "license_files": ["LICENSE", "ijg-license.txt"]
         }
       ],
       "files_read": 28,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/libjpeg/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/libjpeg/LICENSE"]
     },
     "qtbase/src/3rdparty/libpng": {
       "attribution": [
@@ -332,9 +317,7 @@
       ],
       "files_read": 22,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/libpng/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/libpng/LICENSE"]
     },
     "qtbase/src/3rdparty/libpsl": {
       "attribution": [
@@ -386,9 +369,7 @@
       ],
       "files_read": 2,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/md4c/LICENSE.md"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/md4c/LICENSE.md"]
     },
     "qtbase/src/3rdparty/md5": {
       "attribution": [
@@ -444,9 +425,7 @@
       ],
       "files_read": 4,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/rfc6234/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/rfc6234/LICENSE"]
     },
     "qtbase/src/3rdparty/sha1": {
       "attribution": [
@@ -462,9 +441,7 @@
         }
       ],
       "files_read": 1,
-      "spdx_in_files": [
-        "LicenseRef-SHA1-Public-Domain"
-      ],
+      "spdx_in_files": ["LicenseRef-SHA1-Public-Domain"],
       "license_files_in_dir": []
     },
     "qtbase/src/3rdparty/sha3": {
@@ -506,9 +483,7 @@
         }
       ],
       "files_read": 1,
-      "spdx_in_files": [
-        "CC0-1.0"
-      ],
+      "spdx_in_files": ["CC0-1.0"],
       "license_files_in_dir": []
     },
     "qtbase/src/3rdparty/tinycbor": {
@@ -525,9 +500,7 @@
       "spdx_in_files": [
         "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
       ],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/tinycbor/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/tinycbor/LICENSE"]
     },
     "qtbase/src/3rdparty/zlib": {
       "attribution": [
@@ -541,9 +514,7 @@
       ],
       "files_read": 26,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/zlib/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/zlib/LICENSE"]
     },
     "qtdeclarative/src/3rdparty/masm": {
       "attribution": [
@@ -573,9 +544,7 @@
       "spdx_in_files": [
         "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
       ],
-      "license_files_in_dir": [
-        "qtdeclarative/src/3rdparty/masm/LICENSE"
-      ]
+      "license_files_in_dir": ["qtdeclarative/src/3rdparty/masm/LICENSE"]
     }
   },
   "embedded_attributions": [
@@ -585,9 +554,7 @@
       "license": "CC0-1.0",
       "copyright": "To the extent possible under law, Sy Brand has waived all copyright and related or neighboring rights to the expected library. This work is published from: United Kingdom.",
       "license_files": null,
-      "files_read": [
-        "qexpected_p.h"
-      ]
+      "files_read": ["qexpected_p.h"]
     },
     {
       "attribution": "qtbase/src/corelib/text/qt_attribution.json",
@@ -595,10 +562,7 @@
       "license": "Unicode-3.0",
       "copyright": "Copyright (C) 1991-2025 Unicode, Inc.",
       "license_files": null,
-      "files_read": [
-        "qunicodetables_p.h",
-        "qunicodetables.cpp"
-      ]
+      "files_read": ["qunicodetables_p.h", "qunicodetables.cpp"]
     },
     {
       "attribution": "qtbase/src/corelib/text/qt_attribution.json",
@@ -621,9 +585,7 @@
       "license": "MIT",
       "copyright": "Copyright (c) 2013-2014 The Khronos Group Inc.",
       "license_files": "LICENSE.KHRONOS.txt",
-      "files_read": [
-        "qopengles2ext.h"
-      ]
+      "files_read": ["qopengles2ext.h"]
     },
     {
       "attribution": "qtbase/src/gui/painting/qt_attribution.json",
@@ -631,9 +593,7 @@
       "license": "FTL OR GPL-2.0-only",
       "copyright": "Copyright 2000-2016 by David Turner, Robert Wilhelm, and Werner Lemberg.",
       "license_files": "../../3rdparty/freetype/LICENSE.txt",
-      "files_read": [
-        "qgrayraster.c"
-      ]
+      "files_read": ["qgrayraster.c"]
     },
     {
       "attribution": "qtbase/src/gui/painting/qt_attribution.json",
@@ -645,9 +605,7 @@
         "(C) Willem Monsuwe <willem@stack.nl>"
       ],
       "license_files": "LICENSE.QIMAGETRANSFORM.txt",
-      "files_read": [
-        "qimagescale.cpp"
-      ]
+      "files_read": ["qimagescale.cpp"]
     },
     {
       "attribution": "qtbase/src/gui/painting/qt_attribution.json",
@@ -658,9 +616,7 @@
         "Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts."
       ],
       "license_files": "LICENSE.XCONSORTIUM.txt",
-      "files_read": [
-        "qregion.cpp"
-      ]
+      "files_read": ["qregion.cpp"]
     },
     {
       "attribution": "qtbase/src/gui/text/qt_attribution.json",
@@ -668,9 +624,7 @@
       "license": "BSD-3-Clause",
       "copyright": "Copyright 2002, 2003, 2005, 2006, 2008, 2010, 2015 Adobe Systems",
       "license_files": "LICENSE.AGLFN.txt",
-      "files_read": [
-        "qfontsubset_agl.cpp"
-      ]
+      "files_read": ["qfontsubset_agl.cpp"]
     },
     {
       "attribution": "qtbase/src/gui/util/qt_attribution.json",
@@ -678,9 +632,7 @@
       "license": "HPND-sell-variant",
       "copyright": "Copyright 2002 USC/Information Sciences Institute",
       "license_files": "LICENSE.XSVG.txt",
-      "files_read": [
-        "qguisvg.cpp"
-      ]
+      "files_read": ["qguisvg.cpp"]
     }
   ],
   "generated_files_by_dir": {

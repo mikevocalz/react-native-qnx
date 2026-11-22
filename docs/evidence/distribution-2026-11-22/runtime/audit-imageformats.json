@@ -1,11 +1,5 @@
 {
-  "targets": [
-    "QWebpPlugin",
-    "QTiffPlugin",
-    "QTgaPlugin",
-    "QICNSPlugin",
-    "QWbmpPlugin"
-  ],
+  "targets": ["QWebpPlugin", "QTiffPlugin", "QTgaPlugin", "QICNSPlugin", "QWbmpPlugin"],
   "objects": 176,
   "translation_units": 176,
   "translation_units_without_deps_entry": [],
@@ -22,17 +16,12 @@
           "version": "3.2.0",
           "license": "IJG AND BSD-3-Clause",
           "copyright": null,
-          "license_files": [
-            "LICENSE",
-            "ijg-license.txt"
-          ]
+          "license_files": ["LICENSE", "ijg-license.txt"]
         }
       ],
       "files_read": 4,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/libjpeg/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/libjpeg/LICENSE"]
     },
     "qtbase/src/3rdparty/zlib": {
       "attribution": [
@@ -46,9 +35,7 @@
       ],
       "files_read": 2,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/zlib/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/zlib/LICENSE"]
     },
     "qtimageformats/src/3rdparty/libtiff": {
       "attribution": [
@@ -76,9 +63,7 @@
       ],
       "files_read": 171,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtimageformats/src/3rdparty/libwebp/COPYING"
-      ]
+      "license_files_in_dir": ["qtimageformats/src/3rdparty/libwebp/COPYING"]
     }
   },
   "embedded_attributions": [],

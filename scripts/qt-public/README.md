@@ -23,7 +23,7 @@ rebuilt everything in a new container, not in `qnx805-build`:
   owner-read bit is off: `open(O_CREAT, 0200)` fails with `EACCES`. libstdc++'s
   `std::filesystem::copy` creates its destination that way, so Qt's `syncqt`
   stops during the host-tools configure with `Unable to remove file ... error:
-  (13)Permission denied`. The sources and build trees therefore live in a
+(13)Permission denied`. The sources and build trees therefore live in a
   sparse ext4 image file on the T9, loop-mounted at `/build`
   (`mount -o loop`), which has normal Linux semantics while every byte still
   lands on the T9. The archive and the staged outputs stay on the T9 itself.

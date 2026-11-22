@@ -1,8 +1,5 @@
 {
-  "targets": [
-    "Svg",
-    "QSvgPlugin"
-  ],
+  "targets": ["Svg", "QSvgPlugin"],
   "objects": 27,
   "translation_units": 27,
   "translation_units_without_deps_entry": [],

@@ -55,15 +55,15 @@ on 6 CPUs and 11.7 GB of memory. The archive hash was checked by the script
 (`98ff4f44…` equal to the committed value) and the three CVE diffs and two QNX
 patches applied.
 
-| Stage                          | Wall time | Steps / result                           | Exit |
-| ------------------------------ | --------- | ---------------------------------------- | ---- |
-| extract                        | 38 s      | 4 submodules                             | 0    |
-| CVE patches, QNX patches       | 1 s, 0 s  | 3 and 2 diffs                            | 0    |
-| host tools                     | 2126 s    | 2130 of 2130 steps (configure ~4 min)    | 0    |
-| Qt core for QNX aarch64le      | 1945 s    | 1860 of 1860 steps                       | 0    |
-| qtsvg                          | 78 s      | 42 of 42                                 | 0    |
-| qtimageformats                 | 60 s      | 201 of 201                               | 0    |
-| **Total**                      | **4248 s (70 min 48 s)** |                           |      |
+| Stage                     | Wall time                | Steps / result                        | Exit |
+| ------------------------- | ------------------------ | ------------------------------------- | ---- |
+| extract                   | 38 s                     | 4 submodules                          | 0    |
+| CVE patches, QNX patches  | 1 s, 0 s                 | 3 and 2 diffs                         | 0    |
+| host tools                | 2126 s                   | 2130 of 2130 steps (configure ~4 min) | 0    |
+| Qt core for QNX aarch64le | 1945 s                   | 1860 of 1860 steps                    | 0    |
+| qtsvg                     | 78 s                     | 42 of 42                              | 0    |
+| qtimageformats            | 60 s                     | 201 of 201                            | 0    |
+| **Total**                 | **4248 s (70 min 48 s)** |                                       |      |
 
 - **Peak disk use.** The work directory (`du -sk /build`, sampled each minute
   in [build/disk-samples-pass1.tsv](build/disk-samples-pass1.tsv)) peaked at
@@ -79,7 +79,7 @@ patches applied.
   has the same counts as the 2026-11-21 configure-only check).
 - **What this pass had to repair.** (a) The virtiofs mode problem above. (b)
   After pass 1, running `configure-qnx.sh` again stopped with `Failed to find
-  the host tool "Qt6::svgtoqml"` because `build-svg-qnx.sh` had extracted
+the host tool "Qt6::svgtoqml"` because `build-svg-qnx.sh` had extracted
   `qtsvg` beside `qtbase` (the same class of fault as the 2026-11-21 tar
   wildcard). It now extracts to `$QT_PUBLIC_ROOT/src-svg`, and `stage-runtime.py`
   reads the qtsvg notices from there. (c) The first RPATH attempt, below.
@@ -102,10 +102,10 @@ all exit 0).
 
 What changed, and why each part:
 
-| Setting                                                      | Where                                                                                       | Effect                                                                                                                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON`                        | `configure-qnx.sh`, `build-svg-qnx.sh`, `build-imageformats-qnx.sh`, `build-app-qnx.sh`      | Links with Qt's install rpath, `/data/qt612-public/lib`, not the build directory. Also removes the empty entries.                                          |
-| `-Wl,--enable-new-dtags` in the SHARED, MODULE and EXE flags | `qt612-public-qnx-aarch64le.cmake`, `qnx-app-qt-public.toolchain.cmake`                     | QNX's `ld` (binutils 2.43) then writes `DT_RUNPATH`. A direct `qcc` link test with and without the flag gave RPATH and RUNPATH. `-z runpath` is ignored by this `ld`. |
+| Setting                                                      | Where                                                                                   | Effect                                                                                                                                                                |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON`                        | `configure-qnx.sh`, `build-svg-qnx.sh`, `build-imageformats-qnx.sh`, `build-app-qnx.sh` | Links with Qt's install rpath, `/data/qt612-public/lib`, not the build directory. Also removes the empty entries.                                                     |
+| `-Wl,--enable-new-dtags` in the SHARED, MODULE and EXE flags | `qt612-public-qnx-aarch64le.cmake`, `qnx-app-qt-public.toolchain.cmake`                 | QNX's `ld` (binutils 2.43) then writes `DT_RUNPATH`. A direct `qcc` link test with and without the flag gave RPATH and RUNPATH. `-z runpath` is ignored by this `ld`. |
 
 Tried and rejected: `-DFEATURE_enable_new_dtags=ON` with `-DTEST_enable_new_dtags=ON`
 fails the configure (`QT_FEATURE_elf` is OFF on QNX, so Qt refuses to force the
@@ -153,11 +153,11 @@ only the QNX Screen libraries, the two VM system libraries (`libeventfd.so.1`,
 `libzstd.so.1`, copied from the VM's earlier deploy, not part of the runtime) and
 the Hermes library. Never the Qt directory ([vm/run.sh](vm/run.sh)).
 
-| Run                                              | Plugin                                  | Result                                                                                                                                                       |
-| ------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [own-plugin](vm/own-plugin.log)                  | the runtime's own `libqqnx.so` (`4a560e39…`) | `QQnxiIntegration: failed to obtain EGL display: 3008`, abort, exit 134. The VM has no GPU. Same result as 2026-11-21.                                  |
-| [sw-plugin](vm/sw-plugin.log), [png](vm/sw-plugin.png) | the VM lane's software-grab `libqqnx.so` (`531bdd53…`) | exit 0, `RNQNX_PLAYGROUND_SCREENSHOT … 1280x800`, PNG 24,464 bytes (`787bde3b…`) showing the playground's View and Text card. 11 Qt libraries loaded from `/data/qt612-public/lib`. |
-| [repl](vm/repl.log)                              | same plugin; a copy of `libQt6Svg.so.6` in a directory first on `LD_LIBRARY_PATH` | exit 0; `DL_DEBUG` shows `libQt6Svg.so.6 loaded from: /data/dist3/repl/libQt6Svg.so.6`. A replacement library wins, which the old build-host `DT_RPATH` prevented. |
+| Run                                                    | Plugin                                                                            | Result                                                                                                                                                                              |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [own-plugin](vm/own-plugin.log)                        | the runtime's own `libqqnx.so` (`4a560e39…`)                                      | `QQnxiIntegration: failed to obtain EGL display: 3008`, abort, exit 134. The VM has no GPU. Same result as 2026-11-21.                                                              |
+| [sw-plugin](vm/sw-plugin.log), [png](vm/sw-plugin.png) | the VM lane's software-grab `libqqnx.so` (`531bdd53…`)                            | exit 0, `RNQNX_PLAYGROUND_SCREENSHOT … 1280x800`, PNG 24,464 bytes (`787bde3b…`) showing the playground's View and Text card. 11 Qt libraries loaded from `/data/qt612-public/lib`. |
+| [repl](vm/repl.log)                                    | same plugin; a copy of `libQt6Svg.so.6` in a directory first on `LD_LIBRARY_PATH` | exit 0; `DL_DEBUG` shows `libQt6Svg.so.6 loaded from: /data/dist3/repl/libQt6Svg.so.6`. A replacement library wins, which the old build-host `DT_RPATH` prevented.                  |
 
 In the `own-plugin` log the loader prints `rpath=NULL runpath=/data/qt612-public/lib`
 for the app's Qt libraries.
@@ -176,11 +176,11 @@ not that the runtime's own plugin renders.
 
 ## State of the open items
 
-| Item                                | After this pass                                                                                                                                                                                                      |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1 Clean single-pass rebuild         | **Done once, with the old recipe** (70 min 48 s, 1.09 GiB peak). The runtime that was staged comes from the target-side rebuild with the fixed scripts, which reused pass 1's source tree and host tools. A single run of the final scripts from an empty tree is **not done**; it is about 72 minutes by these timings. |
-| 4 Fresh app link against public Qt  | **Done** for the playground app: link, hashes, VM run. The gallery/consumer app was not rebuilt; the VM run needed a substitute plugin (above).                                                                       |
-| 5 Build-level RPATH fix             | **Done and verified** for the Qt libraries, plugins and the app: 0 `DT_RPATH`, `DT_RUNPATH` `/data/qt612-public/lib` throughout, `normalize-rpath.py --check` reports nothing to change.                              |
+| Item                               | After this pass                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 Clean single-pass rebuild        | **Done once, with the old recipe** (70 min 48 s, 1.09 GiB peak). The runtime that was staged comes from the target-side rebuild with the fixed scripts, which reused pass 1's source tree and host tools. A single run of the final scripts from an empty tree is **not done**; it is about 72 minutes by these timings. |
+| 4 Fresh app link against public Qt | **Done** for the playground app: link, hashes, VM run. The gallery/consumer app was not rebuilt; the VM run needed a substitute plugin (above).                                                                                                                                                                          |
+| 5 Build-level RPATH fix            | **Done and verified** for the Qt libraries, plugins and the app: 0 `DT_RPATH`, `DT_RUNPATH` `/data/qt612-public/lib` throughout, `normalize-rpath.py --check` reports nothing to change.                                                                                                                                 |
 
 **Still open for the gate** (nothing here is closed by this paragraph): the
 owner's decision on the software-grab patch and so a runtime plugin that
@@ -211,4 +211,5 @@ is unchanged.
 container facts and the container scripts. `runtime/` has the audits, manifest,
 closure result and notices of the staged runtime. `app/` has the app build logs
 and hashes. `vm/` has the VM logs, the screenshot and the hashes. The staged
-runtime, the tarballs and the app binary are not committed.
+runtime, the tarballs and the app binary are not committed. The JSON files
+under `runtime/` were reformatted with Prettier (content unchanged).
