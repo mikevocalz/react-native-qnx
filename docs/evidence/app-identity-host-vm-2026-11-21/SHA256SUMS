@@ -35,7 +35,7 @@ b75de0a2c59d5de2e3c137a5a6d8f2ff61840b4d37704879a0a64426be61ad01  ./host/positiv
 333caa122398ea67d647def2eee959af936aba479659ebd3fbf693c5cae3f910  ./host/positive/qnx/icons/icon-64.png
 7fc5192809c2e466d2ef731e59223a2265d1401bb7b17fd5dfd74aab4e2723a3  ./host/positive/qnx/icons/icon-96.png
 61f7c3fc88054f850ac6699e95159ffd56e59e3d951ac711ecfc440517e6b8bd  ./host/positive/qnx/native-app.json
-28eda0788e8ae25cc97ec743e968f69444cda2ebab7f1d8ecf4782075a9b8841  ./README.md
+e0a4c92dd6a1eebeb810ac4df3689eb3b5641999f864181e3a7bfc221563e0df  ./README.md
 3e1d2def316803400618229b4ca53ec30805ea7dd51f407a1c7d3f340bf47efa  ./render/IdentityRender.cpp
 45a8b8884dbeb287f86096afe5e991a958fa4860bf152968350f23635a0be53d  ./renders/icon-set-contact-sheet.png
 9fba285290a9bb88e332c2763d4272a42acc5b76827765a8e60585f73ff42da0  ./renders/sample-icon-source-1024.png
@@ -44,3 +44,18 @@ e1d00d83909dd67225ffa49ba23ae70c51265db3d5a734b31231badcd6b5b0aa  ./renders/tile
 2094042d4ba2780bd8569b36bd6e6ce6ed4414c600aa57257591a387ee0a03fb  ./vm/chrome-default.log
 e2d917751ec94c7af18ca168f2fb825dbffa5abc25871fa5cd8487ebdd5f11c6  ./vm/chrome-default.png
 b4493aa7a1764079e7a55e1ec24f0c3b2480a84333b435ebb0a80f796a50a144  ./vm/describe-app.txt
+541b88d318928addef14ff5b52ff3c787bbc34ff73da7484e503c2cbaa8a7c0d  ./marathon-entry/generated/marathon-entry-output.json
+85e7a5bf95b1637a41826368ad100f2d1787386849dd8bb20a28a76e1d957504  ./marathon-entry/generated/org.example.fieldnotes.desktop
+c7697c3d3a735159dd4ad8367c27a1e03ed9c14472deafbd9a67ae2334d8c0b7  ./marathon-entry/generated/prepare-native-marathon.log
+47bb03dc662aeee150b32d7cc7484f71355832f1550c70239705e2d88f221491  ./marathon-entry/generated/reject-leading-slash-exec.txt
+4c3e5cadaddcc8d2d775594930e7e3dbbe8f3f232fd150c82c4ca08305fcf4ba  ./marathon-entry/logs/js-green.log
+304cd0d9b0daa9b51e040004bb1922afda38255825ca69f584b4670012c8b2b3  ./marathon-entry/logs/js-red-allow-leading-slash-exec.log
+cecae2bd09a3388adb31c29e580333d47ac1d38fffd27e079604ff2499e80960  ./marathon-entry/logs/js-red-drop-form-factor-hint.log
+3065808026bdd2ede6393055d086829eee1abf5140b1ad34e602597c3b9d2779  ./marathon-entry/logs/js-red-label-uses-expo-name.log
+3e79c4d6d91c61e9f59b4813445c1ab5816a3040aeee8fa07af741265d65a69e  ./marathon-entry/logs/js-red-module-absent.log
+7b0687552d29081714826329089acac54a88ce1a1a46dc5b2e192787177cd462  ./marathon-entry/rust-upstream-check/Cargo.lock
+91686da484c7da69d0a11e0539b60a1a70caed74fc59bc106b5204cfbe72d2fa  ./marathon-entry/rust-upstream-check/Cargo.toml
+29e8e8ce2bc101f638a1f9b6cef3bd7d9d05be95be80a286bfaafea1e4f6d859  ./marathon-entry/rust-upstream-check/main.rs.txt
+8cc8664c4e1b243dca700f0d6c5db71fdfbda7778243faafb1573bb99868936b  ./marathon-entry/rust-upstream-check/marathon-entry-output.real-paths.json
+f613fc7a59c805d6fb945e13a7e614fa8a41f965f55e66a9c1f7854a6d279ea5  ./marathon-entry/rust-upstream-check/org.example.fieldnotes.real-paths.desktop
+e51797c61200b54bd9d8debf366e2e4060537489ef7e15063736d530927386af  ./marathon-entry/rust-upstream-check/upstream-read-app-output.txt

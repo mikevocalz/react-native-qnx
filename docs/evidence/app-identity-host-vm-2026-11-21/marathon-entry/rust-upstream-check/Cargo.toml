@@ -1,0 +1,7 @@
+[package]
+name = "marathon-entry-check"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+freedesktop_entry_parser = "2.0.1"

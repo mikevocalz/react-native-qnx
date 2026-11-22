@@ -6,6 +6,7 @@ import { prepareNativeMain } from './prepare-native.mjs';
 import { createProjectMain } from './create-project.mjs';
 import { buildNativeMain } from './build-native.mjs';
 import { desktopEntryMain } from './desktop-entry.mjs';
+import { marathonEntryMain } from './marathon-entry.mjs';
 import { addQnxMain } from './add-qnx.mjs';
 import { runMain } from './run.mjs';
 import { devMain, startMain } from './dev-server.mjs';
@@ -41,6 +42,8 @@ try {
     process.exitCode = await prepareNativeMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'desktop-entry')
     process.exitCode = await desktopEntryMain(args.slice(2));
+  else if (args[0] === 'project' && args[1] === 'marathon-entry')
+    process.exitCode = await marathonEntryMain(args.slice(2));
   else if (args[0] === 'analyze') process.exitCode = await analyzeMain(args.slice(1));
   else if (args[0] === 'runner') process.exitCode = await runnerMain(args.slice(1));
   else if (args[0] === 'marathon') process.exitCode = await marathonMain(args.slice(1));
@@ -61,6 +64,7 @@ try {
     console.log('  pnpm qnx project prepare-native --help  Configure a native application');
     console.log('  pnpm qnx project build-native --help    Build a native consumer application');
     console.log('  pnpm qnx project desktop-entry --help   Write the QNX desktop launcher tile');
+    console.log('  pnpm qnx project marathon-entry --help  Write the Marathon launcher entry');
     console.log('  pnpm qnx project doctor --help          Check a consumer project');
     console.log(
       '  pnpm qnx doctor --target-runtime-report <file> [--verbose]  Check supplied QNX observations'

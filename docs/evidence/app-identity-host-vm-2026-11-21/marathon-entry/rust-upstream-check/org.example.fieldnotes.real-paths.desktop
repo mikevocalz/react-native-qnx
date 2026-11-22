@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Notes
+Exec=sh /Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/run.sh
+Icon=/Volumes/QNX/clones/marathon-entry-work/sample/build/marathon/icons/icon-128.png
+Terminal=false
+StartupWMClass=org.example.fieldnotes
+X-Purism-FormFactor=Mobile;

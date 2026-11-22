@@ -45,7 +45,7 @@ const DEVICE_PATH = /^\/(?:[A-Za-z0-9_.+-]+\/)*[A-Za-z0-9_.+-]+$/;
 export const TILE_ICON_SIZE = 128;
 
 /** @param {string} value @param {string} label */
-function devicePath(value, label) {
+export function devicePath(value, label) {
   if (!DEVICE_PATH.test(value) || value.split('/').some((part) => part === '.' || part === '..'))
     throw new Error(
       `${label} must be an absolute device path of letters, digits, '_', '.', '+' and '-' only.`
@@ -144,7 +144,7 @@ echo "  slay demolauncher; on -d demolauncher -a $D"
 
 /** Write without following a planted symlink at the leaf.
  * @param {string} file @param {string} content @param {number} mode */
-async function writeLeaf(file, content, mode) {
+export async function writeLeaf(file, content, mode) {
   try {
     const stat = await lstat(file);
     if (!stat.isFile() || stat.isSymbolicLink())
