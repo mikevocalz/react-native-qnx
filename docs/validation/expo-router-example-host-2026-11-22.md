@@ -108,6 +108,16 @@ using its public API. The pinned `expo-module` skill at the same Expo revision,
 identity adapter: discovering a host package does not register native modules.
 No native bindings or Nitro API changes were made.
 
+## Follow-up: public starter and actual reload protocol
+
+The [fresh external-consumer continuation](../evidence/expo-fresh-consumer-2026-11-22/README.md)
+preserves upstream Head/layout-refresh semantics through a lazy adapter and
+public ExpoRoot entry. Its observed SDK v2 message-socket reload supersedes this
+receipt's earlier HTTP `/reload` status check: HTTP 200 alone did not prove a
+reload command. Historical files are retained with that limitation. The newer
+protocol negative control rejects an invalid version instead of accepting an
+unobserved send as success.
+
 ## Remaining acceptance and rollback
 
 This source example does not publish workspace packages or runners. The Expo

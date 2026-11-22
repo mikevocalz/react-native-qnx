@@ -1,0 +1,61 @@
+{
+  "scope": "external installed consumer host proof; no publication or native execution",
+  "baseCommit": "783caf5ecaacd5e8d48a637f2f80728a439aef12",
+  "node": "v26.13.0",
+  "consumerFileHashes": {
+    "package.json": "fafab89531e57549dd1fa09f89468b24158d57f7881066b3ab32f7d57ef0335e",
+    "pnpm-lock.yaml": "4dd62363f1c8d89ab489a037d6d9585ff9882bd9d3a7035d5390c3d43c912419",
+    "pnpm-workspace.yaml": "9e447894fd2d8efa8bb2beea0f5b48f3d1a94809174e9ecf9c4daacaffd6dde4",
+    "platform-packages.json": "139c1b7e2c821ed787901aaacf5abcf6b5877b1091ffbd0bee6c7c1e97925ee3",
+    "index.js": "6bd6d99378478f6e9028d4a222eb79cc8bd8ab291fe5bbc3889300336870777c",
+    "app-ctx.js": "e92f330140182cd08909a73bcdd4867714f0d977907b1a9330fc2a2fc7667f3d",
+    "metro.config.js": "89f77c6dd35a3a1daf7040d167c47d09718894e66106a2bcc5dc48a17f03355f",
+    "components/router-root.js": "ea13cf61599cceec285d9f63f56d074d389126b815ee7ee536cbdfba66d59343",
+    "app/(tabs)/index.js": "8de9853722899901b1f92d644c430345b2aa3542612e104554bb6aca45c5ff14",
+    "patches/expo-modules-autolinking@58.1.0.patch": "972515d078e6bd5810abebfd69e7ef42c2920ab8bddc5ce1c7e09c3ca5ab5da8",
+    "patches/braces@3.0.3.patch": "6d25bdb49d4029cb4e4527d85fb4925dcf5707f7e93fc8e616518c66dad996c9",
+    "patches/react-native@0.88.1.patch": "93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5"
+  },
+  "platformArtifacts": {
+    "@rn-qnx/react-native-qnx": {
+      "version": "0.1.0",
+      "file": "vendor/rn-qnx-react-native-qnx-0.1.0.tgz",
+      "sha256": "2cf6b2fa4aa698d59a4a37036533259f901d387b25ff5bae03ee72fd431efb8f"
+    },
+    "@rn-qnx/metro-config-qnx": {
+      "version": "0.1.0",
+      "file": "vendor/rn-qnx-metro-config-qnx-0.1.0.tgz",
+      "sha256": "34845fb3e32729b3135d43ff4b432955075881d12c1ad8e403376c46abb6bd0c"
+    },
+    "@rn-qnx/expo-router-qnx": {
+      "version": "0.1.0",
+      "file": "vendor/rn-qnx-expo-router-qnx-0.1.0.tgz",
+      "sha256": "0cdd49ee60ff2c03304089f7295343b219b4f8f206aafe140a04e81bd85e8fb4"
+    }
+  },
+  "runtimeSourceComparisons": {
+    "src/RouterEntry.js": {
+      "sha256": "49377e471cd8aee6a21c8beab33dc156c04b9675c18fe71157a19a75e8a9eee2",
+      "matchesReviewedSource": true
+    },
+    "src/index.js": {
+      "sha256": "7aab70f47742864f1b130b7d5c45985460222cde85f1c30f2230ae6bccd342d2",
+      "matchesReviewedSource": true
+    }
+  },
+  "reviewedSourceFileHashes": {
+    "template/qnx-router/index.js": "1c409d9848132e90fe4318735683746b7fea3ea76c46fdf6e0e88b533da3289e",
+    "template/qnx-router/components/router-root.js": "ea13cf61599cceec285d9f63f56d074d389126b815ee7ee536cbdfba66d59343",
+    "packages/expo-router-qnx/src/RouterEntry.js": "49377e471cd8aee6a21c8beab33dc156c04b9675c18fe71157a19a75e8a9eee2",
+    "packages/expo-router-qnx/src/index.js": "7aab70f47742864f1b130b7d5c45985460222cde85f1c30f2230ae6bccd342d2",
+    "packages/react-native-qnx-cli/src/consumer-contract.mjs": "aff081505a7fc935081ff6f26f076b4f10a7d3db8cd80b7bc4691116172dbc48",
+    "scripts/probe-expo-qnx-dev-server.mjs": "77ce7542df10e8c1cfecf2b48db1a5bd8040537c3fe1a5b9d09ce2dc60315e47"
+  },
+  "productionBundle": {
+    "bytes": 1444324,
+    "sha256": "8daafb911dfcf9e04c29d1356436b6f34dcb5e26db3d6c78d6472642c50db4eb"
+  },
+  "published": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}

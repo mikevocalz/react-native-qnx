@@ -1,0 +1,16 @@
+
+Development build: Unable to determine the default URI scheme for deep linking into the app. Ensure that the expo-dev-client package is installed.
+Networking has been disabled
+Starting project at /Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer
+Starting Metro Bundler
+
+Waiting on http://localhost:64376
+
+Logs for your project will appear below.
+| (node:99204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+qnx Bundled 646ms index.js (1152 modules)
+qnx Bundled 31ms index.js (1 module)
+qnx Bundled 18ms index.js (1 module)
+qnx Bundled 21ms index.js (1 module)
+qnx Bundled 18ms index.js (1 module)

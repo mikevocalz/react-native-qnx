@@ -25,6 +25,11 @@ export const CONSUMER_CONTRACT = Object.freeze({
     'react-native-safe-area-context': '5.11.1',
     'react-native-screens': '4.30.1',
     'react-native-drawer-layout': '4.2.12',
+    // Pin native peer ABIs to the same reviewed graph as the platform. Otherwise
+    // a new consumer silently auto-installs newer Reanimated/Worklets/RNGH.
+    'react-native-reanimated': '4.7.1',
+    'react-native-worklets': '0.13.1',
+    'react-native-gesture-handler': '3.4.0',
     'react-dom': '19.3.0',
   }),
   marathonPackages: Object.freeze({

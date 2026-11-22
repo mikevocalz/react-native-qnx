@@ -76,11 +76,21 @@ try {
   // The qnx-only project is the expo-router drawer and tabs starter.
   assert.equal(qnxManifest.dependencies['expo-router'], '58.0.31');
   assert.equal(qnxManifest.dependencies['react-native-screens'], '4.30.1');
+  assert.equal(qnxManifest.dependencies['react-native-reanimated'], '4.7.1');
+  assert.equal(qnxManifest.dependencies['react-native-worklets'], '0.13.1');
+  assert.equal(qnxManifest.dependencies['react-native-gesture-handler'], '3.4.0');
   const layout = await readFile(path.join(qnx, 'app', '_layout.js'), 'utf8');
   assert.match(layout, /expo-router\/drawer/);
   assert.match(layout, /header\("Notes"\)/);
   assert.match(await readFile(path.join(qnx, 'app', '(tabs)', '_layout.js'), 'utf8'), /Tabs/);
   assert.match(await readFile(path.join(qnx, 'index.js'), 'utf8'), /registerComponent\('main'/);
+  const entryRoot = await readFile(path.join(qnx, 'components', 'router-root.js'), 'utf8');
+  assert.match(entryRoot, /import \{ ExpoRoot \} from 'expo-router'/);
+  assert.match(entryRoot, /QnxRouterProvider/);
+  assert.match(entryRoot, /context=\{ctx\}/);
+  assert.doesNotMatch(entryRoot, /expo-router\/build/);
+  assert.doesNotMatch(await readFile(path.join(qnx, 'index.js'), 'utf8'), /expo-router\/build/);
+
   assert.match(await readFile(path.join(qnx, 'metro.config.js'), 'utf8'), /withExpoRouterQnx/);
   assert.doesNotMatch(layout, /__APP_NAME__/);
   assert.equal(JSON.parse(await readFile(path.join(qnx, 'app.json'), 'utf8')).expo.scheme, 'notes');
@@ -91,7 +101,12 @@ try {
   const listing = spawnSync('tar', ['-tzf', path.join(qnx, routerArchive.file)], {
     encoding: 'utf8',
   });
-  for (const entry of ['package/metro.js', 'package/README.md', 'package/src/resolver.js']) {
+  for (const entry of [
+    'package/metro.js',
+    'package/README.md',
+    'package/src/resolver.js',
+    'package/src/RouterEntry.js',
+  ]) {
     assert.ok(listing.stdout.includes(entry), entry);
   }
   const platformArchive = qnxArtifacts0['@rn-qnx/react-native-qnx'];

@@ -46,6 +46,7 @@ const expectedFiles = [
   'apps/expo-router-example/app/_layout.js',
   'apps/expo-router-example/app/index.js',
   'apps/expo-router-example/app/review.js',
+  'apps/expo-router-example/components/router-root.js',
   'CMakeLists.txt',
   'CMakePresets.json',
   'CHANGELOG.md',

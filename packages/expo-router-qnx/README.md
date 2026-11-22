@@ -40,10 +40,33 @@ entry and Metro configuration for QNX-only projects, using `template/qnx-router`
 Projects that also enable Marathon retain their separately documented starter.
 See [project creation](../../docs/getting-started/expo-project-create.md).
 
-The [small Router example](../../apps/expo-router-example/README.md) registers
-`ExpoRoot` from the public `expo-router` export under its own configured component
-name. It demonstrates two tab routes, public Link navigation and per-app Zustand
-state without importing Router internals in application source.
+The generated starter and [small Router example](../../apps/expo-router-example/README.md)
+register `ExpoRoot` from the public `expo-router` export under their configured
+component name. Registration stays in `index.js`; the root component and route
+context live in separate modules so refresh does not repeat registration.
+
+Wrap `ExpoRoot` with the adapter's `QnxRouterProvider`:
+
+```jsx
+import { ExpoRoot } from 'expo-router';
+import { QnxRouterProvider } from '@rn-qnx/expo-router-qnx';
+import { ctx } from '../app-ctx';
+
+export default function App() {
+  return (
+    <QnxRouterProvider>
+      <ExpoRoot context={ctx} />
+    </QnxRouterProvider>
+  );
+}
+```
+
+The provider preserves SDK 58.0.31's Head provider through the public
+`expo-router/head` export. Its version-specific layout-refresh import stays
+inside the platform adapter; application source uses public exports. The helper loads lazily so importing
+other adapter functions in Node tooling does not initialize Router app globals.
+This is the repository's QNX adapter, not upstream Expo QNX support or proof of
+Fast Refresh delivery to a device. The example uses per-app Zustand state.
 
 The Tabs layout turns the window width into a bar position:
 

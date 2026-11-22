@@ -50,10 +50,10 @@ function launch(out, extra = [], env = {}) {
   processes.push(state);
   return state;
 }
-async function finish(state) {
+async function finish(state, timeout = 15_000) {
   return await Promise.race([
     state.closed,
-    delay(15_000, undefined, { ref: false }).then(() => {
+    delay(timeout, undefined, { ref: false }).then(() => {
       throw Error('Probe cleanup timed out');
     }),
   ]);
@@ -123,6 +123,35 @@ syncBuiltinESMExports();
   assert.equal(await isListening(setupSession.port), false, 'startup-failure server leaked');
   assert.equal(await fs.stat(path.join(brokenOut, 'result.json')).catch(() => null), null);
 
+  // A send alone is not proof of reload: SDK58 rejects another protocol
+  // version. The actual observer must receive the server's v2 broadcast.
+  const wrongProtocol = path.join(temporary, 'wrong-protocol.mjs');
+  await fs.writeFile(
+    wrongProtocol,
+    `const original = WebSocket.prototype.send;
+WebSocket.prototype.send = function(data) {
+  let payload = data;
+  try { const value = JSON.parse(String(data)); if (value.method === 'reload') payload = JSON.stringify({ ...value, version: 999 }); } catch {}
+  return original.call(this, payload);
+};
+`
+  );
+  const rejectedOut = path.join(temporary, 'wrong-protocol');
+  const rejected = await finish(
+    launch(rejectedOut, [], {
+      NODE_OPTIONS: `${process.env.NODE_OPTIONS || ''} --import=${pathToFileURL(wrongProtocol).href}`,
+    }),
+    180_000
+  );
+  assert.notEqual(rejected.code, 0);
+  assert.match(rejected.output, /Timed out waiting for Expo host observation/);
+  const rejectedSession = JSON.parse(
+    await fs.readFile(path.join(rejectedOut, 'session.json'), 'utf8')
+  );
+  assert.equal(await isListening(rejectedSession.port), false, 'rejected-protocol server leaked');
+  assert.equal(await fs.readFile(source, 'utf8'), original);
+  assert.equal(await fs.stat(path.join(rejectedOut, 'result.json')).catch(() => null), null);
+
   const cancelOut = path.join(temporary, 'cancel');
   const cancelling = launch(cancelOut);
   let edited = false;
@@ -156,7 +185,7 @@ syncBuiltinESMExports();
   assert.ok(ownedMembers.length > 0);
   assert.equal(await fs.stat(path.join(cancelOut, 'result.json')).catch(() => null), null);
   console.log(
-    'Expo probe lifecycle: spawn error, post-spawn setup failure and cancellation restore source, stop owned servers and emit no success record.'
+    'Expo probe lifecycle: spawn/setup errors, rejected reload protocol and cancellation restore source, stop owned servers and emit no success record.'
   );
 } finally {
   for (const state of processes) {

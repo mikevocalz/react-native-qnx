@@ -1,0 +1,18 @@
+{
+  "scope": "host-only Expo CLI Metro source watching; no device or native Fast Refresh acceptance",
+  "node": "v26.13.0",
+  "project": "/Volumes/QNX/clones/rnqnx-software-20261122/expo/fresh-consumer",
+  "source": "app/(tabs)/index.js",
+  "port": 64376,
+  "initialBytes": 5973260,
+  "watchedBytes": 5973290,
+  "restoredBytes": 5973260,
+  "reloadTransport": "Expo SDK v2 message socket",
+  "reloadProtocolVersion": 2,
+  "reloadBroadcastObserved": true,
+  "reloadObserver": "synthetic host WebSocket; no native client delivery claim",
+  "initialSha256": "8f8ec70bdd15d779d671c6f6a8d3928ceabecd91c81427cfbbd72d39d6aef26c",
+  "restoredSha256": "8f8ec70bdd15d779d671c6f6a8d3928ceabecd91c81427cfbbd72d39d6aef26c",
+  "sourceRestored": true,
+  "serverStopped": true
+}
