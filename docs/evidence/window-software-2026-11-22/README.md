@@ -91,3 +91,8 @@ and manager protocol; retain the earlier default Qt recipe and window contract.
 No boot, device, publication or deployment action is part of these checks.
 
 [QNX compile record](qnx-compilation.txt) and [source hashes](source-sha256.json) identify these checks.
+
+The recorded generator hash identifies the original compile receipt. A later
+entry-point refactor exports the same generation check for the root codegen gate;
+its generated C++ and declaration outputs are unchanged. Both standalone and
+root generation checks pass after that refactor.

@@ -288,7 +288,8 @@ export function renderWindowDeclarations(declarations) {
   lines.push('export function getCurrentWindow(): Window;', '');
   return lines.join('\n');
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+/** @param {'--check' | '--write'} [mode] */
+export function verifyWindowBindings(mode = '--check') {
   const generated = renderWindowBindings(
     parseWindowSpec(
       readFileSync(path.join(root, typePath), 'utf8'),
@@ -301,7 +302,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       readFileSync(path.join(root, classPath), 'utf8')
     )
   );
-  if (process.argv.includes('--write')) {
+  if (mode === '--write') {
     writeFileSync(path.join(root, output), generated);
     writeFileSync(path.join(root, publicOutput), publicTypes);
   } else {
@@ -317,4 +318,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     );
   }
   console.log('Window API constrained generation: OK');
+}
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  verifyWindowBindings(process.argv.includes('--write') ? '--write' : '--check');
 }

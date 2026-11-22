@@ -67,12 +67,19 @@ receipts above establish narrower prerequisites:
   target acceptance. Published development runners and versioned documentation
   also need actual reviewed release assets; local tarballs are not publication.
 
-An ordinary fresh recipe workspace was prepared in the existing licensed build
-container. Its compiler successfully linked a temporary target probe without
-changing licensing or container identity. A full Qt build is not started while
-free internal space is insufficient to preserve the build guard's 4 GiB floor.
-The external workspace mount needs separate authorization because automatic
-approval review rejected privileged shared-container namespace changes.
+A pristine Qt software-plugin build is now running in an isolated task container
+with fresh source/build/log directories on external storage. The official QNX
+compiler successfully linked a target probe there after restoring the normal
+configuration symlink layout. The SDK is read-only; the container retains its own
+Docker-assigned identity. No host namespace mount, identity change or license
+content change is used. The earlier privileged shared-container mount proposal
+is no longer needed. Build completion, actual runtime staging and closure results
+must be recorded before claiming this distribution prerequisite passed.
+
+The final architecture validator now checks the implemented Expo example's
+entry points instead of its removed placeholder. The root code-generation gate
+also verifies the constrained window bindings. These changes preserve the native
+generated output and close failures exposed by the integrated hosted run.
 
 ## Scope and rollback
 
