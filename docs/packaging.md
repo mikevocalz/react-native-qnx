@@ -22,6 +22,31 @@ runner and records only sanitized evidence.
 
 Source: [QNX Everywhere introduction and license acquisition](https://www.qnx.com/developers/docs/qnxeverywhere/introduction.html).
 
+### Supplying the QNX licence to a clean build container
+
+`qcc` and `q++` stop with "You don't have a valid license for this product" in a
+container that has the SDP but no activated licence. The licence is a per-user
+activation that lives under `~/.qnx/` of the account that ran the QNX
+activation (`license/`, `qconfig/` and `qnx_env.ini`). A new container needs
+those three items in its `HOME`:
+
+1. Activate the SDP licence once, in a container or host the licensed user
+   controls, as the QNX Software Center instructs.
+2. Copy `~/.qnx/license/`, `~/.qnx/qconfig/` and `~/.qnx/qnx_env.ini` into a
+   directory outside the repository and outside every published artifact, laid
+   out as `<home>/.qnx/license/<licence files>` (the licence files sit directly
+   in `license/`, not in a second `license/license/` level), and set `HOME` to
+   `<home>` for the build.
+3. Before a long build, compile one file: `q++ -Vgcc_ntoaarch64le t.cpp -o t`.
+   A licence problem shows within a second here and after the host-tools stage
+   (about 40 minutes) otherwise.
+4. Delete the copy when the build is done.
+
+The files stay out of git, logs, receipts and hashes. A receipt records only
+that the licence was supplied from an existing activated container and the
+result of the one-file compile. Whether a given licence permits this copy is
+the licence holder's decision.
+
 ## Qt module posture
 
 ADR-0011 records module terms. The following stay outside the selected
