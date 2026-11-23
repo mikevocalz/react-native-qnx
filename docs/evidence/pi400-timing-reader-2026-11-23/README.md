@@ -37,10 +37,10 @@ was built, so nothing from `main` ran on the Pi 400 and no old binary is present
 `q++ -Vgcc_ntoaarch64le -std=gnu++20 -O2 -Wall -Wextra -Werror`, exit 0. It reads the resident set,
 allocates and touches N MiB, reads again, frees, reads again.
 
-| Run     | before    | after touching N MiB | delta       | after free | peak       |
-| ------- | --------- | -------------------- | ----------- | ---------- | ---------- |
-| 100 MiB | 3248 KiB  | 105652 KiB           | 102404 KiB  | 3248 KiB   | 105652 KiB |
-| 300 MiB | 3248 KiB  | 310452 KiB           | 307204 KiB  | 3248 KiB   | 310452 KiB |
+| Run     | before   | after touching N MiB | delta      | after free | peak       |
+| ------- | -------- | -------------------- | ---------- | ---------- | ---------- |
+| 100 MiB | 3248 KiB | 105652 KiB           | 102404 KiB | 3248 KiB   | 105652 KiB |
+| 300 MiB | 3248 KiB | 310452 KiB           | 307204 KiB | 3248 KiB   | 310452 KiB |
 
 The deltas equal the allocation plus 4 KiB, so the reader tracks touched pages. The clock rate
 read from the syspage was 54,000,000 Hz. `getrusage` `ru_maxrss` was 0 in an earlier probe, which

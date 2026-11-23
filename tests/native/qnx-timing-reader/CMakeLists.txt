@@ -11,7 +11,8 @@ endif()
 set(timing_dir "${CMAKE_CURRENT_LIST_DIR}/../../../vnext/probes/timing")
 add_executable(rnqnx_timing_reader_test
   TimingReaderTest.cpp
-  "${timing_dir}/QnxTimingSource.cpp")
+  "${timing_dir}/QnxTimingSource.cpp"
+  "${timing_dir}/QnxProcessMemory.cpp")
 target_include_directories(rnqnx_timing_reader_test PRIVATE "${timing_dir}")
 target_compile_options(rnqnx_timing_reader_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
 if(RNQNX_ENABLE_HOST_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")

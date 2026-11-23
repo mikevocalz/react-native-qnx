@@ -146,8 +146,8 @@ with the probe on carry that caveat, and the probe is default OFF.
 ### Public contract
 
 Command line, accepted only when the host is built with
-`RNQNX_ENABLE_TIMING_PROBE=ON` (default OFF; CMake rejects it on QNX and on
-any system other than Linux or Darwin):
+`RNQNX_ENABLE_TIMING_PROBE=ON` (default OFF; CMake accepts Linux, Darwin and QNX and
+rejects any other system. The QNX path was added 2026-11-23 and has not been built against Qt for QNX or run):
 
 | Option                       | Meaning                                                                                                                                                     |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -288,11 +288,11 @@ rnqnx_playground_host --bundle hello-world.bundle.js --timing-json /tmp/hello.js
 
 ### What each platform promises
 
-| Platform                                   | Promise                                                                                                                                                                                                                                        |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Host (Linux, macOS), offscreen or windowed | Startup to the first swap after surface start, stored swap instants, RSS. Labelled `host`.                                                                                                                                                     |
-| QNX Screen (VM, Pi 400, release board)     | None in this slice. CMake rejects `RNQNX_ENABLE_TIMING_PROBE=ON` when `CMAKE_SYSTEM_NAME` is `QNX`. The device and VM budget fields stay `unmeasured` until a QNX reader and clock mapping are written, reviewed and run on a QNX target (S9). |
-| Marathon                                   | Not in scope (frozen).                                                                                                                                                                                                                         |
+| Platform                                   | Promise                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host (Linux, macOS), offscreen or windowed | Startup to the first swap after surface start, stored swap instants, RSS. Labelled `host`.                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| QNX Screen (VM, Pi 400, release board)     | Code written, not built with Qt and not run as a probe. The playground target accepts `RNQNX_ENABLE_TIMING_PROBE=ON` on QNX. Swaps use the same `frameSwapped` hook. The resident set comes from procfs page data and the peak is the highest of 100 ms samples (`rssSource` `sampled-procfs`), a lower bound, because QNX reports no peak. The reader alone was cross-compiled and run on a Pi 400 ([receipt](../evidence/pi400-timing-reader-2026-11-23/README.md)). The device and VM budget fields stay `unmeasured`. |
+| Marathon                                   | Not in scope (frozen).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ## S6 native runner preflight (internal, no JavaScript API)
 

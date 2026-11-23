@@ -82,9 +82,9 @@ option(RNQNX_BUILD_MARATHON_HOST
 option(RNQNX_MARATHON_HOST_NITRO
   "Link and install the Marathon Nitro v1 adapter with the Qt dispatcher in the Marathon host" OFF)
 option(RNQNX_ENABLE_TIMING_PROBE
-  "Add --timing-json startup/frame-swap/RSS recording to the host playground (host only)" OFF)
-if(RNQNX_ENABLE_TIMING_PROBE AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin)$")
-  message(FATAL_ERROR "RNQNX_ENABLE_TIMING_PROBE requires a Linux or Darwin host; QNX has no reader yet")
+  "Add --timing-json startup/frame-swap/RSS recording to the playground (Linux, macOS and QNX)" OFF)
+if(RNQNX_ENABLE_TIMING_PROBE AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
+  message(FATAL_ERROR "RNQNX_ENABLE_TIMING_PROBE supports Linux, Darwin and QNX only")
 endif()
 option(RNQNX_BUILD_FORGE_QNX
   "Build the opt-in native Forge Rust engine owner for QNX" OFF)
@@ -270,6 +270,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
         target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_nitro_qt)
         target_compile_definitions(rnqnx_playground_qnx PRIVATE
           RNQNX_PLAYGROUND_NITRO_QT=1)
+      endif()
+      if(RNQNX_ENABLE_TIMING_PROBE)
+        target_sources(rnqnx_playground_qnx PRIVATE
+          vnext/probes/playground/TimingProbe.cpp
+          vnext/probes/timing/QnxProcessMemory.cpp)
+        target_include_directories(rnqnx_playground_qnx PRIVATE
+          vnext/probes/playground vnext/probes/timing)
+        target_compile_definitions(rnqnx_playground_qnx PRIVATE RNQNX_ENABLE_TIMING_PROBE=1)
       endif()
       rnqnx_enable_strict_warnings(rnqnx_playground_qnx)
       # Lean Hermes consumes precompiled bytecode, supplied with --bundle.
