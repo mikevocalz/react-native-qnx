@@ -262,7 +262,10 @@
       "title": "QNX performance measurements",
       "status": "pending",
       "acceptance": "Publish startup-to-first-frame, presented-frame intervals and RSS for Hello World, a 1000-row list and drawer drag, including revision, sample sizes and capture limitations.",
-      "evidence": []
+      "evidence": [
+        "docs/evidence/performance-host-baseline-2026-11-22/README.md",
+        "docs/evidence/s4-budgets-2026-11-20/README.md"
+      ]
     },
     {
       "id": "developer-path",
