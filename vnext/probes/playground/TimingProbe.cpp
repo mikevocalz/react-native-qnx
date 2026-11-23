@@ -23,6 +23,8 @@
 #include <sys/resource.h>
 #elif defined(__linux__)
 #include <QFile>
+#elif defined(__QNX__)
+#include "QnxProcessMemory.h"
 #endif
 #include <unistd.h>
 
@@ -37,6 +39,10 @@ struct TimingProbe::State {
   std::atomic<bool> stopped{false};
   std::atomic<bool> surfaceStarted{false};
   std::atomic<std::int64_t> firstFrameNs{-1};
+#if defined(__QNX__)
+  // GUI thread only. QNX has no OS peak, so the peak is the highest sample.
+  PeakTracker residentPeak;
+#endif
 
   std::int64_t nowNs() const noexcept {
     return std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -48,6 +54,8 @@ struct TimingProbe::State {
 namespace {
 
 constexpr int kWatchdogMs = 30000;
+// QNX only: how often the resident set is sampled while the workload runs.
+[[maybe_unused]] constexpr int kMemorySampleMs = 100;
 
 std::optional<int> parseRange(const QString& text, int fallback, int low, int high,
                               const char* name, QString* error) {
@@ -109,6 +117,13 @@ Memory readMemory() {
   memory.peakKiB = field("VmHWM:");
   return memory;
 }
+#elif defined(__QNX__)
+// Resident set only: the peak comes from the samples TimingProbe takes while it runs.
+Memory readMemory() {
+  Memory memory;
+  memory.rssKiB = readOwnResidentKiB();
+  return memory;
+}
 #else
 Memory readMemory() { return {}; }
 #endif
@@ -118,6 +133,8 @@ QString osName() {
   return QStringLiteral("darwin");
 #elif defined(__linux__)
   return QStringLiteral("linux");
+#elif defined(__QNX__)
+  return QStringLiteral("qnx");
 #else
   return QStringLiteral("unsupported");
 #endif
@@ -199,12 +216,29 @@ void TimingProbe::markSurfaceStarted() noexcept {
 void TimingProbe::start(std::function<void(bool)> done) {
   done_ = std::move(done);
   phase_ = Phase::WaitingFirstFrame;
+#if defined(__QNX__)
+  startMemorySampling();
+#endif
   QTimer::singleShot(kWatchdogMs, this, [this]() {
     if (phase_ == Phase::WaitingFirstFrame) finish(false);
   });
   // A swap may already have landed between markSurfaceStarted and start.
   onFrameControl();
 }
+
+#if defined(__QNX__)
+void TimingProbe::startMemorySampling() {
+  sampleMemory();
+  memoryTimer_ = new QTimer(this);
+  memoryTimer_->setInterval(kMemorySampleMs);
+  QObject::connect(memoryTimer_, &QTimer::timeout, this, [this]() { sampleMemory(); });
+  memoryTimer_->start();
+}
+
+void TimingProbe::sampleMemory() {
+  if (const auto kib = readOwnResidentKiB()) state_->residentPeak.record(*kib);
+}
+#endif
 
 void TimingProbe::onFrameControl() {
   if (phase_ != Phase::WaitingFirstFrame) return;
@@ -246,8 +280,15 @@ void TimingProbe::finish(bool ok) {
     const Memory memory = readMemory();
     rssKiB_ = memory.rssKiB;
     peakRssKiB_ = memory.peakKiB;
+#if defined(__QNX__)
+    sampleMemory();
+    peakRssKiB_ = state_->residentPeak.peak();
+#endif
   }
   state_->stopped.store(true, std::memory_order_release);
+#if defined(__QNX__)
+  if (memoryTimer_ != nullptr) memoryTimer_->stop();
+#endif
   if (done_) {
     auto done = std::move(done_);
     done(ok);
@@ -283,8 +324,12 @@ QString TimingProbe::writeJson(const QString& path) const {
               rssKiB_ ? QJsonValue(static_cast<double>(*rssKiB_)) : QJsonValue(QJsonValue::Null));
   root.insert(QStringLiteral("peakRssKiB"),
               peakRssKiB_ ? QJsonValue(static_cast<double>(*peakRssKiB_)) : QJsonValue(QJsonValue::Null));
-  root.insert(QStringLiteral("rssSource"),
-              rssKiB_ ? QStringLiteral("os") : QStringLiteral("unavailable"));
+#if defined(__QNX__)
+  const QString rssSource = rssKiB_ ? QStringLiteral("sampled-procfs") : QStringLiteral("unavailable");
+#else
+  const QString rssSource = rssKiB_ ? QStringLiteral("os") : QStringLiteral("unavailable");
+#endif
+  root.insert(QStringLiteral("rssSource"), rssSource);
   const QByteArray bytes = QJsonDocument(root).toJson(QJsonDocument::Indented);
 
   const QFileInfo target(path);

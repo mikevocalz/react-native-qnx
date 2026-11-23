@@ -1,9 +1,14 @@
 #pragma once
 
-// Host-only startup and frame-swap recorder for the performance budgets.
+// Startup and frame-swap recorder for the performance budgets. Built on Linux
+// and macOS hosts, and on QNX since 2026-11-23 (QNX build not yet run, see
+// docs/evidence/pi400-timing-reader-2026-11-23).
 // Contract: docs/nitro/API_CONTRACTS.md, "S4 frame and startup timing probe".
 // No JavaScript API. A swap instant is the steady_clock reading taken when
 // QQuickWindow::frameSwapped is delivered, not a display presentation time.
+// On QNX the resident set is read from procfs page data and the peak is the
+// highest of the samples taken every 100 ms (rssSource "sampled-procfs"), not an
+// OS-reported peak.
 
 #include <QObject>
 #include <QString>
@@ -17,6 +22,7 @@
 #include <vector>
 
 class QQuickWindow;
+class QTimer;
 
 namespace rnqnx::probe {
 
@@ -60,6 +66,10 @@ class TimingProbe final : public QObject {
 
  private:
   void onFrameControl();
+#if defined(__QNX__)
+  void startMemorySampling();
+  void sampleMemory();
+#endif
   void postNotch();
   void finish(bool ok);
 
@@ -69,6 +79,9 @@ class TimingProbe final : public QObject {
   QMetaObject::Connection direct_;
   QMetaObject::Connection control_;
   std::function<void(bool)> done_;
+#if defined(__QNX__)
+  QTimer* memoryTimer_ = nullptr;  // owned by this object
+#endif
   enum class Phase { Idle, WaitingFirstFrame, Settling, Wheel, Done };
   Phase phase_ = Phase::Idle;
   int notchesSent_ = 0;

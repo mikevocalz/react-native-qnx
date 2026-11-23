@@ -1,4 +1,5 @@
 // Host test for vnext/probes/timing/TimingReader.h. Label: host. It says nothing about QNX.
+#include "QnxProcessMemory.h"
 #include "TimingReader.h"
 
 #include <cstdint>
@@ -95,6 +96,32 @@ int main() {
   CHECK(frameIntervals(backwards, 0, 9999 * kMs).error == WindowError::NotAscending);
   CHECK(frameIntervals(swaps, 10, 5).error == WindowError::NoWheelWindow);
   CHECK(frameIntervals(swaps, -1, 5).error == WindowError::NoWheelWindow);
+
+  // Resident set from page runs: only runs with the hardware-mapped bit count.
+  const std::vector<PageRun> runs{
+      {4096 * 10, kPageHwMapped | 0x00200000},  // mapped and referenced
+      {4096 * 90, 0x00200000},                  // referenced, not mapped
+      {1024 * 3, kPageHwMapped},                // 3 KiB
+      {0, kPageHwMapped},
+  };
+  CHECK(*rnqnx::probe::residentKiB(runs) == 40 + 3);
+  CHECK(*rnqnx::probe::residentKiB({}) == 0);
+  CHECK(*rnqnx::probe::residentKiB(runs, 0x00200000) == 40 + 360);
+  // Rounds down to a whole KiB.
+  CHECK(*rnqnx::probe::residentKiB({{1023, kPageHwMapped}}) == 0);
+  // A reply whose sizes overflow 64 bits is refused, not wrapped.
+  CHECK(!rnqnx::probe::residentKiB(
+      {{~0ULL, kPageHwMapped}, {2, kPageHwMapped}}));
+  // The reader exists on QNX only.
+  CHECK(!readOwnResidentKiB());
+
+  // The peak is the highest sample, and empty before any sample.
+  PeakTracker peak;
+  CHECK(!peak.peak());
+  peak.record(100);
+  peak.record(300);
+  peak.record(200);
+  CHECK(*peak.peak() == 300);
 
   if (failures == 0) std::puts("timing reader: all checks passed");
   return failures == 0 ? 0 : 1;

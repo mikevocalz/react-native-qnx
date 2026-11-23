@@ -3,12 +3,15 @@
 // Raw counter source for a QNX run, behind an interface so the clock mapping in
 // TimingReader.h is tested on the host with a fake.
 //
-// STATUS: written, not built and not run on QNX. No QNX measurement exists.
-// The QNX implementation (QnxTimingSource.cpp) is guarded by __QNX__, is not in
-// any CMake target, and needs a first build and a run on each target before any
-// qnx-vm, pi400 or release-board budget can leave `unmeasured`. The Qt
-// frameSwapped hook on QNX is also unwritten: TimingProbe.cpp stays host-only
-// (CMake rejects RNQNX_ENABLE_TIMING_PROBE on QNX).
+// STATUS: the memory reader (QnxProcessMemory.cpp) was cross-compiled with
+// SDP 8.0.5 and run on a Pi 400 on 2026-11-23, see
+// docs/evidence/pi400-timing-reader-2026-11-23. The cycle-counter part of
+// QnxTimingSource.cpp has not been built or run: the playground probe times with
+// steady_clock, so nothing links this class yet. No pi400 or qnx-vm budget has
+// left `unmeasured`.
+//
+// QNX reports no peak resident size. peakResidentKiB() is the highest value
+// residentKiB() returned, a lower bound on the true peak.
 
 #include <cstdint>
 #include <memory>
