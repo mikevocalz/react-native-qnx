@@ -190,7 +190,7 @@ function resolveType(node, structs, file, allow) {
       assert.ok(allow.callback, 'Callbacks are only allowed as parameters');
       assert.equal(node.type.kind, ts.SyntaxKind.VoidKeyword, 'Callbacks must return void');
       assert.equal(node.typeParameters, undefined, 'No generic callbacks');
-      const params = node.parameters.map((p) => {
+      const params = node.parameters.map((/** @type {any} */ p) => {
         assert.ok(ts.isIdentifier(p.name), 'Only named callback parameters');
         assert.equal(p.questionToken, undefined);
         assert.equal(p.dotDotDotToken, undefined);
@@ -221,7 +221,7 @@ function resolveType(node, structs, file, allow) {
 export function cppType(type) {
   switch (type.kind) {
     case 'scalar':
-      return SCALARS[type.name].cpp;
+      return /** @type {Record<string, {cpp: string}>} */ (SCALARS)[type.name].cpp;
     case 'strings':
       return 'std::vector<std::string>';
     case 'struct':
@@ -341,7 +341,7 @@ export function parseHybridSpec(source, expectedClass) {
   return { className: expectedClass, structs, props, methods };
 }
 
-const cap = (name) => `${name[0].toUpperCase()}${name.slice(1)}`;
+const cap = (/** @type {string} */ name) => `${name[0].toUpperCase()}${name.slice(1)}`;
 
 /** @param {ReturnType<typeof parseHybridSpec>} spec */
 export function renderGeneralBinding(spec) {
