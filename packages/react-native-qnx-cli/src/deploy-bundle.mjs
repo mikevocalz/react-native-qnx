@@ -46,10 +46,10 @@ async function resolveHermesc(root, explicit) {
   );
 }
 
-/** @param {string} executable @param {string[]} args @param {string} cwd */
-function execute(executable, args, cwd) {
+/** @param {string} executable @param {string[]} args @param {string} cwd @param {NodeJS.ProcessEnv} [env] */
+function execute(executable, args, cwd, env = process.env) {
   return new Promise((resolve, reject) => {
-    const child = spawn(executable, args, { cwd, stdio: 'inherit' });
+    const child = spawn(executable, args, { cwd, env, stdio: 'inherit' });
     child.on('error', reject);
     child.on('close', (code) => resolve(code ?? 1));
   });
@@ -131,7 +131,7 @@ export async function deployBundle(root, values, cwd) {
   console.log(
     `Compiled ${path.relative(root, bytecode)}: ${size} bytes, sha256 ${await sha256(bytecode)}`
   );
-  const pushed = await execute('bash', push, root);
+  const pushed = await execute('bash', push, root, env);
   if (pushed !== 0)
     console.error(
       `rnqnx: deploy-bundle exited with code ${pushed}. Check that QNX_TARGET_IP and QNX_TARGET_USER reach the board over SSH and that the runner is installed.`

@@ -206,6 +206,15 @@ try {
   );
   assert.equal(ran.status, 0, ran.stderr + ran.stdout);
   assert.match(ran.stdout, /ran with --bundle .*bundles\/dashboard\.hbc/);
+  // --remote-dir must reach the push script, not only the default directory.
+  const custom = path.join(target, 'custom-bundles');
+  const moved = run(
+    workspace,
+    ['deploy-bundle', '--app', 'dashboard', '--hermesc', hermesc, '--remote-dir', custom],
+    env
+  );
+  assert.equal(moved.status, 0, moved.stderr + moved.stdout);
+  assert.equal(await readFile(path.join(custom, 'dashboard.hbc'), 'utf8'), 'HBCconsole.log(1);\n');
   // Missing bundle, bad app name, --runner without --run: refused before any push.
   assert.match(
     run(workspace, ['deploy-bundle', '--app', 'nope', '--hermesc', hermesc], env).stderr,
