@@ -103,6 +103,21 @@ with Fast Refresh on the board, no standalone package built with the SDP and lau
 before JavaScript loads on the board, and no recording. `gh release list` for the repository had no runner release on
 2026-11-23.
 
+## Device parity and cold boot (Pi 400)
+
+Both gates stay `pending`. [ADR-0023](../../adr/0023-pi400-stands-in-for-device-parity.md) is Proposed: it records the owner's
+decision that Pi 400 results are the `device-parity` results, as relayed by the coordinating agent. It is not Accepted and the gate
+text is unchanged.
+
+- `device-parity`: `docs/component-support.json` has a Pi 400 disposition for 12 of 24 components (`scoped`) and `unverified` for
+  the other 12 (VirtualizedList, SectionList, VirtualizedSectionList, Button, TouchableOpacity, TouchableHighlight,
+  TouchableWithoutFeedback, ImageBackground, KeyboardAvoidingView, RefreshControl, SafeAreaView, StatusBar). This run did not
+  exercise them. Keyboard and touch were not proven: injected clicks reached the title bar controls but not the page content
+  (the `Block JS` button and the router tabs), and no touch device is attached.
+- `cold-boot`: needs 20 consecutive supervised cold boots with recovery and logs. None ran: the board was not rebooted and no
+  boot hook exists, by instruction. The by-hand launches above (about 60 process starts) are application relaunches, which the
+  criterion excludes. Every part of this gate needs a real boot.
+
 ## Changes in this branch
 
 - `scripts/qt-public/build-app-qnx.sh` accepts `APP_CMAKE_EXTRA` (whitespace-separated `-D` options), used here for chrome, the
