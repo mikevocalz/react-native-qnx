@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Router Example",
+    "slug": "router-example",
+    "icon": "./assets/icon.png",
+    "scheme": "rnqnx-router-example",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.rnqnx.routerexample",
+        "componentName": "RNQnxPlayground",
+        "platforms": ["qnx"],
+        "window": {
+          "controls": "macos",
+          "titleBarStyle": "default",
+          "initialSize": {
+            "width": 1280,
+            "height": 800
+          }
+        }
+      }
+    }
+  }
+}

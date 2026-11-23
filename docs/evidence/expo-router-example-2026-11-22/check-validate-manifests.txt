@@ -1,0 +1,22 @@
+OK: @rn-qnx/expo-constants-qnx
+OK: @rn-qnx/expo-image-qnx
+OK: @rn-qnx/expo-modules-core-qnx
+SCAFFOLD: packages/expo-qnx
+OK: @rn-qnx/expo-qnx-autolinking
+OK: @rn-qnx/expo-qnx-config-plugins
+OK: @rn-qnx/expo-router-qnx
+OK: @rn-qnx/metro-config-marathon
+OK: @rn-qnx/metro-config-qnx
+SCAFFOLD: packages/qnx-devtools
+OK: @rn-qnx/qnx-nitro-runtime
+OK: @rn-qnx/react-native-marathon
+OK: @rn-qnx/react-native-qnx
+OK: @rn-qnx/react-native-qnx-cli
+SCAFFOLD: packages/react-native-qnx-codegen
+SCAFFOLD: apps/component-conformance
+OK: @rn-qnx/component-gallery
+OK: @rn-qnx/expo-router-example
+SCAFFOLD: apps/native-service-demo
+SCAFFOLD: apps/performance-lab
+OK: @rn-qnx/rn-playground
+validate:manifests passed (15 manifests, 6 scaffold-only directories).
