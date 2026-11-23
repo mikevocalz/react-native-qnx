@@ -277,12 +277,13 @@ for (const [name, modulePath] of Object.entries(cases)) {
   assert.deepEqual(texts(renderer), ['over']);
 }
 
-// 6. SafeAreaView is the plain View off iOS; props and children pass through.
+// 6. SafeAreaView is the QNX override (Libraries/Components/SafeAreaView): a View
+// that also pads for the title bar inset; props and children pass through.
 {
-  assert.equal(
+  assert.notEqual(
     api.SafeAreaView,
     nativeLeaves['Components/View/View'].default,
-    'SafeAreaView is View off iOS'
+    'SafeAreaView is the title-bar-aware override'
   );
   const renderer = render(
     h(api.SafeAreaView, { testID: 'safe', style: { flex: 1 } }, h('Text', null, 'inside'))
@@ -291,6 +292,20 @@ for (const [name, modulePath] of Object.entries(cases)) {
   assert.equal(json.type, 'View');
   assert.equal(json.props.testID, 'safe');
   assert.deepEqual(texts(renderer), ['inside']);
+}
+
+// 7. The title bar inset the host publishes reaches SafeAreaView's padding.
+{
+  globalThis.__RNQNX_TITLE_BAR_INSET__ = { top: 36, right: 0, bottom: 0, left: 8 };
+  try {
+    const renderer = render(h(api.SafeAreaView, { testID: 'inset' }, h('Text', null, 'x')));
+    const style = Object.assign({}, ...[renderer.toJSON().props.style].flat());
+    assert.equal(style.paddingTop, 36);
+    assert.equal(style.paddingLeft, 8);
+    assert.equal(style.paddingRight, 0);
+  } finally {
+    delete globalThis.__RNQNX_TITLE_BAR_INSET__;
+  }
 }
 
 console.log(

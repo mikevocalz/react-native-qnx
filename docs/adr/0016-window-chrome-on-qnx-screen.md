@@ -79,8 +79,9 @@ sets these limits:
    `rnqnx-winmgr`, which lists it). `project desktop-entry` writes the app's launcher tile, which
    is the way back from the desktop. A restore request while the window still
    exists behind another one recreates it, because only a new window becomes
-   the manager's front window. `AppState` does not change yet. Evidence for the window
-   manager's behaviour is in the notes below.
+   the manager's front window. `AppState` follows minimize and restore from the
+   host, not from Qt: see [ADR-0024](0024-minimize-on-qnx-screen.md). Evidence
+   for the window manager's behaviour is in the notes below.
 
 4. **Title bar styles.** `default` draws the bar (title and controls) and moves
    the content down by its height. `hidden` draws no bar background and no
@@ -179,14 +180,19 @@ sets these limits:
 
 - QNX apps get a title and a working close control without a window manager.
 - Minimize works on QNX without a window-manager client of our own, at the
-  cost of releasing the native window. The gate item "minimize and restore
-  with the AppState transition logged" still needs the `AppState` part and a
+  cost of releasing the native window. ADR-0024 defines the `AppState`
+  transition (`background` on minimize, `active` on restore); the gate item
+  "minimize and restore with the AppState transition logged" still needs its
   device receipt.
 - The React surface is shorter by the bar height in the `default` style. The
-  inset is not yet reported to JavaScript or `SafeAreaView`, so `hidden` style
-  content can sit under the floating controls. That is the next slice.
-- The chrome never calls into JavaScript, but `QtReactHost` runs JavaScript on
-  the Qt GUI thread today. A JS call that blocks therefore blocks the title bar
+  inset reaches JavaScript through `globalThis.__RNQNX_TITLE_BAR_INSET__` and
+  the QNX `SafeAreaView` (host-tested; the Nitro windows API will carry it as
+  a typed value), so `hidden` style content can be padded clear of the floating
+  controls.
+- The chrome calls into JavaScript only when the app registered a close guard
+  through the Nitro windows API (`docs/nitro/API_CONTRACTS.md`, Windows API);
+  with no guard the close control acts without JavaScript. `QtReactHost` runs
+  JavaScript on the Qt GUI thread unless `Options::jsThread` is set. A JS call that blocks therefore blocks the title bar
   too. The gate's "chrome still operable while the JS thread is deliberately
   blocked" needs the host to move JavaScript to its own thread first; this
   ADR does not claim it. ADR-0021 adds that thread behind an opt-in flag. On the

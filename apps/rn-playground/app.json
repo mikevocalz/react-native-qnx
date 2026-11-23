@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "RN QNX Playground",
+    "slug": "rn-playground",
+    "icon": "./assets/icon.png",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.rnqnx.playground",
+        "shortName": "Playground",
+        "componentName": "RNQnxPlayground",
+        "platforms": ["qnx"],
+        "window": {
+          "controls": "macos",
+          "titleBarStyle": "default",
+          "initialSize": {
+            "width": 900,
+            "height": 600
+          }
+        }
+      }
+    }
+  }
+}

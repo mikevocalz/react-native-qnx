@@ -1,4 +1,5 @@
 #include "QtApplicationLifecycle.h"
+#include "HostWindowState.h"
 
 #include <QPointer>
 #include <stdexcept>
@@ -9,7 +10,11 @@ QtApplicationLifecycle::QtApplicationLifecycle(QGuiApplication& application, QOb
     : QObject(parent), owner_(application.thread()) {
   requireOwner();
   qRegisterMetaType<LifecycleSnapshot>();
-  snapshot_.visibility = visibilityFor(application.applicationState());
+  hostMinimized_ = HostWindowState::instance().minimized();
+  snapshot_.visibility = hostMinimized_ ? ApplicationVisibility::Hidden
+                                        : visibilityFor(application.applicationState());
+  hostConnection_ = connect(&HostWindowState::instance(), &HostWindowState::minimizedChanged,
+      this, &QtApplicationLifecycle::recordHostMinimized);
   stateConnection_ = connect(&application, &QGuiApplication::applicationStateChanged,
       this, &QtApplicationLifecycle::record);
   quitConnection_ = connect(&application, &QCoreApplication::aboutToQuit,
@@ -45,13 +50,34 @@ void QtApplicationLifecycle::close() {
   pending_.clear();
   disconnect(stateConnection_);
   disconnect(quitConnection_);
+  disconnect(hostConnection_);
   Q_EMIT observationClosed();
 }
 
 void QtApplicationLifecycle::record(Qt::ApplicationState state) {
   requireOwner();
+  if (hostMinimized_) {
+    // The host said the window is minimized, and Qt's other reports do not
+    // override that. Active needs a focused window, so it means the window is
+    // back without the host having been told (the window manager's own
+    // restore under rnqnx-winmgr).
+    if (state != Qt::ApplicationActive) return;
+    // Through the shared state, so the next host minimize is a change again.
+    HostWindowState::instance().setMinimized(false);
+    return;
+  }
+  push(visibilityFor(state));
+}
+
+void QtApplicationLifecycle::recordHostMinimized(bool minimized) {
+  requireOwner();
+  hostMinimized_ = minimized;
+  push(minimized ? ApplicationVisibility::Hidden : ApplicationVisibility::Active);
+}
+
+void QtApplicationLifecycle::push(ApplicationVisibility incoming) {
   if (snapshot_.closed) return;
-  pending_.push_back(visibilityFor(state));
+  pending_.push_back(incoming);
   if (draining_) return;
   draining_ = true;
   while (!snapshot_.closed && !pending_.empty()) {

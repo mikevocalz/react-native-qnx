@@ -35,6 +35,14 @@
 #include "NodeBeacon.h"
 #include "WindowChrome.h"
 #include "WindowHost.h"
+#if defined(RNQNX_PLAYGROUND_NITRO_QNX) && defined(RNQNX_PLAYGROUND_NITRO_QT)
+// Nitro windows API, GUI side (docs/nitro/API_CONTRACTS.md, S8).
+#define RNQNX_WINDOWS_API 1
+#include "QnxWindowsBackend.hpp"
+#include "QtWindowServices.h"
+#include "WindowCloseGate.h"
+#include "react-native-qnx/runtime/QueuedCallTarget.h"
+#endif
 #ifdef RNQNX_CONSUMER_WINDOW_HEADER
 #include RNQNX_CONSUMER_WINDOW_HEADER
 #endif
@@ -94,6 +102,7 @@
 #include <QString>
 #include <QThread>
 #include <QTimer>
+#include <utility>
 #include <functional>
 #include <memory>
 #include <QUrl>
@@ -405,6 +414,12 @@ int main(int argc, char** argv) {
   parser.addOption(traceOption);
 #endif
   parser.addOption(fullscreenOption);
+  // Window-chrome receipt: ask the QPA whether it can start a system move or
+  // resize (gate window-chrome, ADR-0016). Logs one line; changes nothing.
+  const QCommandLineOption probeSystemMoveOption(
+      QStringLiteral("probe-system-move"),
+      QStringLiteral("Log whether QWindow::startSystemMove and startSystemResize succeed on this QPA."));
+  parser.addOption(probeSystemMoveOption);
 #if RNQNX_ENABLE_TIMING_PROBE
   const QCommandLineOption timingOption(QStringLiteral("timing-json"),
       QStringLiteral("Record startup, frame swaps and RSS, write a new JSON file and exit."),
@@ -416,6 +431,17 @@ int main(int argc, char** argv) {
       QStringLiteral("Wheel notches to post after settling (default 0)."), QStringLiteral("n"));
   const QCommandLineOption timingGapOption(QStringLiteral("timing-wheel-gap-ms"),
       QStringLiteral("Gap between wheel notches (default 200)."), QStringLiteral("ms"));
+  const QCommandLineOption timingDragStepsOption(QStringLiteral("timing-drag-steps"),
+      QStringLiteral("Post a left-edge drag with this many moves, then the drag back (default 0, off)."),
+      QStringLiteral("n"));
+  const QCommandLineOption timingDragGapOption(QStringLiteral("timing-drag-gap-ms"),
+      QStringLiteral("Gap between drag events (default 16)."), QStringLiteral("ms"));
+  const QCommandLineOption timingObserveOption(QStringLiteral("timing-observe-ms"),
+      QStringLiteral("Post nothing; record when platform pointer events reach the window for this long (default 0, off)."),
+      QStringLiteral("ms"));
+  parser.addOption(timingDragStepsOption);
+  parser.addOption(timingDragGapOption);
+  parser.addOption(timingObserveOption);
   parser.addOption(timingOption);
   parser.addOption(timingSettleOption);
   parser.addOption(timingNotchesOption);
@@ -495,7 +521,8 @@ int main(int argc, char** argv) {
     };
     const bool timingRequested = parser.isSet(timingOption);
     if (!timingRequested && (parser.isSet(timingSettleOption) || parser.isSet(timingNotchesOption) ||
-                             parser.isSet(timingGapOption))) {
+                             parser.isSet(timingGapOption) || parser.isSet(timingDragStepsOption) ||
+                             parser.isSet(timingDragGapOption) || parser.isSet(timingObserveOption))) {
       return timingError(QStringLiteral("a timing option needs --timing-json"));
     }
     if (timingRequested) {
@@ -511,7 +538,8 @@ int main(int argc, char** argv) {
       QString reason;
       timingConfig = rnqnx::probe::TimingConfig::fromStrings(
           parser.value(timingSettleOption), parser.value(timingNotchesOption),
-          parser.value(timingGapOption), &reason);
+          parser.value(timingGapOption), &reason, parser.value(timingDragStepsOption),
+          parser.value(timingDragGapOption), parser.value(timingObserveOption));
       if (!timingConfig) return timingError(reason);
 #if RNQNX_ENABLE_WINDOW_CHROME
       if (parser.isSet(replaceOption) || parser.isSet(restoreOnlyOption) ||
@@ -591,31 +619,40 @@ int main(int argc, char** argv) {
   std::unique_ptr<rnqnx::window::SingleInstance> singleInstance;
   // Set when a later `--replace` launch asked this instance to quit.
   bool quitByLaunch = false;
-  if (identity.custom && !parser.isSet(screenshotOption)) {
+  // An app with no identity of its own (the playground) keys on a stable
+  // default id, so --restore-only and --stop-running still find it. Its
+  // one-shot timing runs stay outside, as screenshot runs do.
+#if RNQNX_ENABLE_TIMING_PROBE
+  const bool timingRun = parser.isSet(timingOption);
+#else
+  constexpr bool timingRun = false;
+#endif
+  const QString instanceId = rnqnx::runtime::instanceApplicationId(identity);
+  if ((identity.custom || !timingRun) && !parser.isSet(screenshotOption)) {
     // The key is the base app id: a development client and the installed
     // release copy of one app are the same app, so they never run side by
     // side. --replace swaps the running one for this launch.
     singleInstance = std::make_unique<rnqnx::window::SingleInstance>(
-        identity.appId,
+        instanceId,
         devMode ? rnqnx::window::BuildKind::Dev : rnqnx::window::BuildKind::Release);
     if (parser.isSet(replaceOption) || parser.isSet(stopRunningOption)) {
       const auto result = singleInstance->replaceRunningInstance();
       if (result == rnqnx::window::ReplaceResult::Failed) {
         std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_ERROR the running %s did not stop\n",
-                     identity.appId.toUtf8().constData());
+                     instanceId.toUtf8().constData());
         return 1;
       }
       if (parser.isSet(stopRunningOption)) {
-        std::printf("RNQNX_SINGLE_INSTANCE stopped %s\n", identity.appId.toUtf8().constData());
+        std::printf("RNQNX_SINGLE_INSTANCE stopped %s\n", instanceId.toUtf8().constData());
         return 0;
       }
     } else if (singleInstance->forwardedToRunningInstance()) {
       std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
-                  identity.appId.toUtf8().constData());
+                  instanceId.toUtf8().constData());
       return 0;
     } else if (parser.isSet(restoreOnlyOption)) {
       std::printf("RNQNX_SINGLE_INSTANCE no running %s answered\n",
-                  identity.appId.toUtf8().constData());
+                  instanceId.toUtf8().constData());
       return 75;
     }
     // Two launches that start together can both miss the other's socket; the
@@ -631,12 +668,12 @@ int main(int argc, char** argv) {
       }
       if (restored) {
         std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
-                    identity.appId.toUtf8().constData());
+                    instanceId.toUtf8().constData());
         return 0;
       }
       if (singleInstance->failedBecauseOwned()) {
         std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_ERROR %s is owned by another launch that does not answer\n",
-                     identity.appId.toUtf8().constData());
+                     instanceId.toUtf8().constData());
         return 75;
       }
     }
@@ -781,6 +818,12 @@ int main(int argc, char** argv) {
   // unmounts first and the chrome items go before the engine.
   std::unique_ptr<rnqnx::window::WindowChrome> chrome;
   std::unique_ptr<rnqnx::window::NodeBeacon> beacon;
+#ifdef RNQNX_WINDOWS_API
+  // After the chrome they use, so they are destroyed first.
+  rnqnx::runtime::QueuedCallTarget guiCalls;
+  std::unique_ptr<rnqnx::window::WindowCloseGate> closeGate;
+  std::unique_ptr<rnqnx::window::QtWindowServices> windowServices;
+#endif
   if (!parser.isSet(fullscreenOption) &&
       chromeConfig.titleBarStyle != rnqnx::window::TitleBarStyle::None) {
     const QStringList platformOptions =
@@ -822,6 +865,11 @@ int main(int argc, char** argv) {
     if (chrome->barHeight() > 0) beaconNodes.append(QStringLiteral("rnqnxWindowChrome"));
     if (chrome->barVisible()) beaconNodes.append(QStringLiteral("rnqnxTitleBar"));
     beacon = std::make_unique<rnqnx::window::NodeBeacon>(window, *chrome->chromeItem(), beaconNodes);
+#ifdef RNQNX_WINDOWS_API
+    closeGate = std::make_unique<rnqnx::window::WindowCloseGate>(window);
+    windowServices = std::make_unique<rnqnx::window::QtWindowServices>(
+        window, *chrome, *closeGate, capabilities, forcedFullScreen, guiCalls);
+#endif
     std::printf("RNQNX_WINDOW_CHROME platform=%s controls=%s style=%s inset=%g window=%dx%d mode=%s\n",
         QGuiApplication::platformName().toUtf8().constData(),
         rnqnx::window::nameOf(chromeConfig.controls).toUtf8().constData(),
@@ -1047,8 +1095,19 @@ int main(int argc, char** argv) {
   rnqnx::consumer::registerNitroModules();
 #endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QT
-  rnqnx::nitro::installQnxNitroRuntime(
-      host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
+  const auto nitroDispatcher = std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue());
+  rnqnx::nitro::installQnxNitroRuntime(host.runtime(), nitroDispatcher);
+#ifdef RNQNX_WINDOWS_API
+  if (windowServices) {
+    // The windows API owns JavaScript callbacks; its teardown hook releases
+    // them on the JS thread before Hermes goes (ADR-0021).
+    std::shared_ptr<rnqnx::nitro::QnxWindowsBackend> windowsBackend;
+    host.runOnJsThread([&] {
+      windowsBackend = rnqnx::nitro::installQnxWindows(nitroDispatcher, windowServices->services());
+    });
+    host.addTeardownHook([windowsBackend] { windowsBackend->teardown(); });
+  }
+#endif
 #else
   rnqnx::nitro::installQnxNitroRuntime(host.runtime());
 #endif
@@ -1142,10 +1201,38 @@ int main(int argc, char** argv) {
   } else {
     window.show();
   }
+  if (parser.isSet(probeSystemMoveOption)) {
+    // One second after show, so the platform window exists. A platform that
+    // does not implement the call returns false (QPlatformWindow base).
+    QTimer::singleShot(1000, &window, [&window]() {
+      const bool move = window.startSystemMove();
+      QStringList resize;
+      const std::pair<const char*, Qt::Edges> edges[] = {
+          {"left", Qt::LeftEdge},     {"right", Qt::RightEdge},
+          {"top", Qt::TopEdge},       {"bottom", Qt::BottomEdge},
+          {"top-left", Qt::TopEdge | Qt::LeftEdge}, {"bottom-right", Qt::BottomEdge | Qt::RightEdge}};
+      for (const auto& [name, edge] : edges) {
+        resize << QStringLiteral("%1=%2").arg(QLatin1String(name)).arg(window.startSystemResize(edge) ? 1 : 0);
+      }
+      std::fprintf(stderr, "RNQNX_SYSTEM_MOVE_PROBE platform=%s startSystemMove=%d startSystemResize %s\n",
+                   QGuiApplication::platformName().toUtf8().constData(), move ? 1 : 0,
+                   resize.join(QLatin1Char(' ')).toUtf8().constData());
+    });
+  }
   // Without chrome the surface is the whole window, as before.
   QSizeF surfaceSize(window.width(), window.height());
 #if RNQNX_ENABLE_WINDOW_CHROME
-  if (chrome) surfaceSize = chrome->contentRoot().size();
+  if (chrome) {
+    surfaceSize = chrome->contentRoot().size();
+    // The title bar inset reaches JavaScript (TitleBarInset.js, SafeAreaView)
+    // before the first render and again whenever the layout changes.
+    rnqnx::window::WindowChrome* inset = chrome.get();
+    const auto publishInset = [&host, inset]() {
+      host.evaluate(inset->titleBarInsetScript().toStdString(), "rnqnx://title-bar-inset");
+    };
+    publishInset();
+    QObject::connect(inset, &rnqnx::window::WindowChrome::layoutChanged, inset, publishInset);
+  }
 #endif
   host.startSurface(
       kSurfaceId,

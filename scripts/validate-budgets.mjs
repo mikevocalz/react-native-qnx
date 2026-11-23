@@ -76,14 +76,23 @@ export function summarizeRun(result, { needsFrames }) {
     peakRssKiB: result.peakRssKiB,
   };
   if (needsFrames) {
-    if (result.wheelNotchesSent < 1 || result.wheelFirstMs == null || result.wheelLastMs == null) {
-      fail('no wheel script ran, so there is no animated window');
+    // The animated window is bounded by the first and last input the run
+    // produced: posted wheel notches, a posted drag, or pointer events observed
+    // from a device (schema 1 files from before 2026-11-24 carry the wheel fields only).
+    const wheelRan = result.wheelNotchesSent >= 1 && result.wheelFirstMs != null && result.wheelLastMs != null;
+    const inputRan =
+      Number.isInteger(result.inputEvents) && result.inputEvents >= 1 &&
+      result.inputFirstMs != null && result.inputLastMs != null;
+    if (!wheelRan && !inputRan) {
+      fail('no wheel, drag or observed pointer input ran, so there is no animated window');
     }
+    const windowFirst = wheelRan ? result.wheelFirstMs : result.inputFirstMs;
+    const windowLast = wheelRan ? result.wheelLastMs : result.inputLastMs;
     /** @type {number[]} */
     const all = result.frameMs;
-    const window = all.filter((t) => t >= result.wheelFirstMs && t <= result.wheelLastMs);
+    const window = all.filter((t) => t >= windowFirst && t <= windowLast);
     if (window.length < MIN_WINDOW_FRAMES) {
-      fail(`only ${window.length} swaps in the wheel window, need ${MIN_WINDOW_FRAMES}`);
+      fail(`only ${window.length} swaps in the input window, need ${MIN_WINDOW_FRAMES}`);
     }
     const gaps = window
       .slice(1)
@@ -244,10 +253,10 @@ export async function checkRun(file, dir) {
 export async function derive(file, dir) {
   /** @type {Record<string, any>} */
   const out = {};
-  for (const workload of ['hello-world', 'list-1000']) {
+  for (const workload of ['hello-world', 'list-1000', 'drawer-drag']) {
     const results = await readResults(dir, workload);
     if (results.length === 0) continue;
-    const runs = results.map((r) => summarizeRun(r, { needsFrames: workload === 'list-1000' }));
+    const runs = results.map((r) => summarizeRun(r, { needsFrames: workload !== 'hello-world' }));
     out[workload] = { runs: runs.length };
     for (const metric of METRICS) {
       const values = runs

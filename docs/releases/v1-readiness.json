@@ -247,14 +247,14 @@
       "id": "cold-boot",
       "title": "Repeatable graphics cold boot",
       "status": "pending",
-      "acceptance": "20 consecutive supervised cold boots on the named release board/image, with recovery and logs. Application relaunch trials do not count as cold boots.",
+      "acceptance": "20 consecutive supervised cold boots on the named release board/image (the Pi 400 per ADR-0023, booting to the stock QNX desktop with no boot hook), with recovery and logs. Application relaunch trials do not count as cold boots.",
       "evidence": []
     },
     {
       "id": "device-parity",
       "title": "Device component and input results",
       "status": "pending",
-      "acceptance": "Every component has a device disposition and tested limits on stock Pi 4 QSTI; prove keyboard/touch and the selected interaction scope. Pi 400 results stay separate.",
+      "acceptance": "Every component has a device disposition and tested limits on the Pi 400 (ADR-0023, owner Mike, 2026-11-23); prove keyboard/touch and the selected interaction scope. Receipts name the board as Pi 400, never as a stock Pi 4 QSTI.",
       "evidence": []
     },
     {

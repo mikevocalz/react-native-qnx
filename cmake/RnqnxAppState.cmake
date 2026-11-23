@@ -14,6 +14,8 @@ function(rnqnx_configure_app_state)
       "${root}/vnext/src/runtime/QnxAppStateModule.cpp"
       "${root}/native/lifecycle/QtApplicationLifecycle.cpp"
       "${root}/native/lifecycle/QtApplicationLifecycle.h")
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/RnqnxWindowChrome.cmake")
+    rnqnx_add_host_window_state_sources(rnqnx_react_host)
     target_include_directories(rnqnx_react_host PRIVATE "${root}/native/lifecycle")
     set_target_properties(rnqnx_react_host PROPERTIES AUTOMOC ON)
   endif()

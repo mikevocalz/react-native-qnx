@@ -114,6 +114,17 @@ QVariantMap WindowChrome::titleBarInset() const {
                                   {QStringLiteral("height"), inset.overlay.height()}}}};
 }
 
+QString WindowChrome::titleBarInsetScript() const {
+  const TitleBarInset& inset = layout_.inset;
+  // Numbers only, so nothing from the config reaches the script as text.
+  const auto number = [](qreal value) { return QString::number(value, 'g', 9); };
+  return QStringLiteral(
+             "globalThis.__RNQNX_TITLE_BAR_INSET__={top:%1,right:%2,bottom:%3,left:%4};"
+             "if(globalThis.__rctDeviceEventEmitter)"
+             "globalThis.__rctDeviceEventEmitter.emit('rnqnxTitleBarInsetDidChange');")
+      .arg(number(inset.top), number(inset.right), number(inset.bottom), number(inset.left));
+}
+
 // Qt Quick walks the Tab chain in sibling order. Restacking the existing
 // control items to the new physical order keeps the same items, and so the
 // focused one, while Tab follows the order the controls appear in.

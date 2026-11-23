@@ -10,9 +10,13 @@ component dependency.
 existing FlatList implementation. The list has no simulated scrolling or
 JavaScript FPS counter. All data is synthetic and fixed across runs.
 
-The third release workload, `drawer-drag`, is explicitly blocked in
-`fixtures.js`. A static panel or scripted position change would not qualify
-the missing physical gesture/Worklets path, so no substitute is included.
+The third release workload, `drawer-drag.js`, renders the shipped `JsDrawer`
+(a `PanResponder` edge strip and an `Animated.Value` that follows the pointer).
+No script sets the drawer position: the timing probe posts a left-edge drag and
+the drag back as pointer events, or `--timing-observe-ms` records pointer events
+a person or `rnqnx-inject` sends through Screen. The responder system decides
+whether the events are a drag. A run where the drawer did not move is a run
+without a drawer-drag result, so check the log or a board screenshot.
 
 ## Build the list bundle
 
@@ -34,6 +38,21 @@ cd apps/performance-lab
 ../../node_modules/.bin/metro build hello-world.js --config metro.config.js --platform qnx --dev false --max-workers 2 --out ../../build/performance-lab/hello-world.bundle.js
 cd ../..
 ```
+
+## Build the drawer bundle
+
+`drawer-drag.js` needs the public `react-native` entry (the drawer imports it),
+so it has its own Metro config:
+
+```bash
+cd apps/performance-lab
+../../node_modules/.bin/metro build drawer-drag.js --config metro.drawer.config.js --platform qnx --dev false --max-workers 2 --out ../../build/performance-lab/drawer-drag.bundle.js
+cd ../..
+```
+
+Run it with `--timing-json <file> --timing-drag-steps 20` for a posted edge
+drag and the drag back, or with `--timing-observe-ms 8000` and drive the
+window with `rnqnx-inject drag` from a second shell.
 
 Both entries register the existing `RNQnxPlayground` surface. This directory is
 an intentional source fixture rather than a separate workspace package;
@@ -135,7 +154,7 @@ for what the host run showed is `docs/evidence/s4-budgets-2026-11-20/`.
 node tests/js/qnx-performance-lab.test.mjs
 ```
 
-The test checks deterministic data and the blocked drawer state, then builds
+The test checks deterministic data and the drawer workload entry, then builds
 **both** entries with the installed Metro CLI and prints their SHA-256 hashes.
 Each bundle subprocess has a 90-second limit; temporary outputs are removed.
 The same test is automatically included by `pnpm test:js`. This is host

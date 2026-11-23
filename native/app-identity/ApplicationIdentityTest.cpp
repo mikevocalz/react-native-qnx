@@ -22,6 +22,21 @@ class ApplicationIdentityTest final : public QObject {
     applyApplicationIdentity(identity);
     QCOMPARE(QCoreApplication::applicationName(), QStringLiteral("legacy"));
   }
+  // The Pi 400 run of 2026-11-23: a playground with no identity had no
+  // one-instance key, so --restore-only started a second copy.
+  void identitylessAppHasAStableValidInstanceKey() {
+    const auto identity = parse({});
+    QVERIFY(!identity.custom);
+    QCOMPARE(instanceApplicationId(identity), defaultApplicationId());
+    QCOMPARE(instanceApplicationId(identity), instanceApplicationId(parse({})));
+    QVERIFY(!instanceApplicationId(identity).isEmpty());
+    validateApplicationIdentity({defaultApplicationId(), "Playground", "RNQnxPlayground", true});
+  }
+  void appsWithAnIdKeepIt() {
+    const auto identity = parse({"--app-id", "org.rnqnx.notes", "--app-name", "Notes", "--component-name", "FieldNotes"});
+    QCOMPARE(instanceApplicationId(identity), QStringLiteral("org.rnqnx.notes"));
+    QVERIFY(instanceApplicationId(identity) != defaultApplicationId());
+  }
   void publicIdentity() {
     const auto identity = parse({"--app-id", "org.rnqnx.notes", "--app-name", "Notes & sketches", "--component-name", "FieldNotes"});
     applyApplicationIdentity(identity);

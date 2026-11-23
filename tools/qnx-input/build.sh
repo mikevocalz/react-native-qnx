@@ -9,3 +9,6 @@ out=${1:-build/qnx-input/rnqnx-inject}
 mkdir -p "$(dirname "$out")"
 qcc -Vgcc_ntoaarch64le -O2 -Wall -Wextra -Werror -o "$out" "$here/rnqnx-inject.c" -lscreen
 echo "$out"
+dm=$(dirname "$out")/rnqnx-display-mode
+qcc -Vgcc_ntoaarch64le -O2 -Wall -Wextra -Werror -o "$dm" "$here/rnqnx-display-mode.c" -lscreen
+echo "$dm"

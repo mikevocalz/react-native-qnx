@@ -9,7 +9,7 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin)$")
   message(FATAL_ERROR "The isolated window chrome test lane runs on Linux or macOS hosts")
 endif()
 set(CMAKE_AUTOMOC ON)
-find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Gui Qml Quick Test)
+find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Gui GuiPrivate Qml Quick Test)
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/RnqnxWindowChrome.cmake")
 
 if(RNQNX_WINDOW_CHROME_SANITIZERS)
@@ -23,6 +23,8 @@ endif()
 add_library(rnqnx_window_chrome STATIC)
 target_compile_features(rnqnx_window_chrome PUBLIC cxx_std_17)
 target_link_libraries(rnqnx_window_chrome PUBLIC Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick)
+# ApplicationIdentity.h: the default one-instance key the playground uses.
+target_include_directories(rnqnx_window_chrome PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../../vnext/include")
 # The renderer graph builds with QT_NO_KEYWORDS (Folly defines `signals`), so the
 # tests do too: plain `signals:`/`emit` would compile here and fail there.
 target_compile_definitions(rnqnx_window_chrome PUBLIC QT_NO_KEYWORDS)
@@ -37,13 +39,30 @@ add_executable(rnqnx_window_chrome_quick_test WindowChromeQuickTest.cpp)
 target_link_libraries(rnqnx_window_chrome_quick_test PRIVATE rnqnx_window_chrome Qt6::Test)
 add_executable(rnqnx_node_beacon_test NodeBeaconTest.cpp)
 target_link_libraries(rnqnx_node_beacon_test PRIVATE rnqnx_window_chrome Qt6::Test)
+# AppState follows minimize and restore (ADR-0024): the lifecycle observer
+# tests also run here, where HostWindowState and the window code meet.
+add_executable(rnqnx_lifecycle_host_test ../lifecycle/LifecycleTest.cpp ../lifecycle/QtApplicationLifecycle.cpp)
+target_link_libraries(rnqnx_lifecycle_host_test PRIVATE rnqnx_window_chrome Qt6::Test)
+target_include_directories(rnqnx_lifecycle_host_test PRIVATE ../lifecycle)
 
+# Nitro windows API, GUI side: close gate, state publisher, guard sequencer
+# and services (docs/nitro/API_CONTRACTS.md, S8). The sequencer is the adapter's
+# Qt-free code, compiled here so its order and cancel rules run on the host.
+add_executable(rnqnx_window_api_test WindowApiTest.cpp
+  ../../packages/qnx-nitro-runtime/cpp/CloseGuardSequencer.cpp
+  ../../vnext/src/runtime/QueuedCallTarget.cpp)
+target_link_libraries(rnqnx_window_api_test PRIVATE rnqnx_window_chrome Qt6::Test Qt6::GuiPrivate)
+target_include_directories(rnqnx_window_api_test PRIVATE ../../packages/qnx-nitro-runtime/cpp)
 
 include(CTest)
 set(test_env "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1")
 add_test(NAME rnqnx_window_chrome_model COMMAND rnqnx_window_chrome_model_test)
 add_test(NAME rnqnx_window_chrome_quick COMMAND rnqnx_window_chrome_quick_test)
 add_test(NAME rnqnx_node_beacon COMMAND rnqnx_node_beacon_test)
+add_test(NAME rnqnx_lifecycle_host COMMAND rnqnx_lifecycle_host_test)
+add_test(NAME rnqnx_window_api COMMAND rnqnx_window_api_test)
+set_tests_properties(rnqnx_window_api PROPERTIES TIMEOUT 60 ENVIRONMENT "${test_env}")
+set_tests_properties(rnqnx_lifecycle_host PROPERTIES TIMEOUT 60 ENVIRONMENT "${test_env}")
 # Same chrome under a 2x device pixel ratio: logical sizes must not change and
 # the rendered bar must double in device pixels.
 add_test(NAME rnqnx_window_chrome_quick_dpr2 COMMAND rnqnx_window_chrome_quick_test)

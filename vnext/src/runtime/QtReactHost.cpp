@@ -43,6 +43,11 @@
 #include "react-native-qnx/runtime/QnxFileReaderModule.h"
 #if RNQNX_ENABLE_APP_STATE
 #include "react-native-qnx/runtime/QnxAppStateModule.h"
+#if RNQNX_ENABLE_APP_STATE
+#include "HostWindowState.h"
+#include <QCoreApplication>
+#include <QGuiApplication>
+#endif
 #endif
 #include "react-native-qnx/runtime/QnxDevSupportModules.h"
 #include "react-native-qnx/runtime/QnxImageLoader.h"
@@ -840,6 +845,18 @@ class QtReactHost::Impl {
   QString lastError;
 };
 
+#if RNQNX_ENABLE_APP_STATE
+namespace {
+// GUI thread: mirror the Qt application state in atomics so a module built on
+// the JavaScript thread can read its first value without touching Qt.
+void attachHostWindowState() {
+  if (auto* app = qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
+    rnqnx::runtime::HostWindowState::instance().attach(*app);
+  }
+}
+}  // namespace
+#endif
+
 QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter)
     : QtReactHost(adapter, Options{}) {}
 
@@ -849,6 +866,9 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter, Options opt
     impl_ = std::make_unique<Impl>(adapter, guiThread_, nullptr);
     return;
   }
+#if RNQNX_ENABLE_APP_STATE
+  attachHostWindowState();
+#endif
   guiContext_ = std::make_unique<QueuedCallTarget>();
   const auto screen = QnxDeviceInfo::readPrimaryScreen();
   jsThread_ = std::make_unique<QtJsThread>();
@@ -871,6 +891,9 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
     impl_ = std::make_unique<Impl>(adapter, guiThread_, nullptr, std::move(trace));
     return;
   }
+#if RNQNX_ENABLE_APP_STATE
+  attachHostWindowState();
+#endif
   guiContext_ = std::make_unique<QueuedCallTarget>();
   const auto screen = QnxDeviceInfo::readPrimaryScreen();
   jsThread_ = std::make_unique<QtJsThread>();
@@ -1349,12 +1372,9 @@ void QtReactHost::installTurboModuleBinding() {
 
 #if RNQNX_ENABLE_APP_STATE
         if (name == QnxAppStateModule::kModuleName) {
-          if (impl->jsThread != nullptr) {
-            // The module's constructor and its Qt signal wiring require the GUI
-            // thread. Not moved yet (ADR-0021), so refuse with the module name.
-            throw std::logic_error(
-                "AppState is not supported with QtReactHost JS-thread mode yet (ADR-0021)");
-          }
+          // With a JS thread the module is made here, on that thread. Its Qt
+          // observer is made on the GUI thread by a task posted from the
+          // constructor, and JS reads an atomic cache (ADR-0021, ADR-0024).
           if (!impl->appStateModule) {
             impl->appStateModule = std::make_shared<QnxAppStateModule>(callInvoker);
           }

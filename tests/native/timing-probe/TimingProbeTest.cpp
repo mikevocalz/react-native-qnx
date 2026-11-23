@@ -13,6 +13,7 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QQuickItem>
+#include <QMouseEvent>
 #include <QQuickWindow>
 #include <QTemporaryDir>
 #include <QTimer>
@@ -55,6 +56,19 @@ void testConfig() {
   CHECK(configError("", "", "0").contains(QLatin1String("--timing-wheel-gap-ms")));
   CHECK(configError("", "", "5001").contains(QLatin1String("--timing-wheel-gap-ms")));
   CHECK(configError("12x", "", "").contains(QLatin1String("12x")));
+  QString dragError;
+  const auto drag = TimingConfig::fromStrings({}, {}, {}, &dragError, QStringLiteral("20"),
+                                              QStringLiteral("8"), {});
+  CHECK(drag && drag->dragSteps == 20 && drag->dragStepGapMs == 8 && drag->observeMs == 0);
+  CHECK(!TimingConfig::fromStrings({}, {}, {}, &dragError, QStringLiteral("501"), {}, {}));
+  CHECK(dragError.contains(QLatin1String("--timing-drag-steps")));
+  CHECK(!TimingConfig::fromStrings({}, {}, {}, &dragError, {}, QStringLiteral("0"), {}));
+  CHECK(dragError.contains(QLatin1String("--timing-drag-gap-ms")));
+  CHECK(!TimingConfig::fromStrings({}, {}, {}, &dragError, QStringLiteral("5"), {},
+                                   QStringLiteral("1000")));
+  CHECK(dragError.contains(QLatin1String("cannot be combined")));
+  CHECK(!TimingConfig::fromStrings({}, QStringLiteral("5"), {}, &dragError, QStringLiteral("5"), {}, {}));
+  CHECK(dragError.contains(QLatin1String("wheel script")));
   CHECK(configError("1.5", "", "").contains(QLatin1String("1.5")));
 }
 
@@ -155,6 +169,79 @@ void testRecordingAndExport(const QString& dir) {
   CHECK(QDir(dir).entryList(QDir::Files | QDir::Hidden).size() == 1);
 }
 
+// Counts the mouse events the window receives, in order.
+struct MouseCount : QObject {
+  int press = 0, move = 0, release = 0;
+  double maxX = 0;
+  bool eventFilter(QObject*, QEvent* event) override {
+    if (event->type() == QEvent::MouseButtonPress) ++press;
+    if (event->type() == QEvent::MouseButtonRelease) ++release;
+    if (event->type() == QEvent::MouseMove) {
+      ++move;
+      maxX = std::max(maxX, static_cast<QMouseEvent*>(event)->position().x());
+    }
+    return false;
+  }
+};
+
+void testDragScript() {
+  QString error;
+  auto config = *TimingConfig::fromStrings(QStringLiteral("0"), {}, {}, &error, QStringLiteral("10"),
+                                           QStringLiteral("10"), {});
+  Scene scene;
+  MouseCount count;
+  scene.window.installEventFilter(&count);
+  TimingProbe probe(scene.window, config, std::chrono::steady_clock::now());
+  CHECK(run(scene, probe, false));
+  // Two legs of press, 10 moves, release.
+  CHECK(count.press == 2 && count.release == 2 && count.move == 20);
+  CHECK(count.maxX > scene.window.width() * 0.5);
+  QTemporaryDir dir;
+  CHECK(dir.isValid());
+  const QString path = dir.filePath(QStringLiteral("drag.json"));
+  CHECK(probe.writeJson(path).isEmpty());
+  const QJsonObject json = readJson(path);
+  CHECK(json.value("inputKind").toString() == QLatin1String("posted-drag"));
+  CHECK(json.value("inputEvents").toInt() == 24);
+  CHECK(json.value("wheelNotchesSent").toInt() == 0);
+  CHECK(json.value("inputLastMs").toDouble() - json.value("inputFirstMs").toDouble() > 200);
+}
+
+void testObservedPointer() {
+  QString error;
+  auto config = *TimingConfig::fromStrings(QStringLiteral("0"), {}, {}, &error, {}, {},
+                                           QStringLiteral("600"));
+  Scene scene;
+  TimingProbe probe(scene.window, config, std::chrono::steady_clock::now());
+  // The "device": events from outside the probe, after it started observing.
+  QTimer::singleShot(250, &scene.window, [&scene]() {
+    for (int i = 0; i < 3; ++i) {
+      const QPointF p(10 + i * 20, 40);
+      QCoreApplication::postEvent(&scene.window,
+                                  new QMouseEvent(QEvent::MouseMove, p, scene.window.mapToGlobal(p),
+                                                  Qt::NoButton, Qt::LeftButton, Qt::NoModifier));
+    }
+  });
+  CHECK(run(scene, probe, false));
+  QTemporaryDir dir;
+  CHECK(dir.isValid());
+  const QString path = dir.filePath(QStringLiteral("observe.json"));
+  CHECK(probe.writeJson(path).isEmpty());
+  const QJsonObject json = readJson(path);
+  CHECK(json.value("inputKind").toString() == QLatin1String("observed-pointer"));
+  CHECK(json.value("inputEvents").toInt() == 3);
+  CHECK(json.value("wheelNotchesSent").toInt() == 0);
+}
+
+void testObserveWithNoInputFails() {
+  QString error;
+  auto config = *TimingConfig::fromStrings(QStringLiteral("0"), {}, {}, &error, {}, {},
+                                           QStringLiteral("200"));
+  Scene scene;
+  TimingProbe probe(scene.window, config, std::chrono::steady_clock::now());
+  CHECK(!run(scene, probe, false));
+}
+
 void testOverflowIsCounted() {
   QString error;
   auto config = *TimingConfig::fromStrings(QStringLiteral("0"), QStringLiteral("5"),
@@ -195,7 +282,10 @@ int main(int argc, char** argv) {
   CHECK(dir.isValid());
   testRecordingAndExport(dir.path());
   testOverflowIsCounted();
+  testDragScript();
+  testObservedPointer();
+  testObserveWithNoInputFails();
   testProbeOutlivesNothing();
-  std::puts("RNQNX_TIMING_PROBE_TEST_OK config recording export overflow lifetime");
+  std::puts("RNQNX_TIMING_PROBE_TEST_OK config recording export overflow drag observe lifetime");
   return 0;
 }

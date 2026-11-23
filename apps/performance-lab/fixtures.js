@@ -15,9 +15,11 @@ const WORKLOADS = Object.freeze([
   },
   {
     id: 'drawer-drag',
-    entry: null,
-    status: 'blocked',
-    description: 'Requires qualified QNX gesture/Worklets integration; no simulated substitute.',
+    entry: 'drawer-drag.js',
+    config: 'metro.drawer.config.js',
+    status: 'available-source',
+    description:
+      'The shipped JsDrawer (PanResponder edge strip, Animated progress) dragged open and back by pointer events; no script sets its position.',
   },
 ]);
 
