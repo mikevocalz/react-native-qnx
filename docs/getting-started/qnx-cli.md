@@ -28,6 +28,32 @@ The template has no component state. Use Zustand when adding state. Leave
 native handles in refs. Bundle output must be under the checkout's `build/`
 directory; a successful bundle does not establish device compatibility.
 
+## Pick a versioned template
+
+`init` copies a template that ships as a versioned tarball. List and pack them with:
+
+```bash
+pnpm qnx templates pack --out build/templates
+```
+
+This writes `qnx-1.0.0.tgz`, `qnx-router-1.0.0.tgz` and `templates-manifest.json`.
+Each entry carries the template name, its version, the file count and two hashes:
+
+- `contentSha256` hashes the uncompressed tar, whose bytes depend only on the template
+  files. `template/templates.lock.json` pins it, and `init` and `project create` refuse
+  a template whose content or version differs from the lock.
+- `tarballSha256` hashes the `.tgz`. It can change with the zlib build, so nothing pins it.
+
+`init` takes `--template <name>` (default `qnx`). `project create` takes
+`--template <name>` (default `qnx-router`) and writes `template-source.json` into the
+new project. Both print the selected version and `contentSha256`. A wrong name lists
+the names that command accepts. Edit a template, bump its `version` in
+`template/templates.json`, then run `pnpm qnx templates lock` to update the lock.
+
+The registry holds the two templates that already exist in this repository: `qnx`
+(static hello world for the stock runner) and `qnx-router` (expo-router drawer and
+tabs). Host only: no template has run on a QNX target through this path.
+
 ## Render your bundle on the host
 
 Install host Qt ≥6.11.1 and the prerequisites in [the toolchain guide](../toolchain.md).
@@ -71,6 +97,9 @@ These commands retain the existing shell scripts and their environment contract:
 | `pnpm qnx deploy-qnx --target rnqnx_playground`        | `scripts/deploy-qnx.sh`    | Atomically deploy a built executable  |
 | `pnpm qnx run-qnx --target rnqnx_playground`           | `scripts/run-qnx.sh`       | Run a deployed executable             |
 | `pnpm qnx log-qnx`                                     | `scripts/log-qnx.sh`       | Stream slog2 output                   |
+
+To compile a bundle to Hermes bytecode and push it to a target, see
+[Deploy a bundle to a QNX target](deploy-bundle.md) (`pnpm qnx deploy-bundle`).
 
 **`rnqnx_playground` is the Screen probe.** The full React Native executable is
 `rnqnx_playground_qnx`, with the separate build/dependency closure described in

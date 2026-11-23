@@ -17,14 +17,16 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { CONSUMER_CONTRACT } from './consumer-contract.mjs';
 import { validateAppIdentity } from './prepare-native.mjs';
+import { extractTemplate, packVerified, receipt, selectTemplate } from './templates.mjs';
 
 const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const help = [
   'React Native QNX - create a shared Expo application',
   '  project create --project <NEW-directory> --app-id org.example.notes --name Notes',
-  '                 [--component-name main] [--with-marathon] [--dry-run]',
+  '                 [--component-name main] [--template qnx-router] [--with-marathon] [--dry-run]',
   '',
   'QNX is the default target. --with-marathon adds a native Linux/Wayland target.',
+  '--template picks a versioned template tarball; the output names its version and hash.',
   'This creates source and locally packed platform packages. It does not install,',
   'build, deploy, publish, or qualify any native executable.',
 ].join('\n');
@@ -193,8 +195,6 @@ export function packedFilename(info) {
   return file;
 }
 
-const routerStarterRoot = path.join(sourceRoot, 'template', 'qnx-router');
-
 /** The expo-router starter's Metro config: the QNX config plus the router resolver. */
 function routerMetroConfig() {
   return [
@@ -216,38 +216,30 @@ function routerMetroConfig() {
 }
 
 /**
- * Writes template/qnx-router into the new project: a drawer around a tabs
+ * Writes the packed qnx-router template tarball into the new project: a drawer around a tabs
  * group, with the app name and component name filled in.
  * @param {string} destination
  * @param {{ displayName: string, componentName: string }} identity
+ * @param {import('./templates.mjs').PackedTemplate} packed
  */
-async function writeRouterStarter(destination, identity) {
+async function writeRouterStarter(destination, identity, packed) {
   const appNameLiteral = JSON.stringify(identity.displayName)
     .replaceAll('\u2028', '\\u2028')
     .replaceAll('\u2029', '\\u2029');
-  /** @param {string} directory @param {string} relative */
-  async function copyTree(directory, relative) {
-    for (const entry of await readdir(path.join(directory, relative), { withFileTypes: true })) {
-      const next = path.join(relative, entry.name);
-      if (entry.isSymbolicLink()) throw new Error('Starter template contains a symlink.');
-      if (entry.isDirectory()) {
-        await mkdir(path.join(destination, next), { recursive: true });
-        await copyTree(directory, next);
-      } else if (entry.isFile()) {
-        const source = await smallSource(path.join(directory, next));
-        await writeFile(
-          path.join(destination, next),
-          // __APP_NAME__ is a bare JS expression in the template; it becomes a
-          // JSON string literal, so the name stays exact whatever it contains.
-          // A replacer function keeps `$&` and friends in a name literal.
-          source
-            .replaceAll('__APP_NAME__', () => appNameLiteral)
-            .replaceAll('__COMPONENT_NAME__', () => identity.componentName)
-        );
-      }
-    }
+  for (const [relative, data] of extractTemplate(packed)) {
+    const target = path.join(destination, ...relative.split('/'));
+    await mkdir(path.dirname(target), { recursive: true });
+    await writeFile(
+      target,
+      // __APP_NAME__ is a bare JS expression in the template; it becomes a
+      // JSON string literal, so the name stays exact whatever it contains.
+      // A replacer function keeps `$&` and friends in a name literal.
+      data
+        .toString('utf8')
+        .replaceAll('__APP_NAME__', () => appNameLiteral)
+        .replaceAll('__COMPONENT_NAME__', () => identity.componentName)
+    );
   }
-  await copyTree(routerStarterRoot, '');
 }
 
 /** @param {string[]} argv */
@@ -263,6 +255,7 @@ export async function createProjectMain(argv) {
       'app-id': { type: 'string' },
       name: { type: 'string' },
       'component-name': { type: 'string' },
+      template: { type: 'string' },
       'with-marathon': { type: 'boolean' },
       'dry-run': { type: 'boolean' },
     },
@@ -301,11 +294,25 @@ export async function createProjectMain(argv) {
     if (!absent(error)) throw error;
   }
   const marathon = !!values['with-marathon'];
+  if (marathon && values.template !== undefined)
+    throw new Error(
+      '--template does not apply with --with-marathon; that target has one built-in entry.'
+    );
+  const selected = marathon ? undefined : await selectTemplate('project-create', values.template);
+  const packed = selected ? await packVerified(selected.name) : undefined;
+  const templateReceipt = packed ? receipt(packed) : null;
   const platforms = marathon ? ['qnx', 'marathon'] : ['qnx'];
   if (values['dry-run']) {
     console.log(
       JSON.stringify(
-        { action: 'dry-run', destination, identity, platforms, nativeBuildVerified: false },
+        {
+          action: 'dry-run',
+          destination,
+          identity,
+          platforms,
+          template: templateReceipt,
+          nativeBuildVerified: false,
+        },
         null,
         2
       )
@@ -438,7 +445,24 @@ export async function createProjectMain(argv) {
         ].join('\n')
       );
     } else {
-      await writeRouterStarter(destination, identity);
+      await writeRouterStarter(
+        destination,
+        identity,
+        /** @type {import('./templates.mjs').PackedTemplate} */ (packed)
+      );
+      await writeFile(
+        path.join(destination, 'template-source.json'),
+        JSON.stringify(
+          {
+            schemaVersion: 1,
+            ...templateReceipt,
+            source: 'local-source-checkout',
+            published: false,
+          },
+          null,
+          2
+        ) + '\n'
+      );
     }
     await writeFile(
       path.join(destination, 'babel.config.js'),
@@ -490,6 +514,7 @@ export async function createProjectMain(argv) {
           destination,
           identity,
           platforms,
+          template: templateReceipt,
           archives: Object.keys(artifacts),
           dependenciesInstalled: false,
           nativeBuildVerified: false,

@@ -14,12 +14,17 @@ import {
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import { extractTemplate, packVerified, selectTemplate } from './templates.mjs';
+import { deployBundle } from './deploy-bundle.mjs';
+import { templatesCommand } from './templates-command.mjs';
 
 const help = `React Native QNX (source checkout)
 
 Usage: pnpm qnx <command> [options]
 
-  init <name>       Create apps/<name>; never overwrites an existing app
+  init <name>       Create apps/<name>; never overwrites an existing app [--template <name>]
+  templates        list | pack --out <dir> | lock: versioned template tarballs (H14)
+  deploy-bundle    hermesc-compile a bundle and push it to the target over ssh
   bundle-qnx       Production Metro bundle for --app <name> [--out build/<file>]
   doctor           Check host tools, the QNX SDP environment and target settings;
                    each failure names its fix
@@ -74,8 +79,8 @@ function appName(name) {
   return name;
 }
 
-/** @param {string} root @param {string} name */
-async function init(root, name) {
+/** @param {string} root @param {string} name @param {string | undefined} templateName */
+async function init(root, name, templateName) {
   const destination = path.join(root, 'apps', appName(name));
   const workspace = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
   const manifest = {
@@ -90,9 +95,11 @@ async function init(root, name) {
     devDependencies: { '@rn-qnx/metro-config-qnx': 'workspace:*' },
   };
   const files = new Map([['package.json', JSON.stringify(manifest, null, 2) + '\n']]);
-  for (const file of ['index.js', 'metro.config.js', 'babel.config.js', 'README.md']) {
-    const source = await readFile(path.join(root, 'template/qnx', file), 'utf8');
-    files.set(file, source.replaceAll('__APP_NAME__', name));
+  const selected = await selectTemplate('init', templateName, root);
+  const packed = await packVerified(selected.name, root);
+  const extracted = extractTemplate(packed, selected.entry.extract);
+  for (const [file, data] of extracted) {
+    files.set(file, data.toString('utf8').replaceAll('__APP_NAME__', name));
   }
   try {
     await mkdir(destination);
@@ -111,7 +118,9 @@ async function init(root, name) {
     throw error;
   }
   console.log(
-    `Created apps/${name}.\nRun pnpm install --no-frozen-lockfile, then:\npnpm qnx bundle-qnx --app ${name}`
+    `Created apps/${name}.\n` +
+      `Template ${packed.name} ${packed.version}, content sha256 ${packed.contentSha256}\n` +
+      `Run pnpm install --no-frozen-lockfile, then:\npnpm qnx bundle-qnx --app ${name}`
   );
 }
 
@@ -192,6 +201,12 @@ export async function main(argv, cwd = process.cwd()) {
       config: { type: 'string' },
       target: { type: 'string' },
       dir: { type: 'string' },
+      template: { type: 'string' },
+      bundle: { type: 'string' },
+      runner: { type: 'string' },
+      'remote-dir': { type: 'string' },
+      hermesc: { type: 'string' },
+      run: { type: 'boolean' },
     },
   });
   if (values.help || argv.length === 0) {
@@ -201,7 +216,9 @@ export async function main(argv, cwd = process.cwd()) {
   const [command, ...rest] = positionals;
   /** @type {Record<string, string[]>} */
   const allowed = {
-    init: [],
+    init: ['template'],
+    templates: ['out', 'dry-run'],
+    'deploy-bundle': ['app', 'bundle', 'hermesc', 'remote-dir', 'runner', 'run', 'dry-run'],
     'bundle-qnx': ['app', 'out', 'dry-run'],
     doctor: ['dry-run'],
     'configure-qnx': ['arch', 'config', 'dry-run'],
@@ -223,7 +240,7 @@ export async function main(argv, cwd = process.cwd()) {
     throw new Error('init needs exactly one app name, for example: pnpm qnx init dashboard');
   if (command === 'evidence' && rest.length !== 1)
     throw new Error('Use pnpm qnx evidence verify [--dir <path>].');
-  if (command !== 'init' && command !== 'evidence' && rest.length)
+  if (command !== 'init' && command !== 'evidence' && command !== 'templates' && rest.length)
     throw new Error(
       `${command} takes options only; remove ${rest.join(' ')}. Run pnpm qnx --help for its options.`
     );
@@ -231,9 +248,11 @@ export async function main(argv, cwd = process.cwd()) {
     throw new Error('Use pnpm qnx evidence verify [--dir <path>].');
   const root = await findWorkspace(cwd);
   if (command === 'init') {
-    await init(root, rest[0]);
+    await init(root, rest[0], values.template);
     return 0;
   }
+  if (command === 'templates') return templatesCommand(root, rest, values, cwd);
+  if (command === 'deploy-bundle') return deployBundle(root, values, cwd);
   const arch = values.arch ?? 'aarch64';
   const config = values.config ?? 'Debug';
   const target = values.target ?? 'rnqnx_playground';

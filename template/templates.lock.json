@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "templates": {
+    "qnx": {
+      "version": "1.0.0",
+      "contentSha256": "bfd049cfadcf9e49af91f66681b1daabda8541df473cae3e2f5246d0fee1df43"
+    },
+    "qnx-router": {
+      "version": "1.0.0",
+      "contentSha256": "2215011569736f231eb8368a14e92ddb0cae19b62df2d5325c92748013009699"
+    }
+  }
+}

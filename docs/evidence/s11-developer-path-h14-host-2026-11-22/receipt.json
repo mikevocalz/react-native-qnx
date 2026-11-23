@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "label": "host",
+  "runner": "darwin",
+  "commit": null,
+  "templates": [
+    {
+      "template": "qnx",
+      "version": "1.0.0",
+      "contentSha256": "bfd049cfadcf9e49af91f66681b1daabda8541df473cae3e2f5246d0fee1df43",
+      "tarballSha256": "c27e3372ca797b23321651bdaec3abd2d3860d3d9cc6a70501c2418d21689daa"
+    },
+    {
+      "template": "qnx-router",
+      "version": "1.0.0",
+      "contentSha256": "2215011569736f231eb8368a14e92ddb0cae19b62df2d5325c92748013009699",
+      "tarballSha256": "aa222ab8187fb0f71251c78c9826912629100d74da40fa6ca552db866824ef8f"
+    }
+  ],
+  "app": "ci-receipt",
+  "bundleSha256": "452a3c454fd31ca84ce16a0e9a3ae128b374d71bd152c28ec35788b59c24f67d",
+  "bytecodeSha256": "1b4de609464111f0426df1d513428931ebb3af4ff726fe481b8999dfc1a82eb0",
+  "pushedBytecodeSha256": "1b4de609464111f0426df1d513428931ebb3af4ff726fe481b8999dfc1a82eb0",
+  "stepSeconds": {
+    "templates-pack": 0,
+    "init": 0,
+    "install": 1,
+    "bundle": 4,
+    "deploy-bundle": 2
+  },
+  "notRun": [
+    "QNX native build",
+    "QNX VM run",
+    "Pi 400 run",
+    "release board run",
+    "ssh to a real target (a local stand-in copied the file)",
+    "first-time licensed developer run"
+  ]
+}

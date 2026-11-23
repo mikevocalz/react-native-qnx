@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "note": "contentSha256 is the SHA-256 of the uncompressed tar and is pinned in template/templates.lock.json. tarballSha256 can differ between zlib builds.",
+  "templates": [
+    {
+      "template": "qnx",
+      "version": "1.0.0",
+      "contentSha256": "bfd049cfadcf9e49af91f66681b1daabda8541df473cae3e2f5246d0fee1df43",
+      "tarballSha256": "c27e3372ca797b23321651bdaec3abd2d3860d3d9cc6a70501c2418d21689daa",
+      "tarballBytes": 16184,
+      "files": 6,
+      "commands": ["init"],
+      "file": "qnx-1.0.0.tgz"
+    },
+    {
+      "template": "qnx-router",
+      "version": "1.0.0",
+      "contentSha256": "2215011569736f231eb8368a14e92ddb0cae19b62df2d5325c92748013009699",
+      "tarballSha256": "aa222ab8187fb0f71251c78c9826912629100d74da40fa6ca552db866824ef8f",
+      "tarballBytes": 3510,
+      "files": 12,
+      "commands": ["project-create"],
+      "file": "qnx-router-1.0.0.tgz"
+    }
+  ]
+}

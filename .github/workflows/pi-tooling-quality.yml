@@ -46,6 +46,8 @@ jobs:
             scripts/lib/wait-log.sh \
             scripts/validate-runtime-qnx.sh \
             scripts/deploy-qnx.sh \
+            scripts/deploy-bundle.sh \
+            scripts/ci-host-path-receipt.sh \
             scripts/run-qnx.sh \
             scripts/log-qnx.sh \
             scripts/qnx-sdk-container.sh \
@@ -63,6 +65,8 @@ jobs:
             scripts/install-pi.sh \
             scripts/pi-mouse-smoke.sh \
             scripts/deploy-qnx.sh \
+            scripts/deploy-bundle.sh \
+            scripts/ci-host-path-receipt.sh \
             scripts/run-qnx.sh \
             scripts/log-qnx.sh \
             scripts/qnx-sdk-container.sh \
