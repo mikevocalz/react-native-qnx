@@ -1,0 +1,20 @@
+{
+  "bundleEvaluatedMs": 141.61,
+  "clock": "steady_clock",
+  "droppedFrames": 0,
+  "firstFrameMs": 257.543,
+  "frameMs": [257.543],
+  "os": "qnx",
+  "peakRssKiB": 107244,
+  "platform": "qnx",
+  "renderBackend": "opengl",
+  "rssKiB": 107244,
+  "rssSource": "sampled-procfs",
+  "schema": 1,
+  "scope": "steady_clock from the first statement of main() to the first QQuickWindow::frameSwapped after the surface started; excludes dynamic loading before main(); a swap is not a display presentation",
+  "surfaceStartedMs": 198.131,
+  "totalFrames": 1,
+  "wheelFirstMs": null,
+  "wheelLastMs": null,
+  "wheelNotchesSent": 0
+}
