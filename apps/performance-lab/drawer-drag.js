@@ -34,7 +34,11 @@ function DrawerDrag() {
             View,
             { collapsable: false, style: { flex: 1, padding: 16 } },
             ROWS.map((label) =>
-              h(Text, { key: label, style: { color: '#e3edf7', fontSize: 16, paddingVertical: 8 } }, label)
+              h(
+                Text,
+                { key: label, style: { color: '#e3edf7', fontSize: 16, paddingVertical: 8 } },
+                label
+              )
             )
           ),
       },
@@ -46,7 +50,11 @@ function DrawerDrag() {
           { style: { color: '#ffffff', fontSize: 18 } },
           'RNQNX performance workload / drawer-drag'
         ),
-        h(Text, { style: { color: '#9dafc2', fontSize: 14, marginTop: 8 } }, open ? 'open' : 'closed')
+        h(
+          Text,
+          { style: { color: '#9dafc2', fontSize: 14, marginTop: 8 } },
+          open ? 'open' : 'closed'
+        )
       )
     )
   );

@@ -79,10 +79,13 @@ export function summarizeRun(result, { needsFrames }) {
     // The animated window is bounded by the first and last input the run
     // produced: posted wheel notches, a posted drag, or pointer events observed
     // from a device (schema 1 files from before 2026-11-24 carry the wheel fields only).
-    const wheelRan = result.wheelNotchesSent >= 1 && result.wheelFirstMs != null && result.wheelLastMs != null;
+    const wheelRan =
+      result.wheelNotchesSent >= 1 && result.wheelFirstMs != null && result.wheelLastMs != null;
     const inputRan =
-      Number.isInteger(result.inputEvents) && result.inputEvents >= 1 &&
-      result.inputFirstMs != null && result.inputLastMs != null;
+      Number.isInteger(result.inputEvents) &&
+      result.inputEvents >= 1 &&
+      result.inputFirstMs != null &&
+      result.inputLastMs != null;
     if (!wheelRan && !inputRan) {
       fail('no wheel, drag or observed pointer input ran, so there is no animated window');
     }

@@ -74,7 +74,7 @@ Any other name throws `React Native QNX public export "<name>" is not implemente
 | `VirtualizedSectionList`   | `Lists/VirtualizedSectionList`                   | upstream     | unverified  | Re-exports `VirtualizedSectionList` from `@react-native/virtualized-lists`. `SectionList` builds on it.                                           |
 | `Button`                   | `Components/Button`                              | upstream     | supported   | Renders `TouchableOpacity` off Android.                                                                                                           |
 | `ImageBackground`          | `Image/ImageBackground`                          | QNX override | supported   | Override. Paints an explicitly sized `Image`, then the children in an overlay `View`.                                                             |
-| `SafeAreaView`             | `Components/SafeAreaView/SafeAreaView`           | QNX override | partial     | A `View` that pads for the title bar inset the host publishes (`globalThis.__RNQNX_TITLE_BAR_INSET__`); no other system insets exist.            |
+| `SafeAreaView`             | `Components/SafeAreaView/SafeAreaView`           | QNX override | partial     | A `View` that pads for the title bar inset the host publishes (`globalThis.__RNQNX_TITLE_BAR_INSET__`); no other system insets exist.             |
 
 ## Names with a support row that this entry does not export
 

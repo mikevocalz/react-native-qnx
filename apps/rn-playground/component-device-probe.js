@@ -49,7 +49,10 @@ function useRect(name) {
   const onLayout = React.useCallback(() => {
     requestAnimationFrame(() => {
       ref.current?.measureInWindow?.((x, y, w, h) => {
-        log(name, `layout x=${Math.round(x)} y=${Math.round(y)} w=${Math.round(w)} h=${Math.round(h)}`);
+        log(
+          name,
+          `layout x=${Math.round(x)} y=${Math.round(y)} w=${Math.round(w)} h=${Math.round(h)}`
+        );
       });
     });
   }, [name]);
@@ -65,7 +68,13 @@ function Tile({ name, children, style }) {
   );
 }
 
-const btn = { padding: 10, backgroundColor: '#2b6cb0', alignItems: 'center', margin: 4, width: 190 };
+const btn = {
+  padding: 10,
+  backgroundColor: '#2b6cb0',
+  alignItems: 'center',
+  margin: 4,
+  width: 190,
+};
 const label = { color: '#fff', fontSize: 16 };
 
 function TouchPage() {
@@ -166,7 +175,9 @@ function TouchPage() {
       >
         <Text style={label}>SafeAreaView child</Text>
       </SafeAreaView>
-      <Text style={label}>RefreshControl: wheel up at the top; the log shows onRefresh if it fires.</Text>
+      <Text style={label}>
+        RefreshControl: wheel up at the top; the log shows onRefresh if it fires.
+      </Text>
     </ScrollView>
   );
 }
@@ -177,8 +188,19 @@ const SECTIONS = Array.from({ length: 12 }, (_, s) => ({
   data: Array.from({ length: 25 }, (_, i) => ({ id: `s${s}-${i}`, title: `Item ${s}.${i}` })),
 }));
 
-const rowStyle = { height: 44, justifyContent: 'center', paddingHorizontal: 12, borderBottomWidth: 1, borderColor: '#2d3748' };
-const headerStyle = { height: 36, justifyContent: 'center', paddingHorizontal: 12, backgroundColor: '#2c5282' };
+const rowStyle = {
+  height: 44,
+  justifyContent: 'center',
+  paddingHorizontal: 12,
+  borderBottomWidth: 1,
+  borderColor: '#2d3748',
+};
+const headerStyle = {
+  height: 36,
+  justifyContent: 'center',
+  paddingHorizontal: 12,
+  backgroundColor: '#2c5282',
+};
 
 function viewable(name) {
   return ({ viewableItems }) => {
@@ -210,7 +232,9 @@ function VirtualizedListPage() {
       windowSize={5}
       maxToRenderPerBatch={8}
       onViewableItemsChanged={onViewableItemsChanged}
-      onScroll={(e) => log('VirtualizedList', `onScroll y=${Math.round(e.nativeEvent.contentOffset.y)}`)}
+      onScroll={(e) =>
+        log('VirtualizedList', `onScroll y=${Math.round(e.nativeEvent.contentOffset.y)}`)
+      }
       scrollEventThrottle={100}
       onEndReachedThreshold={0.5}
       onEndReached={() => log('VirtualizedList', 'onEndReached')}
@@ -246,10 +270,14 @@ function SectionListPage() {
       keyExtractor={(item) => item.id}
       stickySectionHeadersEnabled
       onViewableItemsChanged={onViewableItemsChanged}
-      onScroll={(e) => log('SectionList', `onScroll y=${Math.round(e.nativeEvent.contentOffset.y)}`)}
+      onScroll={(e) =>
+        log('SectionList', `onScroll y=${Math.round(e.nativeEvent.contentOffset.y)}`)
+      }
       scrollEventThrottle={100}
       getItemLayout={undefined}
-      onScrollToIndexFailed={() => log('SectionList', 'scrollToLocation failed (needs getItemLayout)')}
+      onScrollToIndexFailed={() =>
+        log('SectionList', 'scrollToLocation failed (needs getItemLayout)')
+      }
       renderSectionHeader={({ section }) => (
         <View style={headerStyle}>
           <Text style={label}>{section.title}</Text>
@@ -311,7 +339,11 @@ function Probe() {
           <Tile key={id} name={`nav-${id}`} style={{ flex: 1 }}>
             <Pressable
               onPress={() => setPage(id)}
-              style={{ padding: 12, backgroundColor: page === id ? '#2b6cb0' : '#1a365d', alignItems: 'center' }}
+              style={{
+                padding: 12,
+                backgroundColor: page === id ? '#2b6cb0' : '#1a365d',
+                alignItems: 'center',
+              }}
             >
               <Text style={label}>{title}</Text>
             </Pressable>

@@ -61,7 +61,8 @@ const packages = [
         'Libraries/Components/SafeAreaView/TitleBarInset.js',
         {
           // A helper of the SafeAreaView override, loaded by relative path.
-          referencedBy: 'packages/react-native-qnx/Libraries/Components/SafeAreaView/SafeAreaView.js',
+          referencedBy:
+            'packages/react-native-qnx/Libraries/Components/SafeAreaView/SafeAreaView.js',
           needle: "require('./TitleBarInset')",
         },
       ],

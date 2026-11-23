@@ -8,7 +8,7 @@
 
 const GLOBAL_NAME = '__RNQNX_TITLE_BAR_INSET__';
 const CHANGE_EVENT = 'rnqnxTitleBarInsetDidChange';
-const ZERO = Object.freeze({top: 0, right: 0, bottom: 0, left: 0});
+const ZERO = Object.freeze({ top: 0, right: 0, bottom: 0, left: 0 });
 
 function edge(value) {
   return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
@@ -36,4 +36,4 @@ function titleBarInsetPadding(inset) {
   };
 }
 
-module.exports = {CHANGE_EVENT, GLOBAL_NAME, getTitleBarInset, titleBarInsetPadding};
+module.exports = { CHANGE_EVENT, GLOBAL_NAME, getTitleBarInset, titleBarInsetPadding };

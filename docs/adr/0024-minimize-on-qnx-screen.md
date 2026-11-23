@@ -23,11 +23,11 @@ puts JavaScript on its own thread behind `QtReactHost::Options::jsThread`, and t
 
 ### What minimize does
 
-| Window manager       | Minimize                                                                                                                                                                              | Restore                                                                                                                                                                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fullscreen-winmgr`  | `minimizeByDestroyingWindow`: `QWindow::hide()` then `QWindow::destroy()`. The launcher shows because no app window is left. The window is not in the manager's Alt+Tab list.          | A second launch of the app (launcher tile, run script, or `--restore-only`) sends `restore` over the one-instance socket. The host shows the window again, recreating it when it sits behind another one. |
-| `rnqnx-winmgr`       | `sendWindowManagerRequest(window, "minimize")`: the manager message `rnqnx=minimize`. The manager hides the window and lists it in its dock. The native window and process stay.      | `rnqnx=restore`, from the dock or from a second launch. The manager shows and raises the window.                                                                                                          |
-| Off QNX (host tests) | `showMinimized()`. AppState does not follow it; this ADR defines QNX behaviour only.                                                                                                      | `restoreMinimizedWindow`.                                                                                                                                                                                |
+| Window manager       | Minimize                                                                                                                                                                         | Restore                                                                                                                                                                                                   |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fullscreen-winmgr`  | `minimizeByDestroyingWindow`: `QWindow::hide()` then `QWindow::destroy()`. The launcher shows because no app window is left. The window is not in the manager's Alt+Tab list.    | A second launch of the app (launcher tile, run script, or `--restore-only`) sends `restore` over the one-instance socket. The host shows the window again, recreating it when it sits behind another one. |
+| `rnqnx-winmgr`       | `sendWindowManagerRequest(window, "minimize")`: the manager message `rnqnx=minimize`. The manager hides the window and lists it in its dock. The native window and process stay. | `rnqnx=restore`, from the dock or from a second launch. The manager shows and raises the window.                                                                                                          |
+| Off QNX (host tests) | `showMinimized()`. AppState does not follow it; this ADR defines QNX behaviour only.                                                                                             | `restoreMinimizedWindow`.                                                                                                                                                                                 |
 
 ### What JavaScript sees
 
@@ -35,13 +35,13 @@ The host decides, not Qt. `rnqnx::runtime::HostWindowState` (native/lifecycle) h
 minimizes sets it before the window is hidden: `minimizeByDestroyingWindow` and a `minimize` manager request set it, and
 `restoreMinimizedWindow` and a `restore` request clear it. `QtApplicationLifecycle` follows it:
 
-| Event                                                    | `AppState.currentState` and the `change` event |
-| -------------------------------------------------------- | ---------------------------------------------- |
-| Host minimizes (either manager)                          | `background`                                   |
-| Qt reports inactive, hidden or suspended while minimized | no change, still `background`                  |
-| Host restores                                            | `active`, then whatever Qt reports next        |
+| Event                                                    | `AppState.currentState` and the `change` event                                                                              |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Host minimizes (either manager)                          | `background`                                                                                                                |
+| Qt reports inactive, hidden or suspended while minimized | no change, still `background`                                                                                               |
+| Host restores                                            | `active`, then whatever Qt reports next                                                                                     |
 | Qt reports active while the host still says minimized    | the host flag clears and JavaScript sees `active`; this is the window manager restoring the window without telling the host |
-| Minimize or restore requested twice                      | one transition, not two                        |
+| Minimize or restore requested twice                      | one transition, not two                                                                                                     |
 
 `Hidden` and `Suspended` map to `background`, as before. On a Qt state change that does not involve minimize, behaviour is
 unchanged. For the windows API the event order on minimize is: visibility false, then focus false. On restore it is the reverse.

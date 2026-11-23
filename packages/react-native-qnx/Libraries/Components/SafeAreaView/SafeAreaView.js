@@ -6,13 +6,16 @@
 
 const React = require('react');
 const View = require('react-native/Libraries/Components/View/View').default;
-const DeviceEventEmitter = require('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter').default;
-const {CHANGE_EVENT, getTitleBarInset, titleBarInsetPadding} = require('./TitleBarInset');
+const DeviceEventEmitter =
+  require('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter').default;
+const { CHANGE_EVENT, getTitleBarInset, titleBarInsetPadding } = require('./TitleBarInset');
 
 function useTitleBarInset() {
   const [inset, setInset] = React.useState(() => getTitleBarInset());
   React.useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener(CHANGE_EVENT, () => setInset(getTitleBarInset()));
+    const subscription = DeviceEventEmitter.addListener(CHANGE_EVENT, () =>
+      setInset(getTitleBarInset())
+    );
     // The value may have changed between render and subscription.
     setInset(getTitleBarInset());
     return () => subscription.remove();
@@ -20,10 +23,10 @@ function useTitleBarInset() {
   return inset;
 }
 
-const SafeAreaView = React.forwardRef(function SafeAreaView({style, ...props}, ref) {
+const SafeAreaView = React.forwardRef(function SafeAreaView({ style, ...props }, ref) {
   const inset = useTitleBarInset();
-  return React.createElement(View, {...props, ref, style: [style, titleBarInsetPadding(inset)]});
+  return React.createElement(View, { ...props, ref, style: [style, titleBarInsetPadding(inset)] });
 });
 SafeAreaView.displayName = 'SafeAreaView';
 
-module.exports = {__esModule: true, default: SafeAreaView, useTitleBarInset};
+module.exports = { __esModule: true, default: SafeAreaView, useTitleBarInset };
