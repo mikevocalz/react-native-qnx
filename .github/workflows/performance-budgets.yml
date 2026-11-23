@@ -8,6 +8,8 @@ on:
       - 'scripts/validate-budgets.mjs'
       - 'tests/js/performance-budgets.test.mjs'
       - 'tests/native/timing-probe/**'
+      - 'tests/native/qnx-timing-reader/**'
+      - 'vnext/probes/timing/**'
       - 'vnext/probes/playground/**'
       - 'vnext/src/**'
       - 'vnext/include/**'
@@ -64,6 +66,12 @@ jobs:
           arch: linux_gcc_64
           modules: qtmultimedia
           cache: true
+      - name: Timing reader math under ASan and UBSan (host only)
+        run: |
+          cmake -S tests/native/qnx-timing-reader -B build/timing-reader -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++
+          cmake --build build/timing-reader --parallel 2
+          ctest --test-dir build/timing-reader --output-on-failure
       - name: Timing probe under ASan and UBSan
         run: |
           cmake -S tests/native/timing-probe -B build/timing-probe -G Ninja \
