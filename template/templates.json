@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "templates": {
+    "qnx": {
+      "version": "1.0.0",
+      "description": "Static hello-world for the existing runner surface RNQnxPlayground",
+      "commands": ["init"],
+      "default": ["init"],
+      "extract": ["index.js", "metro.config.js", "babel.config.js", "README.md"]
+    },
+    "qnx-router": {
+      "version": "1.0.0",
+      "description": "expo-router drawer around a tabs group",
+      "commands": ["project-create"],
+      "default": ["project-create"],
+      "extract": null
+    }
+  }
+}
