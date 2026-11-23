@@ -1,0 +1,12 @@
+crw-rw----  1 36 root 0,   1 1970-01-01 00:00 /dev/io-hid/io-hid
+5e95f02259cbd72f55420e016daadca69f194066110227b25002b41756235a08  /data/home/qnxuser/rnqnx-tile-1/org.rnqnx.showcase
+1e36e8d8d4da5ab9f017cb2326a178a48af401e31251474d475dd287dc4c9141  /data/home/qnxuser/rnqnx-tile-1/app.bundle.js
+3
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1123 14:42:42.386458     1 conversions.h:368] Could not parse yoga::PositionType: left
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 781 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+RNQNX_SINGLE_INSTANCE replacing pid 434171938 (release)
+RNQNX_SINGLE_INSTANCE stopped org.rnqnx.showcase
+remaining: 2

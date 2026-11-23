@@ -1,0 +1,9 @@
+-rw-r--r--  1 root root 3686522 2026-11-23 14:42 /tmp/gates-baseline.bmp
+QNX qnxpi 8.0.0 2026/06/05-16:21:14EDT RaspberryPi400 aarch64le
+  696343 /data/pi400-graphics-compat/sbin/drm-rpi4 -s 
+  737305 screen -c /data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/graphics-pi400-hdmi2.conf 
+  786459 /data/rnqnx-winmgr/rnqnx-winmgr -s demolauncher,st,gtk 
+ 1081359 /bin/sh /system/etc/startup/rnqnx-desktop.sh 
+433717279 bash -c sudo -n screenshot -file=/tmp/gates-baseline.bmp 2>&1; ls -l /tmp/gates-baseline.bmp; uname -a; sudo -n pidin ar | egrep "screen|drm|winmgr|rnqnx-desktop"; ls /dev/io-hid/io-hid 
+433754146 egrep screen|drm|winmgr|rnqnx-desktop 
+/dev/io-hid/io-hid
