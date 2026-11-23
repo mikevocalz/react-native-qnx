@@ -1,0 +1,17 @@
+{
+  "name": "@rn-qnx/expo-router-example",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Expo Router example (drawer + tabs) for QNX, created from template/qnx-router",
+  "main": "index.js",
+  "dependencies": {
+    "@expo/metro-runtime": "58.0.17",
+    "@rn-qnx/expo-router-qnx": "workspace:*",
+    "expo-linking": "58.0.17",
+    "expo-router": "58.0.31",
+    "expo-status-bar": "58.0.5",
+    "react-dom": "19.3.0",
+    "react-native-safe-area-context": "5.11.1",
+    "react-native-screens": "4.30.1"
+  }
+}

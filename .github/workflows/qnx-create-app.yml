@@ -4,6 +4,9 @@ on:
     paths:
       - 'packages/react-native-qnx-cli/src/**'
       - 'tests/js/qnx-project-create.test.mjs'
+      - 'tests/js/expo-router-example.test.mjs'
+      - 'apps/expo-router-example/**'
+      - 'template/qnx-router/**'
       - 'docs/getting-started/expo-project-create.md'
       - '.github/workflows/qnx-create-app.yml'
   workflow_dispatch:
@@ -76,6 +79,16 @@ jobs:
           test -s build/marathon/icons/icon-512.png
           node -e 'const d=require("./build/marathon/native-app.json"); if (d.labelFit.status !== "measured" || d.shortName !== "Created") process.exit(1)'
           sha256sum build/qnx/app.bundle.js build/marathon/app.bundle.js
+      - name: Bundle apps/expo-router-example and prepare it twice with the real identity tool
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          set -euo pipefail
+          pnpm qnx bundle-qnx --app expo-router-example --out build/expo-router-example.bundle.js
+          test -s build/expo-router-example.bundle.js
+          grep -F 'Router Example' build/expo-router-example.bundle.js
+          sha256sum build/expo-router-example.bundle.js
+          node tests/js/expo-router-example.test.mjs
       - name: Validate architecture, codegen and dependency integrity
         run: |
           pnpm validate:architecture

@@ -116,6 +116,18 @@ jobs:
           grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/conformance-render.log"
           test -s "$evidence/conformance.png"
           sha256sum build/component-conformance.bundle.js "$evidence/conformance.png" > "$evidence/conformance-sha256.txt"
+      - name: Render apps/expo-router-example (Linux host only)
+        run: |
+          set -euo pipefail
+          evidence=build/linux-host-renderer/evidence
+          pnpm qnx bundle-qnx --app expo-router-example --out build/expo-router-example.bundle.js
+          timeout 60s build/linux-host-renderer/bin/rnqnx_playground_host \
+            --bundle "$PWD/build/expo-router-example.bundle.js" \
+            --screenshot "$PWD/$evidence/expo-router-example.png" \
+            2>&1 | tee "$evidence/expo-router-example-render.log"
+          grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/expo-router-example-render.log"
+          test -s "$evidence/expo-router-example.png"
+          sha256sum build/expo-router-example.bundle.js "$evidence/expo-router-example.png" > "$evidence/expo-router-example-sha256.txt"
       - name: Render both window chrome layouts (Linux host only, chrome ON leg)
         if: matrix.input-lifecycle == 'ON'
         run: |
