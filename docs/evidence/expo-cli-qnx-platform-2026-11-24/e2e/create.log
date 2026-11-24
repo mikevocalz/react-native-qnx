@@ -1,0 +1,29 @@
+$ /opt/homebrew/Cellar/node/26.13.0_2/bin/node /private/tmp/claude-501/-Users-mikevocalz/db418dbc-a744-4667-a304-c3a28e5c0322/scratchpad/rnqnx/packages/react-native-qnx-cli/src/bin.mjs project create --project /var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-cli-4LArjq/notes --app-id org.example.notes --name Notes
+{
+  "action": "created",
+  "destination": "/private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-cli-4LArjq/notes",
+  "identity": {
+    "appId": "org.example.notes",
+    "displayName": "Notes",
+    "componentName": "main"
+  },
+  "platforms": [
+    "qnx"
+  ],
+  "template": {
+    "template": "qnx-router",
+    "version": "1.0.0",
+    "contentSha256": "2215011569736f231eb8368a14e92ddb0cae19b62df2d5325c92748013009699",
+    "tarballSha256": "aa222ab8187fb0f71251c78c9826912629100d74da40fa6ca552db866824ef8f",
+    "tarballBytes": 3510,
+    "files": 12
+  },
+  "archives": [
+    "@rn-qnx/react-native-qnx",
+    "@rn-qnx/metro-config-qnx",
+    "@rn-qnx/expo-router-qnx"
+  ],
+  "dependenciesInstalled": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}

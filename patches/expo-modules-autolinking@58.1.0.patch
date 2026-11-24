@@ -1,0 +1,16 @@
+diff --git a/build/platforms/index.js b/build/platforms/index.js
+index 2b0bd9714f5e32e38fb85697b3e45b8d3ba2047b..488a6b5c4c45e80f692ded290e225ba05d3c6bea 100644
+--- a/build/platforms/index.js
++++ b/build/platforms/index.js
+@@ -60,6 +60,11 @@ function getSupportPackageForPlatform(platform) {
+         case 'web':
+         case 'devtools':
+             return null;
++        case 'qnx':
++        case 'marathon':
++            // React Native QNX: out-of-tree platforms that run on the stock `react-native` host
++            // package (the platform layer is @rn-qnx/react-native-qnx), so there is no fork to redirect to.
++            return 'react-native';
+         default:
+             throw new Error(`No support package is known for platform "${platform}"`);
+     }

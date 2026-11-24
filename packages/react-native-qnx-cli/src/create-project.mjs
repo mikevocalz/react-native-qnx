@@ -412,7 +412,7 @@ export async function createProjectMain(argv) {
     );
     await mkdir(path.join(destination, 'patches'));
     const patches = [...policy.matchAll(/^  [^\n]+: (patches\/[A-Za-z0-9@._-]+\.patch)$/gm)];
-    if (patches.length !== 2) {
+    if (patches.length !== 3) {
       throw new Error('Platform patch inventory drifted; review required.');
     }
     for (const match of patches) {

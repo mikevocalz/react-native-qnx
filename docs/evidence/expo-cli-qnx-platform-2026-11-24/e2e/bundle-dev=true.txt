@@ -1,0 +1,1 @@
+GET http://127.0.0.1:<port>/index.bundle?platform=qnx&dev=true -> HTTP 200, 5574276 bytes

@@ -1,0 +1,10 @@
+/private/tmp/claude-501/-Users-mikevocalz/db418dbc-a744-4667-a304-c3a28e5c0322/scratchpad/rnqnx/node_modules/.pnpm/expo-modules-autolinking@58.1.0_supports-color@8.1.1_typescript@7.0.2/node_modules/expo-modules-autolinking/build/platforms/index.js:64
+            throw new Error(`No support package is known for platform "${platform}"`);
+                  ^
+
+Error: No support package is known for platform "qnx"
+    at getSupportPackageForPlatform (/private/tmp/claude-501/-Users-mikevocalz/db418dbc-a744-4667-a304-c3a28e5c0322/scratchpad/rnqnx/node_modules/.pnpm/expo-modules-autolinking@58.1.0_supports-color@8.1.1_typescript@7.0.2/node_modules/expo-modules-autolinking/build/platforms/index.js:64:19)
+    at file:///private/tmp/claude-501/-Users-mikevocalz/db418dbc-a744-4667-a304-c3a28e5c0322/scratchpad/rnqnx/tests/js/expo-cli-qnx-platform.test.mjs:23:14
+
+Node.js v26.13.0
+exit 1
