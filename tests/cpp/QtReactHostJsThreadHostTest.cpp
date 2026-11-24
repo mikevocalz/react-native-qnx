@@ -709,7 +709,12 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
         },
         3000, "AppState transitions reached JavaScript");
     result("AppState transitions after the block: " + log);
-    if (releasesWindowForAppState()) EXPECT(log == "background,active");
+    // The first entries can be start-up changes (inactive to active) that Qt
+    // reported before the block; the minimize and restore are the last two.
+    const std::string tail = "background,active";
+    if (releasesWindowForAppState()) {
+      EXPECT(log.size() >= tail.size() && log.compare(log.size() - tail.size(), tail.size(), tail) == 0);
+    }
   }
 #endif
   // The posted calls were not lost: JavaScript saw the size and the surface

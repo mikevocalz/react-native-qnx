@@ -50,9 +50,13 @@ cd apps/performance-lab
 cd ../..
 ```
 
-Run it with `--timing-json <file> --timing-drag-steps 20` for a posted edge
-drag and the drag back, or with `--timing-observe-ms 8000` and drive the
-window with `rnqnx-inject drag` from a second shell.
+Run it with `--timing-json <file> --timing-observe-ms 7500` and drive the
+window with `rnqnx-inject drag 195 403 620 403 100` from a second shell started
+about 3 s after launch (`docs/evidence/pi400-v1-gates-2026-11-24/board/scripts/drag-loop.sh`).
+The probe also has `--timing-drag-steps N`, which posts the drag as Qt mouse
+events. On the Pi 400 on 2026-11-24 those posted events did not move the drawer
+(9 swaps, none during the drag), so no drawer-drag number comes from them; use
+the observed-pointer mode.
 
 Both entries register the existing `RNQnxPlayground` surface. This directory is
 an intentional source fixture rather than a separate workspace package;

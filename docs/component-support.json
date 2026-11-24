@@ -103,11 +103,14 @@
     {
       "name": "VirtualizedList",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Covered transitively by the FlatList virtualization test. Importable from react-native through the QNX public entry; the render test mounts it there.",
+      "notes": "Covered transitively by the FlatList virtualization test. Importable from react-native through the QNX public entry; the render test mounts it there. Pi 400: 300 rows with getItemLayout, windowSize 5. Initial render stopped at index 25; scrollToIndex(150) and wheel scrolling moved the render window (up to 150, 175, 200), onScroll offsets and onViewableItemsChanged windows (12 to 13 rows) were logged. onEndReached was not reached. Limit: no touch or kinetic flick tested, wheel and Screen-injected drag only. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-vlist.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -123,11 +126,14 @@
     {
       "name": "SectionList",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Renders through VirtualizedSectionList, ScrollView and VirtualizedList; host-tested.",
+      "notes": "Renders through VirtualizedSectionList, ScrollView and VirtualizedList; host-tested. Pi 400: 12 sections of 25 rows; viewable-item windows and onScroll offsets logged through scrolling by wheel; scrollToLocation ran. Limit: sticky header pinning was not inspected in a capture. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-vsection.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -143,11 +149,14 @@
     {
       "name": "VirtualizedSectionList",
       "host": "unverified",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Mounted directly through the public entry in the host render test (headers and rows). Scrolling, viewability and sticky headers are unverified. Importable from react-native through the QNX public entry; the render test mounts it there.",
+      "notes": "Mounted directly through the public entry in the host render test (headers and rows). Scrolling, viewability and sticky headers are unverified. Importable from react-native through the QNX public entry; the render test mounts it there. Pi 400: mounted directly from the public entry; 33 viewable-item changes and onScroll offsets logged while scrolling by wheel in both directions. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-vsection.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -163,11 +172,14 @@
     {
       "name": "Button",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Mounts and reports presses; opacity press animation reaches the connected NativeAnimated backend. Importable from react-native through the QNX public entry; the render test mounts it there.",
+      "notes": "Mounts and reports presses; opacity press animation reaches the connected NativeAnimated backend. Importable from react-native through the QNX public entry; the render test mounts it there. Pi 400: onPress delivered 2 of 2 clicks. Limit: with no color prop the title draws black on this target, unreadable on a dark background; pass color. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-after.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -183,11 +195,14 @@
     {
       "name": "TouchableOpacity",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Mounts through the responder system and uses NativeAnimated opacity. Responder coverage comes from Pressable.",
+      "notes": "Mounts through the responder system and uses NativeAnimated opacity. Responder coverage comes from Pressable. Pi 400: onPressIn, onPressOut and onPress per click; a 900 ms hold produced onLongPress after about 500 ms. The opacity change was not measured. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-after.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -203,11 +218,14 @@
     {
       "name": "TouchableHighlight",
       "host": "unverified",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Direct component coverage is unverified.",
+      "notes": "Direct component coverage is unverified. Pi 400: onShowUnderlay, onPressIn, onHideUnderlay, onPressOut and onPress per click. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-after.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -223,11 +241,14 @@
     {
       "name": "TouchableWithoutFeedback",
       "host": "unverified",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Direct component coverage is unverified.",
+      "notes": "Direct component coverage is unverified. Pi 400: onPressIn, onPressOut and onPress per click. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-after.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -243,11 +264,14 @@
     {
       "name": "ImageBackground",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Composes View and Image; paints the image behind children and forwards resizeMode. Importable from react-native through the QNX public entry; the render test mounts it there.",
+      "notes": "Composes View and Image; paints the image behind children and forwards resizeMode. Importable from react-native through the QNX public entry; the render test mounts it there. Pi 400: data-URI source fired onLoad and the child laid out over the image (1x1 PNG stretched). Limit: remote and animated sources not retested here. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-initial.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -263,11 +287,14 @@
     {
       "name": "KeyboardAvoidingView",
       "host": "no-op",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Renders children as a View and forwards the other View props; behavior, keyboardVerticalOffset, enabled and contentContainerStyle are ignored because no Keyboard module is wired. The override sits at the upstream path, so the Metro resolver selects it.",
+      "notes": "Renders children as a View and forwards the other View props; behavior, keyboardVerticalOffset, enabled and contentContainerStyle are ignored because no Keyboard module is wired. The override sits at the upstream path, so the Metro resolver selects it. Pi 400: renders its children and fires onLayout; behavior, keyboardVerticalOffset and enabled are accepted. Limit: no soft keyboard exists on this board, so avoidance cannot occur. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-initial.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -294,11 +321,14 @@
     {
       "name": "RefreshControl",
       "host": "no-op",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Renders nothing; refreshing and onRefresh are accepted and ignored. Pull-to-refresh is absent.",
+      "notes": "Renders nothing; refreshing and onRefresh are accepted and ignored. Pull-to-refresh is absent. Pi 400: renders nothing. A 270 px downward drag and five wheel-up notches at the top fired no onRefresh. Pull-to-refresh is absent. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-after.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -325,11 +355,15 @@
     {
       "name": "SafeAreaView",
       "host": "partial",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Mounts as a View with zero insets. System safe-area integration is absent. Importable from react-native through the QNX public entry; the render test mounts it there.",
+      "notes": "Mounts as a View with zero insets. System safe-area integration is absent. Importable from react-native through the QNX public entry; the render test mounts it there. Pi 400: pads by the title bar inset the host publishes. With titleBarStyle default it adds no padding (layout height 19); with hidden it adds 44 (height 63). No other system insets exist. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe-hidden-style.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/inset-hidden-style.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {
@@ -359,11 +393,14 @@
     {
       "name": "StatusBar",
       "host": "no-op",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Static API calls have no effect. The target has no status-bar integration.",
+      "notes": "Static API calls have no effect. The target has no status-bar integration. Pi 400: setBarStyle, setHidden and setBackgroundColor returned without error; currentHeight is 0; nothing is drawn. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.log",
+          "docs/evidence/pi400-v1-gates-2026-11-24/frames/comp-touch-initial.png"
+        ],
         "pi4Qsti": []
       },
       "vm": {

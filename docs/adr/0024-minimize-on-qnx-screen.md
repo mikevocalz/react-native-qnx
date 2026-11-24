@@ -2,10 +2,12 @@
 
 ## Status
 
-Proposed, 2026-11-23. The implementation and its host tests exist (macOS host, Qt 6.12.0). Nothing here has run on the QNX VM or the
-Pi 400, and AppState in JavaScript-thread mode has been compiled on the host only. The status moves to Accepted when the QNX VM
-and the Pi 400 receipts named under Notes pass. The `window-chrome` gate rule "an ADR in docs/adr defines minimize on QNX Screen"
-is met by this text once it is Accepted.
+Proposed, 2026-11-23, with Pi 400 receipts added 2026-11-24. The implementation and its host tests exist (macOS host, Qt 6.12.0). On
+the Pi 400 under `rnqnx-winmgr`, minimize logged `appstate=background` and a second launch restored with `appstate=active`, and the
+JavaScript-thread test host delivered `background,active` for a mid-block minimize and restore
+([receipt](../evidence/pi400-v1-gates-2026-11-24/README.md)). The status moves to Accepted when the two remaining items under Notes
+pass: the QNX VM `appstate` runtime test and a run under the stock `fullscreen-winmgr`. The `window-chrome` gate rule "an ADR in
+docs/adr defines minimize on QNX Screen" is met by this text.
 
 ## Context
 
@@ -116,9 +118,7 @@ Qt reports during minimize, repeated minimize, and the atomic state mirror read 
 for the minimize and restore notifications and for the one-instance key; the application identity test for the default key.
 `QnxAppStateModule.cpp` compiles on the host with `-fsyntax-only`.
 
-Needed before Accepted:
+Needed before Accepted (item 3 of the original list, `rnqnx-winmgr` on the Pi 400, passed on 2026-11-24):
 
 1. QNX VM: the `appstate` runtime test (`RNQNX_BUILD_APPSTATE_TESTS`) with `jsThread` on, for the module's JavaScript-thread path.
-2. Pi 400 under `fullscreen-winmgr`: minimize, see `background` logged, relaunch with `--restore-only`, see `active` logged, with
-   the chrome-while-JavaScript-blocked receipt from the same build.
-3. Pi 400 or the QNX VM under `rnqnx-winmgr`: the same with the manager message.
+2. Pi 400 under `fullscreen-winmgr`: minimize, see `background` logged, relaunch with `--restore-only`, see `active` logged.

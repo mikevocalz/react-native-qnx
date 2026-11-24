@@ -400,6 +400,18 @@ function(rnqnx_add_consumer_app)
   if(TARGET rnqnx_gesture_handler)
     target_link_libraries(rnqnx_consumer_app PRIVATE rnqnx_gesture_handler)
   endif()
+  if(RNQNX_ENABLE_TIMING_PROBE)
+    # The same recorder the playground has: --timing-json, wheel, drag and observe runs.
+    set(_timing_sources "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../vnext/probes/playground/TimingProbe.cpp")
+    if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+      list(APPEND _timing_sources "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../vnext/probes/timing/QnxProcessMemory.cpp")
+    endif()
+    target_sources(rnqnx_consumer_app PRIVATE ${_timing_sources})
+    target_include_directories(rnqnx_consumer_app PRIVATE
+      "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../vnext/probes/playground"
+      "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../vnext/probes/timing")
+    target_compile_definitions(rnqnx_consumer_app PRIVATE RNQNX_ENABLE_TIMING_PROBE=1)
+  endif()
   rnqnx_enable_strict_warnings(rnqnx_consumer_app)
   target_compile_definitions(rnqnx_consumer_app PRIVATE RNQNX_CONSUMER_APP_HEADER="${header}" RNQNX_PLAYGROUND_BUNDLE_PATH="")
   if(RNQNX_ENABLE_WINDOW_CHROME)

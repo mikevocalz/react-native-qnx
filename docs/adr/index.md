@@ -28,7 +28,7 @@ This directory records significant architectural decisions for `react-native-qnx
 | [0021](0021-javascript-thread-off-the-qt-gui-thread.md)       | JavaScript on its own thread, off the Qt GUI thread             | Proposed; opt-in, host tests only                  | 2026-11-21 |
 | [0022](0022-marathon-launcher-entry-generator.md)             | Marathon launcher entry generator, and the scope lift for it    | Accepted; host tests only                          | 2026-11-21 |
 | [0023](0023-pi400-stands-in-for-device-parity.md)             | The Pi 400 stands in for the device-parity gate                 | Accepted (owner Mike, 2026-11-23)                  | 2026-11-23 |
-| [0024](0024-minimize-on-qnx-screen.md)                        | Minimize on QNX Screen, and what AppState reports               | Proposed; host tests only                          | 2026-11-23 |
+| [0024](0024-minimize-on-qnx-screen.md)                        | Minimize on QNX Screen, and what AppState reports               | Proposed; Pi 400 receipts, VM test pending         | 2026-11-23 |
 
 ADR-0015 was filed as a second ADR-0013 and renumbered on 2026-11-11. Links to
 `0013-marathon-linux-wayland-native-target.md` now point to

@@ -82,6 +82,15 @@ function run() {
     log('setBounds skipped: target has no move/resize capability');
   }
 
+  // Runtime layout switch: flip the control layout once, 3 s after start.
+  setTimeout(() => {
+    const next = windows.getState().controlsLayout === 'windows' ? 'macos' : 'windows';
+    windows
+      .setControlsLayout(next)
+      .then(() => log(`setControlsLayout ok layout=${windows.getState().controlsLayout}`))
+      .catch((error) => log(`setControlsLayout failed ${describe(error)}`));
+  }, 3000);
+
   setTimeout(() => {
     windows
       .minimize()

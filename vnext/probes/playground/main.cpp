@@ -102,6 +102,7 @@
 #include <QString>
 #include <QThread>
 #include <QTimer>
+#include <jsi/jsi.h>
 #include <utility>
 #include <functional>
 #include <memory>
@@ -1227,8 +1228,29 @@ int main(int argc, char** argv) {
     // The title bar inset reaches JavaScript (TitleBarInset.js, SafeAreaView)
     // before the first render and again whenever the layout changes.
     rnqnx::window::WindowChrome* inset = chrome.get();
+    // Set through JSI, not evaluated as source: the lean Hermes on QNX runs
+    // bytecode only and rejects script text.
     const auto publishInset = [&host, inset]() {
-      host.evaluate(inset->titleBarInsetScript().toStdString(), "rnqnx://title-bar-inset");
+      const auto values = inset->titleBarInsetValues();
+      host.runOnJsThread([&host, values]() {
+        auto& rt = host.runtime();
+        namespace jsi = facebook::jsi;
+        jsi::Object object(rt);
+        object.setProperty(rt, "top", static_cast<double>(values.top));
+        object.setProperty(rt, "right", static_cast<double>(values.right));
+        object.setProperty(rt, "bottom", static_cast<double>(values.bottom));
+        object.setProperty(rt, "left", static_cast<double>(values.left));
+        rt.global().setProperty(rt, "__RNQNX_TITLE_BAR_INSET__", object);
+        const auto emitter = rt.global().getProperty(rt, "__rctDeviceEventEmitter");
+        if (emitter.isObject()) {
+          auto emitterObject = emitter.asObject(rt);
+          const auto emit = emitterObject.getProperty(rt, "emit");
+          if (emit.isObject() && emit.asObject(rt).isFunction(rt)) {
+            emit.asObject(rt).asFunction(rt).callWithThis(
+                rt, emitterObject, jsi::String::createFromAscii(rt, "rnqnxTitleBarInsetDidChange"));
+          }
+        }
+      });
     };
     publishInset();
     QObject::connect(inset, &rnqnx::window::WindowChrome::layoutChanged, inset, publishInset);
