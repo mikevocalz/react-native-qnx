@@ -3,8 +3,10 @@ e36fa8d94e3a191e6c889b05a7e1ff10570e2c23b23d3dcbcc53031121402cfb  ./board/app-mi
 4819c969011dc5d89c518cc7e7b337a75cd18fa584c32ceed5b991c2236a6725  ./board/chrome-probe-macos-minimize-restore.txt
 0e945162c308c396dab43ed6759e64beb7e62051bcce98f731b593d062d797e5  ./board/component-probe-hidden-style.txt
 dfcd64f7d6b0646f2deeca389dc2e023490c2815b565d83c4affbb8a83117063  ./board/component-probe.txt
-a6e65f84532c44a5660443b978ac16848fc819817622b427fd4574ab4529f72c  ./board/deployed-sha256.txt
+06ebd5da9e10a450537109b248b8f84902453a41935bd7db432911b1ba7cb334  ./board/deployed-sha256.txt
 baaaa969c918a5df4e967e1a2923c733c90ab44173917c2b10f0e6db8c7f2108  ./board/display-mode.txt
+d6e4359008d9a5a1e326fb7c1b9341cc91fac1710029573a39c41febc2a306f0  ./board/expo-dev-client-metro.txt
+a4aed54a0b2c23fdec8bed5a99f50c8a706d13d16e4f498b701e9fbd2d3ba068  ./board/expo-dev-client.txt
 6cb5c789c41a6f382f19fec692bffc15035f94e47a9da64192880f099e60e08b  ./board/expo-preflight-missing-module.txt
 a46d322cdeeedf5b6c1c16a421510605e51c09e5a6635a830dd690e3001678e0  ./board/expo-preflight-ok.txt
 12e558cf41b5a65a8ca600553532a591875a5e241aae1663f783931127ce6572  ./board/expo-router-example.txt
@@ -25,6 +27,8 @@ d4bf276e62d91542952e1293ae7281af576db3dc22195eca241fad7956d4ec35  ./board/script
 ddf23a963481b43781a6a3d50ea22c475683611b5140c4dc8d0763357d2be4bc  ./frames/comp-touch-initial.png
 c615dca52846098de3864250fa86a51b969888a7454cabad5a14d7f3a3c7a8cf  ./frames/comp-vlist.png
 e8768d5adb59319144b24fbf0a20a7fd809dcbc3c4f3c28b8a46593d0dbb2066  ./frames/comp-vsection.png
+0a147de89a804237c7b0e24a8947674d48dd402b13f4aeb8c7558ed7ce039c99  ./frames/dev-client-fast-refresh.png
+956ee5bbbf6cf4e90fb553c62aacf6be8f05052f972a5f1dac1ef14877bdf64e  ./frames/dev-client-home.png
 78232ed9b784bb85aae807dcac6ae13c3f9a51920f5b6603710eed0c5c1d108a  ./frames/drawer-physical-open.png
 996bb2381681ce210ab2713890f28d7aa8d2fd0c4c210abd84a96842667418a6  ./frames/expo-controls.png
 c811e1eae911b80dc70daed8dff070d806b762e13e1eae60c2c9c0951ab28fc6  ./frames/expo-explore.png
@@ -129,4 +133,4 @@ d01cdd5c83cdda425c9d1af1f90dc39b9eefa2915ddcacdfa17b2218e86e75fd  ./perf/list-10
 1a0bf96dc61dc671ad1e9cfdeff5c18664755d95678a5149dfc5659906fba289  ./perf/list-1000/list-1000-7.json
 699e48c5911a9f7d846327fc6a739f009e401c72b3f81567b917752656d1c737  ./perf/list-1000/list-1000-8.json
 95423faf6e6bf950c7d7fb62dfc486cd1a84da48a4c558d7f21f6fae80c87468  ./perf/list-1000/list-1000-9.json
-974733f6d2e301cfa82fd09ffa478d1d304508e4770892691bdfdc6a1b0af0f6  ./README.md
+bbea214c6c22bdb7fd56ba9d503f54bc0c2778d5b0cb7f12295def1217b24190  ./README.md

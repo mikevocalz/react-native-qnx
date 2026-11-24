@@ -20,7 +20,14 @@ function titleBarWindows() {
     if (error != null && error.code === 'WINDOWS_UNAVAILABLE') return null;
     // The runtime package is not installed next to this app: nothing to ask.
     // (create-project does not vendor @rn-qnx/qnx-nitro-runtime yet.)
-    if (error != null && error.code === 'MODULE_NOT_FOUND') return null;
+    // Node reports MODULE_NOT_FOUND; Metro's development runtime throws a plain
+    // Error whose message starts with "Cannot find module".
+    if (
+      error != null &&
+      (error.code === 'MODULE_NOT_FOUND' || /^Cannot find module/.test(String(error.message)))
+    ) {
+      return null;
+    }
     throw error;
   }
 }

@@ -1,0 +1,32 @@
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+Metro for qnx on port 8081 (expo-router-example)
+  --dev-server http://192.168.1.173:8081
+  --dev-server http://169.254.79.23:8081
+  --dev-server http://192.168.2.1:8081
+ BUNDLE  apps/expo-router-example/index.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+development client connected (1 on /message)
+ BUNDLE  apps/expo-router-example/index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 61% (566/723)
+ BUNDLE  apps/expo-router-example/index.js 
+development client connected (2 on /message)
+ LOG  Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+ ERROR  [Error: Cannot find module '@rn-qnx/qnx-nitro-runtime']
+ ERROR  [Error: Cannot find module '@rn-qnx/qnx-nitro-runtime']
+ ERROR  [TypeError: Cannot read property 'SafeAreaProvider' of undefined]
