@@ -1,8 +1,12 @@
 /**
  * `RefreshControl` for QNX.
  *
- * QNX targets do not have a native pull-to-refresh gesture, so this is a
- * minimal no-op. It renders nothing and ignores `refreshing` and `onRefresh`.
+ * Renders nothing. QNX has no native pull view, and upstream's ScrollView would
+ * not mount this element anyway (it does so only for ios and android). The QNX
+ * ScrollView reads this element's `onRefresh`, `refreshing` and `enabled` props
+ * and calls `onRefresh` when a finger pulls down from the top
+ * (Libraries/Components/ScrollView/PullToRefresh.js). This module holds no
+ * state and draws no indicator.
  */
 
 'use strict';

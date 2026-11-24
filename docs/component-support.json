@@ -320,10 +320,10 @@
     },
     {
       "name": "RefreshControl",
-      "host": "no-op",
+      "host": "partial",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Renders nothing; refreshing and onRefresh are accepted and ignored. Pull-to-refresh is absent. Pi 400: renders nothing. A 270 px downward drag and five wheel-up notches at the top fired no onRefresh. Pull-to-refresh is absent. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
+      "notes": "Renders nothing. The QNX ScrollView (packages/react-native-qnx/Libraries/Components/ScrollView) calls onRefresh when one finger goes down at the top of a vertical ScrollView and moves 72 points down; refreshing=true or enabled=false suppress it. No indicator, no native overscroll. Host test only (tests/js/pull-to-refresh.test.mjs). Pi 400, 2026-11-24, before this change: a 270 px downward drag and five wheel-up notches at the top fired no onRefresh because upstream ScrollView never mounted the control and the QNX control did nothing. Not re-run on the Pi since. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
         "pi400": [
           "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.txt",
