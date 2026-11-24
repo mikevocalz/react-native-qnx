@@ -41,4 +41,4 @@ the block and delivered in order once it ended. The chrome stayed operable durin
   passes with it.
 - Nothing ran under the stock `fullscreen-winmgr`. See ADR-0024, Notes.
 
-Verify the directory with `shasum -a 256 -c SHA256SUMS`.
+Verify the directory with `shasum -a 256 -c SHA256SUMS`. `result.json` was reformatted with Prettier after the run (whitespace only) and its checksum updated.
