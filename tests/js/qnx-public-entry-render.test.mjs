@@ -180,8 +180,8 @@ const texts = (renderer) =>
   findAll(renderer, 'Text').map((node) => [node.props.children].flat().join(''));
 
 // 1. Every export is the default export of the module behind it. ImageBackground
-// has a QNX override (packages/react-native-qnx/Libraries/Image/ImageBackground.js);
-// the other four are upstream react-native@0.88.1 files.
+// and Button have QNX overrides (packages/react-native-qnx/Libraries/Image/ImageBackground.js,
+// Libraries/Components/Button.js); the other three are upstream react-native@0.88.1 files.
 const cases = {
   VirtualizedList: 'Lists/VirtualizedList',
   VirtualizedSectionList: 'Lists/VirtualizedSectionList',
@@ -255,6 +255,25 @@ for (const [name, modulePath] of Object.entries(cases)) {
   const disabledTouchable = findAll(disabled, 'TouchableOpacity')[0];
   assert.equal(disabledTouchable.props.disabled, true);
   assert.equal(disabledTouchable.props.accessibilityState?.disabled, true);
+
+  // Colors. Upstream styles Button only for ios and android, so on qnx the title
+  // had no color (black, unreadable on a dark background) and `color` painted
+  // the button background instead of the title. The QNX override uses the iOS
+  // look: a blue title, and `color` sets the title color.
+  const titleStyle = (renderer) => flatten(findAll(renderer, 'Text')[0].props.style);
+  const buttonStyle = (renderer) => flatten(findAll(renderer, 'View')[0].props.style);
+  const plain = render(h(api.Button, { title: 'Plain', onPress() {} }));
+  assert.equal(titleStyle(plain).color, '#007AFF', 'no color prop: readable default title color');
+  assert.equal(titleStyle(plain).fontSize, 18);
+  assert.equal(buttonStyle(plain).backgroundColor, undefined);
+  assert.equal(titleStyle(press).color, '#1b8f96', 'color prop colors the title');
+  assert.equal(buttonStyle(press).backgroundColor, undefined, 'color prop is not a background');
+  assert.equal(titleStyle(disabled).color, '#cdcdcd', 'disabled title is dimmed');
+  const disabledColored = render(
+    h(api.Button, { title: 'Off', onPress() {}, color: '#1b8f96', disabled: true })
+  );
+  assert.equal(titleStyle(disabledColored).color, '#cdcdcd', 'disabled wins over color');
+  assert.equal(titleStyle(plain).textAlign, 'center');
 }
 
 // 5. ImageBackground (QNX override) paints the image first, sized by the
