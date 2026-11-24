@@ -174,7 +174,7 @@
       "host": "supported",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Mounts and reports presses; opacity press animation reaches the connected NativeAnimated backend. Importable from react-native through the QNX public entry; the render test mounts it there. Pi 400: onPress delivered 2 of 2 clicks. Limit: with no color prop the title draws black on this target, unreadable on a dark background; pass color. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
+      "notes": "Mounts and reports presses; opacity press animation reaches the connected NativeAnimated backend. Importable from react-native through the QNX public entry; the render test mounts it there. Pi 400: onPress delivered 2 of 2 clicks. Limit: that Pi run used React Native's own Button, whose title drew black on a dark background. A QNX override (packages/react-native-qnx/Libraries/Components/Button.js) now gives the title the iOS blue, makes color the title color and dims a disabled title; the host render test asserts those styles. Not re-run on the Pi since the override. Evidence: docs/evidence/pi400-v1-gates-2026-11-24 (Pi 400, 2026-11-24, org.rnqnx.playground with apps/rn-playground/component-device-probe.js, input from rnqnx-inject through QNX Screen).",
       "evidence": {
         "pi400": [
           "docs/evidence/pi400-v1-gates-2026-11-24/board/component-probe.txt",
