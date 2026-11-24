@@ -311,7 +311,8 @@
       "evidence": [
         "docs/evidence/pi400-v1-gates-2026-11-24/README.md",
         "docs/evidence/expo-runner-pack-2026-11-24/README.md",
-        "docs/evidence/expo-cli-qnx-platform-2026-11-24/README.md"
+        "docs/evidence/expo-cli-qnx-platform-2026-11-24/README.md",
+        "docs/evidence/host-runner-release-2026-11-24/README.md"
       ]
     },
     {
