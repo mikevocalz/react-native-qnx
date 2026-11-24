@@ -1,0 +1,9 @@
+== relocated archive smoke (host, extracted copy, QT_QPA_PLATFORM=offscreen)
+Running "RNQnxPlayground"
+qt.qpa.fonts: Populating font family aliases took 117 ms. Replace uses of missing font family "Sans Serif" with one that exists to avoid this cost. 
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1124 17:52:08.355782 4211310464 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x761ac68218).
+W1124 17:52:08.355893 1812918272 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x108ffa0d8).
+W1124 17:52:08.355916 1812918272 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x761acc4318).
+RNQNX_PLAYGROUND_SCREENSHOT ../shot2.png 640x480
+exit=0
