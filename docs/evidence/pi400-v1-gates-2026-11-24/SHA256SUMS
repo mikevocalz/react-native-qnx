@@ -11,7 +11,7 @@ a4aed54a0b2c23fdec8bed5a99f50c8a706d13d16e4f498b701e9fbd2d3ba068  ./board/expo-d
 a46d322cdeeedf5b6c1c16a421510605e51c09e5a6635a830dd690e3001678e0  ./board/expo-preflight-ok.txt
 12e558cf41b5a65a8ca600553532a591875a5e241aae1663f783931127ce6572  ./board/expo-router-example.txt
 6e0579e00960df38a75d6a367d9d18b637c8d1c3fd5c0dafd4fa4d9567507df8  ./board/js-thread-test-pi400.txt
-5773d0bdd236048a31c37b3c6c34d3c4d3a4b3e8226c0f3c1d366a976d6297ac  ./board/rnqnx-runtime.json
+d662d543e119545aa1e9ad884483f2dae7dd8975f330ee111c75b8c8fa640f9f  ./board/rnqnx-runtime.json
 ae963679e15dcaceef954b5463d351f540058316ab420281bacc827e1b27353b  ./board/scripts/deploy.sh
 25ffb1a1054e37d9aacb4642b534d6f55f67405f7256525cefa387284fa74441  ./board/scripts/drag-loop.sh
 5ede43086f2e7111cb0bda9357d8d33830ffcef73c5b64588819b379c545a293  ./board/scripts/perf-loop2.sh
