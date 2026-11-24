@@ -1,0 +1,21 @@
+Running "RNQnxPlayground"
+RNQNX_WINDOWS_PROBE 42 capabilities ["close","minimize","maximize","move","resize"]
+RNQNX_WINDOWS_PROBE 42 state sequence=2 title="RN QNX Playground" size=900x600 position=189,59 focused=false visible=true maximized=false controls=macos
+RNQNX_WINDOWS_PROBE 42 guard registered
+RNQNX_WINDOWS_PROBE 44 visibility visible=true
+RNQNX_WINDOWS_PROBE 44 setTitle ok title="Windows API probe"
+RNQNX_WINDOWS_PROBE 44 setBounds ok applied={"x":60,"y":60,"width":640,"height":480}
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=900x600 mode=native-moved
+RNQNX_NODE name=rnqnxWindowChrome visible=1
+RNQNX_NODE name=rnqnxTitleBar visible=1
+RNQNX_WINDOWS_PROBE 145 focus focused=true
+RNQNX_WINDOWS_PROBE 2895 setControlsLayout ok layout=windows
+RNQNX_WINDOWS_PROBE 8323 visibility visible=false
+RNQNX_WINDOWS_PROBE 8323 focus focused=false
+RNQNX_WINDOWS_PROBE 8323 minimize-api ok
+RNQNX_WINDOW_ACTION restore
+RNQNX_WINDOWS_PROBE 33371 visibility visible=true
+RNQNX_WINDOWS_PROBE 33371 focus focused=true
+RNQNX_WINDOW_ACTION minimize
+RNQNX_WINDOWS_PROBE 36383 visibility visible=false
+RNQNX_WINDOWS_PROBE 36383 focus focused=false

@@ -1,0 +1,77 @@
+[INFO] platform=qnx blockMs=5000 responsiveMs=500
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1124 01:49:09.290138     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b1b36458).
+W1124 01:49:09.290537     9 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b28024d8).
+W1124 01:49:09.290635     9 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b1b367c8).
+W1124 01:49:09.295696     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b1001778).
+W1124 01:49:09.296139     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b102fca8).
+W1124 01:49:09.296209     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b101a728).
+[PASS] jsRunsOnItsOwnThread
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:09.360543     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b1b2e188).
+W1124 01:49:09.360934     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b105b9a8).
+W1124 01:49:09.360998     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b1b2e4f8).
+[PASS] mountsAreAppliedOnTheGuiThread
+W1124 01:49:09.481601     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b1b572f8).
+W1124 01:49:09.482018     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b1b2e658).
+W1124 01:49:09.482234     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b1b57668).
+[PASS] timersAndCompletionsRunOnTheJsThread
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:11.057564     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b0224be8).
+W1124 01:49:11.057904     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b1b1ba88).
+W1124 01:49:11.057971     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b0224f58).
+[PASS] resizeAndWindowSizeDoNotWaitForJavaScript
+[RESULT] AppState initial=active
+[RESULT] grab flag-on-after-pan-mid-block 640x480 /tmp/jsshots/flag-on-after-pan-mid-block.png
+[RESULT] grab flag-on-after-restore-first-frame-mid-block 640x480 /tmp/jsshots/flag-on-after-restore-first-frame-mid-block.png
+[RESULT] grab flag-on-after-restore-400ms-mid-block 640x480 /tmp/jsshots/flag-on-after-restore-400ms-mid-block.png
+[RESULT] item grab flag-on-after-restore-item-tree-mid-block did not finish in 3 s
+[RESULT] AppState transitions after the block: background,active
+[RESULT] flag=on blockMs=5000 blocked=5002ms heartbeats@3841ms=345 total=461 panMs=95 contentY=-0->48 minimizeMs=5 closeMs=0 resizeMs=0 touchDispatchedNatively=10 touchSeenByJs=6 (starts 2, moves 2 coalesced from 6, ends 2) responsiveBoundMs=500
+blocked=5002ms beats@3841ms=345 total=461
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:16.142040     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b35e7908).
+W1124 01:49:16.142413     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b35c8408).
+W1124 01:49:16.142483     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b35e7c78).
+[PASS] blockedJavaScriptLeavesTheGuiThreadResponsive
+[RESULT] flag=off blockMs=5000 blocked=5000ms heartbeatsDuringBlock=0 firstHeartbeatAt=5001ms lastHeartbeatAt=5001ms contentYAtBlockEnd=-0 closeActionAt=5001ms (queued click ran only after the block)
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:21.279412     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b01715e8).
+W1124 01:49:21.279917     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b1b3b838).
+W1124 01:49:21.280071     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b1b1b9d8).
+[PASS] blockedJavaScriptFreezesTheGuiThreadWithTheFlagOff
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:21.390877     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b0223b98).
+W1124 01:49:21.391238     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b106fbb8).
+W1124 01:49:21.391304     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b0223f08).
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:21.487859     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b3c4af48).
+W1124 01:49:21.488216     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b34472c8).
+W1124 01:49:21.488274     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b3c4b2b8).
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:21.584888     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b01f9918).
+W1124 01:49:21.585242     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b0171888).
+W1124 01:49:21.585299     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b01f9c88).
+[PASS] teardownWithQueuedWorkIsClean
+[RESULT] AppState resolves in JS-thread mode: ok
+[RESULT] no refusing library is compiled into this build
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:21.647313     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b3c303a8).
+W1124 01:49:21.647608     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b1b32ec8).
+W1124 01:49:21.647670     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b3c30718).
+[PASS] unmovedLibrariesRefuseWithAClearError
+[RESULT] FileReader readAsText -> rejected: FileReaderModule is not implemented on this platform
+[RESULT] ImageLoader getSize(37x23 png) -> 37x23, settled on the JS thread
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:21.779364     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b020b848).
+W1124 01:49:21.779786     9 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b35e9518).
+W1124 01:49:21.779853     9 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b020bbb8).
+[PASS] turboModulesResolveAndCompleteOnTheJsThread
+[RESULT] Nitro installQnxNitroRuntime on the JS thread: async callback and native Promise round trip
+[js task error] Non-JS exception: AppRegistryBinding::stopSurface failed. Global was not installed.
+W1124 01:49:21.910980     5 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 40b020ca48).
+W1124 01:49:21.911475     9 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 40b0214dd8).
+W1124 01:49:21.911578     9 UIManager.cpp:57] UIManager::~UIManager() was called (address: 40b0210cd8).
+[PASS] nitroInstallerAndDispatcherUseTheJsThread
+All 10 JS-thread tests passed.
+exit=0

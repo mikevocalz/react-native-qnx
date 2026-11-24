@@ -1,0 +1,28 @@
+Running "RNQnxPlayground"
+RNQNX_WINDOWS_PROBE 42 capabilities ["close","minimize","maximize","move","resize"]
+RNQNX_WINDOWS_PROBE 42 state sequence=2 title="RN QNX Playground" size=900x600 position=189,59 focused=false visible=true maximized=false controls=windows
+RNQNX_WINDOWS_PROBE 42 guard registered
+RNQNX_WINDOWS_PROBE 44 visibility visible=true
+RNQNX_WINDOWS_PROBE 44 setTitle ok title="Windows API probe"
+RNQNX_WINDOWS_PROBE 44 setBounds ok applied={"x":60,"y":60,"width":640,"height":480}
+RNQNX_WINDOW_CHROME platform=qnx controls=windows style=default inset=44 window=900x600 mode=native-moved
+RNQNX_NODE name=rnqnxWindowChrome visible=1
+RNQNX_NODE name=rnqnxTitleBar visible=1
+RNQNX_WINDOWS_PROBE 133 focus focused=true
+RNQNX_SYSTEM_MOVE_PROBE platform=qnx startSystemMove=0 startSystemResize left=0 right=0 top=0 bottom=0 top-left=0 bottom-right=0
+RNQNX_WINDOWS_PROBE 7644 visibility visible=false
+RNQNX_WINDOWS_PROBE 7644 focus focused=false
+RNQNX_WINDOWS_PROBE 7644 minimize-api ok
+RNQNX_WINDOW_ACTION restore
+RNQNX_WINDOWS_PROBE 53162 visibility visible=true
+RNQNX_WINDOWS_PROBE 53162 focus focused=true
+RNQNX_WINDOW_ACTION close
+RNQNX_WINDOWS_PROBE 55761 guard request=1 reason=control cancellable=true deadlineMs=none decision=cancel
+RNQNX_WINDOW_ACTION close
+RNQNX_WINDOWS_PROBE 71362 guard request=2 reason=control cancellable=true deadlineMs=none decision=allow
+RNQNX_WINDOWS_PROBE 71364 visibility visible=false
+RNQNX_WINDOWS_PROBE 71364 focus focused=false
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1124 01:47:09.169145     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 239940a478).
+W1124 01:47:09.169647     7 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2399458c38).
+W1124 01:47:09.169716     7 UIManager.cpp:57] UIManager::~UIManager() was called (address: 2399423428).
