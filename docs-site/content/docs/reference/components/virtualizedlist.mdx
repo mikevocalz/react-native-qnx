@@ -39,7 +39,7 @@ The generated notes give its host coverage as "covered transitively by the FlatL
 | `maxToRenderPerBatch`, `updateCellsBatchingPeriod`              | number   | JavaScript, untested                     | Drive `setTimeout` batching; timers are real `QTimer`s.                                     |
 | `getItemLayout`                                                 | function | JavaScript, untested                     | Replaces measured sizes; the test sizes cells from `onLayout`.                              |
 | `horizontal`, `inverted`                                        | boolean  | see below                                | `inverted` is dropped for vertical lists by the transform reader. `horizontal` is untested. |
-| `refreshing`, `onRefresh`                                       | various  | ignored                                  | Routed through a `RefreshControl` that `ScrollView` drops on QNX.                           |
+| `refreshing`, `onRefresh`                                       | various  | partial                                  | Routed through a `RefreshControl`; the QNX `ScrollView` calls `onRefresh` on a touch pull.  |
 
 ## Events
 

@@ -1,6 +1,6 @@
 ## Props
 
-`FlatList` is React Native's upstream JavaScript. No QNX override exists under `packages/react-native-qnx/Libraries` (the directory holds only `Image`, `Components` entries for StatusBar, RefreshControl, TextInput, Switch and KeyboardAvoidingView, and a few utilities). The QNX public entry exports it (`packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js:24-26`). It renders `VirtualizedList` from `@react-native/virtualized-lists` over a `ScrollView`, which mounts as a Qt Quick `Flickable`. The host test comment says it plainly: FlatList is upstream JavaScript over `ScrollView`, so it needs a mounted Flickable, measured children, `Dimensions`, timers and scroll offsets coming back (`tests/cpp/QtReactHostHostTest.cpp`, `flatListRendersAndVirtualises`, line 1544).
+`FlatList` is React Native's upstream JavaScript. No QNX override exists under `packages/react-native-qnx/Libraries` (the directory holds only `Image`, `Components` entries for Button, ScrollView, StatusBar, RefreshControl, TextInput, Switch and KeyboardAvoidingView, and a few utilities). The QNX public entry exports it (`packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js:24-26`). It renders `VirtualizedList` from `@react-native/virtualized-lists` over a `ScrollView`, which mounts as a Qt Quick `Flickable`. The host test comment says it plainly: FlatList is upstream JavaScript over `ScrollView`, so it needs a mounted Flickable, measured children, `Dimensions`, timers and scroll offsets coming back (`tests/cpp/QtReactHostHostTest.cpp`, `flatListRendersAndVirtualises`, line 1544).
 
 Every prop below is JavaScript behavior. None has a FlatList-specific native reader. Their support depends on four things the platform supplies, each traced here: scroll events that carry `contentOffset`, `contentSize` and `layoutMeasurement`; `onLayout` for the list and its cells; timers; and Yoga.
 
@@ -17,7 +17,7 @@ Every prop below is JavaScript behavior. None has a FlatList-specific native rea
 | `numColumns`                            | number   | JavaScript, untested                     | Rows of flex-row Views from `FlatList.js`; needs only Yoga. See Unsupported or partial props.             |
 | `horizontal`                            | boolean  | partial, untested                        | Passed to `ScrollView`; native reads it only in `scrollToEnd`.                                            |
 | `inverted`                              | boolean  | ignored for vertical lists               | Implemented as `scaleY: -1`, and the adapter reads only the x scale factor.                               |
-| `refreshing`, `onRefresh`               | various  | ignored                                  | Wrapped in a `RefreshControl` that `ScrollView` drops on QNX.                                             |
+| `refreshing`, `onRefresh`               | various  | partial                                  | Wrapped in a `RefreshControl`; the QNX `ScrollView` calls `onRefresh` on a touch pull from the top.       |
 
 ## Events
 
@@ -25,7 +25,7 @@ Every prop below is JavaScript behavior. None has a FlatList-specific native rea
 
 - `onEndReached`: `_maybeCallOnEdgeReached` (`VirtualizedList.js:1561-1625`) compares the distance from the end, computed from those three metrics, with `onEndReachedThreshold` times the viewport length, and fires once per content length. QNX supplies every input. No test, app or gallery card in the repository sets `onEndReached` (searched `tests/`, `apps/`, `packages/`), so it has never been exercised here.
 - `onViewableItemsChanged`: `ViewabilityHelper` runs on the same metrics plus cell layouts. The SectionList host test registers the callback and asserts `viewableItems.length >= 1` (`apps/rn-playground/index.js:451`, `tests/cpp/QtReactHostHostTest.cpp:1704-1745`), recorded as PASS in `docs/evidence/drawer-route-2026-11-13/drawer-input-host-test.txt:168`. That covers the initial report. A change after scrolling is not asserted, and no test sets the callback on a `FlatList`.
-- `onRefresh`: `VirtualizedList` builds a `RefreshControl` and passes it as the ScrollView's `refreshControl` (`VirtualizedList.js:1292-1320`). `ScrollView.js` renders `refreshControl` only for `ios` and `android`, so on `qnx` it is dropped, and the QNX `RefreshControl` returns null anyway. `onRefresh` never fires.
+- `onRefresh`: `VirtualizedList` builds a `RefreshControl` and passes it as the ScrollView's `refreshControl` (`VirtualizedList.js:1292-1320`). Upstream `ScrollView.js` renders `refreshControl` only for `ios` and `android`; the QNX `ScrollView` copy does not mount it but calls its `onRefresh` when a finger pulls 72 points down from the top. No indicator is drawn. Host test only.
 - `onScrollToIndexFailed`: JavaScript, raised by `scrollToIndex` when it cannot place the index. Not tested.
 
 ## Platform behavior on QNX
