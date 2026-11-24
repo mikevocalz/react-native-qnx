@@ -308,7 +308,10 @@
       "title": "Expo readiness",
       "status": "pending",
       "acceptance": "One-command create and an add-to-existing-Expo-app path; static app.json and dynamic app.config.js/.ts resolved through @expo/config; packages/expo-qnx-config-plugins as the single source of native configuration (name, short name, icon, chrome layout, title bar style, initial window size) with no hand-edited native files, and a second prebuild run that changes nothing; Expo CLI owning Metro, logs and reload; a prebuilt development runner, versioned against its SDP, Qt and React Native and verified against a published hash on download, for the QNX release board and for macOS and Linux hosts, a custom development build and a standalone package; a native-module requirement check before JavaScript loads; autolinking of Expo and Nitro modules outside this checkout; a committed Expo SDK 58 package support list generated from tests, with a check that fails when it drifts; apps/expo-router-example running on device. Acceptance: on a clean host without the SDP, create an app, change name, icon and chrome layout only through Expo config and run it on the device in the downloaded runner with Fast Refresh; then with the SDP build and launch the standalone package on the device, recorded end to end.",
-      "evidence": ["docs/evidence/pi400-v1-gates-2026-11-24/README.md"]
+      "evidence": [
+        "docs/evidence/pi400-v1-gates-2026-11-24/README.md",
+        "docs/evidence/expo-runner-pack-2026-11-24/README.md"
+      ]
     },
     {
       "id": "dependencies",
