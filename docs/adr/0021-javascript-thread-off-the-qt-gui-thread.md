@@ -125,8 +125,11 @@ Mounts queued from step 1 capture the delegate, so they must run before step 3.
 `QtWorkletsPlatform::install`, `QtGesturePlatform::install` and
 `installReanimated` read the runtime from the GUI thread and run worklets against
 it. In JS-thread mode they throw `std::runtime_error` naming this ADR. The
-AppState module needs the GUI thread for its constructor and signals, so a
-lookup of it in this mode throws. All four stay on the single-thread path until
+AppState module needed the GUI thread for its constructor and signals, so a
+lookup of it in this mode threw; [ADR-0024](0024-minimize-on-qnx-screen.md)
+moves its observer to the GUI thread and gives JavaScript an atomic cache, so
+AppState now loads in this mode (host-compiled only; the QNX VM result above
+predates it). The other three stay on the single-thread path until
 each is moved and tested. On the QNX VM all four refused with their
 ADR-0021 message (see Results). `QnxDevSupport` was not run in this mode. The
 Nitro runtime installer, the WebSocket and FileReader modules and

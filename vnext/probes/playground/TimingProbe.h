@@ -10,6 +10,7 @@
 // highest of the samples taken every 100 ms (rssSource "sampled-procfs"), not an
 // OS-reported peak.
 
+#include <QEvent>
 #include <QObject>
 #include <QString>
 
@@ -30,6 +31,14 @@ struct TimingConfig {
   int settleMs = 500;
   int wheelNotches = 0;
   int wheelGapMs = 200;
+  // Pointer drag script (drawer-drag workload). 0 steps means no drag. One
+  // script is an open drag from the left edge followed by a drag back.
+  int dragSteps = 0;
+  int dragStepGapMs = 16;
+  // Observe mode: after settling, wait this long and record when pointer events
+  // from the platform (a real or Screen-injected device) first and last reach
+  // the window. 0 means off. The probe posts nothing.
+  int observeMs = 0;
   // Internal. Not on the command line; tests lower it to exercise overflow.
   int frameCapacity = 4096;
 
@@ -37,7 +46,8 @@ struct TimingConfig {
   // On failure returns nullopt and sets `error`.
   static std::optional<TimingConfig> fromStrings(
       const QString& settleMs, const QString& wheelNotches, const QString& wheelGapMs,
-      QString* error);
+      QString* error, const QString& dragSteps = {}, const QString& dragStepGapMs = {},
+      const QString& observeMs = {});
 };
 
 class TimingProbe final : public QObject {
@@ -71,7 +81,10 @@ class TimingProbe final : public QObject {
   void sampleMemory();
 #endif
   void postNotch();
+  void postDragEvent();
+  void finishObserve();
   void finish(bool ok);
+  bool eventFilter(QObject* watched, QEvent* event) override;
 
   QQuickWindow& window_;
   TimingConfig config_;
@@ -82,9 +95,13 @@ class TimingProbe final : public QObject {
 #if defined(__QNX__)
   QTimer* memoryTimer_ = nullptr;  // owned by this object
 #endif
-  enum class Phase { Idle, WaitingFirstFrame, Settling, Wheel, Done };
+  enum class Phase { Idle, WaitingFirstFrame, Settling, Wheel, Drag, Observe, Done };
   Phase phase_ = Phase::Idle;
   int notchesSent_ = 0;
+  int dragEventsSent_ = 0;
+  int inputEvents_ = 0;
+  std::int64_t inputFirstNs_ = -1;
+  std::int64_t inputLastNs_ = -1;
   std::int64_t wheelFirstNs_ = -1;
   std::int64_t wheelLastNs_ = -1;
 

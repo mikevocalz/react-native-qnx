@@ -1,11 +1,14 @@
 // Renders the real chrome QML in an offscreen QQuickWindow and drives it with
 // Qt pointer and key events. Host evidence only; no QNX Screen involved.
 
+#include "HostWindowState.h"
 #include "WindowChrome.h"
 #include "WindowHost.h"
+#include "react-native-qnx/runtime/ApplicationIdentity.h"
 
 #include <QAccessible>
 #include <QImage>
+#include <QJSEngine>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -445,6 +448,34 @@ class WindowChromeQuickTest : public QObject {
                      .value(QStringLiteral("x")).toDouble(), 1000.0 - 3 * kWindowsHitWidth);
   }
 
+  // The script the host evaluates puts the same numbers where JavaScript
+  // (TitleBarInset.js, SafeAreaView) reads them, and tells the emitter.
+  void titleBarInsetScriptReachesJavaScript() {
+    WindowChromeConfig config;
+    config.titleBarStyle = TitleBarStyle::Hidden;
+    Harness harness(config);
+    // Hermes has globalThis; QJSEngine may not, so give it the same name.
+    const QString prelude = QStringLiteral("if(typeof globalThis==='undefined')this.globalThis=this;");
+    QJSEngine js;
+    const QJSValue setup = js.evaluate(prelude + QStringLiteral(
+        "globalThis.events=[];globalThis.__rctDeviceEventEmitter={emit:function(n){events.push(n);}};"));
+    QVERIFY2(!setup.isError(), qPrintable(setup.toString()));
+    const QJSValue result = js.evaluate(harness.chrome->titleBarInsetScript());
+    QVERIFY2(!result.isError(), qPrintable(result.toString()));
+    const QVariantMap inset = harness.chrome->titleBarInset();
+    const QJSValue published = js.globalObject().property(QStringLiteral("__RNQNX_TITLE_BAR_INSET__"));
+    for (const char* edge : {"top", "right", "bottom", "left"})
+      QCOMPARE(published.property(QString::fromLatin1(edge)).toNumber(),
+               inset.value(QString::fromLatin1(edge)).toDouble());
+    QVERIFY(published.property(QStringLiteral("top")).toNumber() > 0);
+    QCOMPARE(js.evaluate(QStringLiteral("events.join()")).toString(),
+             QStringLiteral("rnqnxTitleBarInsetDidChange"));
+    // No emitter yet (before the bundle runs): the value is still published.
+    QJSEngine bare;
+    QVERIFY(!bare.evaluate(prelude + harness.chrome->titleBarInsetScript()).isError());
+    QVERIFY(bare.globalObject().hasProperty(QStringLiteral("__RNQNX_TITLE_BAR_INSET__")));
+  }
+
   // WCAG 1.4.11: the focus ring is at least 3:1 against the active and inactive
   // bar, in both colour schemes. The hover and pressed fills are hand-calculated
   // in docs/v1/design/contrast.json and are not asserted here.
@@ -748,6 +779,35 @@ class WindowChromeQuickTest : public QObject {
 
   // Dev, debug and preview ids reduce to the base id, so every build of one
   // app uses one socket; the name has no uid in it.
+  // The socket an identity-less playground listens on is the one --restore-only
+  // and --stop-running talk to.
+  void identitylessAppIsFoundByRestoreAndStop() {
+    const auto key = rnqnx::runtime::instanceApplicationId({});
+    QCOMPARE(key, rnqnx::runtime::defaultApplicationId());
+    InstanceThread running(key, BuildKind::Release, true);
+    QVERIFY(running.waitListening());
+    SingleInstance later(rnqnx::runtime::instanceApplicationId({}));
+    QVERIFY(later.forwardedToRunningInstance());
+    QTRY_COMPARE(running.restores.load(), 1);
+    const auto info = later.runningInstanceInfo();
+    QVERIFY(info.has_value());
+    QCOMPARE(info->pid, static_cast<qint64>(QCoreApplication::applicationPid()));
+  }
+  void minimizeAndRestoreReachAppState() {
+    auto& host = rnqnx::runtime::HostWindowState::instance();
+    host.setMinimized(false);  // earlier tests may have minimized the chrome
+    QSignalSpy changes(&host, &rnqnx::runtime::HostWindowState::minimizedChanged);
+    QWindow window;
+    sendWindowManagerRequest(window, "minimize");
+    QVERIFY(host.minimized());
+    minimizeByDestroyingWindow(window);
+    QCOMPARE(changes.count(), 1);  // minimizing twice is one transition
+    restoreMinimizedWindow(window, false);
+    QVERIFY(!host.minimized());
+    QCOMPARE(changes.count(), 2);
+    QCOMPARE(changes.at(0).at(0).toBool(), true);
+    QCOMPARE(changes.at(1).at(0).toBool(), false);
+  }
   void baseAppIdStripsBuildVariants() {
     QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.showcase")), QStringLiteral("org.rnqnx.showcase"));
     QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.showcase.dev")), QStringLiteral("org.rnqnx.showcase"));

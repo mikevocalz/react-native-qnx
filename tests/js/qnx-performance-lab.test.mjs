@@ -9,14 +9,14 @@ const root = process.cwd();
 const app = path.join(root, 'apps/performance-lab');
 const require = createRequire(import.meta.url);
 const fixture = require(path.join(app, 'fixtures.js'));
-/** @type {Array<{ id: string, entry: string | null, status: string }>} */
+/** @type {Array<{ id: string, entry: string | null, status: string, config?: string }>} */
 const workloads = fixture.WORKLOADS;
 assert.deepEqual(
   workloads.map((workload) => workload.id),
   ['hello-world', 'list-1000', 'drawer-drag']
 );
-assert.equal(workloads[2].status, 'blocked');
-assert.equal(workloads[2].entry, null);
+assert.equal(workloads[2].status, 'available-source');
+assert.equal(workloads[2].entry, 'drawer-drag.js');
 const rows = fixture.createRows();
 assert.equal(rows.length, 1000);
 assert.equal(rows[0].id, 'row-0001');
@@ -51,7 +51,7 @@ try {
         'build',
         workload.entry,
         '--config',
-        path.join(app, 'metro.config.js'),
+        path.join(app, workload.config ?? 'metro.config.js'),
         '--platform',
         'qnx',
         '--dev',

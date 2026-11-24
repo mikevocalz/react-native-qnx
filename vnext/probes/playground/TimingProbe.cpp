@@ -11,6 +11,7 @@
 #include <QSGRendererInterface>
 #include <QTemporaryFile>
 #include <QTimer>
+#include <QMouseEvent>
 #include <QWheelEvent>
 
 #include <algorithm>
@@ -159,7 +160,8 @@ QString backendName(const QQuickWindow& window) {
 
 std::optional<TimingConfig> TimingConfig::fromStrings(
     const QString& settleMs, const QString& wheelNotches, const QString& wheelGapMs,
-    QString* error) {
+    QString* error, const QString& dragSteps, const QString& dragStepGapMs,
+    const QString& observeMs) {
   TimingConfig config;
   const auto settle = parseRange(settleMs, config.settleMs, 0, 60000, "--timing-settle-ms", error);
   if (!settle) return std::nullopt;
@@ -168,9 +170,27 @@ std::optional<TimingConfig> TimingConfig::fromStrings(
   if (!notches) return std::nullopt;
   const auto gap = parseRange(wheelGapMs, config.wheelGapMs, 1, 5000, "--timing-wheel-gap-ms", error);
   if (!gap) return std::nullopt;
+  const auto drag = parseRange(dragSteps, config.dragSteps, 0, 500, "--timing-drag-steps", error);
+  if (!drag) return std::nullopt;
+  const auto dragGap =
+      parseRange(dragStepGapMs, config.dragStepGapMs, 1, 1000, "--timing-drag-gap-ms", error);
+  if (!dragGap) return std::nullopt;
+  const auto observe = parseRange(observeMs, config.observeMs, 0, 120000, "--timing-observe-ms", error);
+  if (!observe) return std::nullopt;
+  if (*drag > 0 && *observe > 0) {
+    *error = QStringLiteral("--timing-drag-steps and --timing-observe-ms cannot be combined");
+    return std::nullopt;
+  }
+  if (*notches > 0 && (*drag > 0 || *observe > 0)) {
+    *error = QStringLiteral("the wheel script cannot be combined with a drag or observe run");
+    return std::nullopt;
+  }
   config.settleMs = *settle;
   config.wheelNotches = *notches;
   config.wheelGapMs = *gap;
+  config.dragSteps = *drag;
+  config.dragStepGapMs = *dragGap;
+  config.observeMs = *observe;
   return config;
 }
 
@@ -245,8 +265,17 @@ void TimingProbe::onFrameControl() {
   if (state_->firstFrameNs.load(std::memory_order_acquire) < 0) return;
   phase_ = Phase::Settling;
   QTimer::singleShot(config_.settleMs, this, [this]() {
-    phase_ = Phase::Wheel;
-    postNotch();
+    if (config_.dragSteps > 0) {
+      phase_ = Phase::Drag;
+      postDragEvent();
+    } else if (config_.observeMs > 0) {
+      phase_ = Phase::Observe;
+      window_.installEventFilter(this);
+      QTimer::singleShot(config_.observeMs, this, [this]() { finishObserve(); });
+    } else {
+      phase_ = Phase::Wheel;
+      postNotch();
+    }
   });
 }
 
@@ -267,6 +296,83 @@ void TimingProbe::postNotch() {
   wheelLastNs_ = postedNs;
   ++notchesSent_;
   QTimer::singleShot(config_.wheelGapMs, this, [this]() { postNotch(); });
+}
+
+bool TimingProbe::eventFilter(QObject* watched, QEvent* event) {
+  if (phase_ == Phase::Observe && watched == &window_) {
+    switch (event->type()) {
+      case QEvent::MouseButtonPress:
+      case QEvent::MouseMove:
+      case QEvent::MouseButtonRelease:
+      case QEvent::TouchBegin:
+      case QEvent::TouchUpdate:
+      case QEvent::TouchEnd: {
+        const std::int64_t ns = state_->nowNs();
+        if (inputFirstNs_ < 0) inputFirstNs_ = ns;
+        inputLastNs_ = ns;
+        ++inputEvents_;
+        break;
+      }
+      default: break;
+    }
+  }
+  return false;
+}
+
+void TimingProbe::finishObserve() {
+  if (phase_ != Phase::Observe) return;
+  window_.removeEventFilter(this);
+  // No pointer events means nothing moved: the run has no animated window.
+  finish(inputEvents_ > 0);
+}
+
+// One drag script: press on the left edge, move right across 60 % of the
+// window in dragSteps moves, release; then the same path back. Events are
+// posted, so they take the platform-independent mouse route the real device
+// route ends in. Index 0 is the press and the last index is the release.
+void TimingProbe::postDragEvent() {
+  if (phase_ != Phase::Drag) return;
+  const int steps = config_.dragSteps;
+  const int perLeg = steps + 2;  // press, steps moves, release
+  const int total = perLeg * 2;
+  if (dragEventsSent_ >= total) {
+    finish(true);
+    return;
+  }
+  const int leg = dragEventsSent_ / perLeg;  // 0 open, 1 close
+  const int index = dragEventsSent_ % perLeg;
+  const double span = window_.width() * 0.6;
+  const double y = window_.height() / 2.0;
+  const double edge = 6.0;
+  const double start = leg == 0 ? edge : edge + span;
+  const double end = leg == 0 ? edge + span : edge;
+  QEvent::Type type = QEvent::MouseMove;
+  Qt::MouseButton button = Qt::NoButton;
+  Qt::MouseButtons buttons = Qt::LeftButton;
+  double x = start;
+  if (index == 0) {
+    type = QEvent::MouseButtonPress;
+    button = Qt::LeftButton;
+  } else if (index == perLeg - 1) {
+    type = QEvent::MouseButtonRelease;
+    button = Qt::LeftButton;
+    buttons = Qt::NoButton;
+    x = end;
+  } else {
+    x = start + (end - start) * index / static_cast<double>(steps);
+  }
+  const QPointF position(x, y);
+  QCoreApplication::postEvent(
+      &window_, new QMouseEvent(type, position, window_.mapToGlobal(position), button, buttons,
+                                Qt::NoModifier));
+  const std::int64_t postedNs = state_->nowNs();
+  if (inputFirstNs_ < 0) inputFirstNs_ = postedNs;
+  inputLastNs_ = postedNs;
+  ++inputEvents_;
+  ++dragEventsSent_;
+  // Hold 300 ms between the open leg and the close leg so the drawer settles.
+  const int gap = (index == perLeg - 1 && leg == 0) ? 300 : config_.dragStepGapMs;
+  QTimer::singleShot(gap, this, [this]() { postDragEvent(); });
 }
 
 void TimingProbe::finish(bool ok) {
@@ -320,6 +426,16 @@ QString TimingProbe::writeJson(const QString& path) const {
               wheelFirstNs_ >= 0 ? QJsonValue(toMs(wheelFirstNs_)) : QJsonValue(QJsonValue::Null));
   root.insert(QStringLiteral("wheelLastMs"),
               wheelLastNs_ >= 0 ? QJsonValue(toMs(wheelLastNs_)) : QJsonValue(QJsonValue::Null));
+  const QString inputKind = config_.dragSteps > 0 ? QStringLiteral("posted-drag")
+                            : config_.observeMs > 0 ? QStringLiteral("observed-pointer")
+                            : notchesSent_ > 0      ? QStringLiteral("posted-wheel")
+                                                    : QStringLiteral("none");
+  root.insert(QStringLiteral("inputKind"), inputKind);
+  root.insert(QStringLiteral("inputEvents"), inputEvents_);
+  root.insert(QStringLiteral("inputFirstMs"),
+              inputFirstNs_ >= 0 ? QJsonValue(toMs(inputFirstNs_)) : QJsonValue(QJsonValue::Null));
+  root.insert(QStringLiteral("inputLastMs"),
+              inputLastNs_ >= 0 ? QJsonValue(toMs(inputLastNs_)) : QJsonValue(QJsonValue::Null));
   root.insert(QStringLiteral("rssKiB"),
               rssKiB_ ? QJsonValue(static_cast<double>(*rssKiB_)) : QJsonValue(QJsonValue::Null));
   root.insert(QStringLiteral("peakRssKiB"),

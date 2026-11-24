@@ -1,0 +1,14 @@
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1280x720 mode=native-moved
+RNQNX_DEV_SERVER http://192.168.2.1:8081
+RNQNX_NODE name=rnqnxWindowChrome visible=1
+RNQNX_NODE name=rnqnxTitleBar visible=1
+RNQNX_DEV_PACKAGER connected
+RNQNX_DEV_BUNDLE_LOADED bytes=5873278 ms=5862 url=http://192.168.2.1:8081/index.bundle?platform=qnx&dev=true&lazy=false&minify=false&modulesOnly=false&runModule=true&app=org.rnqnx.routerexample
+Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+Error: Cannot find module '@rn-qnx/qnx-nitro-runtime'
+Error: Cannot find module '@rn-qnx/qnx-nitro-runtime'
+TypeError: Cannot read property 'SafeAreaProvider' of undefined
+RNQNX_DEV_LOGBOX shown
+RNQNX_DEV_LOGBOX hidden
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1124 03:06:42.152912     1 conversions.h:368] Could not parse yoga::PositionType: left

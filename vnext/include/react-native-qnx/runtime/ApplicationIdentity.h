@@ -21,6 +21,12 @@ struct ApplicationIdentity {
   bool custom{false};
 };
 
+// The id a build without an application identity keys its one-instance
+// socket on. A playground launched with no --app-id, --app-name or
+// --component-name is still one app, so `--restore-only` and `--stop-running`
+// must find the copy that is running. An app that supplies an id keeps its own.
+inline QString defaultApplicationId() { return QStringLiteral("org.rnqnx.playground"); }
+
 inline void validateApplicationIdentity(const ApplicationIdentity& identity) {
   static const QRegularExpression idPattern(
       QStringLiteral("\\A[A-Za-z][A-Za-z0-9_]*(?:\\.[A-Za-z][A-Za-z0-9_]*)+\\z"));
@@ -44,6 +50,12 @@ inline void validateApplicationIdentity(const ApplicationIdentity& identity) {
       throw std::invalid_argument("App name cannot contain control or line-separator characters.");
     }
   }
+}
+
+// The base id of the one-instance socket (`rnqnx-<id>`): the app's own id when
+// it has one, otherwise the stable default.
+inline QString instanceApplicationId(const ApplicationIdentity& identity) {
+  return identity.custom ? identity.appId : defaultApplicationId();
 }
 
 inline void addApplicationIdentityOptions(QCommandLineParser& parser) {

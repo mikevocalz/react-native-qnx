@@ -1,0 +1,10 @@
+{
+  "schema": "rnqnx-app/v1",
+  "reactNative": "0.88.1",
+  "nitroAbi": null,
+  "requires": {
+    "nitroModules": [],
+    "expoModules": [{ "package": "@rn-qnx/expo-constants-qnx", "version": "0.1.0" }],
+    "fabricComponents": []
+  }
+}

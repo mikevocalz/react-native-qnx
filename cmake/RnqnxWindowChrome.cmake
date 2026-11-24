@@ -16,6 +16,20 @@ function(rnqnx_generate_window_chrome_qml out_dir)
     "${out_dir}/WindowChromeQml.generated.h" @ONLY)
 endfunction()
 
+# HostWindowState (native/lifecycle): the minimize/restore channel between the
+# window code and AppState. Both options add it; once per target.
+function(rnqnx_add_host_window_state_sources target)
+  set(dir "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../native/lifecycle")
+  get_target_property(existing ${target} SOURCES)
+  foreach(file HostWindowState.cpp HostWindowState.h)
+    cmake_path(NORMAL_PATH dir OUTPUT_VARIABLE normal_dir)
+    if(NOT "${normal_dir}/${file}" IN_LIST existing)
+      target_sources(${target} PRIVATE "${normal_dir}/${file}")
+    endif()
+  endforeach()
+  target_include_directories(${target} PUBLIC "${normal_dir}")
+endfunction()
+
 # Adds the chrome sources to `target` (a STATIC or executable target that
 # already links Qt Quick).
 function(rnqnx_add_window_chrome_sources target)
@@ -26,8 +40,17 @@ function(rnqnx_add_window_chrome_sources target)
     "${root}/WindowChromeModel.cpp" "${root}/WindowChromeModel.h"
     "${root}/WindowChrome.cpp" "${root}/WindowChrome.h"
     "${root}/WindowHost.cpp" "${root}/WindowHost.h"
-    "${root}/NodeBeacon.cpp" "${root}/NodeBeacon.h")
-  target_include_directories(${target} PUBLIC "${root}" PRIVATE "${generated}")
+    "${root}/NodeBeacon.cpp" "${root}/NodeBeacon.h"
+    # Nitro windows API, GUI side (docs/nitro/API_CONTRACTS.md, S8).
+    "${root}/WindowCloseGate.cpp" "${root}/WindowCloseGate.h"
+    "${root}/WindowCloseRequest.h" "${root}/WindowStatePublisher.h"
+    "${root}/QtWindowServices.cpp" "${root}/QtWindowServices.h")
+  # WindowHost reports minimize and restore to AppState through this.
+  rnqnx_add_host_window_state_sources(${target})
+  # QtWindowServices implements the adapter's Qt-free service interface.
+  target_include_directories(${target} PUBLIC "${root}"
+    "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../packages/qnx-nitro-runtime/cpp"
+    PRIVATE "${generated}")
   # WindowHost: single-instance restore over a local socket, and on QNX the
   # Screen calls that keep a windowed app at its own size.
   find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)

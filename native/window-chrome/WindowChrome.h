@@ -109,6 +109,14 @@ class WindowChrome final : public QObject {
   QVariantMap controlGeometry() const;
   QStringList controlOrder() const;
   QVariantMap titleBarInset() const;
+  // JavaScript that publishes the inset to React: sets
+  // `globalThis.__RNQNX_TITLE_BAR_INSET__` and emits
+  // `rnqnxTitleBarInsetDidChange` when the device event emitter exists.
+  // Evaluate it before the surface starts and after every layoutChanged.
+  QString titleBarInsetScript() const;
+  // The same four numbers without script text, for a host whose JavaScript
+  // engine cannot compile source (the QNX lean Hermes runs bytecode only).
+  TitleBarInset titleBarInsetValues() const { return layout_.inset; }
   QRectF titleRect() const { return layout_.titleRect; }
   bool titleCentered() const { return layout_.titleAlignment == Qt::AlignHCenter; }
   bool barVisible() const { return layout_.barVisible; }

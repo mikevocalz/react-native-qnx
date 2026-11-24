@@ -1,3 +1,4 @@
+#include "HostWindowState.h"
 #include "QtApplicationLifecycle.h"
 
 #include <QPointer>
@@ -22,7 +23,7 @@ static void notify(Qt::ApplicationState state) {
 
 class LifecycleTest final : public QObject {
   Q_OBJECT
- private slots:
+ private Q_SLOTS:
   void initialSnapshot() {
     QtApplicationLifecycle observer(*qGuiApp);
     const auto initial = observer.snapshot();
@@ -104,6 +105,53 @@ class LifecycleTest final : public QObject {
     QVERIFY(QMetaObject::invokeMethod(qGuiApp, "aboutToQuit", Qt::DirectConnection));
     QVERIFY(observer.snapshot().closed);
     QCOMPARE(closed.count(), 1);
+  }
+  void cleanup() { rnqnx::runtime::HostWindowState::instance().setMinimized(false); }
+  // ADR-0024: the host says minimized, Qt says nothing. AppState still moves.
+  void hostMinimizeReportsHiddenWithoutAQtEvent() {
+    auto& host = rnqnx::runtime::HostWindowState::instance();
+    QtApplicationLifecycle observer(*qGuiApp);
+    notify(Qt::ApplicationActive);
+    QSignalSpy changes(&observer, &QtApplicationLifecycle::stateChanged);
+    host.setMinimized(true);
+    QCOMPARE(changes.count(), 1);
+    QCOMPARE(observer.snapshot().visibility, ApplicationVisibility::Hidden);
+    host.setMinimized(true);  // repeated minimize is not a transition
+    QCOMPARE(changes.count(), 1);
+    host.setMinimized(false);
+    QCOMPARE(changes.count(), 2);
+    QCOMPARE(observer.snapshot().visibility, ApplicationVisibility::Active);
+    QCOMPARE(changes.at(0).at(0).value<LifecycleSnapshot>().sequence + 1,
+             changes.at(1).at(0).value<LifecycleSnapshot>().sequence);
+  }
+  void qtReportsDoNotOverrideMinimizeExceptActive() {
+    auto& host = rnqnx::runtime::HostWindowState::instance();
+    QtApplicationLifecycle observer(*qGuiApp);
+    notify(Qt::ApplicationActive);
+    host.setMinimized(true);
+    notify(Qt::ApplicationInactive);
+    QCOMPARE(observer.snapshot().visibility, ApplicationVisibility::Hidden);
+    // Active means the window is back without the host having been told
+    // (the window manager restored it): the shared state follows.
+    notify(Qt::ApplicationActive);
+    QCOMPARE(observer.snapshot().visibility, ApplicationVisibility::Active);
+    QVERIFY(!host.minimized());
+    host.setMinimized(true);  // a later minimize is a change again
+    QCOMPARE(observer.snapshot().visibility, ApplicationVisibility::Hidden);
+  }
+  void observerCreatedWhileMinimizedStartsHidden() {
+    rnqnx::runtime::HostWindowState::instance().setMinimized(true);
+    QtApplicationLifecycle observer(*qGuiApp);
+    QCOMPARE(observer.snapshot().visibility, ApplicationVisibility::Hidden);
+  }
+  void qtApplicationStateIsMirroredForOtherThreads() {
+    auto& host = rnqnx::runtime::HostWindowState::instance();
+    host.attach(*qGuiApp);
+    notify(Qt::ApplicationHidden);
+    std::atomic<int> seen{-1};
+    std::thread worker([&] { seen = static_cast<int>(host.qtApplicationState()); });
+    worker.join();
+    QCOMPARE(seen.load(), static_cast<int>(Qt::ApplicationHidden));
   }
   void foreignThreadReadRejected() {
     QtApplicationLifecycle observer(*qGuiApp);

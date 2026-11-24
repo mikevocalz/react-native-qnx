@@ -1,15 +1,13 @@
 {
   "generatedFrom": {
-    "componentSupport": "7d847ed",
-    "readiness": "638e2d2"
+    "componentSupport": "6c2422c",
+    "readiness": "22f3625"
   },
   "counts": {
-    "Device-verified (Pi 400, scoped)": 12,
-    "Host-tested": 9,
-    "Untested": 3
+    "Device-verified (Pi 400, scoped)": 24
   },
   "total": 24,
-  "gatesPending": 10,
+  "gatesPending": 9,
   "gatesTotal": 11,
   "pulls": {
     "total": 147,

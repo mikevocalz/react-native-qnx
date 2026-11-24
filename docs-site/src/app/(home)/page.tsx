@@ -3,9 +3,10 @@ import status from '@/generated/status.json';
 import { componentRows } from '@/lib/site-data';
 import { gitConfig, withBase } from '@/lib/shared';
 
-const device = status.counts['Device-verified (Pi 400, scoped)'] ?? 0;
-const host = status.counts['Host-tested'] ?? 0;
-const untested = status.counts['Untested'] ?? 0;
+const counts: Record<string, number> = status.counts;
+const device = counts['Device-verified (Pi 400, scoped)'] ?? 0;
+const host = counts['Host-tested'] ?? 0;
+const untested = counts['Untested'] ?? 0;
 const repoUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
 
 // The rows shown on the home page. The full list is the component matrix.

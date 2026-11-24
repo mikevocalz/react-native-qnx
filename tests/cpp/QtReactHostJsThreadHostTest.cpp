@@ -37,6 +37,7 @@
 
 #if RNQNX_ENABLE_WINDOW_CHROME
 #include "WindowChrome.h"
+#include "WindowHost.h"
 #include "WindowChromeModel.h"
 #endif
 
@@ -476,6 +477,14 @@ void resizeAndWindowSizeDoNotWaitForJavaScript() {
   EXPECT(readNumber(host, "dimsHeight") == 600.0);
 }
 
+#if RNQNX_ENABLE_APP_STATE && RNQNX_ENABLE_WINDOW_CHROME
+/// Minimize releases the native window only on QNX (ADR-0016, ADR-0024); the
+/// host lane has no such transition to expect.
+bool releasesWindowForAppState() {
+  return QGuiApplication::platformName() == QLatin1String("qnx");
+}
+#endif
+
 void blockedJavaScriptLeavesTheGuiThreadResponsive() {
   Fixture fixture;
   fixture.start();
@@ -483,6 +492,12 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
   EXPECT(installDimensionsRecorder(host));
   mustRun(host, "scroll-tree");
   mustRun(host, "touch-recorder");
+#if RNQNX_ENABLE_APP_STATE && RNQNX_ENABLE_WINDOW_CHROME
+  // ADR-0024: AppState reports minimize and restore while JavaScript is blocked.
+  host.installTurboModuleBinding();
+  mustRun(host, "appstate-recorder");
+  result("AppState initial=" + readEntry(host, "appStateSummary", "initial"));
+#endif
   QQuickItem* scroll = fixture.layer().itemForTag(601);
   EXPECT(scroll != nullptr);
   EXPECT(scroll->property("contentHeight").toDouble() > scroll->height());
@@ -623,7 +638,8 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
         QObject::connect(&fixture.window(), &QQuickWindow::frameSwapped, [&] { swapped = true; });
     if (releasesWindow) {
       EXPECT(!fixture.window().isVisible());
-      fixture.window().show();
+      // The restore path of the app: clears the host minimize flag (ADR-0024).
+      rnqnx::window::restoreMinimizedWindow(fixture.window(), false);
     } else {
       EXPECT(fixture.window().visibility() == QWindow::Minimized);
       fixture.window().showNormal();
@@ -682,6 +698,25 @@ void blockedJavaScriptLeavesTheGuiThreadResponsive() {
   EXPECT(blocked.elapsed() >= kBlockMs - 100);
   waitUntil([&] { return queuedRan.load() != 0; }, 2000, "queued work ran after the block");
   EXPECT(queuedRan.load() == 1);
+#if RNQNX_ENABLE_APP_STATE && RNQNX_ENABLE_WINDOW_CHROME
+  {
+    // The two transitions were queued behind the block and arrive in order.
+    std::string log;
+    waitUntil(
+        [&] {
+          log = readEntry(host, "appStateSummary", "log");
+          return log.find("active") != std::string::npos || !releasesWindowForAppState();
+        },
+        3000, "AppState transitions reached JavaScript");
+    result("AppState transitions after the block: " + log);
+    // The first entries can be start-up changes (inactive to active) that Qt
+    // reported before the block; the minimize and restore are the last two.
+    const std::string tail = "background,active";
+    if (releasesWindowForAppState()) {
+      EXPECT(log.size() >= tail.size() && log.compare(log.size() - tail.size(), tail.size(), tail) == 0);
+    }
+  }
+#endif
   // The posted calls were not lost: JavaScript saw the size and the surface
   // was laid out at it, now that JavaScript is free.
   waitUntil([&] { return readNumber(host, "dimsWidth") == 700.0; }, 2000,
@@ -907,15 +942,13 @@ void unmovedLibrariesRefuseWithAClearError() {
   ++refusals;
 #endif
 #if RNQNX_ENABLE_APP_STATE
+  // ADR-0024: AppState no longer refuses in JS-thread mode. The module is made
+  // on the JS thread, its Qt observer on the GUI thread, and JS reads a cache.
   host.installTurboModuleBinding();
   mustRun(host, "turbo-lookup");
   const std::string appState = readEntry(host, "lookups", "AppState");
-  if (appState.find("ADR-0021") == std::string::npos ||
-      appState.find("AppState") == std::string::npos) {
-    fail("AppState lookup refuses", __FILE__, __LINE__, appState);
-  }
-  result("refusal AppState: " + appState);
-  ++refusals;
+  if (appState != "ok") fail("AppState lookup resolves", __FILE__, __LINE__, appState);
+  result("AppState resolves in JS-thread mode: " + appState);
 #endif
   if (refusals == 0) result("no refusing library is compiled into this build");
 }

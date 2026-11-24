@@ -1,0 +1,8 @@
+RNQNX_PLAYGROUND_PREFLIGHT_FAILED This runner needs a native build
+The app requires native modules this runner cannot load. Build the app with its current native dependencies.
+
+Missing  Expo module @rn-qnx/expo-camera-qnx 0.1.0
+
+Build this app on your development host
+  rnqnx project build-native --project .
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1280x720 mode=native-moved

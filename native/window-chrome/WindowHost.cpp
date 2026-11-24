@@ -1,5 +1,7 @@
 #include "WindowHost.h"
 
+#include "HostWindowState.h"
+
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QDir>
@@ -132,6 +134,10 @@ void applyNativePosition([[maybe_unused]] QWindow& window) {
 }
 
 void sendWindowManagerRequest([[maybe_unused]] QWindow& window, [[maybe_unused]] const char* request) {
+  // AppState follows what the host asked for, whether or not the manager is
+  // there to act on it (ADR-0024).
+  if (std::strcmp(request, "minimize") == 0) rnqnx::runtime::HostWindowState::instance().setMinimized(true);
+  if (std::strcmp(request, "restore") == 0) rnqnx::runtime::HostWindowState::instance().setMinimized(false);
 #if defined(Q_OS_QNX)
   // The launcher talks to the manager the same way: a SCREEN_EVENT_MANAGER
   // event naming the window, injected on its display, with `key=value` text.
@@ -501,6 +507,8 @@ void SingleInstance::acceptConnections() {
 }
 
 void minimizeByDestroyingWindow(QWindow& window) {
+  // First, so JavaScript sees "background" before the window goes (ADR-0024).
+  rnqnx::runtime::HostWindowState::instance().setMinimized(true);
   window.hide();
   // Releasing the native window is what makes fullscreen-winmgr show the
   // launcher again; the QQuickWindow, its items and the React tree stay.
@@ -508,6 +516,7 @@ void minimizeByDestroyingWindow(QWindow& window) {
 }
 
 void restoreMinimizedWindow(QWindow& window, bool sizeKeepingManager) {
+  rnqnx::runtime::HostWindowState::instance().setMinimized(false);
   if (sizeKeepingManager && window.isVisible()) {
     // rnqnx-winmgr hid the window and keeps it; it shows and raises it.
     sendWindowManagerRequest(window, "restore");

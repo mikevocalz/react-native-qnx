@@ -1,0 +1,237 @@
+Running "RNQnxPlayground"
+RNQNX_COMPONENT_PROBE 76 StatusBar static calls returned currentHeight=0
+RNQNX_COMPONENT_PROBE 76 probe page=touch
+RNQNX_COMPONENT_PROBE 79 ImageBackground child laid out over image
+RNQNX_COMPONENT_PROBE 79 KeyboardAvoidingView onLayout children rendered
+RNQNX_COMPONENT_PROBE 80 SafeAreaView onLayout w=876 h=19
+RNQNX_COMPONENT_PROBE 80 ImageBackground onLoad
+RNQNX_COMPONENT_PROBE 80 nav-touch layout x=0 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 80 nav-vlist layout x=225 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 80 nav-section layout x=450 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 81 nav-vsection layout x=675 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 81 Button layout x=12 y=55 w=76 h=39
+RNQNX_COMPONENT_PROBE 81 TouchableOpacity layout x=96 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 81 TouchableHighlight layout x=294 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 81 TouchableWithoutFeedback layout x=492 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 81 ImageBackground layout x=12 y=102 w=360 h=90
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=900x600 mode=native-moved
+RNQNX_NODE name=rnqnxWindowChrome visible=1
+RNQNX_NODE name=rnqnxTitleBar visible=1
+RNQNX_COMPONENT_PROBE 14011 Button onPress
+RNQNX_COMPONENT_PROBE 14024 Button layout x=12 y=55 w=76 h=39
+RNQNX_COMPONENT_PROBE 14024 TouchableOpacity layout x=96 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 14024 TouchableHighlight layout x=294 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 14024 TouchableWithoutFeedback layout x=492 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 14464 TouchableOpacity onPressIn
+RNQNX_COMPONENT_PROBE 14525 TouchableOpacity onPressOut
+RNQNX_COMPONENT_PROBE 14525 TouchableOpacity onPress
+RNQNX_COMPONENT_PROBE 14978 TouchableHighlight onShowUnderlay
+RNQNX_COMPONENT_PROBE 14978 TouchableHighlight onPressIn
+RNQNX_COMPONENT_PROBE 15039 TouchableHighlight onHideUnderlay
+RNQNX_COMPONENT_PROBE 15039 TouchableHighlight onPressOut
+RNQNX_COMPONENT_PROBE 15039 TouchableHighlight onShowUnderlay
+RNQNX_COMPONENT_PROBE 15039 TouchableHighlight onPress
+RNQNX_COMPONENT_PROBE 15050 TouchableHighlight onHideUnderlay
+RNQNX_COMPONENT_PROBE 15492 TouchableWithoutFeedback onPressIn
+RNQNX_COMPONENT_PROBE 15553 TouchableWithoutFeedback onPressOut
+RNQNX_COMPONENT_PROBE 15553 TouchableWithoutFeedback onPress
+RNQNX_COMPONENT_PROBE 16578 TouchableOpacity onPressIn
+RNQNX_COMPONENT_PROBE 17103 TouchableOpacity onLongPress
+RNQNX_COMPONENT_PROBE 17479 TouchableOpacity onPressOut
+RNQNX_COMPONENT_PROBE 18535 Button onPress
+RNQNX_COMPONENT_PROBE 31277 probe page=vlist
+RNQNX_COMPONENT_PROBE 31291 VirtualizedList viewable first=r0 last=r11 count=12
+RNQNX_COMPONENT_PROBE 31352 VirtualizedList rendered up to 25
+RNQNX_COMPONENT_PROBE 32702 VirtualizedList scrollToIndex 150 start
+RNQNX_COMPONENT_PROBE 32704 VirtualizedList onScroll y=6600
+RNQNX_COMPONENT_PROBE 32705 VirtualizedList viewable first=undefined last=undefined count=0
+RNQNX_COMPONENT_PROBE 32710 VirtualizedList rendered up to 150
+RNQNX_COMPONENT_PROBE 32773 VirtualizedList viewable first=r150 last=r161 count=12
+RNQNX_COMPONENT_PROBE 32902 VirtualizedList rendered up to 175
+RNQNX_COMPONENT_PROBE 35018 VirtualizedList onScroll y=6662
+RNQNX_COMPONENT_PROBE 35019 VirtualizedList viewable first=r151 last=r163 count=13
+RNQNX_COMPONENT_PROBE 35035 VirtualizedList onScroll y=6679
+RNQNX_COMPONENT_PROBE 35052 VirtualizedList onScroll y=6691
+RNQNX_COMPONENT_PROBE 35052 VirtualizedList viewable first=r152 last=r163 count=12
+RNQNX_COMPONENT_PROBE 35085 VirtualizedList onScroll y=6699
+RNQNX_COMPONENT_PROBE 35102 VirtualizedList onScroll y=6700
+RNQNX_COMPONENT_PROBE 35201 VirtualizedList onScroll y=6805
+RNQNX_COMPONENT_PROBE 35202 VirtualizedList viewable first=r154 last=r166 count=13
+RNQNX_COMPONENT_PROBE 35272 VirtualizedList onScroll y=7041
+RNQNX_COMPONENT_PROBE 35273 VirtualizedList viewable first=r160 last=r171 count=12
+RNQNX_COMPONENT_PROBE 35285 VirtualizedList onScroll y=7073
+RNQNX_COMPONENT_PROBE 35286 VirtualizedList viewable first=r160 last=r172 count=13
+RNQNX_COMPONENT_PROBE 35302 VirtualizedList onScroll y=7091
+RNQNX_COMPONENT_PROBE 35302 VirtualizedList viewable first=r161 last=r172 count=12
+RNQNX_COMPONENT_PROBE 35345 VirtualizedList onScroll y=7099
+RNQNX_COMPONENT_PROBE 35347 VirtualizedList onScroll y=7100
+RNQNX_COMPONENT_PROBE 35348 VirtualizedList viewable first=r161 last=r173 count=13
+RNQNX_COMPONENT_PROBE 35352 VirtualizedList onScroll y=7100
+RNQNX_COMPONENT_PROBE 35618 VirtualizedList onScroll y=7162
+RNQNX_COMPONENT_PROBE 35619 VirtualizedList viewable first=r162 last=r174 count=13
+RNQNX_COMPONENT_PROBE 35635 VirtualizedList onScroll y=7179
+RNQNX_COMPONENT_PROBE 35636 VirtualizedList viewable first=r163 last=r174 count=12
+RNQNX_COMPONENT_PROBE 35668 VirtualizedList onScroll y=7197
+RNQNX_COMPONENT_PROBE 35669 VirtualizedList viewable first=r163 last=r175 count=13
+RNQNX_COMPONENT_PROBE 35685 VirtualizedList onScroll y=7199
+RNQNX_COMPONENT_PROBE 35835 VirtualizedList onScroll y=7447
+RNQNX_COMPONENT_PROBE 35836 VirtualizedList viewable first=r169 last=r180 count=12
+RNQNX_COMPONENT_PROBE 35852 VirtualizedList onScroll y=7520
+RNQNX_COMPONENT_PROBE 35852 VirtualizedList viewable first=r170 last=r182 count=13
+RNQNX_COMPONENT_PROBE 35885 VirtualizedList onScroll y=7588
+RNQNX_COMPONENT_PROBE 35886 VirtualizedList viewable first=r172 last=r184 count=13
+RNQNX_COMPONENT_PROBE 35902 VirtualizedList onScroll y=7598
+RNQNX_COMPONENT_PROBE 35913 VirtualizedList rendered up to 200
+RNQNX_COMPONENT_PROBE 35932 VirtualizedList onScroll y=7600
+RNQNX_COMPONENT_PROBE 35935 VirtualizedList onScroll y=7600
+RNQNX_COMPONENT_PROBE 36218 VirtualizedList onScroll y=7662
+RNQNX_COMPONENT_PROBE 36219 VirtualizedList viewable first=r174 last=r185 count=12
+RNQNX_COMPONENT_PROBE 36235 VirtualizedList onScroll y=7679
+RNQNX_COMPONENT_PROBE 36236 VirtualizedList viewable first=r174 last=r186 count=13
+RNQNX_COMPONENT_PROBE 36268 VirtualizedList onScroll y=7697
+RNQNX_COMPONENT_PROBE 36285 VirtualizedList onScroll y=7699
+RNQNX_COMPONENT_PROBE 36286 VirtualizedList viewable first=r175 last=r186 count=12
+RNQNX_COMPONENT_PROBE 36307 VirtualizedList onScroll y=7700
+RNQNX_COMPONENT_PROBE 36318 VirtualizedList onScroll y=7700
+RNQNX_COMPONENT_PROBE 36418 VirtualizedList onScroll y=7810
+RNQNX_COMPONENT_PROBE 36419 VirtualizedList viewable first=r177 last=r189 count=13
+RNQNX_COMPONENT_PROBE 36468 VirtualizedList onScroll y=8042
+RNQNX_COMPONENT_PROBE 36469 VirtualizedList viewable first=r182 last=r194 count=13
+RNQNX_COMPONENT_PROBE 36485 VirtualizedList onScroll y=8074
+RNQNX_COMPONENT_PROBE 36486 VirtualizedList viewable first=r183 last=r195 count=13
+RNQNX_COMPONENT_PROBE 36502 VirtualizedList onScroll y=8092
+RNQNX_COMPONENT_PROBE 36535 VirtualizedList onScroll y=8100
+RNQNX_COMPONENT_PROBE 36536 VirtualizedList viewable first=r184 last=r195 count=12
+RNQNX_COMPONENT_PROBE 36552 VirtualizedList onScroll y=8100
+RNQNX_COMPONENT_PROBE 46564 probe page=section
+RNQNX_COMPONENT_PROBE 46591 SectionList viewable first=undefined last=undefined count=1
+RNQNX_COMPONENT_PROBE 46591 SectionList viewable first=undefined last=s0-0 count=2
+RNQNX_COMPONENT_PROBE 46592 SectionList viewable first=undefined last=s0-1 count=3
+RNQNX_COMPONENT_PROBE 46592 SectionList viewable first=undefined last=s0-2 count=4
+RNQNX_COMPONENT_PROBE 46593 SectionList viewable first=undefined last=s0-3 count=5
+RNQNX_COMPONENT_PROBE 46594 SectionList viewable first=undefined last=s0-4 count=6
+RNQNX_COMPONENT_PROBE 46595 SectionList viewable first=undefined last=s0-5 count=7
+RNQNX_COMPONENT_PROBE 46595 SectionList viewable first=undefined last=s0-6 count=8
+RNQNX_COMPONENT_PROBE 46596 SectionList viewable first=undefined last=s0-7 count=9
+RNQNX_COMPONENT_PROBE 46597 SectionList viewable first=undefined last=s0-8 count=10
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1124 01:50:22.847513     1 UIManagerBinding.cpp:150] instanceHandle is null, event of type topScroll will be dropped
+RNQNX_COMPONENT_PROBE 46624 SectionList viewable first=undefined last=s0-9 count=11
+RNQNX_COMPONENT_PROBE 46625 SectionList viewable first=undefined last=s0-10 count=12
+RNQNX_COMPONENT_PROBE 48139 SectionList scrollToLocation section 6 start
+RNQNX_COMPONENT_PROBE 48140 SectionList scrollToLocation failed (needs getItemLayout)
+RNQNX_COMPONENT_PROBE 50303 SectionList onScroll y=62
+RNQNX_COMPONENT_PROBE 50304 SectionList viewable first=s0-0 last=s0-12 count=13
+RNQNX_COMPONENT_PROBE 50319 SectionList onScroll y=79
+RNQNX_COMPONENT_PROBE 50321 SectionList viewable first=s0-1 last=s0-12 count=12
+RNQNX_COMPONENT_PROBE 50341 SectionList onScroll y=91
+RNQNX_COMPONENT_PROBE 50353 SectionList onScroll y=97
+RNQNX_COMPONENT_PROBE 50354 SectionList viewable first=s0-1 last=s0-13 count=13
+RNQNX_COMPONENT_PROBE 50429 SectionList onScroll y=99
+RNQNX_COMPONENT_PROBE 50435 SectionList onScroll y=99
+RNQNX_COMPONENT_PROBE 50557 SectionList onScroll y=246
+RNQNX_COMPONENT_PROBE 50558 SectionList viewable first=s0-4 last=s0-16 count=13
+RNQNX_COMPONENT_PROBE 50574 SectionList onScroll y=352
+RNQNX_COMPONENT_PROBE 50575 SectionList viewable first=s0-7 last=s0-18 count=12
+RNQNX_COMPONENT_PROBE 50591 SectionList onScroll y=420
+RNQNX_COMPONENT_PROBE 50592 SectionList viewable first=s0-8 last=s0-20 count=13
+RNQNX_COMPONENT_PROBE 50607 SectionList onScroll y=465
+RNQNX_COMPONENT_PROBE 50608 SectionList viewable first=s0-9 last=s0-21 count=13
+RNQNX_COMPONENT_PROBE 50668 SectionList onScroll y=489
+RNQNX_COMPONENT_PROBE 50669 SectionList viewable first=s0-10 last=s0-21 count=12
+RNQNX_COMPONENT_PROBE 50676 SectionList onScroll y=498
+RNQNX_COMPONENT_PROBE 50677 SectionList viewable first=s0-10 last=s0-22 count=13
+RNQNX_COMPONENT_PROBE 50687 SectionList onScroll y=500
+RNQNX_COMPONENT_PROBE 50892 SectionList onScroll y=535
+RNQNX_COMPONENT_PROBE 50894 SectionList viewable first=s0-11 last=s0-22 count=12
+RNQNX_COMPONENT_PROBE 50903 SectionList onScroll y=562
+RNQNX_COMPONENT_PROBE 50904 SectionList viewable first=s0-11 last=s0-23 count=13
+RNQNX_COMPONENT_PROBE 50924 SectionList onScroll y=579
+RNQNX_COMPONENT_PROBE 50925 SectionList viewable first=s0-12 last=s0-24 count=13
+RNQNX_COMPONENT_PROBE 50941 SectionList onScroll y=591
+RNQNX_COMPONENT_PROBE 51002 SectionList onScroll y=597
+RNQNX_COMPONENT_PROBE 51004 SectionList onScroll y=597
+RNQNX_COMPONENT_PROBE 51036 SectionList onScroll y=723
+RNQNX_COMPONENT_PROBE 51037 SectionList viewable first=s0-15 last=undefined count=11
+RNQNX_COMPONENT_PROBE 51138 SectionList onScroll y=788
+RNQNX_COMPONENT_PROBE 51139 SectionList viewable first=s0-17 last=undefined count=9
+RNQNX_COMPONENT_PROBE 51169 SectionList onScroll y=919
+RNQNX_COMPONENT_PROBE 51170 SectionList viewable first=s0-20 last=undefined count=6
+RNQNX_COMPONENT_PROBE 51203 SectionList onScroll y=981
+RNQNX_COMPONENT_PROBE 51204 SectionList viewable first=s0-21 last=undefined count=5
+RNQNX_COMPONENT_PROBE 51275 SectionList onScroll y=994
+RNQNX_COMPONENT_PROBE 51279 SectionList onScroll y=994
+RNQNX_COMPONENT_PROBE 51282 SectionList onScroll y=999
+RNQNX_COMPONENT_PROBE 51286 SectionList onScroll y=1000
+RNQNX_COMPONENT_PROBE 51303 SectionList onScroll y=1000
+RNQNX_COMPONENT_PROBE 53422 probe page=vsection
+RNQNX_COMPONENT_PROBE 53459 VirtualizedSectionList viewable first=undefined last=undefined count=1
+RNQNX_COMPONENT_PROBE 53460 VirtualizedSectionList viewable first=undefined last=s0-0 count=2
+RNQNX_COMPONENT_PROBE 53461 VirtualizedSectionList viewable first=undefined last=s0-1 count=3
+RNQNX_COMPONENT_PROBE 53461 VirtualizedSectionList viewable first=undefined last=s0-2 count=4
+RNQNX_COMPONENT_PROBE 53462 VirtualizedSectionList viewable first=undefined last=s0-3 count=5
+RNQNX_COMPONENT_PROBE 53463 VirtualizedSectionList viewable first=undefined last=s0-4 count=6
+RNQNX_COMPONENT_PROBE 53463 VirtualizedSectionList viewable first=undefined last=s0-5 count=7
+RNQNX_COMPONENT_PROBE 53464 VirtualizedSectionList viewable first=undefined last=s0-6 count=8
+RNQNX_COMPONENT_PROBE 53465 VirtualizedSectionList viewable first=undefined last=s0-7 count=9
+RNQNX_COMPONENT_PROBE 53466 VirtualizedSectionList viewable first=undefined last=s0-8 count=10
+RNQNX_COMPONENT_PROBE 53489 VirtualizedSectionList viewable first=undefined last=s0-9 count=11
+RNQNX_COMPONENT_PROBE 53491 VirtualizedSectionList viewable first=undefined last=s0-10 count=12
+RNQNX_COMPONENT_PROBE 56169 VirtualizedSectionList onScroll y=62
+RNQNX_COMPONENT_PROBE 56170 VirtualizedSectionList viewable first=s0-0 last=s0-12 count=13
+RNQNX_COMPONENT_PROBE 56186 VirtualizedSectionList onScroll y=79
+RNQNX_COMPONENT_PROBE 56187 VirtualizedSectionList viewable first=s0-1 last=s0-12 count=12
+RNQNX_COMPONENT_PROBE 56202 VirtualizedSectionList onScroll y=91
+RNQNX_COMPONENT_PROBE 56235 VirtualizedSectionList onScroll y=99
+RNQNX_COMPONENT_PROBE 56237 VirtualizedSectionList viewable first=s0-1 last=s0-13 count=13
+RNQNX_COMPONENT_PROBE 56252 VirtualizedSectionList onScroll y=100
+RNQNX_COMPONENT_PROBE 56288 VirtualizedSectionList onScroll y=100
+RNQNX_COMPONENT_PROBE 56419 VirtualizedSectionList onScroll y=348
+RNQNX_COMPONENT_PROBE 56420 VirtualizedSectionList viewable first=s0-7 last=s0-18 count=12
+RNQNX_COMPONENT_PROBE 56466 VirtualizedSectionList onScroll y=421
+RNQNX_COMPONENT_PROBE 56467 VirtualizedSectionList viewable first=s0-8 last=s0-20 count=13
+RNQNX_COMPONENT_PROBE 56469 VirtualizedSectionList onScroll y=464
+RNQNX_COMPONENT_PROBE 56471 VirtualizedSectionList viewable first=s0-9 last=s0-21 count=13
+RNQNX_COMPONENT_PROBE 56485 VirtualizedSectionList onScroll y=488
+RNQNX_COMPONENT_PROBE 56487 VirtualizedSectionList viewable first=s0-10 last=s0-21 count=12
+RNQNX_COMPONENT_PROBE 56538 VirtualizedSectionList onScroll y=498
+RNQNX_COMPONENT_PROBE 56539 VirtualizedSectionList viewable first=s0-10 last=s0-22 count=13
+RNQNX_COMPONENT_PROBE 56542 VirtualizedSectionList onScroll y=498
+RNQNX_COMPONENT_PROBE 56544 VirtualizedSectionList onScroll y=500
+RNQNX_COMPONENT_PROBE 56548 VirtualizedSectionList onScroll y=500
+RNQNX_COMPONENT_PROBE 56769 VirtualizedSectionList onScroll y=562
+RNQNX_COMPONENT_PROBE 56770 VirtualizedSectionList viewable first=s0-11 last=s0-23 count=13
+RNQNX_COMPONENT_PROBE 56785 VirtualizedSectionList onScroll y=579
+RNQNX_COMPONENT_PROBE 56787 VirtualizedSectionList viewable first=s0-12 last=s0-24 count=13
+RNQNX_COMPONENT_PROBE 56819 VirtualizedSectionList onScroll y=597
+RNQNX_COMPONENT_PROBE 56835 VirtualizedSectionList onScroll y=599
+RNQNX_COMPONENT_PROBE 56878 VirtualizedSectionList onScroll y=599
+RNQNX_COMPONENT_PROBE 57019 VirtualizedSectionList onScroll y=847
+RNQNX_COMPONENT_PROBE 57020 VirtualizedSectionList viewable first=s0-18 last=s1-4 count=14
+RNQNX_COMPONENT_PROBE 57035 VirtualizedSectionList onScroll y=920
+RNQNX_COMPONENT_PROBE 57037 VirtualizedSectionList viewable first=s0-20 last=s1-5 count=13
+RNQNX_COMPONENT_PROBE 57101 VirtualizedSectionList onScroll y=963
+RNQNX_COMPONENT_PROBE 57103 VirtualizedSectionList viewable first=s0-21 last=s1-6 count=13
+RNQNX_COMPONENT_PROBE 57108 VirtualizedSectionList onScroll y=963
+RNQNX_COMPONENT_PROBE 57111 VirtualizedSectionList onScroll y=988
+RNQNX_COMPONENT_PROBE 57112 VirtualizedSectionList viewable first=s0-21 last=s1-7 count=14
+RNQNX_COMPONENT_PROBE 57115 VirtualizedSectionList onScroll y=998
+RNQNX_COMPONENT_PROBE 57135 VirtualizedSectionList onScroll y=1000
+RNQNX_COMPONENT_PROBE 57189 VirtualizedSectionList onScroll y=1000
+RNQNX_COMPONENT_PROBE 57369 VirtualizedSectionList onScroll y=938
+RNQNX_COMPONENT_PROBE 57370 VirtualizedSectionList viewable first=s0-20 last=s1-6 count=14
+RNQNX_COMPONENT_PROBE 57385 VirtualizedSectionList onScroll y=921
+RNQNX_COMPONENT_PROBE 57387 VirtualizedSectionList viewable first=s0-20 last=s1-5 count=13
+RNQNX_COMPONENT_PROBE 57419 VirtualizedSectionList onScroll y=903
+RNQNX_COMPONENT_PROBE 57420 VirtualizedSectionList viewable first=s0-19 last=s1-5 count=14
+RNQNX_COMPONENT_PROBE 57435 VirtualizedSectionList onScroll y=901
+RNQNX_COMPONENT_PROBE 57552 VirtualizedSectionList onScroll y=776
+RNQNX_COMPONENT_PROBE 57554 VirtualizedSectionList viewable first=s0-16 last=s1-2 count=14
+RNQNX_COMPONENT_PROBE 57569 VirtualizedSectionList onScroll y=740
+RNQNX_COMPONENT_PROBE 57570 VirtualizedSectionList viewable first=s0-16 last=s1-1 count=13
+RNQNX_COMPONENT_PROBE 57602 VirtualizedSectionList onScroll y=706
+RNQNX_COMPONENT_PROBE 57603 VirtualizedSectionList viewable first=s0-15 last=s1-1 count=14
+RNQNX_COMPONENT_PROBE 57619 VirtualizedSectionList onScroll y=701
+RNQNX_COMPONENT_PROBE 57620 VirtualizedSectionList viewable first=s0-15 last=s1-0 count=13
+RNQNX_COMPONENT_PROBE 57651 VirtualizedSectionList onScroll y=700
+RNQNX_COMPONENT_PROBE 57654 VirtualizedSectionList onScroll y=700

@@ -158,7 +158,8 @@ void applyNativePosition(QWindow& window);
 void sendWindowManagerRequest(QWindow& window, const char* request);
 
 // Minimize the way fullscreen-winmgr understands it: hide and destroy the
-// native window so the launcher shows.
+// native window so the launcher shows. Also tells rnqnx::runtime::
+// HostWindowState, so AppState reports "background" (ADR-0024).
 void minimizeByDestroyingWindow(QWindow& window);
 // Shows a minimized window again. Under rnqnx-winmgr
 // (`sizeKeepingManager`) the manager shows and raises it. Under

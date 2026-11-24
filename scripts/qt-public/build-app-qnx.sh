@@ -18,7 +18,10 @@
 # Environment: APP_SRC (repo root), APP_BUILD (default $QT_PUBLIC_BUILD/app-qnx),
 # HERMES_QNX_DIR, HERMES_QNX_SRC, RN_DEPS_DIR, APP_RUNPATH (default
 # /data/qt612-public/lib), JOBS (default 4), APP_CMAKE_EXTRA (extra -D options,
-# whitespace separated, for example -DRNQNX_ENABLE_TIMING_PROBE=ON).
+# whitespace separated, for example -DRNQNX_ENABLE_TIMING_PROBE=ON), APP_TARGETS
+# (CMake targets to build, default rnqnx_playground_qnx; a consumer app is
+# rnqnx_consumer_app with APP_CMAKE_EXTRA="-DRNQNX_BUILD_CONSUMER_APP=ON
+# -DRNQNX_CONSUMER_CONFIG=<build/qnx/native-app.json>").
 set -euo pipefail
 source "$(dirname "$0")/layout.sh"
 source "$QNX_SDP/qnxsdp-env.sh" >/dev/null
@@ -52,5 +55,7 @@ cmake -S "$APP_SRC" -B "$build" -G Ninja \
   -DQt6_DIR="$QT_PUBLIC_BUILD/qnx-build/qtbase/lib/cmake/Qt6" \
   -DQT_HOST_PATH="$QT_PUBLIC_BUILD/host-build/qtbase" \
   -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON "-DCMAKE_INSTALL_RPATH=$runpath" ${APP_CMAKE_EXTRA:-}
-cmake --build "$build" --target rnqnx_playground_qnx --parallel "${JOBS:-4}"
-ls -l "$build/bin/rnqnx_playground_qnx"
+targets=${APP_TARGETS:-rnqnx_playground_qnx}
+# shellcheck disable=SC2086
+cmake --build "$build" --target $targets --parallel "${JOBS:-4}"
+for t in $targets; do ls -l "$build/bin/$t" 2>/dev/null || find "$build" -maxdepth 6 -type f -name "$t" -exec ls -l {} +; done

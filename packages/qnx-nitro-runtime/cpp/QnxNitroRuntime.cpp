@@ -1,5 +1,6 @@
 #include "QnxNitroRuntime.hpp"
 #include "QnxPlatformInfo.hpp"
+#include "QnxWindows.hpp"
 
 #include <NitroModules/HybridClassRegistry.hpp>
 #include <NitroModules/InstallNitro.hpp>
@@ -30,6 +31,16 @@ void installQnxNitroRuntime(
   installQnxNitroRuntime(runtime);
   margelo::nitro::Dispatcher::installRuntimeGlobalDispatcher(
       runtime, std::move(dispatcher));
+}
+
+std::shared_ptr<QnxWindowsBackend> installQnxWindows(
+    std::shared_ptr<margelo::nitro::Dispatcher> dispatcher,
+    std::shared_ptr<WindowServices> services) {
+  if (!margelo::nitro::HybridClassRegistry::hasHybridClass("QnxWindows")) {
+    margelo::nitro::HybridClassRegistry::registerHybridClass("QnxWindows",
+                                                             QnxWindows::Class::get());
+  }
+  return QnxWindowsBackend::create(std::move(dispatcher), std::move(services));
 }
 
 } // namespace rnqnx::nitro

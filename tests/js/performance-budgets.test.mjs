@@ -116,6 +116,25 @@ assert.equal(
   null
 );
 
+// A drag or observed-pointer run carries input fields instead of wheel fields.
+const dragRun = {
+  ...fakeResult({ notches: 0, interval: 20 }),
+  inputKind: 'posted-drag',
+  inputEvents: 44,
+  inputFirstMs: 600,
+  inputLastMs: 4500,
+};
+const drag = summarizeRun(dragRun, { needsFrames: true });
+assert.equal(drag.frameIntervalP95Ms, 20);
+assert.throws(
+  () => summarizeRun({ ...dragRun, inputEvents: 0 }, { needsFrames: true }),
+  /no wheel, drag or observed pointer input/
+);
+assert.throws(
+  () => summarizeRun({ ...dragRun, inputFirstMs: 4400 }, { needsFrames: true }),
+  /swaps in the input window/
+);
+
 // Invalid runs are rejected, not averaged in.
 assert.throws(
   () => summarizeRun(fakeResult({ dropped: 1 }), { needsFrames: true }),
@@ -124,7 +143,7 @@ assert.throws(
 assert.throws(() => summarizeRun(fakeResult({ rss: 0 }), { needsFrames: true }), /peakRssKiB/);
 assert.throws(
   () => summarizeRun(fakeResult({ notches: 0 }), { needsFrames: true }),
-  /no wheel script/
+  /no wheel, drag or observed pointer input/
 );
 assert.throws(
   () =>

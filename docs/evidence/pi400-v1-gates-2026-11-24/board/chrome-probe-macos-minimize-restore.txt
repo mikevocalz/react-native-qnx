@@ -1,0 +1,12 @@
+Running "RNQnxPlayground"
+RNQNX_CHROME_PROBE 1795484646225 initial appstate=inactive
+RNQNX_CHROME_PROBE 1795484646319 appstate=active
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=900x600 mode=native-moved
+RNQNX_NODE name=rnqnxWindowChrome visible=1
+RNQNX_NODE name=rnqnxTitleBar visible=1
+RNQNX_CHROME_PROBE 1795484662372 js-block-start ms=20000
+RNQNX_CHROME_PROBE 1795484682373 js-block-end
+RNQNX_WINDOW_ACTION minimize
+RNQNX_CHROME_PROBE 1795484693271 appstate=background
+RNQNX_WINDOW_ACTION restore
+RNQNX_CHROME_PROBE 1795484703237 appstate=active

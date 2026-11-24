@@ -1,0 +1,6 @@
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1124 02:12:00.040421     1 conversions.h:368] Could not parse yoga::PositionType: left
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1280x720 mode=native-moved
+RNQNX_NODE name=rnqnxWindowChrome visible=1
+RNQNX_NODE name=rnqnxTitleBar visible=1
