@@ -468,8 +468,20 @@ Commands:
 rnqnx analyze --project . --runtime <rnqnx-runtime.json>
 rnqnx runner check --runtime <rnqnx-runtime.json> --project . --bundle build/qnx/app.bundle.hbc
 rnqnx runner pack --stage <dir> --out <dir> --id <id> --target <target> --hermesc <path> \
-  --hermes <v> --qt <v> --sdp <v>|none --builtins <json>
+  --hermes <v> --qt <v> --sdp <v>|none --builtins <json> [--target-libs <file>] \
+  (--published-at <ISO date> | SOURCE_DATE_EPOCH=<seconds>)
 ```
+
+`runner pack` writes three files into `--out` and refuses to overwrite any of them:
+`<id>.tar.gz`, `rnqnx-runner-manifest.json` (one entry, with the archive's `sha256`
+and `size`) and `rnqnx-runtime.json` (the same bytes that sit inside the archive).
+The output is reproducible. Tar entries are sorted with zero owner and time fields,
+gzip carries no timestamp, every JSON file has sorted keys, and `targetLibraries`
+is sorted. The only time value is the manifest's `publishedAt`, which comes from
+`--published-at` or `SOURCE_DATE_EPOCH` and never from the clock. Without one of
+them the command stops. Running it twice on the same stage and inputs gives
+byte-identical files. Publishing the result is a separate, owner-approved step:
+[Publish a runner release](releases/publish-runner-release.md).
 
 ### Runner publication (ADR-0018)
 

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { checkoutRunnerVersions } from './runner.mjs';
-import { packRunner } from './runner-pack.mjs';
+import { packRunner, resolvePublishedAt } from './runner-pack.mjs';
 import {
   bundleProfile,
   compareRunnerToBundle,
@@ -69,6 +69,7 @@ export async function runnerToolsMain(argv) {
       'react-native-qnx': { type: 'string' },
       'react-native': { type: 'string' },
       'target-libs': { type: 'string' },
+      'published-at': { type: 'string' },
     },
   });
   if (positionals.length) throw new Error(`runner ${command} accepts no positional arguments.`);
@@ -95,7 +96,17 @@ export async function runnerToolsMain(argv) {
   ]))
     if (!values[key]) throw new Error(`runner pack needs --${key}.`);
   const pinned = await checkoutRunnerVersions();
-  const builtins = JSON.parse(await readFile(/** @type {string} */ (values.builtins), 'utf8'));
+  const publishedAt = resolvePublishedAt(values['published-at'], process.env.SOURCE_DATE_EPOCH);
+  const builtinsFile = /** @type {string} */ (values.builtins);
+  /** @type {unknown} */
+  let builtins;
+  try {
+    builtins = JSON.parse(await readFile(builtinsFile, 'utf8'));
+  } catch (error) {
+    throw new Error(
+      `Cannot read --builtins ${builtinsFile} as JSON (${error instanceof Error ? error.message : error}).`
+    );
+  }
   const targetLibraries = values['target-libs']
     ? (await readFile(values['target-libs'], 'utf8')).split(/\r?\n/).filter(Boolean)
     : undefined;
@@ -115,6 +126,7 @@ export async function runnerToolsMain(argv) {
     nitroAbi: values['nitro-abi'] ?? (await checkoutNitroAbi()),
     builtins,
     targetLibraries,
+    publishedAt,
   });
   console.log(JSON.stringify({ ...result, published: false }, null, 2));
   return 0;

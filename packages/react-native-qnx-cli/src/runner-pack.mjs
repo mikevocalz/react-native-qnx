@@ -19,10 +19,13 @@ import {
 
 // `rnqnx runner pack`: turn a staged runner directory into the archive and the
 // manifest entry that `runner fetch` consumes (ADR-0018). Nothing is
-// published. The archive is reproducible: entries are sorted, owner and time
-// fields are zero, and gzip carries no timestamp, so the same stage gives the
-// same SHA-256. The Hermes bytecode version is measured by compiling an empty
-// file with the runner's own hermesc and reading the header, not typed in.
+// published. The output is reproducible: tar entries are sorted, owner and time
+// fields are zero, gzip carries no timestamp, and every JSON file is written
+// with sorted keys. The one time value, the manifest's publishedAt, is an
+// input (`--published-at` or SOURCE_DATE_EPOCH) and is never read from the
+// clock, so the same stage and inputs give the same bytes and SHA-256. The
+// Hermes bytecode version is measured by compiling an empty file with the
+// runner's own hermesc and reading the header, not typed in.
 
 /** @param {string} name @param {number} size @param {string} type @param {number} mode */
 function tarHeader(name, size, type, mode) {
@@ -41,6 +44,47 @@ function tarHeader(name, size, type, mode) {
   for (const byte of h) sum += byte;
   h.write(sum.toString(8).padStart(6, '0') + '\0 ', 148);
   return h;
+}
+
+/**
+ * Recursively sort object keys so the serialized form does not depend on the
+ * order the caller built the value in. Arrays keep their order.
+ * @param {unknown} value @returns {unknown}
+ */
+export function sortKeys(value) {
+  if (Array.isArray(value)) return value.map(sortKeys);
+  if (value && typeof value === 'object')
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, sortKeys(/** @type {Record<string, unknown>} */ (value)[key])])
+    );
+  return value;
+}
+
+/** Canonical JSON text: sorted keys, two-space indent, one trailing newline. */
+export const canonicalJson = (/** @type {unknown} */ value) =>
+  JSON.stringify(sortKeys(value), null, 2) + '\n';
+
+/**
+ * The manifest timestamp, taken from an explicit ISO date or from a
+ * SOURCE_DATE_EPOCH value (seconds since the epoch), never from the clock.
+ * @param {string | undefined} publishedAt @param {string | undefined} epoch
+ */
+export function resolvePublishedAt(publishedAt, epoch) {
+  if (publishedAt !== undefined) {
+    if (Number.isNaN(Date.parse(publishedAt)))
+      throw new Error(`--published-at ${JSON.stringify(publishedAt)} is not an ISO date.`);
+    return publishedAt;
+  }
+  if (epoch !== undefined && epoch !== '') {
+    if (!/^[0-9]{1,12}$/.test(epoch))
+      throw new Error(`SOURCE_DATE_EPOCH ${JSON.stringify(epoch)} is not whole seconds.`);
+    return new Date(Number(epoch) * 1000).toISOString();
+  }
+  throw new Error(
+    'runner pack needs a fixed time so the output is reproducible: pass --published-at <ISO date> or set SOURCE_DATE_EPOCH.'
+  );
 }
 
 /** @param {Buffer} body */
@@ -95,11 +139,17 @@ export async function measureBytecodeVersion(hermesc) {
 /**
  * @param {{stage: string, out: string, id: string, target: string,
  *   versions: Record<string, string | null>, hermesc: string, nitroAbi: string,
- *   builtins: unknown, targetLibraries?: string[], publishedAt?: string}} options
+ *   builtins: unknown, targetLibraries?: string[], publishedAt: string}} options
  */
 export async function packRunner(options) {
   const stage = path.resolve(options.stage);
-  const names = await listFiles(stage);
+  const publishedAt = resolvePublishedAt(options.publishedAt, undefined);
+  const names = await listFiles(stage).catch((error) => {
+    if (error?.code === 'ENOENT' || error?.code === 'ENOTDIR')
+      throw new Error(`The stage ${stage} is not a readable directory.`);
+    throw error;
+  });
+  if (names.length === 0) throw new Error(`The stage ${stage} holds no files.`);
   if (names.includes(RUNTIME_FILE))
     throw new Error(`The stage already contains ${RUNTIME_FILE}; pack writes it.`);
   const hermesBytecodeVersion = await measureBytecodeVersion(options.hermesc);
@@ -114,7 +164,7 @@ export async function packRunner(options) {
     versions: options.versions,
     ...runtime,
   };
-  const descriptorBody = Buffer.from(JSON.stringify(descriptor, null, 2) + '\n');
+  const descriptorBody = Buffer.from(canonicalJson(descriptor));
 
   /** @type {Buffer[]} */
   const parts = [];
@@ -142,12 +192,12 @@ export async function packRunner(options) {
     sha256,
     size: archive.length,
     format: 'tar.gz',
-    ...(options.targetLibraries ? { targetLibraries: options.targetLibraries } : {}),
+    ...(options.targetLibraries ? { targetLibraries: [...options.targetLibraries].sort() } : {}),
     runtime,
   };
   const manifest = validateRunnerManifest({
     schema: RUNNER_MANIFEST_SCHEMA,
-    publishedAt: options.publishedAt ?? new Date().toISOString(),
+    publishedAt,
     runners: [entry],
   });
   checkRunnerContents(manifest.runners[0], all);
@@ -156,7 +206,8 @@ export async function packRunner(options) {
   await mkdir(out, { recursive: true });
   const archivePath = path.join(out, `${options.id}.tar.gz`);
   const manifestPath = path.join(out, 'rnqnx-runner-manifest.json');
-  for (const target of [archivePath, manifestPath])
+  const descriptorPath = path.join(out, RUNTIME_FILE);
+  for (const target of [archivePath, manifestPath, descriptorPath])
     if (
       await lstat(target).then(
         () => true,
@@ -165,7 +216,9 @@ export async function packRunner(options) {
     )
       throw new Error(`EEXIST: ${target} already exists; pack never overwrites.`);
   await writeFile(archivePath, archive, { flag: 'wx' });
-  await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx' });
+  await writeFile(manifestPath, canonicalJson(manifest), { flag: 'wx' });
+  // The same bytes that sit inside the archive, for readers who do not unpack it.
+  await writeFile(descriptorPath, descriptorBody, { flag: 'wx' });
   // Prove the written archive reads back with the entries recorded above.
   const listed = await listTarGz(archivePath);
   if (listed.length !== all.length)
@@ -173,6 +226,7 @@ export async function packRunner(options) {
   return {
     archive: archivePath,
     manifest: manifestPath,
+    descriptor: descriptorPath,
     entry,
     entries: all.length,
   };

@@ -56,6 +56,7 @@ const help = `React Native QNX prebuilt development runner
   runner pack  --stage <dir> --out <dir> --id <id> --target <target> --hermesc <path>
                --hermes <v> --qt <v> --sdp <v>|none --builtins <json> [--nitro-abi <v>]
                [--react-native-qnx <v>] [--react-native <v>] [--target-libs <file>]
+               (--published-at <ISO date> | SOURCE_DATE_EPOCH=<seconds>)
   runner check --runtime <rnqnx-runtime.json> --project <dir> [--bundle <file>]
 
 Targets: ${RUNNER_TARGETS.join(', ')}.

@@ -140,6 +140,7 @@ file names, so it catches the libraries it names and nothing else. See
 - `packages/react-native-qnx-cli/src/runner.mjs`
 - `tests/js/qnx-runner-manifest.test.mjs`
 - `scripts/verify-runner-archive.mjs`
+- `scripts/publish-runner-release.mjs`
 - `.github/workflows/runner-release.yml`
 - `docs/packaging.md`
 
@@ -149,8 +150,12 @@ Release steps for a runner, once one is built:
 
 1. Build the runner and stage it with the Qt runtime from an ADR-0017 (`-O2`)
    build and the licence material; leave out every QNX file.
-2. Write the manifest entry with `sha256`, `size` and `targetLibraries`.
-3. Create a draft release, upload the archive and `rnqnx-runner-manifest.json`.
+2. Run `rnqnx runner pack`. It writes the archive, the manifest entry with
+   `sha256`, `size` and `targetLibraries`, and `rnqnx-runtime.json`.
+3. Create a draft release with `scripts/publish-runner-release.mjs`, which uploads
+   the archive and `rnqnx-runner-manifest.json`. It is a dry run unless the owner
+   passes `--confirm` and sets `RNQNX_RELEASE_OWNER_APPROVED=<tag>`
+   ([Publish a runner release](../releases/publish-runner-release.md)).
 4. Run the "Runner release attestation" workflow with the tag and archive
    name. It checks the archive, attests it and the manifest, and uploads
    `SHA256SUMS`.
