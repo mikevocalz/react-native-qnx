@@ -27,7 +27,7 @@ when package manifests and independent release units are created.
 - `expo start --offline` on a project made with `rnqnx project create` answered
   `platform=qnx` bundle requests with HTTP 500 (`No support package is known for
 platform "qnx"`). `patches/expo-modules-autolinking@58.1.0.patch` registers `qnx`
-  and `marathon` with Expo's host-package lookup. The patch and an exact version pin
+  (and the second native target) with Expo's host-package lookup. The patch and an exact version pin
   ship in the workspace policy and in generated projects. `pnpm verify:expo-cli-qnx`
   repeats the clean-project check.
 

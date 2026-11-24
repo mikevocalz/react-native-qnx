@@ -59,7 +59,7 @@ Exact pins from `package.json` and the generated dependency table.
 | Hermes compiler                                                | `260318099.0.5`                         | Generated table in the compatibility matrix                                                                                                                            |
 | Hermes source                                                  | tag `hermes-v260318099.0.5`             | Generated table in the compatibility matrix                                                                                                                            |
 
-[pnpm-workspace.yaml](https://github.com/mikevocalz/react-native-qnx/blob/main/pnpm-workspace.yaml) includes the workspace packages `apps/*` and `packages/*`. It also patches `react-native@0.88.1`, `braces@3.0.3` and `expo-modules-autolinking@58.1.0` from the `patches/` directory. The last one teaches Expo CLI the `qnx` and `marathon` platforms; without it `expo start` answers `platform=qnx` bundle requests with HTTP 500.
+[pnpm-workspace.yaml](https://github.com/mikevocalz/react-native-qnx/blob/main/pnpm-workspace.yaml) includes the workspace packages `apps/*` and `packages/*`. It also patches `react-native@0.88.1`, `braces@3.0.3` and `expo-modules-autolinking@58.1.0` from the `patches/` directory. The last one teaches Expo CLI the `qnx` platform; without it `expo start` answers `platform=qnx` bundle requests with HTTP 500.
 
 ## Target and QNX
 
