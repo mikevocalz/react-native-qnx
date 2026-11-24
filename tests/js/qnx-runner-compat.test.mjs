@@ -239,6 +239,7 @@ try {
       hermesc,
       nitroAbi: NITRO,
       builtins,
+      publishedAt: '2026-11-20T00:00:00Z',
     }),
     /EEXIST/
   );
@@ -271,6 +272,7 @@ try {
     hermesc,
     nitroAbi: NITRO,
     builtins,
+    publishedAt: '2026-11-20T00:00:00Z',
   });
   const longName = `${'a'.repeat(60)}/${'b'.repeat(60)}/file.txt`;
   ok((await listTarGz(long.archive)).includes(longName), 'long name lists back');
@@ -307,6 +309,7 @@ try {
       nitroAbi: NITRO,
       builtins,
       targetLibraries: ['libc.so.6'],
+      publishedAt: '2026-11-20T00:00:00Z',
     }),
     /QNX SDP or target-image files/
   );

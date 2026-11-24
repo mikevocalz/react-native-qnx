@@ -123,6 +123,11 @@ made on a host with the SDP, not a downloaded runner), and the end-to-end record
 for the board target, then `rnqnx project create`, an edit through Expo config, and `rnqnx project dev` against the downloaded
 runner on a host with no SDP.
 
+Update after this receipt (host): `board/rnqnx-runtime.json` was written by hand on 2026-11-24. `rnqnx runner pack` now writes it, with sorted keys and
+a fixed time input, and the checked-in file is the generated output (same values, new key order; `SHA256SUMS` updated).
+The packing test and the publish script with its dry run are in `tests/js/runner-pack-cli.test.mjs` and `scripts/publish-runner-release.mjs`.
+No runner release exists; creating one needs the owner ([procedure](../../releases/publish-runner-release.md)). The gate stays pending.
+
 ## Device parity and cold boot
 
 [ADR-0023](../../adr/0023-pi400-stands-in-for-device-parity.md) is Accepted (owner Mike, 2026-11-23) and `v1-readiness.json` carries
