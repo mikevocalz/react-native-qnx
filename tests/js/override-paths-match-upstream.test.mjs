@@ -58,6 +58,14 @@ const packages = [
         },
       ],
       [
+        'Libraries/Components/ScrollView/PullToRefresh.js',
+        {
+          // A helper of the ScrollView override, loaded by relative path.
+          referencedBy: 'packages/react-native-qnx/Libraries/Components/ScrollView/ScrollView.js',
+          needle: "from './PullToRefresh'",
+        },
+      ],
+      [
         'Libraries/Components/SafeAreaView/TitleBarInset.js',
         {
           // A helper of the SafeAreaView override, loaded by relative path.

@@ -1,26 +1,34 @@
 ## Props
 
-`RefreshControl` is a QNX JavaScript module at `packages/react-native-qnx/Libraries/Components/RefreshControl/RefreshControl.js`. Its comment says QNX has no native pull-to-refresh gesture, so it is a no-op. The function takes no arguments and returns `null` (`:12-14`). The only default is `refreshing: false` (`:16-18`). `PublicAPI.js:157` exports it as `RefreshControl`, and `tests/js/qnx-public-entry.test.mjs:69` checks the export exists.
+`RefreshControl` renders nothing on QNX, and it never needs to: the Qt Quick scroll item has no native pull view. The pull is detected by the QNX `ScrollView` (`packages/react-native-qnx/Libraries/Components/ScrollView/ScrollView.js`, a copy of React Native 0.88.1's file with three marked edits) from the `refreshControl` element's props. `RefreshControl.js` itself is a null-returning function with `refreshing: false` as its only default.
 
-| Prop                                                                                                             | Type     | Status             | Traced finding                     |
-| ---------------------------------------------------------------------------------------------------------------- | -------- | ------------------ | ---------------------------------- |
-| `refreshing`                                                                                                     | boolean  | accepted-no-effect | Default `false`. Nothing reads it. |
-| `onRefresh`                                                                                                      | function | accepted-no-effect | Never called.                      |
-| `colors`, `tintColor`, `title`, `titleColor`, `progressBackgroundColor`, `progressViewOffset`, `size`, `enabled` | various  | accepted-no-effect | The function has no parameters.    |
+| Prop                                                                                                  | Type     | Status             | Traced finding                                                                                                                                                         |
+| ----------------------------------------------------------------------------------------------------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onRefresh`                                                                                           | function | supported          | Called once per pull, as soon as one finger has gone down at the top of a vertical `ScrollView` and travelled 72 points downward (`PullToRefresh.js`). Host test only. |
+| `refreshing`                                                                                          | boolean  | read               | While `true`, a pull does nothing, so the app controls when the next refresh may start. No spinner is drawn.                                                           |
+| `enabled`                                                                                             | boolean  | read               | `false` disables the pull.                                                                                                                                             |
+| `colors`, `tintColor`, `title`, `titleColor`, `progressBackgroundColor`, `progressViewOffset`, `size` | various  | accepted-no-effect | There is no indicator to style.                                                                                                                                        |
 
 ## Events
 
-| Event       | Status      | Note                                                                                                                                                                                             |
-| ----------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `onRefresh` | unsupported | The module registers no gesture, key or timer. No native code references RefreshControl: the only files outside docs that mention it are `RefreshControl.js`, `PublicAPI.js` and the entry test. |
+| Event       | Status      | Note                                                                                                                                                                                         |
+| ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onRefresh` | host-tested | Fires from `onTouchStart`, `onTouchMove` and `onScroll` events the host already delivers, through `tests/js/pull-to-refresh.test.mjs`. Not run on the Pi 400 or the QNX VM since the change. |
 
 ## Platform behavior on QNX
 
-The element is not mounted at all. In React Native 0.88.1's `ScrollView.js:1922-1960`, a `refreshControl` is placed in the tree only when `Platform.OS` is `'ios'` or `'android'`. `Platform.OS` is `'qnx'` (`packages/react-native-qnx/Libraries/Utilities/Platform.js:32`), so both branches are skipped and the ScrollView renders normally. `FlatList` and `SectionList` go through `VirtualizedList.js:1298-1322`, which builds a `RefreshControl` element when `onRefresh` is set and hands it to `ScrollView`, where it is dropped. That branch also asserts `typeof refreshing === 'boolean'` with an invariant, so a list with `onRefresh` and no `refreshing` prop throws on QNX as it does elsewhere.
+React Native 0.88.1's `ScrollView.js:1922-1960` mounts a `refreshControl` only when `Platform.OS` is `'ios'` (a child of the native scroll view) or `'android'` (a wrapping swipe layout). `Platform.OS` is `'qnx'`, so the element was dropped and `onRefresh` had no path to run. That, and a `RefreshControl` that did nothing, is why a drag and five wheel notches at the top fired no `onRefresh` on the Pi 400 (2026-11-24).
+
+The Qt Quick scroll item stops at its bounds (`boundsBehavior: Flickable.StopAtBounds` in the QML the playground registers), so a drag at the top moves nothing and sends no scroll event. The host does send touch events with the finger's page position. The QNX `ScrollView` records the vertical offset from `onScroll`, arms a pull when a single finger goes down at offset 0 or less, disarms it if the content scrolls, and calls the control's `onRefresh` once the finger has moved 72 points down. It fires at the threshold, not on release, because the scroll item may take over the touch and end it with a cancel. `FlatList`, `SectionList` and `VirtualizedList` build their `RefreshControl` and pass it down, so their `onRefresh` works the same way. `VirtualizedList` still asserts that `refreshing` is a boolean when `onRefresh` is set.
+
+Mouse wheel and keyboard do not start a refresh: the scroll item reports nothing at the top for either.
 
 ## Unsupported or partial props
 
-All props are ignored. No pointer-driven or keyboard-driven refresh exists in the repository (files traced: `packages/react-native-qnx`, `packages/expo-router-qnx/src`, `vnext/src`). An app that needs refresh can put a button in the list header that calls the function it would pass to `onRefresh`.
+- No indicator: nothing shows while `refreshing` is `true`, and nothing follows the finger. An app that wants feedback renders its own, for example in the list header.
+- Vertical `ScrollView` only. `horizontal` never refreshes.
+- Touch only. A mouse drag counts only if the host delivers it as touch events.
+- The threshold is fixed at 72 points.
 
 ## Minimal example
 
@@ -50,9 +58,9 @@ export default function Feed() {
 }
 ```
 
-On QNX the `Button` is the only way to trigger `reload`. The `refreshControl` element is accepted and draws nothing.
+On QNX a 72 point downward pull at the top also calls `reload`. The `refreshControl` element draws nothing, so the `Button` stays as a visible way to refresh.
 
 ## Known gaps
 
-- Pull-to-refresh does not exist on this target and no work toward it was found.
-- Host status is `no-op` and both device columns are unverified. No receipt exercises the component.
+- Pull-to-refresh is detected in JavaScript from touch events and is covered by a host test only. No Pi 400 or QNX VM receipt exercises it, so the support row stays at its previous device evidence, which predates the change and recorded no refresh.
+- No native overscroll, spring-back or indicator.

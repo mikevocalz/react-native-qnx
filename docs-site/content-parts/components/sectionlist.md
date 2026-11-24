@@ -14,7 +14,7 @@ A SectionList-specific host test exists. `sectionListRenders` (`tests/cpp/QtReac
 | `onEndReached`                                     | function | JavaScript, untested                | See Events.                                                                 |
 | `stickySectionHeadersEnabled`                      | boolean  | JavaScript, untested; default false | Default is `Platform.OS === 'ios'`, false on `qnx`.                         |
 | `onScroll`, `onLayout`, `onContentSizeChange`      | function | supported                           | Delivered from the ScrollView layer.                                        |
-| `refreshing`, `onRefresh`                          | various  | ignored                             | Routed through a `RefreshControl` that `ScrollView` drops on QNX.           |
+| `refreshing`, `onRefresh`                          | various  | partial                             | Routed through a `RefreshControl`; the QNX `ScrollView` calls `onRefresh`.  |
 
 ## Events
 
