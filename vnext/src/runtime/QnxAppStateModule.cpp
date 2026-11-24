@@ -28,6 +28,11 @@ std::string appState(ApplicationVisibility visibility) {
   return "unknown";
 }
 
+// JavaScript has one background state, so Hidden and Suspended are the same cached value.
+ApplicationVisibility canonical(ApplicationVisibility visibility) {
+  return visibility == ApplicationVisibility::Suspended ? ApplicationVisibility::Hidden : visibility;
+}
+
 void arguments(jsi::Runtime& runtime, size_t count, size_t expected) {
   if (count != expected) throw jsi::JSError(runtime, "AppState: invalid argument count");
 }
@@ -86,6 +91,7 @@ QnxAppStateModule::QnxAppStateModule(std::shared_ptr<react::CallInvoker> jsInvok
     const auto state = weak.lock();
     if (!state || !state->active.load(std::memory_order_acquire)) return;
     state->requireOwner();
+    visibility = canonical(visibility);
     if (state->current.exchange(static_cast<int>(visibility), std::memory_order_acq_rel) ==
         static_cast<int>(visibility))
       return;
@@ -129,7 +135,7 @@ QnxAppStateModule::QnxAppStateModule(std::shared_ptr<react::CallInvoker> jsInvok
   if (onOwner) {
     // The first value is exact and synchronous, as before.
     auto observer = std::make_unique<QtApplicationLifecycle>(*application);
-    impl_->current.store(static_cast<int>(observer->snapshot().visibility), std::memory_order_release);
+    impl_->current.store(static_cast<int>(canonical(observer->snapshot().visibility)), std::memory_order_release);
     impl_->gui->observer = std::move(observer);
     QtApplicationLifecycle* raw = impl_->gui->observer.get();
     QObject::connect(raw, &QtApplicationLifecycle::stateChanged, raw,
@@ -144,7 +150,7 @@ QnxAppStateModule::QnxAppStateModule(std::shared_ptr<react::CallInvoker> jsInvok
     auto& host = HostWindowState::instance();
     impl_->current.store(static_cast<int>(host.minimized()
                              ? ApplicationVisibility::Hidden
-                             : QtApplicationLifecycle::visibilityFor(host.qtApplicationState())),
+                             : canonical(QtApplicationLifecycle::visibilityFor(host.qtApplicationState()))),
         std::memory_order_release);
     QMetaObject::invokeMethod(application, attach, Qt::QueuedConnection);
   }
