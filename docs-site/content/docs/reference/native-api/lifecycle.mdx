@@ -13,7 +13,7 @@ Header: [native/lifecycle/HostWindowState.h](https://github.com/mikevocalz/react
 
 ### `rnqnx::runtime::HostWindowState`
 
-Kind: class · Namespace: `rnqnx::runtime` · Source: [native/lifecycle/HostWindowState.h#L29](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L29)
+Kind: class · Namespace: `rnqnx::runtime` · Source: [native/lifecycle/HostWindowState.h#L31](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L31)
 
 ```cpp
 class HostWindowState final : public QObject
@@ -29,7 +29,8 @@ stayed on that thread would queue the applicationStateChanged mirror update
 onto a thread with no event loop. attach() must run on the owner thread and
 throws std::logic_error elsewhere. setMinimized() may be called from any
 thread: the flag changes at once and minimizedChanged() is emitted on the
-owner thread. minimized() and qtApplicationState() may be read from any
+owner thread, in the order the flag changed (a change made on the owner
+thread waits behind any foreign-thread change still queued). minimized() and qtApplicationState() may be read from any
 thread: AppState's first value is read on the JavaScript thread before its
 GUI-side observer exists.
 
@@ -39,7 +40,7 @@ have no owner thread to live on, so it throws std::logic_error.
 
 ### `rnqnx::runtime::HostWindowState::instance`
 
-Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L33](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L33)
+Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L35](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L35)
 
 ```cpp
 static HostWindowState& instance()
@@ -49,7 +50,7 @@ No doc comment in the header.
 
 ### `rnqnx::runtime::HostWindowState::minimized`
 
-Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L35](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L35)
+Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L37](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L37)
 
 ```cpp
 bool minimized() const noexcept
@@ -59,7 +60,7 @@ No doc comment in the header.
 
 ### `rnqnx::runtime::HostWindowState::setMinimized`
 
-Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L37](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L37)
+Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L39](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L39)
 
 ```cpp
 void setMinimized(bool minimized)
@@ -73,7 +74,7 @@ Emits minimizedChanged (on the owner thread) only when the value changes.
 
 ### `rnqnx::runtime::HostWindowState::attach`
 
-Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L40](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L40)
+Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L42](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L42)
 
 ```cpp
 void attach(QGuiApplication& application)
@@ -87,7 +88,7 @@ Mirrors QGuiApplication::applicationState() in an atomic. Idempotent.
 
 ### `rnqnx::runtime::HostWindowState::qtApplicationState`
 
-Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L41](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L41)
+Kind: method · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L43](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L43)
 
 ```cpp
 Qt::ApplicationState qtApplicationState() const noexcept
@@ -97,7 +98,7 @@ No doc comment in the header.
 
 ### `rnqnx::runtime::HostWindowState::minimizedChanged`
 
-Kind: signal · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L46](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L46)
+Kind: signal · Namespace: `rnqnx::runtime` · Class: `HostWindowState` · Source: [native/lifecycle/HostWindowState.h#L48](https://github.com/mikevocalz/react-native-qnx/blob/main/native/lifecycle/HostWindowState.h#L48)
 
 ```cpp
 void minimizedChanged(bool minimized)
