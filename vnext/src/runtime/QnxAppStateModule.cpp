@@ -45,7 +45,7 @@ void arguments(jsi::Runtime& runtime, size_t count, size_t expected) {
 // to the GUI thread, and delivery goes through the thread-safe invokeAsync.
 struct QnxAppStateModule::Impl {
   struct GuiSide {
-    std::unique_ptr<QtApplicationLifecycle> observer;
+    LifecycleObserverPtr observer;
   };
 
   Impl(QGuiApplication& app, bool jsOnOwner)
@@ -119,7 +119,7 @@ QnxAppStateModule::QnxAppStateModule(std::shared_ptr<react::CallInvoker> jsInvok
     const auto state = weak.lock();
     if (!state || !state->active.load(std::memory_order_acquire)) return;
     state->requireOwner();
-    auto observer = std::make_unique<QtApplicationLifecycle>(*application);
+    LifecycleObserverPtr observer(new QtApplicationLifecycle(*application));
     QtApplicationLifecycle* raw = observer.get();
     QObject::connect(raw, &QtApplicationLifecycle::stateChanged, raw,
         [deliver](LifecycleSnapshot snapshot) { deliver(snapshot.visibility); });
@@ -134,7 +134,7 @@ QnxAppStateModule::QnxAppStateModule(std::shared_ptr<react::CallInvoker> jsInvok
 
   if (onOwner) {
     // The first value is exact and synchronous, as before.
-    auto observer = std::make_unique<QtApplicationLifecycle>(*application);
+    LifecycleObserverPtr observer(new QtApplicationLifecycle(*application));
     impl_->current.store(static_cast<int>(canonical(observer->snapshot().visibility)), std::memory_order_release);
     impl_->gui->observer = std::move(observer);
     QtApplicationLifecycle* raw = impl_->gui->observer.get();

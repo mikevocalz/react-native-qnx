@@ -163,6 +163,23 @@ class LifecycleTest final : public QObject {
     worker.join();
     QVERIFY(rejected.load());
   }
+  void deleterOnOwnerThreadDeletesAtOnce() {
+    QPointer<QtApplicationLifecycle> watch;
+    {
+      rnqnx::runtime::LifecycleObserverPtr observer(new QtApplicationLifecycle(*qGuiApp));
+      watch = observer.get();
+    }
+    QVERIFY(watch.isNull());
+  }
+  void deleterOffOwnerThreadDefersToTheOwner() {
+    rnqnx::runtime::LifecycleObserverPtr observer(new QtApplicationLifecycle(*qGuiApp));
+    QPointer<QtApplicationLifecycle> watch(observer.get());
+    std::thread worker([&] { observer.reset(); });  // must neither throw nor delete here
+    worker.join();
+    QVERIFY(!watch.isNull());
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QVERIFY(watch.isNull());
+  }
 };
 
 int main(int argc, char** argv) {

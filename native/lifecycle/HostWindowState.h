@@ -13,11 +13,19 @@
 
 namespace rnqnx::runtime {
 
-// One per process. Call setMinimized() and attach() on the QGuiApplication
-// owner thread (the thread that owns QWindow); connect to minimizedChanged()
-// on that thread too. minimized() and qtApplicationState() may be read from
-// any thread: with the JavaScript thread on its own thread, AppState's first
-// value is read there before its GUI-side observer exists.
+// One per process. The object lives on the QGuiApplication owner thread no
+// matter which thread calls instance() first: with the JavaScript thread on
+// its own thread, QnxAppStateModule can be the first caller, and a QObject that
+// stayed on that thread would queue the applicationStateChanged mirror update
+// onto a thread with no event loop. attach() must run on the owner thread and
+// throws std::logic_error elsewhere. setMinimized() may be called from any
+// thread: the flag changes at once and minimizedChanged() is emitted on the
+// owner thread. minimized() and qtApplicationState() may be read from any
+// thread: AppState's first value is read on the JavaScript thread before its
+// GUI-side observer exists.
+//
+// instance() needs the QGuiApplication to exist. Before that the object would
+// have no owner thread to live on, so it throws std::logic_error.
 class HostWindowState final : public QObject {
   Q_OBJECT
 
@@ -25,7 +33,7 @@ class HostWindowState final : public QObject {
   static HostWindowState& instance();
 
   bool minimized() const noexcept { return minimized_.load(std::memory_order_acquire); }
-  // Emits minimizedChanged only when the value changes.
+  // Emits minimizedChanged (on the owner thread) only when the value changes.
   void setMinimized(bool minimized);
 
   // Mirrors QGuiApplication::applicationState() in an atomic. Idempotent.
@@ -38,7 +46,7 @@ class HostWindowState final : public QObject {
   void minimizedChanged(bool minimized);
 
  private:
-  HostWindowState() = default;
+  HostWindowState();
   std::atomic<bool> minimized_{false};
   std::atomic<int> qtState_{static_cast<int>(Qt::ApplicationInactive)};
   bool attached_{false};
