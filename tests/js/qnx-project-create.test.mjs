@@ -108,6 +108,16 @@ try {
   }
   const workspaceYaml = await readFile(path.join(qnx, 'pnpm-workspace.yaml'), 'utf8');
   assert.match(workspaceYaml, /'@rn-qnx\/expo-router-qnx': 'file:vendor\//);
+  // Expo CLI needs the autolinking platform patch to serve platform=qnx.
+  assert.match(
+    workspaceYaml,
+    /expo-modules-autolinking@58\.1\.0: patches\/expo-modules-autolinking@58\.1\.0\.patch/
+  );
+  assert.match(workspaceYaml, /'expo-modules-autolinking': 58\.1\.0/);
+  assert.match(
+    await readFile(path.join(qnx, 'patches', 'expo-modules-autolinking@58.1.0.patch'), 'utf8'),
+    /case 'qnx':/
+  );
   for (const name of [
     'react-native-drawer-layout',
     'react-dom',

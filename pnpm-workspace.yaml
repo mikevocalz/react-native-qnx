@@ -47,10 +47,14 @@ overrides:
   '@ts-morph/common>minimatch': 11.0.1
   'glob': 14.0.3
   'node-forge': 1.4.3
+  # Exact pin: patches/expo-modules-autolinking@58.1.0.patch must apply, and pnpm
+  # rejects a patch whose version is not installed.
+  'expo-modules-autolinking': 58.1.0
 
 # Do not suppress moderate-or-higher advisories. The source-verified braces
 # backport below is the sole separately documented exception.
 
 patchedDependencies:
   braces@3.0.3: patches/braces@3.0.3.patch
+  expo-modules-autolinking@58.1.0: patches/expo-modules-autolinking@58.1.0.patch
   react-native@0.88.1: patches/react-native@0.88.1.patch

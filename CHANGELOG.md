@@ -22,6 +22,15 @@ when package manifests and independent release units are created.
 - Host-side C++20 lifecycle tests for the concrete QNX Screen probe with strict
   warnings and sanitizer coverage.
 
+### Fixed
+
+- `expo start --offline` on a project made with `rnqnx project create` answered
+  `platform=qnx` bundle requests with HTTP 500 (`No support package is known for
+platform "qnx"`). `patches/expo-modules-autolinking@58.1.0.patch` registers `qnx`
+  and `marathon` with Expo's host-package lookup. The patch and an exact version pin
+  ship in the workspace policy and in generated projects. `pnpm verify:expo-cli-qnx`
+  repeats the clean-project check.
+
 ### Changed
 
 - prepare-native always generates the app icon set and `--skip-identity-tool`

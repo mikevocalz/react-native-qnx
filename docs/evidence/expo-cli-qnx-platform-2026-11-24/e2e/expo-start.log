@@ -1,0 +1,12 @@
+npm notice run org.example.notes@0.0.1 npx
+npm notice run 'pnpm' exec expo start --offline --port 60932
+Networking has been disabled
+Starting project at /private/var/folders/37/s0s6qm2x3cx1mdsr_fv0y1pr0000gn/T/rnqnx-expo-cli-4LArjq/notes
+Metro is running in CI mode, reloads are disabled. Remove CI=true to enable watch mode.
+Starting Metro Bundler
+
+Waiting on http://localhost:60932
+
+Logs for your project will appear below.
+qnx Bundled 4341ms index.js (1149 modules)
+qnx Bundled 2439ms index.js (1013 modules)
