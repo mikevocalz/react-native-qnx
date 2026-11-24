@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QtGlobal>
 #include <deque>
+#include <memory>
 
 namespace rnqnx::runtime {
 
@@ -56,6 +57,17 @@ class QtApplicationLifecycle final : public QObject {
   std::deque<ApplicationVisibility> pending_;
   bool draining_{false};
 };
+
+// Ends an observer from the thread that releases it. On the owner thread it
+// closes and deletes at once. From any other thread (a module torn down on the
+// JavaScript thread after the event loop that would run a posted task is gone)
+// it hands the object to deleteLater(), which is thread safe: the owner thread
+// deletes it, or the object is reclaimed with that thread's event data. A QObject
+// is never deleted off its own thread, and no Qt call needs the owner thread.
+struct LifecycleObserverDeleter {
+  void operator()(QtApplicationLifecycle* observer) const noexcept;
+};
+using LifecycleObserverPtr = std::unique_ptr<QtApplicationLifecycle, LifecycleObserverDeleter>;
 
 }  // namespace rnqnx::runtime
 

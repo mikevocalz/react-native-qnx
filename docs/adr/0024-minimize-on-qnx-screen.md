@@ -5,8 +5,8 @@
 Proposed, 2026-11-23, with Pi 400 receipts added 2026-11-24. The implementation and its host tests exist (macOS host, Qt 6.12.0). On
 the Pi 400 under `rnqnx-winmgr`, minimize logged `appstate=background` and a second launch restored with `appstate=active`, and the
 JavaScript-thread test host delivered `background,active` for a mid-block minimize and restore
-([receipt](../evidence/pi400-v1-gates-2026-11-24/README.md)). The status moves to Accepted when the two remaining items under Notes
-pass: the QNX VM `appstate` runtime test and a run under the stock `fullscreen-winmgr`. The `window-chrome` gate rule "an ADR in
+([receipt](../evidence/pi400-v1-gates-2026-11-24/README.md)). The QNX VM item passed on 2026-11-24. The status moves to Accepted when a run under the stock
+`fullscreen-winmgr` passes and the owner records acceptance (see Notes). The `window-chrome` gate rule "an ADR in
 docs/adr defines minimize on QNX Screen" is met by this text.
 
 ## Context
@@ -61,6 +61,13 @@ JavaScript thread, so:
   the cache.
 - `invalidate()` on the JavaScript thread clears the active flag and posts the observer's destruction to the GUI thread.
 - The non-`jsThread` path keeps its synchronous construction and its owner-thread checks.
+- `HostWindowState` lives on the `QGuiApplication` thread whichever thread calls `instance()` first. The module can be that first
+  caller on the JavaScript thread, and a QObject left on that thread would queue the `applicationStateChanged` mirror update onto
+  a thread with no event loop. `attach()` throws off the owner thread, and `setMinimized()` works from any thread and emits
+  `minimizedChanged` on the owner thread.
+- The observer is held by `LifecycleObserverPtr`. Its deleter closes and deletes on the owner thread and calls `deleteLater()`
+  from any other, so a module released on the JavaScript thread after the event loop is gone never deletes a QObject off its
+  thread.
 
 The default-off flags stay off: `RNQNX_ENABLE_APP_STATE`, `RNQNX_ENABLE_WINDOW_CHROME`, `RNQNX_ENABLE_INPUT_LIFECYCLE` and
 `Options::jsThread`. The AppState receipt and the "chrome operable while JavaScript is blocked" receipt come from one build with
@@ -120,5 +127,13 @@ for the minimize and restore notifications and for the one-instance key; the app
 
 Needed before Accepted (item 3 of the original list, `rnqnx-winmgr` on the Pi 400, passed on 2026-11-24):
 
-1. QNX VM: the `appstate` runtime test (`RNQNX_BUILD_APPSTATE_TESTS`) with `jsThread` on, for the module's JavaScript-thread path.
+1. QNX VM, `jsThread` on, the module's JavaScript-thread path. Done on 2026-11-24 (QNX VM): `qt_react_host_js_thread_qnx_test`
+   delivered `background,active` for a mid-block minimize and restore and resolved AppState in JS-thread mode
+   ([receipt](../evidence/adr-0024-vm-2026-11-24/README.md)). It is the JS-thread test's AppState coverage; the Linux-only
+   `rnqnx_appstate_runtime_test` cannot run on the VM. The VM script's 11-pass threshold was not met because the build had no
+   Nitro (10 of 10 passed).
 2. Pi 400 under `fullscreen-winmgr`: minimize, see `background` logged, relaunch with `--restore-only`, see `active` logged.
+   **Not run.** The board was running `rnqnx-winmgr` on 2026-11-24 (seen over ssh, read-only), and the stock manager starts `demolauncher` as its
+   child (`-s demolauncher,st,gtk`). Swapping managers on the live board restarts the launcher and the desktop, which the board
+   rules forbid without the owner, and a software reboot is not available if the swap leaves a blank screen.
+3. Acceptance by the owner (Mike). Not recorded in the repository, so the status stays Proposed.

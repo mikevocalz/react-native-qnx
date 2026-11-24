@@ -75,6 +75,16 @@ void QtApplicationLifecycle::recordHostMinimized(bool minimized) {
   push(minimized ? ApplicationVisibility::Hidden : ApplicationVisibility::Active);
 }
 
+void LifecycleObserverDeleter::operator()(QtApplicationLifecycle* observer) const noexcept {
+  if (!observer) return;
+  if (QThread::currentThread() == observer->thread()) {
+    try { observer->close(); } catch (...) {}
+    delete observer;
+  } else {
+    observer->deleteLater();
+  }
+}
+
 void QtApplicationLifecycle::push(ApplicationVisibility incoming) {
   if (snapshot_.closed) return;
   pending_.push_back(incoming);
