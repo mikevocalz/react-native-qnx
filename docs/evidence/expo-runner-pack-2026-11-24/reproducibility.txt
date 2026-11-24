@@ -1,0 +1,16 @@
+archive e48619e15818869268c3484d242df8f2ee191314cd92e6c6c49c60ac86c57d22 7563925 bytes (not committed)
+e48619e15818869268c3484d242df8f2ee191314cd92e6c6c49c60ac86c57d22  out1/pi400-showcase-stage-0.1.0.tar.gz
+82262a7b221a421b20bb4499de1be3b282ccc14463c64d60a28f5dc8b6457a7f  out1/rnqnx-runner-manifest.json
+f1c726b42f618e3e7242d84baf50dee3f45506a8f818132210f1a8b0099f8fcc  out1/rnqnx-runtime.json
+e48619e15818869268c3484d242df8f2ee191314cd92e6c6c49c60ac86c57d22  out2/pi400-showcase-stage-0.1.0.tar.gz
+82262a7b221a421b20bb4499de1be3b282ccc14463c64d60a28f5dc8b6457a7f  out2/rnqnx-runner-manifest.json
+f1c726b42f618e3e7242d84baf50dee3f45506a8f818132210f1a8b0099f8fcc  out2/rnqnx-runtime.json
+diff -r out1 out2: no differences
+
+19e458ebf17bacdee152cd4f64f8e37c49517aedc688e3d214d0466b0ebccdaf  clean/notes-qnx/build/qnx/app.bundle.js
+5332bbbf65aa1ab3f9eb1b0dcf2302dc63131695e589cd3ccc48e53698072262  clean/app.hbc
+-rwxr-xr-x  0 0      0      828968 Dec 31  1969 libQt6Svg.so.6.12.0
+-rwxr-xr-x  0 0      0     8723680 Dec 31  1969 libhermesvm.so
+-rwxr-xr-x  0 0      0    14056088 Dec 31  1969 org.rnqnx.showcase
+-rwxr-xr-x  0 0      0       34816 Dec 31  1969 plugins/imageformats/libqsvg.so
+-rw-r--r--  0 0      0         549 Dec 31  1969 rnqnx-runtime.json

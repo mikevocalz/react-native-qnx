@@ -1,0 +1,10 @@
+GET /index.bundle?platform=qnx&dev=false against `expo start --offline` (Expo CLI 58.1.21): HTTP 500
+Metro has encountered an error: No support package is known for platform "qnx": <scratch>/work/clean/notes-qnx/node_modules/.pnpm/expo-modules-autolinking@58.1.0_supports-color@8.1.1/node_modules/expo-modules-autolinking/build/platforms/index.js (64:19)
+
+  62 |             return null;
+  63 |         default:
+> 64 |             throw new Error(`No support package is known for platform "${platform}"`);
+     |                   ^
+  65 |     }
+  66 | }
+  67 |
