@@ -1,18 +1,20 @@
 ## Props
 
-`Button` has no QNX override. It is React Native's `Button.js`, which wraps a `View` and `Text` in `TouchableOpacity` when `Platform.OS` is not `android` (`Button.js:172-174`). `Platform.OS` is `qnx` here (`packages/react-native-qnx/Libraries/Utilities/Platform.js:32`), and QNX `Platform.select` returns the `qnx` key, then `native`, then `default` (line 65). Button's styles specify only `ios` and `android` (`Button.js:318-355`), so every style entry resolves to undefined. The result is unstyled, centered text with an 8 px margin, in the default text color, with no 18 px iOS size and no blue.
+`Button` has a QNX override (`packages/react-native-qnx/Libraries/Components/Button.js`). Upstream's `Button.js` styles itself with `Platform.select({ ios, android })` and puts `color` on the title only when `Platform.OS === 'ios'` (`Button.js:237-243`, `:318-355`). `Platform.OS` is `qnx` here and QNX `Platform.select` returns the `qnx` key, then `native`, then `default` (`Platform.js`), so every style entry resolved to undefined. The title had no color, which is black on a dark background (seen on the Pi 400, 2026-11-24), and `color` was applied as the button background. The override keeps upstream's props and `TouchableOpacity` structure and uses the iOS look: a `#007AFF` 18 px title, `color` sets the title color, and a disabled title is `#cdcdcd`.
+
+The host render test (`tests/js/qnx-public-entry-render.test.mjs`, section 4) asserts those styles through the public entry. The override has not been re-run on the Pi 400.
 
 Press delivery is the `Pressable` path (see the Pressable page for what the native touch path emits). The host test `buttonMounts` (`tests/cpp/QtReactHostHostTest.cpp:2088-2116`) only mounts the playground `ButtonApp` and checks for no mount failures and one root child. It sends no press, and `__buttonPress` (`apps/rn-playground/index.js:478`) is never read by any test. The matrix note "reports presses" therefore rests on the `Pressable` probe, not on a `Button` test.
 
-| Prop                                | Status                           | Trace                                                                                                                                                                                                                           |
-| ----------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`                             | supported                        | Mount test only. Not upper-cased, since that happens only on Android (`Button.js:270-271`).                                                                                                                                     |
-| `onPress`                           | inherited                        | Same responder path as `Pressable`. No `Button` press test.                                                                                                                                                                     |
-| `color`                             | applies as background            | `Button.js:238-243` sets text color only on `ios`; any other `Platform.OS` takes the Android branch and sets `backgroundColor` on the button `View`. On QNX the color becomes a background, with unstyled text on top. No test. |
-| `disabled`                          | blocks presses, no disabled look | Passed to `TouchableOpacity`. The disabled styles are `Platform.select` entries with no `qnx` key (`Button.js:343-354`), so the dimmed text color is not applied. No test.                                                      |
-| `accessibilityLabel`, `testID`      | forwarded                        | Passed to `TouchableOpacity` (`Button.js:280-300`). No test.                                                                                                                                                                    |
-| `hasTVPreferredFocus`, `nextFocus*` | not read                         | Forwarded as props. No file under `vnext/` references them.                                                                                                                                                                     |
-| `touchSoundDisabled`                | no effect                        | Android-only in React Native. No QNX reader.                                                                                                                                                                                    |
+| Prop                                | Status                         | Trace                                                                                         |
+| ----------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------- |
+| `title`                             | supported                      | Mount test only. Not upper-cased, since that happens only on Android (`Button.js:270-271`).   |
+| `onPress`                           | inherited                      | Same responder path as `Pressable`. No `Button` press test.                                   |
+| `color`                             | supported                      | Sets the title color, as on iOS. Host render test.                                            |
+| `disabled`                          | blocks presses, dims the title | Passed to `TouchableOpacity`; the title is `#cdcdcd` and wins over `color`. Host render test. |
+| `accessibilityLabel`, `testID`      | forwarded                      | Passed to `TouchableOpacity` (`Button.js:280-300`). No test.                                  |
+| `hasTVPreferredFocus`, `nextFocus*` | not read                       | Forwarded as props. No file under `vnext/` references them.                                   |
+| `touchSoundDisabled`                | no effect                      | Android-only in React Native. No QNX reader.                                                  |
 
 ## Events
 
@@ -26,7 +28,7 @@ Presses arrive as Fabric touch events from `QtTouchDispatcher` (`vnext/src/fabri
 
 ## Unsupported or partial props
 
-- Platform styling: QNX gets none, see above.
+- Platform styling: the iOS look only. No Material or desktop variant.
 - `hasTVPreferredFocus` and `nextFocus*`: no native reader.
 - Focus: no Qt tab-chain wiring for `Button` was found. Only `TextInput` joins the tab chain, and only with its contract on (`tests/native/text-input/BridgeTest.cpp:45`).
 
