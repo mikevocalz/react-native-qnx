@@ -10,6 +10,7 @@
 #include <QObject>
 
 #include <atomic>
+#include <mutex>
 
 namespace rnqnx::runtime {
 
@@ -20,7 +21,8 @@ namespace rnqnx::runtime {
 // onto a thread with no event loop. attach() must run on the owner thread and
 // throws std::logic_error elsewhere. setMinimized() may be called from any
 // thread: the flag changes at once and minimizedChanged() is emitted on the
-// owner thread. minimized() and qtApplicationState() may be read from any
+// owner thread, in the order the flag changed (a change made on the owner
+// thread waits behind any foreign-thread change still queued). minimized() and qtApplicationState() may be read from any
 // thread: AppState's first value is read on the JavaScript thread before its
 // GUI-side observer exists.
 //
@@ -48,6 +50,10 @@ class HostWindowState final : public QObject {
  private:
   HostWindowState();
   std::atomic<bool> minimized_{false};
+  // Orders flag changes against the emissions they queue. Never held while a
+  // signal is emitted.
+  std::mutex order_;
+  std::atomic<int> queued_{0};
   std::atomic<int> qtState_{static_cast<int>(Qt::ApplicationInactive)};
   bool attached_{false};
 };

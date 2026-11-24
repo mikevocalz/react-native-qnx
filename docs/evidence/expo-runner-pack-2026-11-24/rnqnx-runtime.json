@@ -1,0 +1,24 @@
+{
+  "builtins": {
+    "expoModules": [
+      {
+        "package": "@rn-qnx/expo-constants-qnx",
+        "version": "0.1.0"
+      }
+    ],
+    "fabricComponents": [],
+    "nitroModules": []
+  },
+  "hermesBytecodeVersion": 99,
+  "nitroAbi": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+  "runnerId": "pi400-showcase-stage-0.1.0",
+  "schema": "rnqnx-runtime/v1",
+  "target": "qnx-aarch64-pi400",
+  "versions": {
+    "hermes": "hermes-v260318099.0.5",
+    "qt": "6.12.0",
+    "reactNative": "0.88.1",
+    "reactNativeQnx": "0.1.0",
+    "sdp": "8.0.5"
+  }
+}

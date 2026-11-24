@@ -67,6 +67,46 @@ int main(int argc, char** argv) {
   host.setMinimized(true);  // owner thread: synchronous
   check(seen.size() == 3 && seen[2] == true, "owner-thread change emits synchronously");
   host.setMinimized(false);
+  check(seen.size() == 4 && seen[3] == false, "owner-thread restore emits synchronously");
+
+  // Emission order follows flag order. A change queued from a foreign thread
+  // must not be overtaken by a later change made on the owner thread, or the
+  // last signal a listener sees disagrees with minimized().
+  seen.clear();
+  std::thread queuer([&] { host.setMinimized(true); });
+  queuer.join();
+  host.setMinimized(false);  // owner thread, while the foreign emission is still queued
+  QCoreApplication::processEvents();
+  check(seen == std::vector<bool>({true, false}), "owner change waits behind a queued foreign change");
+  check(!seen.empty() && seen.back() == host.minimized(), "last signal matches the flag (mixed threads)");
+
+  // Two foreign threads racing true against false: whatever the interleaving,
+  // the last signal equals the final flag and no signal repeats its predecessor.
+  for (int round = 0; round < 2000; ++round) {
+    seen.clear();
+    const bool before = host.minimized();
+    std::atomic<bool> go{false};
+    std::thread a([&] { while (!go.load()) {} host.setMinimized(true); });
+    std::thread b([&] { while (!go.load()) {} host.setMinimized(false); });
+    go = true;
+    a.join();
+    b.join();
+    QCoreApplication::processEvents();
+    const bool last = seen.empty() ? before : seen.back();
+    if (last != host.minimized()) {
+      check(false, "last signal matches the flag (two foreign threads)");
+      break;
+    }
+    for (std::size_t i = 0; i < seen.size(); ++i) {
+      const bool previous = i == 0 ? before : seen[i - 1];
+      if (seen[i] == previous) {
+        check(false, "every signal is a change");
+        round = 2000;
+        break;
+      }
+    }
+  }
+  host.setMinimized(false);
 
   if (failures == 0) std::puts("host window state thread test: ok");
   return failures == 0 ? 0 : 1;
