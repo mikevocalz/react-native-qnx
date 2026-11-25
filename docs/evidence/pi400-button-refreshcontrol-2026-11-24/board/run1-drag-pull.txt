@@ -1,0 +1,26 @@
+Running "RNQnxPlayground"
+RNQNX_COMPONENT_PROBE 85 StatusBar static calls returned currentHeight=0
+RNQNX_COMPONENT_PROBE 85 probe page=touch
+RNQNX_COMPONENT_PROBE 89 ImageBackground child laid out over image
+RNQNX_COMPONENT_PROBE 89 KeyboardAvoidingView onLayout children rendered
+RNQNX_COMPONENT_PROBE 89 SafeAreaView onLayout w=876 h=19
+RNQNX_COMPONENT_PROBE 89 ImageBackground onLoad
+RNQNX_COMPONENT_PROBE 90 nav-touch layout x=0 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 90 nav-vlist layout x=225 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 90 nav-section layout x=450 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 90 nav-vsection layout x=675 y=0 w=225 h=43
+RNQNX_COMPONENT_PROBE 90 Button layout x=12 y=55 w=93 h=39
+RNQNX_COMPONENT_PROBE 90 TouchableOpacity layout x=113 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 90 TouchableHighlight layout x=311 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 90 TouchableWithoutFeedback layout x=509 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 90 ImageBackground layout x=12 y=102 w=360 h=90
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=900x600 mode=native-moved
+RNQNX_NODE name=rnqnxWindowChrome visible=1
+RNQNX_NODE name=rnqnxTitleBar visible=1
+RNQNX_COMPONENT_PROBE 20638 Button onPress
+RNQNX_COMPONENT_PROBE 20651 Button layout x=12 y=55 w=93 h=39
+RNQNX_COMPONENT_PROBE 20651 TouchableOpacity layout x=113 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 20651 TouchableHighlight layout x=311 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 20651 TouchableWithoutFeedback layout x=509 y=55 w=190 h=39
+RNQNX_COMPONENT_PROBE 22522 Button onPress
+RNQNX_COMPONENT_PROBE 29723 RefreshControl onRefresh
