@@ -22,4 +22,12 @@ set(CMAKE_ASM_FLAGS_INIT "-Vgcc_ntoaarch64le -D_QNX_SOURCE")
 # (QT_FEATURE_elf is OFF on QNX), so pass the linker flag directly.
 foreach(kind SHARED MODULE EXE)
   string(APPEND CMAKE_${kind}_LINKER_FLAGS_INIT " -Wl,--enable-new-dtags")
+  # _INIT only affects new caches; preserve unrelated flags on reruns.
+  if(DEFINED CACHE{CMAKE_${kind}_LINKER_FLAGS})
+    set(_flags "$CACHE{CMAKE_${kind}_LINKER_FLAGS}")
+    if(NOT _flags MATCHES "(^|[ ;])(-Wl,)?--enable-new-dtags([ ;]|$)")
+      set(CMAKE_${kind}_LINKER_FLAGS "${_flags} -Wl,--enable-new-dtags" CACHE STRING "Linker flags" FORCE)
+    endif()
+    unset(_flags)
+  endif()
 endforeach()

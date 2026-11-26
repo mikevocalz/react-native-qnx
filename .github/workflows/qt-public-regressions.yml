@@ -1,0 +1,28 @@
+name: Qt public PR 217 regressions
+on:
+  pull_request:
+    paths:
+      - 'scripts/qt-public/**'
+      - 'tests/js/qnx-pr217-regressions.test.mjs'
+      - '.github/workflows/qt-public-regressions.yml'
+  workflow_dispatch:
+
+jobs:
+  host-regressions:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify script syntax
+        run: |
+          bash -n scripts/qt-public/single-pass-build.sh
+          bash -n scripts/qt-public/build-app-qnx.sh
+          bash -n scripts/qt-public/guarded-run.sh
+      - name: Test cache, bundle and rerun regressions
+        run: node --test tests/js/qnx-pr217-regressions.test.mjs
+      - name: Verify runtime staging and packaging checks
+        run: |
+          node tests/js/qnx-public-runtime-staging.test.mjs
+          python3 -m py_compile scripts/qt-public/stage-runtime.py scripts/qt-public/verify-closure.py scripts/qt-public/normalize-rpath.py
