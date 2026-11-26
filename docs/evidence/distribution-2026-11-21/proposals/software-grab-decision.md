@@ -1,7 +1,9 @@
 # Proposal: the software-grab patch and the shipped QNX plugin
 
-**For Mike to decide. Nothing here is decided.** This lane did not change
-`apply-qnx-patches.sh` and will not until the owner picks an option.
+**Owner selected C on 2026-11-22.** The observations and options below describe
+the original proposal. The opt-in recipe is documented in
+[`scripts/qt-public/README.md`](../../../../scripts/qt-public/README.md#optional-no-gpu-capture-plugin).
+This decision does not qualify a new runtime or change historical evidence.
 
 ## The facts
 
@@ -57,7 +59,9 @@ by anything this lane measured.
 
 ## Decision record
 
-Owner choice: ____ (A, B or C) Date: ____
+Owner choice: C. Date: 2026-11-22. Confirmed by the owner in the release-gate
+continuation: "C: opt-in software plugin". Board and licensed self-hosted
+runners are unavailable; complete independent work.
 
 Whichever option is chosen, update `scripts/qt-public/README.md`, the source
 offer ([docs/distribution/source-offer.md](../../../distribution/source-offer.md))

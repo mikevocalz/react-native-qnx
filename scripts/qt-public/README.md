@@ -31,6 +31,21 @@ rebuilt everything in a new container, not in `qnx805-build`:
   wall seconds, exit code, size of the work directory) and `disk-samples.tsv`
   (one row a minute).
 
+### Strict final-pass qualification
+
+For the **final** distribution qualification (not a partial/recovery build), run
+`REQUIRE_CLEAN=1 ./single-pass-build.sh` with fresh source, build and logging
+paths. The guard refuses pre-existing extracted source, SVG source, any of the
+four Qt build trees, or previous stage/disk timing tables. Downloaded archives
+and CVE patches are allowed. It checks before creating logs or launching work,
+never deletes prior evidence, and fails closed on dangling symlinks.
+
+Run `bash tests/scripts/qt-public-clean-tree.test.sh` from the repository root
+(or from any current directory) to exercise pristine and stale-state controls.
+This is a **preflight only**: a passing result does not prove a successful
+one-pass Qt build, SPDX review, publication, independent reproduction or gate
+completion. Keep `distribution` pending until those are recorded.
+
 ## Layout
 
 [`layout.sh`](layout.sh) sets every path; override with environment
@@ -288,6 +303,35 @@ the patch adds a member to `QQnxWindow`; mixing old and new objects breaks
 the class layout.
 
 ## On the board
+
+### Optional no-GPU capture plugin
+
+The owner selected option C on 2026-11-22. `QNX_SOFTWARE_GRAB=1` adds
+`qtbase-qnx-software-grab.patch` to the two default QNX patches. Unset or `0`
+keeps the default patch set; any other value fails. The opt-in permits software
+rendering without an EGL display and software `grabWindow()` capture. Set
+`QT_QUICK_BACKEND=software` when running that variant without a GPU.
+
+Use a separate pristine source/build root for each variant. The patch script
+refuses a second invocation, including an attempt to change variants in place.
+For final qualification, export the choice before the complete build:
+
+```sh
+export QNX_SOFTWARE_GRAB=1
+REQUIRE_CLEAN=1 ./single-pass-build.sh
+./audit-and-stage.sh
+./make-source-bundle.sh /path/to/new-source-output
+```
+
+Keep the same value for the source bundle. Its `SOURCE-MANIFEST.json` records
+`rnQnxPatches.softwareGrab` and the selected patch list; when the source tree
+contains `.qnx-patches-applied`, a mismatch is refused before packaging.
+The runtime package manifest must copy that applied patch list into
+`patchesApplied`, record `softwareGrab`, and identify the built plugin by hash.
+Each variant needs its own runtime/source manifests, notices, hashes and target
+receipt. A successful VM run of the opt-in variant does not qualify the default
+GPU plugin or establish physical-board behavior. No newly built plugin is
+qualified by this configuration change.
 
 `public-qt-env.sh` and the `run-public-*.sh` launchers expect the runtime at
 `/data/home/qnxuser/qt612-public` and the proof directory at

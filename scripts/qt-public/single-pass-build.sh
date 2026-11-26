@@ -17,6 +17,11 @@
 set -uo pipefail
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$here/layout.sh"
+source "$here/qnx-patch-set.sh"
+# Release qualification must not silently reuse object files or previous logs.
+if [[ "${REQUIRE_CLEAN:-0}" == "1" ]]; then
+  bash "$here/assert-clean-tree.sh" || exit $?
+fi
 WORK_DIR=${WORK_DIR:-$(dirname "$QT_PUBLIC_ROOT")}
 STAGE_LOG_DIR=${STAGE_LOG_DIR:-$QT_PUBLIC_ROOT/logs}
 export GUARD_PATH=${GUARD_PATH:-$WORK_DIR} MIN_KB=${MIN_KB:-4194304}

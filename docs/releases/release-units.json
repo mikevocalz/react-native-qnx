@@ -9,6 +9,12 @@
       "description": "Qt 6.12.0 libraries, plugins and QML plugins built from the public source for QNX SDP 8.0.5 aarch64le, with licenses/ and hashes.",
       "licenses": ["LGPL-3.0-only", "see licenses/THIRD_PARTY_ATTRIBUTIONS.txt"],
       "buildRecipe": "scripts/qt-public/",
+      "pluginVariants": {
+        "default": { "QNX_SOFTWARE_GRAB": "0", "softwareGrab": false },
+        "no-gpu-capture": { "QNX_SOFTWARE_GRAB": "1", "softwareGrab": true },
+        "manifestRequirements": ["softwareGrab", "patchesApplied", "plugin SHA-256"],
+        "qualification": "Separate pristine build, corresponding-source manifest, hashes and target receipt for each variant. Neither variant is qualified by this declaration."
+      },
       "packageManifest": "docs/evidence/distribution-2026-11-21/package-manifest.runtime-current.json",
       "closureCheck": "scripts/qt-public/verify-closure.py",
       "mustCarry": [
